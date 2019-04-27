@@ -1,0 +1,10 @@
+name: rise-environment
+channels:
+  - conda-forge
+dependencies:
+  - python
+  - numpy
+  - pandas
+  - bokeh
+  - rise
+  - qiskit
