@@ -1,10 +1,17 @@
-name: rise-environment
+name: qiskit-rise-environment
 channels:
   - conda-forge
 dependencies:
-  - python
+  - python==3.6
+  - pip=18
   - numpy
   - pandas
   - bokeh
   - rise
   - qiskit
+  - matplotlib
+  - notebook
+  - ipywidgets
+  - pip:
+    - qiskit
+    - qiskit-aqua
