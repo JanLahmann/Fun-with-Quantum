@@ -8,7 +8,6 @@ dependencies:
   - pandas
   - bokeh
   - rise
-  - qiskit
   - matplotlib
   - notebook
   - ipywidgets
