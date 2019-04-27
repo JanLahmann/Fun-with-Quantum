@@ -9,7 +9,7 @@ View - and play the game online, without any install - in Binder: [![Binder](htt
 
 ## Usage instructions for the user interface
 
-1. "Ctrl -" and "Ctrl +" (or "command -", "command +") adjust the zoom level to fit the text to the browser window
+* "Ctrl -" and "Ctrl +" (or "command -", "command +") adjust the zoom level to fit the text to the browser window
 * Use the right & left arrow keys to navigate through the slides 
 * "Shift + Enter" executes the interactive cells (might need to click the cell, first)
 * Execute the interactive cells on each slide ("In [1]:", etc)
