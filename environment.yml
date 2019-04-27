@@ -10,4 +10,4 @@ dependencies:
   - notebook
   - ipywidgets
   - pip:
-    - qiskit
+    - qiskit==0.7.0
