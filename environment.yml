@@ -3,7 +3,7 @@ channels:
   - conda-forge
 dependencies:
   - python
-  - pip
+  - pip==19.0.1
   - numpy
   - rise
   - matplotlib
