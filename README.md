@@ -1,4 +1,4 @@
-# Quantum Coin Game. 
+# Quantum Coin Game 
 A quantum coin game to illustrate the power of quantum superposition and interference
 
 Inspired by the TED talk of Shohini Ghose  
