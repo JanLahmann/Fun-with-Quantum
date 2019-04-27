@@ -1,5 +1,5 @@
 # Quantum Coin Game 
-A quantum coin game to illustrate the power of quantum superposition and interference
+A quantum coin game to illustrate the power of quantum superposition and interference  - implemented by Jan-R. Lahmann using Qiskit, binder and RISE.
 
 Inspired by the TED talk of Shohini Ghose  
 ["Quantum computing explained in 10 minutes"](https://www.ted.com/talks/shohini_ghose_quantum_computing_explained_in_10_minutes) 
