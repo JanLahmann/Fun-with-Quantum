@@ -1,5 +1,5 @@
-# "Fun with Quantum" 
-Is a growing colletion of Jupyter notebooks that highlight specific aspects of Quantum Computing that are interesting and/or fun.
+# Fun with Quantum
+"Fun with Quantum" is a growing colletion of Jupyter notebooks that highlight specific aspects of Quantum Computing that are interesting and/or fun.
 
 Currently, it contains:
 1. Quantum Coin Game 
