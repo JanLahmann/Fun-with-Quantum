@@ -17,4 +17,4 @@ View - and play the game online, without any install - in Binder: [![Binder](htt
 * "X" at the top left exits the slideshow and enters the jupyter notebook interface
 
 ---
-Jan-R. Lahmann
+Jan-R. Lahmann, http://twitter.com/JanLahmann
