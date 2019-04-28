@@ -1,20 +1,18 @@
 # Fun with Quantum
-"Fun with Quantum" is a growing colletion of Jupyter notebooks that highlight specific aspects of Quantum Computing that are interesting and/or fun.
+"Fun with Quantum" is planned to be a colletion of Jupyter notebooks that highlight specific aspects of Quantum Computing that are interesting and/or fun.
 
-Currently, it contains:
-1. Quantum Coin Game 
-1. ...
+1. Quantum Coin Game  [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Quantum-Coin-Game/master?filepath=Quantum-Coin-Game.ipynb)
 
-## Quantum Coin Game 
+
+### Quantum Coin Game 
 A quantum coin game that illustrates the power of quantum superposition and interference  - implemented by Jan-R. Lahmann using [Qiskit](https://qiskit.org), [binder](https://mybinder.org) and [RISE](https://rise.readthedocs.io/en/stable/).
 
-Inspired by the TED talk of Shohini Ghose  
-["Quantum computing explained in 10 minutes"](https://www.ted.com/talks/shohini_ghose_quantum_computing_explained_in_10_minutes) 
+Inspired by the TED talk of Shohini Ghose ["Quantum computing explained in 10 minutes"](https://www.ted.com/talks/shohini_ghose_quantum_computing_explained_in_10_minutes) 
 
 View - and play the game online, without any install - in Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Quantum-Coin-Game/master?filepath=Quantum-Coin-Game.ipynb)
 
 
-## Usage instructions for the RISE 
+## Usage instructions for the RISE Slideshow Extension
 
 Some of the binder images in this repository automatically launch RISE, a Jupyter/IPython Slideshow Extension.  
 Navigation is easy:
