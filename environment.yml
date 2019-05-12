@@ -12,5 +12,6 @@ dependencies:
   - pip:
     - qiskit==0.7.0
     - qiskit_aqua
+    - qiskit_util
     - wget
     - tabulate
