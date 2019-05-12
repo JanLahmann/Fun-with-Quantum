@@ -11,6 +11,6 @@ dependencies:
   - ipywidgets
   - pip:
     - qiskit==0.7.0
-    - wget
     - qiskit_aqua
+    - wget
     - tabulate
