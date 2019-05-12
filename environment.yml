@@ -9,6 +9,6 @@ dependencies:
   - matplotlib
   - notebook
   - ipywidgets
-  - wget
   - pip:
     - qiskit==0.7.0
+    - wget
