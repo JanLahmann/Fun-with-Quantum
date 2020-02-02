@@ -12,7 +12,7 @@ Inspired by the TED talk of Shohini Ghose ["Quantum computing explained in 10 mi
 
 View - and play the game online, without any install - in Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=Quantum-Coin-Game.ipynb)
 
-A slighlty more current version of this Quantum Coin Game is now part of the official Qiskit Community Tutorials in can be played at http://ibm.biz/QiskitCoinGame
+A slightly more current version of this Quantum Coin Game is now part of the official Qiskit Community Tutorials and can be played at http://ibm.biz/QiskitCoinGame
 
 ### 2. Simple Quantum Implementation for Boolean satisfiability problems
 
