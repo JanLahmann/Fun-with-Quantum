@@ -1,16 +1,12 @@
-name: qiskit-rise-environment
-channels:
-  - conda-forge
+name: Qiskitenv
 dependencies:
-  - python
-  - pip==19.0.1
-  - numpy
-  - rise
-  - matplotlib
-  - notebook
-  - ipywidgets
-  - pip:
-    - qiskit==0.7.0
-    - qiskit_aqua==0.4.0
-    - wget
-    - tabulate
+- python=3
+- pip=18
+- matplotlib
+- notebook
+- ipywidgets
+- rise
+- pip:
+  - qiskit
+  - wget
+  - tabulate
