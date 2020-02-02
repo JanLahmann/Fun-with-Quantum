@@ -12,11 +12,13 @@ Inspired by the TED talk of Shohini Ghose ["Quantum computing explained in 10 mi
 
 View - and play the game online, without any install - in Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=Quantum-Coin-Game.ipynb)
 
+A slighlty more current version of this Quantum Coin Game is now part of the official Qiskit Community Tutorials in can be played at http://ibm.biz/QiskitCoinGame
+
 ### 2. Simple Quantum Implementation for Boolean satisfiability problems
 
 A simple implementation to solve Boolean satisfiability problems ("3SAT) using Qiskit. The aim is to show how easy such a problem can be solved on a Quantum Computer using Qiskit. To keep it as simple as possible, the theory is not explained in this notebook.
 
-Walk through this demo (and chance it if you like) in Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=3sat.ipynb)
+Walk through this demo (and change it if you like) in Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=3sat.ipynb)
 
 
 ## Usage instructions for the RISE Slideshow Extension
