@@ -7,6 +7,7 @@ dependencies:
 - ipywidgets
 - rise
 - pip:
-  - qiskit
+  - qiskit==0.7.0
+  - qiskit_aqua==0.4.0
   - wget
   - tabulate
