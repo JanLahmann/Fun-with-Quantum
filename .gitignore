@@ -104,3 +104,4 @@ venv.bak/
 .mypy_cache/
 *.old
 .DS_Store
+Hardys-Paradox-newqiskit.ipynb
