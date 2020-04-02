@@ -50,8 +50,8 @@ def runExperiment():
             counts = simulate(qc, q, c, 1)
             if ("001" in counts or "010" in counts or "100" in counts or "111" in counts): correctSchr = True; # if product = 1 -> win
         print ("Round ", i, ", Question ", i)
-        if (correctSchr == True and correctEinstein != True): print ("Team Einstein was wrong, Team Schrödinger wins"); 
-        elif (correctSchr != True and correctEinstein == True): print ("Team Einstein wins, Team Schrödinger was wrong");
+        if (correctSchr == True and correctEinstein != True): print ("Team Einstein was wrong, Team Schrödinger was right"); 
+        elif (correctSchr != True and correctEinstein == True): print ("Team Einstein was right, Team Schrödinger was wrong");
         else: print ("Both teams were right")
         i = i+1;
 
@@ -60,6 +60,7 @@ def xxx(qc, q):
     qc.h(q[1])
     qc.h(q[2])
     return qc
+
 def xyy(qc, q):
     qc.h(q[0])
     qc.sdg(q[1])
@@ -86,7 +87,7 @@ def yyx(qc, q):
 
 def simulate(qc, q, c, s):
     backend = BasicAer.get_backend('qasm_simulator') # define the backend
-    qc.measure(q,c) # measure xxx
+    qc.measure(q,c) 
     job = execute(qc, backend, shots=s) # run the job simulation
     result = job.result() # grab the result
     counts = result.get_counts(qc) # results for the number of runs
@@ -101,7 +102,7 @@ def randomQuestion():
     if (x == 4): print("Shape, color, shape");
     return x;
 
-def correctAnswer(x):
+def correctAnswer(x): # prints out the 
     print ("Copy the following code in the cell above:\n\n")
     if (x==1):
         print ("qc.h(q[0])\nqc.h(q[1])\nqc.h(q[2])")
@@ -124,7 +125,7 @@ def circuitCheck(qc,q,c,x):
             print ("Perfect! Your team won!")
         else: print ("Hmmm... There might still be a mistake.")
             
-def question():
+def quiz():
     print ("(a) All 8 possible states equally mixed (|000>, |001>, |010>, ..., |110>, |111>)\n(b) A random distribution across all 8 states (|000>, |001>, |010>, ..., |110>, |111>)\n(c) Measurement result in 50% is state |000> and in 50% is state |100>\n(d) Measurement result in 50% is state |000> and in 50% is state |111>")
     answer = input()
     if answer == "d" or answer == "D":
