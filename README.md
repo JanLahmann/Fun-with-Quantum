@@ -1,5 +1,5 @@
 # Fun with Quantum
-"Fun with Quantum" is planned to be a colletion of Jupyter notebooks that highlight specific aspects of Quantum Computing that are interesting and/or fun.
+"Fun with Quantum" is a colletion of Jupyter notebooks that highlight specific aspects of Quantum Computing that are interesting and/or fun.
 
 1. Quantum Coin Game  [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=Quantum-Coin-Game.ipynb)
 2. Simple Quantum Implementation for Boolean satisfiability problems [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=3sat.ipynb)
