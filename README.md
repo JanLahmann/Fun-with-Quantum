@@ -19,13 +19,13 @@ A slightly more current version of this Quantum Coin Game is now part of the off
 
 ### 2. Simple Quantum Implementation for Boolean satisfiability problems
 
-A simple implementation to solve Boolean satisfiability problems ("3SAT) using Qiskit. The aim is to show how easy such a problem can be solved on a Quantum Computer using Qiskit. To keep it as simple as possible, the theory is not explained in this notebook.
+A simple implementation to solve Boolean satisfiability problems ("3SAT) using Qiskit and Grover's Quantum Search Algorithm. The aim is to show how easy such a problem can be solved on a Quantum Computer using Qiskit. To keep it as simple as possible, the theory is not explained in this notebook.
 
 Walk through this demo (and change it if you like) in Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=3sat.ipynb)
 
-### 3. Simpler Quantum Implementation for Boolean satisfiability problems
+### 3. Even Simpler Quantum Implementation for Boolean satisfiability problems
 
-An even simpler implementation to solve Boolean satisfiability problems ("3SAT) using Qiskit. To keep it as simple as possible, the theory is not explained in this notebook.
+An even simpler implementation to solve Boolean satisfiability problems ("3SAT) using Qiskit and Grover's Quantum Search Algorithm.
 
 Walk through this demo (and change it if you like) in Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=3sat-v2.ipynb)
 
