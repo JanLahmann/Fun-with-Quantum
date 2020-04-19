@@ -31,7 +31,7 @@ An even simpler implementation to solve Boolean satisfiability problems ("3SAT) 
 
 Walk through this demo (and change it if you like) in Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=3sat-v2.ipynb)
 
-
+---
 ### 4. GHZ Game (under development)
 
 A quantum game that illustrates the power of quantum entanglement  - implemented by Isabell Heider using [Qiskit](https://qiskit.org), [binder](https://mybinder.org) and [RISE](https://rise.readthedocs.io/en/stable/).
@@ -46,7 +46,6 @@ View - and play the game online, without any install - in Binder: [![Binder](htt
 
 ---
 ## Usage instructions for the RISE Slideshow Extension
-
 Some of the binder images in this repository automatically launch RISE, a Jupyter/IPython Slideshow Extension.  
 Navigation is easy:
 
