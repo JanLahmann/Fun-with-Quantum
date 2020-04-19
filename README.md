@@ -3,6 +3,7 @@
 
 1. Quantum Coin Game  [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=Quantum-Coin-Game.ipynb)
 2. Simple Quantum Implementation for Boolean satisfiability problems [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=3sat.ipynb)
+2a. Simpler Quantum Implementation for Boolean satisfiability problems [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=3sat-v2.ipynb)
 3. GHZ Game (under development) [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=GHZ-Game.ipynb)
 4. Hardy's Paradox (under development) [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=Hardys-Paradox.ipynb)
 
@@ -21,6 +22,13 @@ A slightly more current version of this Quantum Coin Game is now part of the off
 A simple implementation to solve Boolean satisfiability problems ("3SAT) using Qiskit. The aim is to show how easy such a problem can be solved on a Quantum Computer using Qiskit. To keep it as simple as possible, the theory is not explained in this notebook.
 
 Walk through this demo (and change it if you like) in Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=3sat.ipynb)
+
+### 2a. Simpler Quantum Implementation for Boolean satisfiability problems
+
+An even simpler implementation to solve Boolean satisfiability problems ("3SAT) using Qiskit. To keep it as simple as possible, the theory is not explained in this notebook.
+
+Walk through this demo (and change it if you like) in Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=3sat-v2.ipynb)
+
 
 ### 3. GHZ Game (under development)
 A quantum game that illustrates the power of quantum entanglement  - implemented by Isabell Heider using [Qiskit](https://qiskit.org), [binder](https://mybinder.org) and [RISE](https://rise.readthedocs.io/en/stable/).
