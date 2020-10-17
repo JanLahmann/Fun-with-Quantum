@@ -18,7 +18,7 @@ Part 3.1 "GHZ Game": [![Binder](https://mybinder.org/badge_logo.svg)](https://my
 
 Part 3.2 "GHZ Game on real devices": [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/Q019?filepath=GHZ-on-Real-Devices.ipynb) or [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Fun-with-Quantum/Fun-with-Quantum/Q019?filepath=GHZ-on-Real-Devices.ipynb)
 
-A recording of the three 1h tutorial sessions ["Serious Games for Quantum Computing"](https://qce.quantum.ieee.org/tutorials/#tut-lahmann-heider) are available here: [part 1](https://ibm.box.com/v/IEEE-QCE20-QSeriousGames-1), [part 2](https://ibm.box.com/v/IEEE-QCE20-QSeriousGames-2), [part 3](https://ibm.box.com/v/IEEE-QCE20-QSeriousGames-3).
+A recording of the three 1h tutorial sessions ["Serious Games for Quantum Computing"](https://qce.quantum.ieee.org/tutorials/#tut-lahmann-heider) from the [IEEE International Conference on Quantum Computing and Engineering (QCE20)](https://qce.quantum.ieee.org/) are available here: [part 1](https://ibm.box.com/v/IEEE-QCE20-QSeriousGames-1), [part 2](https://ibm.box.com/v/IEEE-QCE20-QSeriousGames-2), [part 3](https://ibm.box.com/v/IEEE-QCE20-QSeriousGames-3).
 
 ---
 ### 1. Quantum Coin Game 
