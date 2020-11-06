@@ -53,9 +53,11 @@ A quantum game that illustrates the power of quantum entanglement  - implemented
 View - and play the game online, without any install - in Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/Q019?filepath=GHZ-Game.ipynb)
 
 ---
-### 5. GHZ Game on real devices": 
+### 5. GHZ Game on real devices
 
 Analyzing different techniques how to improve the results of playing the GHZ game on real quantum devices - implemented by Lennart Schulze using [Qiskit](https://qiskit.org) and [binder](https://mybinder.org). 
+
+This notebook compares several IBM Quantum devices, explains how to (manually) optimize a circuit for a specific device, how to use the Qiskit transpiler and its optimizations, and discusses Measurement Error Mitigation.
 
 View - and play the game online on real quantum devices, without any install - in Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/Q019?filepath=GHZ-on-Real-Devices.ipynb)
 
