@@ -13,4 +13,4 @@ dependencies:
   - wget
   - tabulate
   - pylatexenc
-
+  - seaborn
