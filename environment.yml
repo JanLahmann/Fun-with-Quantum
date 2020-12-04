@@ -1,9 +1,7 @@
 name: Qiskitenv
 dependencies:
 - python=3
-- pip=19
 - matplotlib
-- notebook
 - ipywidgets
 - rise
 - networkx=2.3
