@@ -1,10 +1,10 @@
 name: Qiskitenv
 dependencies:
 - python=3
+- notebook
 - matplotlib
 - ipywidgets
 - rise
-- networkx=2.3
 - pip:
   - qiskit==0.23.1
   - qiskit_aqua==0.8.1
