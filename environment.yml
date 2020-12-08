@@ -7,7 +7,7 @@ dependencies:
 - rise
 - pip:
   - qiskit==0.23.1
-  - qiskit_aqua==0.8.1
+  - qiskit.aqua==0.8.1
   - wget
   - tabulate
   - pylatexenc
