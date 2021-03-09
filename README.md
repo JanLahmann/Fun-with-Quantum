@@ -7,7 +7,7 @@
 4. GHZ Game [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=GHZ-Game.ipynb)
 5. GHZ Game on real devices [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=GHZ-on-Real-Devices.ipynb)
 6. Hardy's Paradox (under development) [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=Hardys-Paradox.ipynb)
-6. Mermin-Peres Magic Square (under development) [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=Mermin–Peres-Game.ipynb)
+7. Mermin-Peres Magic Square (under development) [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=Mermin–Peres-Game.ipynb)
 
 ---
 ### IEEE QCE20 Tutorial on "Serious Games for Quantum Computing"
@@ -76,8 +76,8 @@ A tutorial that discusses a specific version of the Einstein-Podolsky-Rosen (EPR
 View - and play the game online, without any install - in Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=Hardys-Paradox.ipynb) 
 
 ---
-### 8. Mermin-Peres Magic Square (under development)
-A base version of the Mermin-Peres quantum game demonstrating the computational power of quantum computers, which can be further extended to outperform classical machines - extended by Jan-R. Lahmann & David Drexlin with [Qiskit](https://qiskit.org). Based on the Medium article [This Proof Demonstrates a Quantum Advantage, Even for Noisy Quantum Computers](https://medium.com/qiskit/this-proof-demonstrates-a-quantum-advantage-even-for-noisy-quantum-computers-b44a738801ad). 
+### 7. Mermin-Peres Magic Square (under development)
+A base version of the Mermin-Peres magic square game demonstrating the computational power of quantum computers, which can be further extended to outperform classical machines - extended by Jan-R. Lahmann & David Drexlin with [Qiskit](https://qiskit.org). Based on the Medium article [This Proof Demonstrates a Quantum Advantage, Even for Noisy Quantum Computers](https://medium.com/qiskit/this-proof-demonstrates-a-quantum-advantage-even-for-noisy-quantum-computers-b44a738801ad). 
 
 View - and play the game online, without any install - in Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=Mermin–Peres-Game.ipynb)
 
