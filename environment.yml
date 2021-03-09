@@ -11,3 +11,4 @@ dependencies:
   - tabulate
   - pylatexenc
   - seaborn
+  - numpy
