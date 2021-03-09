@@ -9,6 +9,7 @@
 6. Hardy's Paradox (under development) [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=Hardys-Paradox.ipynb)
 7. Mermin-Peres Magic Square (under development) [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=Mermin–Peres-Game.ipynb)
 
+
 ---
 ### IEEE QCE20 Tutorial on "Serious Games for Quantum Computing"
 
