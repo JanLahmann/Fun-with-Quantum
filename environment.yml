@@ -6,9 +6,9 @@ dependencies:
 - ipywidgets
 - rise
 - pip:
+  - numpy==1.19.5
   - qiskit==0.23
   - wget
   - tabulate
   - pylatexenc
   - seaborn
-  - numpy
