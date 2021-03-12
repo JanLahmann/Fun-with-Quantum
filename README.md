@@ -59,7 +59,7 @@ Walk through this demo (and change it if you like) in Binder: [![Binder](https:/
 
 A quantum game that illustrates the power of quantum entanglement  - implemented by Isabell Heider using [Qiskit](https://qiskit.org) and [binder](https://mybinder.org). 
 
-For an easier, more storytelling guide about the GHZ Game take a look at the presentation inside the GHZ Game subfolder.
+For an introductions to the GHZ Game, please take a look at the following [presentation](https://github.com/JanLahmann/Fun-with-Quantum/blob/master/GHZGame/GHZ%20Game.pdf) by Jana Foehlisch.
 
 View - and play the game online, without any install - in Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/Q019?filepath=GHZ-Game.ipynb)
 
