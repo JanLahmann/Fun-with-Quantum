@@ -9,19 +9,19 @@
 6. Hardy's Paradox (under development) [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=Hardys-Paradox.ipynb)
 7. Mermin-Peres Magic Square (under development) [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=Mermin–Peres-Game.ipynb)
 
-
 ---
-### IEEE QCE20 Tutorial on "Serious Games for Quantum Computing"
+### THINK 2021 Lab - Explore Quantum Computing with Serious Games
 
-For the [tutorial "Serious Games for Quantum Computing"](https://qce.quantum.ieee.org/tutorials/#tut-lahmann-heider) as part of the IEEE QCE20 conference, please use the following URLs to launch the tutorial notebooks:
+In this lab, we will give an overview of serious games for quantum computing and use several Quantum Games that make the fundamental concepts of Superposition, Interference and Entanglement tangible and understandable for beginners. In addition, we will use real quantum computers and explore how to mitigate noise and errors.
 
-Part 2 "Quantum Coin Game": [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=Quantum-Coin-Game.ipynb)
 
-Part 3.1 "GHZ Game": [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=GHZ-Game.ipynb)  
+As a first introduction look at [these slides](https://github.com/JanLahmann/Fun-with-Quantum/blob/master/SeriousGames-for-QuantumComputing.pdf) which provide an Overview about the topic of Serious Games in the area of Quantum Computing.
+Then you can go through some of the Serious Games to experience the differences and possibilities that Quantum Computing provides and get a first understanding on how to program todays Quantum Computers and Quantum Simulators:
 
-Part 3.2 "GHZ Game on real devices": [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=GHZ-on-Real-Devices.ipynb)
 
-A recording of the three 1h tutorial sessions ["Serious Games for Quantum Computing"](https://qce.quantum.ieee.org/tutorials/#tut-lahmann-heider) from the [IEEE International Conference on Quantum Computing and Engineering (QCE20)](https://qce.quantum.ieee.org/) are available here: [part 1](https://ibm.box.com/v/IEEE-QCE20-QSeriousGames-1), [part 2](https://ibm.box.com/v/IEEE-QCE20-QSeriousGames-2), [part 3](https://ibm.box.com/v/IEEE-QCE20-QSeriousGames-3). The agenda for the three parts is [here](https://ibm.box.com/v/IEEE-QCE20-QSeriousGames-0).
+1. **Quantum Coin Game:** this Game provides an introduction to the concepts of Superposition and Interference. Go ahead and try it out for yourself: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=Quantum-Coin-Game.ipynb) (opens as interactive slide show)
+2. **GHZ-Game:** in this game you will learn the basics about the concept of Entanglement and experience the effect that it can have based on a simple riddle: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=GHZ-Game.ipynb) (opens as Jupyter Notebook)
+3. **GHZ on real devices:** to go one step further you can now try the GHZ-Game on a real quantum computer device. In this notebook you can experience the influence noise has on todays Quantum Computers and learn the fundamentals about error mitigation: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=GHZ-on-Real-Devices.ipynb) (opens as Jupyter Notebook)
 
 ---
 ### RasQberry: Exploring Quantum Computing and Qiskit with a Raspberry Pi and a 3D Printer
@@ -96,6 +96,19 @@ Navigation is easy:
 * In case a cell is not formatted correctly, try to double-click and then "Shift Enter" to re-execute
 * Interactive cells can be modified, if needed
 * "X" at the top left exits the slideshow and enters the jupyter notebook interface
+
+---
+### IEEE QCE20 Tutorial on "Serious Games for Quantum Computing"
+
+For the [tutorial "Serious Games for Quantum Computing"](https://qce.quantum.ieee.org/tutorials/#tut-lahmann-heider) as part of the IEEE QCE20 conference, please use the following URLs to launch the tutorial notebooks:
+
+Part 2 "Quantum Coin Game": [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=Quantum-Coin-Game.ipynb)
+
+Part 3.1 "GHZ Game": [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=GHZ-Game.ipynb)  
+
+Part 3.2 "GHZ Game on real devices": [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=GHZ-on-Real-Devices.ipynb)
+
+A recording of the three 1h tutorial sessions ["Serious Games for Quantum Computing"](https://qce.quantum.ieee.org/tutorials/#tut-lahmann-heider) from the [IEEE International Conference on Quantum Computing and Engineering (QCE20)](https://qce.quantum.ieee.org/) are available here: [part 1](https://ibm.box.com/v/IEEE-QCE20-QSeriousGames-1), [part 2](https://ibm.box.com/v/IEEE-QCE20-QSeriousGames-2), [part 3](https://ibm.box.com/v/IEEE-QCE20-QSeriousGames-3). The agenda for the three parts is [here](https://ibm.box.com/v/IEEE-QCE20-QSeriousGames-0).
 
 ---
 Jan-R. Lahmann, http://twitter.com/JanLahmann
