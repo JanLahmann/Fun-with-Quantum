@@ -1,13 +1,20 @@
 # Fun with Quantum
-"Fun with Quantum" is a colletion of Jupyter notebooks that highlight specific aspects of Quantum Computing that are interesting and/or fun.
 
-1. Quantum Coin Game  [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=Quantum-Coin-Game.ipynb)
-2. Simple Quantum Implementation for Boolean satisfiability problems [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=3sat.ipynb)
-3. Even Simpler Quantum Implementation for Boolean satisfiability problems (under development) [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=3sat-v2.ipynb)
-4. GHZ Game [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=GHZ-Game.ipynb)
-5. GHZ Game on real devices [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=GHZ-on-Real-Devices.ipynb)
-6. Hardy's Paradox (under development) [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=Hardys-Paradox.ipynb)
-7. Mermin-Peres Magic Square (under development) [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=Mermin–Peres-Game.ipynb)
+### How to execute the Serious Games in the IBM Quantum Lab
+You can run the jupyter notebooks with the different Serious Games in the IBM Quantum Labs without the need to save them local or copy the code.
+1. Open the [Quantum Lab](https://quantum-computing.ibm.com/) in your browser.
+1. If you already have an IBMid sign in to IBM Quantum.<br/> 
+If you don't please create an account by clicking on `Create an IBM account` and follow the instructions.
+1. Launch the Quantum Lab.
+1. Create a new file by clicking on the blue button `New file +`.
+1. Delete the code from the first cell and enter
+```python
+!git clone https://github.com/JanLahmann/Fun-with-Quantum
+```
+6. Execute the cell with `Shift + Enter`. The Fun-with-Quantum Repository will now be cloned in your IBM Quantum Lab.<br/>
+To see the Repository-folder in the directory-tree on the left side, close and open the Lab files.
+1. Open the `Readme.ipynb`-file.<br/>
+Here you can find the links to the different Serious Games.
 
 ---
 ### THINK 2021 Lab - Explore Quantum Computing with Serious Games
