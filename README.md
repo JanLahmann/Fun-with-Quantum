@@ -9,12 +9,13 @@
  5. GHZ Game on real devices 
  6. Hardy's Paradox (under development)
  7. Mermin-Peres Magic Square (under development)
-
-### How to execute the Serious Games in the IBM Quantum Lab
-You can run the jupyter notebooks with the different Serious Games in the IBM Quantum Labs without the need to save them local or copy the code.
-1. Open the [Quantum Lab](https://quantum-computing.ibm.com/) in your browser.
-1. If you already have an IBMid sign in to IBM Quantum.<br/> 
-If you don't please create an account by clicking on `Create an IBM account` and follow the instructions.
+ 
+---
+### How to execute the Examples in the IBM Quantum Lab
+You can run the jupyter notebooks with the different Serious Games in the IBM Quantum Lab without the need for a local software install.
+1. Open the Quantum Lab in your browser: https://quantum-computing.ibm.com/
+1. If you already have an ID sign in to IBM Quantum.<br/> 
+Otherwise, please create an IBMid by clicking `Create an IBM account`, or use one of the other ID options.
 1. Launch the Quantum Lab.
 1. Create a new file by clicking on the blue button `New file +`.
 1. Delete the code from the first cell and enter
@@ -22,9 +23,9 @@ If you don't please create an account by clicking on `Create an IBM account` and
 !git clone https://github.com/JanLahmann/Fun-with-Quantum
 ```
 6. Execute the cell with `Shift + Enter`. The Fun-with-Quantum Repository will now be cloned in your IBM Quantum Lab.<br/>
-To see the Repository-folder in the directory-tree on the left side, close and open the Lab files.
-1. Open the `Readme.ipynb`-file.<br/>
-Here you can find the links to the different Serious Games.
+To see the new folder `Fun-with-Quantum` in the directory-tree on the left side, close and open the Lab files side menu.
+1. Click `Fun-with-Quantum` to enter the new directory.
+1. Open the `Readme.ipynb`-file and follow the links to the different examples.
 
 ---
 ### RasQberry: Exploring Quantum Computing and Qiskit with a Raspberry Pi and a 3D Printer
