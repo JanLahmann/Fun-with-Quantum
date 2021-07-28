@@ -1,5 +1,15 @@
 # Fun with Quantum
 
+"Fun with Quantum" is a colletion of Jupyter notebooks that highlight specific aspects of Quantum Computing that are interesting and/or fun.
+
+ 1. Quantum Coin Game  
+ 2. Simple Quantum Implementation for Boolean satisfiability problems 
+ 3. Even Simpler Quantum Implementation for Boolean satisfiability problems (under development) 
+ 4. GHZ Game 
+ 5. GHZ Game on real devices 
+ 6. Hardy's Paradox (under development)
+ 7. Mermin-Peres Magic Square (under development)
+
 ### How to execute the Serious Games in the IBM Quantum Lab
 You can run the jupyter notebooks with the different Serious Games in the IBM Quantum Labs without the need to save them local or copy the code.
 1. Open the [Quantum Lab](https://quantum-computing.ibm.com/) in your browser.
@@ -15,20 +25,6 @@ If you don't please create an account by clicking on `Create an IBM account` and
 To see the Repository-folder in the directory-tree on the left side, close and open the Lab files.
 1. Open the `Readme.ipynb`-file.<br/>
 Here you can find the links to the different Serious Games.
-
----
-### THINK 2021 Lab - Explore Quantum Computing with Serious Games
-
-In this lab, we will give an overview of serious games for quantum computing and use several Quantum Games that make the fundamental concepts of Superposition, Interference and Entanglement tangible and understandable for beginners. In addition, we will use real quantum computers and explore how to mitigate noise and errors.
-
-
-As a first introduction look at [these slides](https://github.com/JanLahmann/Fun-with-Quantum/blob/master/SeriousGames-for-QuantumComputing.pdf) which provide an Overview about the topic of Serious Games in the area of Quantum Computing.
-Then you can go through some of the Serious Games to experience the differences and possibilities that Quantum Computing provides and get a first understanding on how to program todays Quantum Computers and Quantum Simulators:
-
-
-1. **Quantum Coin Game:** this Game provides an introduction to the concepts of Superposition and Interference. Go ahead and try it out for yourself: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=Quantum-Coin-Game.ipynb) (opens as interactive slide show)
-2. **GHZ-Game:** in this game you will learn the basics about the concept of Entanglement and experience the effect that it can have based on a simple riddle: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=GHZ-Game.ipynb) (opens as Jupyter Notebook)
-3. **GHZ on real devices:** to go one step further you can now try the GHZ-Game on a real quantum computer device. In this notebook you can experience the influence noise has on todays Quantum Computers and learn the fundamentals about error mitigation: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=GHZ-on-Real-Devices.ipynb) (opens as Jupyter Notebook)
 
 ---
 ### RasQberry: Exploring Quantum Computing and Qiskit with a Raspberry Pi and a 3D Printer
@@ -103,6 +99,21 @@ Navigation is easy:
 * In case a cell is not formatted correctly, try to double-click and then "Shift Enter" to re-execute
 * Interactive cells can be modified, if needed
 * "X" at the top left exits the slideshow and enters the jupyter notebook interface
+
+---
+### THINK 2021 Lab - Explore Quantum Computing with Serious Games
+
+In this lab, we will give an overview of serious games for quantum computing and use several Quantum Games that make the fundamental concepts of Superposition, Interference and Entanglement tangible and understandable for beginners. In addition, we will use real quantum computers and explore how to mitigate noise and errors.
+
+
+As a first introduction look at [these slides](https://github.com/JanLahmann/Fun-with-Quantum/blob/master/SeriousGames-for-QuantumComputing.pdf) which provide an Overview about the topic of Serious Games in the area of Quantum Computing.
+Then you can go through some of the Serious Games to experience the differences and possibilities that Quantum Computing provides and get a first understanding on how to program todays Quantum Computers and Quantum Simulators:
+
+
+1. **Quantum Coin Game:** this Game provides an introduction to the concepts of Superposition and Interference. Go ahead and try it out for yourself: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=Quantum-Coin-Game.ipynb) (opens as interactive slide show)
+2. **GHZ-Game:** in this game you will learn the basics about the concept of Entanglement and experience the effect that it can have based on a simple riddle: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=GHZ-Game.ipynb) (opens as Jupyter Notebook)
+3. **GHZ on real devices:** to go one step further you can now try the GHZ-Game on a real quantum computer device. In this notebook you can experience the influence noise has on todays Quantum Computers and learn the fundamentals about error mitigation: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=GHZ-on-Real-Devices.ipynb) (opens as Jupyter Notebook)
+
 
 ---
 ### IEEE QCE20 Tutorial on "Serious Games for Quantum Computing"
