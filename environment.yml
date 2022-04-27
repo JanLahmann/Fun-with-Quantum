@@ -5,8 +5,9 @@ dependencies:
 - matplotlib
 - ipywidgets
 - rise
-- numpy==1.19.5
+- libblas
 - pip:
+  - numpy==1.19.5
   - qiskit==0.23
   - wget
   - tabulate
