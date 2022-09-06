@@ -15,4 +15,3 @@ dependencies:
   - seaborn
   - qiskit_ibm_runtime
   - qiskit_aqt_provider
-  -
