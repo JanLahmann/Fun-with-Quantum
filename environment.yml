@@ -118,7 +118,6 @@ dependencies:
   - qt-main=5.15.2
   - qtconsole=5.3.2
   - qtpy=2.2.0
-  - qtwebkit=5.212
   - readline=8.1.2
   - requests=2.28.1
   - send2trash=1.8.0
