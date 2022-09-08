@@ -3,7 +3,6 @@ channels:
   - defaults
 dependencies:
   - anyio=3.5.0
-  - appnope=0.1.2
   - rise
   - argon2-cffi=21.3.0
   - argon2-cffi-bindings=21.2.0
@@ -71,7 +70,6 @@ dependencies:
   - libwebp-base=1.2.2
   - libxml2=2.9.14
   - libxslt=1.1.35
-  - llvm-openmp=12.0.0
   - lz4-c=1.9.3
   - markupsafe=2.1.1
   - matplotlib-inline=0.1.6
@@ -82,7 +80,6 @@ dependencies:
   - mkl_random=1.2.2
   - nbclassic=0.3.5
   - nbclient=0.5.13
-  - nbconvert=6.4.4
   - nbformat=5.3.0
   - ncurses=6.3
   - nest-asyncio=1.5.5
@@ -121,7 +118,6 @@ dependencies:
   - pytz=2022.1
   - pyzmq=23.2.0
   - qt-main=5.15.2
-  - qt-webengine=5.15.9
   - qtconsole=5.3.2
   - qtpy=2.2.0
   - qtwebkit=5.212
