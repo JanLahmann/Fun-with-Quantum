@@ -4,8 +4,8 @@ dependencies:
 - notebook=6.4.12
 - matplotlib=3.5.3
 - ipywidgets=7.6.5
-- rise
-- libblas
+- rise=5.7.1
+- libblas=3.9.0
 - pip:
   - numpy==1.23.2
   - qiskit==0.37
@@ -15,4 +15,4 @@ dependencies:
   - seaborn==0.12.0
   - qiskit_ibm_runtime==0.6.2
   - qiskit_aqt_provider==0.4.3
-  - qiskit_experiments==0.2.5
+  - qiskit_experiments==0.2
