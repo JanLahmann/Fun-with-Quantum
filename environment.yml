@@ -192,4 +192,3 @@ dependencies:
     - websocket-client==1.4.1
     - websockets==10.3
     - wget==3.2
-prefix: /Users/bengtwegner/opt/anaconda3/envs/Fun-with-Quantum
