@@ -1,18 +1,18 @@
 name: Qiskitenv
 dependencies:
-- python=3.9
-- notebook
-- matplotlib
-- ipywidgets
+- python=3.9.13
+- notebook=6.4.12
+- matplotlib=3.5.3
+- ipywidgets=7.6.5
 - rise
 - libblas
 - pip:
-  - numpy
+  - numpy==1.23.2
   - qiskit==0.37
-  - wget
-  - tabulate
-  - pylatexenc
-  - seaborn
-  - qiskit_ibm_runtime
-  - qiskit_aqt_provider
-  - qiskit_experiments
+  - wget==3.2
+  - tabulate==0.8.10
+  - pylatexenc==2.10
+  - seaborn==0.12.0
+  - qiskit_ibm_runtime==0.6.2
+  - qiskit_aqt_provider==0.4.3
+  - qiskit_experiments==0.2.5
