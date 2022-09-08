@@ -108,8 +108,6 @@ dependencies:
   - pygments=2.11.2
   - pyopenssl=22.0.0
   - pyparsing=3.0.9
-  - pyqt=5.15.7
-  - pyqt5-sip=12.11.0
   - pyrsistent=0.18.0
   - pysocks=1.7.1
   - python=3.9.13
