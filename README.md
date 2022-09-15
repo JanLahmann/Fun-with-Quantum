@@ -9,8 +9,15 @@
  5. GHZ Game on real devices 
  6. Hardy's Paradox (complementary observables & the problem with classical logic)
  7. Mermin-Peres Magic Square (under development)
- 
 ---
+## Came here from Linux Magazine?
+
+Find the notebook in the repository under the name [Codebeispiele-Linux-Magazin.ipynb](https://github.com/JanLahmann/Fun-with-Quantum/blob/master/Codebeispiele-Linux-Magazin.ipynb).
+
+View - and play the game online, without any install - in Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=Codebeispiele-Linux-Magazin.ipynb)
+
+---
+
 ### How to execute the Examples in the IBM Quantum Lab
 You can run the jupyter notebooks with the different Serious Games in the IBM Quantum Lab without the need for a local software install.
 1. Open the Quantum Lab in your browser: https://quantum-computing.ibm.com/
