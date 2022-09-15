@@ -8,7 +8,7 @@ dependencies:
 - libblas=3.9.0
 - pip:
   - numpy==1.23.2
-  - qiskit==0.37
+  - qiskit==0.38.0
   - wget==3.2
   - tabulate==0.8.10
   - pylatexenc==2.10
