@@ -15,4 +15,4 @@ dependencies:
   - seaborn==0.12.0
   - qiskit_ibm_runtime==0.6.2
   - qiskit_aqt_provider==0.4.3
-  - qiskit_experiments==0.2
+  - qiskit_experiments==0.4.0
