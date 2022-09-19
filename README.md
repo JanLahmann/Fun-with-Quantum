@@ -5,9 +5,9 @@
  1. Quantum Coin Game (superposition & interference))  
  2. Simple Quantum Implementation for Boolean satisfiability problems 
  3. Even Simpler Quantum Implementation for Boolean satisfiability problems (under development) 
- 4. GHZ Game (entanglement)
- 5. GHZ Game on real devices 
- 6. Hardy's Paradox (complementary observables & the problem with classical logic)
+ 4. Hardy's Paradox (complementary observables & the problem with classical logic) 
+ 5. GHZ Game (entanglement)
+ 6. GHZ Game on real devices
  7. Mermin-Peres Magic Square (under development)
 ---
 ## Came here from Linux Magazine?
@@ -66,7 +66,16 @@ An even simpler implementation to solve Boolean satisfiability problems ("3SAT")
 Walk through this demo (and change it if you like) in Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=3sat-v2.ipynb)
 
 ---
-### 4. GHZ Game
+### 4. Hardy's Paradox
+
+Hardy's Paradox nicely illustrates the fundamental difference of Quantum Mechanics and classical physics. Learn about complementary oberservables and why classical logic is not applicable to quantum mechanics.
+ 
+A tutorial that discusses a specific version of the Einstein-Podolsky-Rosen (EPR) Paradox  - implemented by Jan-R. Lahmann & Bengt Wegner using [Qiskit](https://qiskit.org), [binder](https://mybinder.org) and [RISE](https://rise.readthedocs.io/en/stable/), based on an idea in a former version of the [Qiskit Textbook](https://qiskit.org/textbook)
+
+View - and play the game online, without any install - in Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=Hardys-Paradox.ipynb) 
+
+---
+### 5. GHZ Game
 
 A quantum game that illustrates the power of quantum entanglement  - implemented by Isabell Heider using [Qiskit](https://qiskit.org) and [binder](https://mybinder.org). 
 
@@ -75,22 +84,13 @@ For an introductions to the GHZ Game, please take a look at the following [prese
 View - and play the game online, without any install - in Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=GHZ-Game.ipynb)
 
 ---
-### 5. GHZ Game on real devices
+### 6. GHZ Game on real devices
 
 Analyzing different techniques how to improve the results of playing the GHZ game on real quantum devices - implemented by Lennart Schulze using [Qiskit](https://qiskit.org) and [binder](https://mybinder.org). 
 
 This notebook compares several IBM Quantum devices, explains how to (manually) optimize a circuit for a specific device, how to use the Qiskit transpiler and its optimizations, and discusses Measurement Error Mitigation.
 
 View - and play the game online on real quantum devices, without any install - in Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=GHZ-on-Real-Devices.ipynb)
-
----
-### 6. Hardy's Paradox
-
-Hardy's Paradox nicely illustrates the fundamental difference of Quantum Mechanics and classical physics. Learn about complementary oberservables and why classical logic is not applicable to quantum mechanics.
- 
-A tutorial that discusses a specific version of the Einstein-Podolsky-Rosen (EPR) Paradox  - implemented by Jan-R. Lahmann & Bengt Wegner using [Qiskit](https://qiskit.org), [binder](https://mybinder.org) and [RISE](https://rise.readthedocs.io/en/stable/), based on an idea in a former version of the [Qiskit Textbook](https://qiskit.org/textbook)
-
-View - and play the game online, without any install - in Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=Hardys-Paradox.ipynb) 
 
 ---
 ### 7. Mermin-Peres Magic Square (under development)

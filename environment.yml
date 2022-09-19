@@ -6,6 +6,7 @@ dependencies:
 - ipywidgets=7.6.5
 - rise==5.7.1
 - libblas=3.9.0
+- pip
 - pip:
   - numpy==1.23.2
   - qiskit==0.38.0
