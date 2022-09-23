@@ -105,9 +105,3 @@ venv.bak/
 *.old
 .DS_Store
 Hardys-Paradox-newqiskit.ipynb
-/.idea/Fun-with-Quantum.iml
-/.idea/misc.xml
-/.idea/modules.xml
-/.idea/inspectionProfiles/profiles_settings.xml
-/.idea/vcs.xml
-/.idea/workspace.xml
