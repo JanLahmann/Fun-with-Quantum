@@ -9,7 +9,10 @@
  5. GHZ Game (entanglement)
  6. GHZ Game on real devices
  7. Mermin-Peres Magic Square (under development)
+ 
+ 
 ---
+
 ## Came here from Linux Magazine?
 
 Find the notebook in the repository under the name [Codebeispiele-Linux-Magazin.ipynb](https://github.com/JanLahmann/Fun-with-Quantum/blob/master/Codebeispiele-Linux-Magazin.ipynb).
