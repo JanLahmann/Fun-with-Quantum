@@ -42,7 +42,7 @@ To see the new folder `Fun-with-Quantum` in the directory-tree on the left side,
 
 Please have a look at the RasQberry project at https://github.com/JanLahmann/RasQberry.
 
-RasQberry integrates Qiskit, a Raspberry Pi (the full range from Pi 4 down to a Pi Zero) and a 3D printed model of IBM Q System One to explore various state-of-the-art technologies and create a tool that can be used in meetings, meetups, demo booths, etc. A spectrum of Quantum Computing demos and Serious Games for Quantum Computing (that illustrate superposition, interference and entanglement) will being made available on this device for an engaging introduction to Quantum Computing.
+RasQberry integrates Qiskit, a Raspberry Pi (the full range from Pi 4 down to a Pi Zero) and a 3D printed model of IBM Q System One to explore various state-of-the-art technologies and create a tool that can be used in meetings, meetups, demo booths, etc. A spectrum of Quantum Computing demos and Serious Games for Quantum Computing (that illustrate superposition, interference and entanglement) will be made available on this device for an engaging introduction to Quantum Computing.
 
 ---
 ### 1. Quantum Coin Game 
@@ -71,7 +71,7 @@ Walk through this demo (and change it if you like) in Binder: [![Binder](https:/
 ---
 ### 4. Hardy's Paradox
 
-Hardy's Paradox nicely illustrates the fundamental difference of Quantum Mechanics and classical physics. Learn about complementary oberservables and why classical logic is not applicable to quantum mechanics.
+Hardy's Paradox nicely illustrates the fundamental difference of Quantum Mechanics and classical physics. Learn about complementary observables and why classical logic is not applicable to quantum mechanics.
  
 A tutorial that discusses a specific version of the Einstein-Podolsky-Rosen (EPR) Paradox  - implemented by Jan-R. Lahmann & Bengt Wegner using [Qiskit](https://qiskit.org), [binder](https://mybinder.org) and [RISE](https://rise.readthedocs.io/en/stable/), based on an idea in a former version of the [Qiskit Textbook](https://qiskit.org/textbook)
 
@@ -82,7 +82,7 @@ View - and play the game online, without any install - in Binder: [![Binder](htt
 
 A quantum game that illustrates the power of quantum entanglement  - implemented by Isabell Heider using [Qiskit](https://qiskit.org) and [binder](https://mybinder.org). 
 
-For an introductions to the GHZ Game, please take a look at the following [presentation](https://github.com/JanLahmann/Fun-with-Quantum/blob/master/GHZGame/GHZ%20Game.pdf) by Jana Foehlisch.
+For an introduction to the GHZ Game, please take a look at the following [presentation](https://github.com/JanLahmann/Fun-with-Quantum/blob/master/GHZGame/GHZ%20Game.pdf) by Jana Foehlisch.
 
 View - and play the game online, without any install - in Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=GHZ-Game.ipynb)
 
@@ -99,7 +99,7 @@ View - and play the game online on real quantum devices, without any install - i
 ### 7. Mermin-Peres Magic Square (under development)
 A base version of the Mermin-Peres magic square game demonstrating the computational power of quantum computers, which can be further extended to outperform classical machines - extended by Jan-R. Lahmann & David Drexlin with [Qiskit](https://qiskit.org). Based on the Medium article [This Proof Demonstrates a Quantum Advantage, Even for Noisy Quantum Computers](https://medium.com/qiskit/this-proof-demonstrates-a-quantum-advantage-even-for-noisy-quantum-computers-b44a738801ad). 
 
-View - and play the game online, without any install - in Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=Mermin–Peres-Game.ipynb)
+View - and play the game online, without any install - in Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=Mermin%E2%80%93Peres-Game.ipynb)
 
 ---
 ## Usage instructions for the RISE Slideshow Extension
