@@ -1,0 +1,3 @@
+#!/bin/bash
+# Enable JupyterLab extensions for mybinder
+jupyter labextension enable @jupyter-widgets/jupyterlab-manager
