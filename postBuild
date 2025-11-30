@@ -1,0 +1,4 @@
+#!/bin/bash
+# Trust notebooks to enable RISE autolaunch
+jupyter trust Quantum-Coin-Game.ipynb
+jupyter trust Hardys-Paradox.ipynb
