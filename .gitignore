@@ -105,3 +105,6 @@ venv.bak/
 *.old
 .DS_Store
 Hardys-Paradox-newqiskit.ipynb
+
+# Claude Code
+.claude/
