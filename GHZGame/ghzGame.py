@@ -1,5 +1,5 @@
 from qiskit import ClassicalRegister, QuantumRegister, QuantumCircuit
-from qiskit import execute, BasicAer
+from qiskit_aer import AerSimulator
 from random import randint
 
 def Alice(AlicesColor, AlicesShape): global a_color; global a_shape; a_color=AlicesColor; a_shape = AlicesShape;
@@ -86,9 +86,9 @@ def yyx(qc, q):
     return qc
 
 def simulate(qc, q, c, s):
-    backend = BasicAer.get_backend('qasm_simulator') # define the backend
-    qc.measure(q,c) 
-    job = execute(qc, backend, shots=s) # run the job simulation
+    backend = AerSimulator() # define the backend
+    qc.measure(q,c)
+    job = backend.run(qc, shots=s) # run the job simulation
     result = job.result() # grab the result
     counts = result.get_counts(qc) # results for the number of runs
     return counts
