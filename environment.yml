@@ -4,7 +4,7 @@ dependencies:
 - notebook>=7.0
 - matplotlib>=3.8
 - ipywidgets>=8.0
-- rise>=5.7.1
+- jupyterlab-rise>=0.42
 - libblas>=3.9.0
 - pip
 - pip:
