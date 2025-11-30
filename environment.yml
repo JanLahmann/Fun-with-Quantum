@@ -4,14 +4,15 @@ dependencies:
 - notebook>=7.0
 - matplotlib>=3.8
 - ipywidgets>=8.0
-- jupyterlab-rise>=0.42
 - libblas>=3.9.0
 - pip
 - pip:
   - numpy>=1.26
-  - qiskit>=2.0
+  - qiskit>=2.1
   - qiskit-aer>=0.15
+  - qiskit-algorithms>=0.3
   - qiskit-ibm-runtime>=0.30
+  - jupyterlab-rise>=0.42
   - wget>=3.2
   - tabulate>=0.9
   - pylatexenc>=2.10
