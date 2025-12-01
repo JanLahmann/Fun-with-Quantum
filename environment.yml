@@ -15,6 +15,7 @@ dependencies:
   - qiskit-aer>=0.15
   - qiskit-algorithms>=0.3
   - qiskit-ibm-runtime>=0.30
+  - qiskit-experiments>=0.7
   - wget>=3.2
   - tabulate>=0.9
   - pylatexenc>=2.10
