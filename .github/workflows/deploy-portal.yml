@@ -27,6 +27,7 @@ jobs:
         uses: withastro/action@v3
         with:
           path: ./portal
+          node-version: 24
 
   deploy:
     needs: build
