@@ -31,9 +31,14 @@ const d = project.data;
       {d.facts.map((f) => <li>{f}</li>)}
     </ul>
   )}
-  {d.repoUrl && (
+  {(d.repoUrl || d.ecosystemUrl) && (
     <div class="links">
-      <a href={d.repoUrl}>Source on GitHub ↗</a>
+      {d.repoUrl && <a href={d.repoUrl}>Source on GitHub ↗</a>}
+      {d.ecosystemUrl && (
+        <a class="eco" href={d.ecosystemUrl} title="Listed in the official Qiskit ecosystem">
+          <img src="/qiskit-ecosystem.svg" alt="Qiskit ecosystem member" width="127" height="20" loading="lazy" />
+        </a>
+      )}
     </div>
   )}
 </article>
@@ -53,5 +58,6 @@ const d = project.data;
     font-size: 0.83rem; color: var(--muted);
   }
   .facts li::before { content: "✓ "; color: var(--cyan); }
-  .links { font-size: 0.85rem; }
+  .links { font-size: 0.85rem; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .links .eco img { display: block; }
 </style>

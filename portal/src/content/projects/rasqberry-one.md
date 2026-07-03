@@ -7,6 +7,7 @@ order: 4
 url: https://rasqberry.one
 repoUrl: https://github.com/JanLahmann/RasQberry
 status: legacy
+ecosystemUrl: https://qisk.it/e-dfa4cfd2
 facts:
   - Where it all started — featured by Hackster, EE Times & Springer
   - Superseded by RasQberry Two for new builds

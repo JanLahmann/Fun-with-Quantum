@@ -6,6 +6,7 @@ icon: "📚"
 order: 1
 url: https://doqumentation.org
 repoUrl: https://github.com/JanLahmann/doQumentation
+ecosystemUrl: https://qisk.it/e-dd84980a
 facts:
   - Interactive Qiskit tutorials, executable in the browser
   - Workshop mode for guided sessions

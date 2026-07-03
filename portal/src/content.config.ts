@@ -30,6 +30,9 @@ const projects = defineCollection({
     repoUrl: z.string().url().optional(),
     status: z.enum(['live', 'coming-soon', 'legacy']).default('live'),
     facts: z.array(z.string()).default([]),
+    // Link to the project's entry on qiskit.github.io/ecosystem — only for
+    // projects that are actually listed members; controls the ecosystem badge.
+    ecosystemUrl: z.string().url().optional(),
   }),
 });
 

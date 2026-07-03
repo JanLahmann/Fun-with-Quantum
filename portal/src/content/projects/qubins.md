@@ -5,7 +5,8 @@ tagline: Signed, daily-rebuilt Qiskit environments — the zero-setup way to kee
 icon: "📦"
 order: 3
 url: https://qubins.org
-repoUrl: https://github.com/JanLahmann/QuBins
+repoUrl: https://github.com/QuBins/qiskit-images
+ecosystemUrl: https://qisk.it/e-6c640264
 facts:
   - Always-current Qiskit, rebuilt daily
   - Binder & Docker images, plus a launch-link generator
