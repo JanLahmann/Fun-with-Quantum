@@ -1,0 +1,57 @@
+---
+import { render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+const d = project.data;
+---
+
+<article class="project card">
+  <div class="head">
+    <span class="icon">{d.icon}</span>
+    <div>
+      <h3>
+        {d.url ? <a href={d.url}>{d.title} ↗</a> : d.title}
+        {d.status === 'coming-soon' && <span class="badge soon">coming soon</span>}
+        {d.status === 'legacy' && <span class="badge legacy">legacy</span>}
+      </h3>
+      <p class="tagline">{d.tagline}</p>
+    </div>
+  </div>
+  <div class="body prose">
+    <Content />
+  </div>
+  {d.facts.length > 0 && (
+    <ul class="facts">
+      {d.facts.map((f) => <li>{f}</li>)}
+    </ul>
+  )}
+  {d.repoUrl && (
+    <div class="links">
+      <a href={d.repoUrl}>Source on GitHub ↗</a>
+    </div>
+  )}
+</article>
+
+<style>
+  .project { margin-bottom: 20px; }
+  .head { display: flex; gap: 16px; align-items: flex-start; }
+  .head .icon { font-size: 2rem; line-height: 1.2; }
+  .head h3 { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .head h3 a { color: inherit; }
+  .head h3 a:hover { color: var(--cyan); text-decoration: none; }
+  .tagline { color: var(--muted); font-size: 0.93rem; }
+  .body { font-size: 0.93rem; color: var(--muted); }
+  .body :global(p:last-child) { margin-bottom: 0; }
+  .facts {
+    list-style: none; display: flex; flex-wrap: wrap; gap: 6px 20px;
+    font-size: 0.83rem; color: var(--muted);
+  }
+  .facts li::before { content: "✓ "; color: var(--cyan); }
+  .links { font-size: 0.85rem; }
+</style>

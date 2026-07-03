@@ -1,0 +1,77 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+export async function getStaticPaths() {
+  const games = await getCollection('games');
+  return games.map((game) => ({ params: { slug: game.id }, props: { game } }));
+}
+
+const { game } = Astro.props;
+const { Content } = await render(game);
+const others = (await getCollection('games'))
+  .filter((g) => g.id !== game.id)
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 3);
+---
+
+<Base
+  title={`${game.data.title} | Fun with Quantum`}
+  description={game.data.tagline}
+>
+  <section class="section">
+    <div class="wrap">
+      <div class="kicker">Play · {game.data.concept}</div>
+      <h2>{game.data.icon} {game.data.title}</h2>
+      <p class="lead">{game.data.tagline}</p>
+
+      <div class="launch card">
+        <div>
+          <a class="btn primary" href={game.data.binderUrl}>▶ Launch on Binder</a>
+          <div class="hero-note">
+            {game.data.duration} · {game.data.audience} · runs in your browser, no account
+          </div>
+        </div>
+        <div class="alt">
+          Prefer it local? <code>git clone</code> the{' '}<a href="https://github.com/JanLahmann/Fun-with-Quantum">repository</a>{' '}and open <code>{game.data.notebook}</code>.
+        </div>
+      </div>
+
+      <div class="prose">
+        <Content />
+      </div>
+
+      <div class="deeper">
+        Want the theory behind it? Go deeper on{' '}<a href="https://doqumentation.org">doQumentation ↗</a>{' '}— interactive tutorials, code runs in the browser.
+      </div>
+
+      <h3 class="more-title">More games</h3>
+      <div class="grid cols-3">
+        {others.map((g) => (
+          <a class="card" href={`/play/${g.id}/`}>
+            <span class="icon">{g.data.icon}</span>
+            <h3>{g.data.title}</h3>
+            <span class="meta">{g.data.concept}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .launch {
+    flex-direction: row; align-items: center; justify-content: space-between;
+    gap: 24px; margin-bottom: 36px; flex-wrap: wrap;
+  }
+  .launch .alt { color: var(--muted); font-size: 0.88rem; max-width: 320px; }
+  .hero-note {
+    margin-top: 10px; font-family: var(--mono); font-size: 0.72rem;
+    letter-spacing: 0.04em; color: var(--muted);
+  }
+  .deeper {
+    margin: 36px 0; padding: 16px 20px; border-left: 3px solid var(--cyan);
+    background: var(--card); border-radius: 0 10px 10px 0; font-size: 0.93rem;
+  }
+  .more-title { margin: 40px 0 16px; }
+</style>

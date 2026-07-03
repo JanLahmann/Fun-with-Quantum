@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <title>Fun with Quantum</title>
+  <style>
+    .arc { stroke: #1C1D27; }
+    @media (prefers-color-scheme: dark) {
+      .arc { stroke: #E9EAF1; }
+    }
+  </style>
+  <defs>
+    <linearGradient id="fwqGradF" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0E7C9C"/>
+      <stop offset="1" stop-color="#C22F6E"/>
+    </linearGradient>
+  </defs>
+  <path class="arc" d="M9 12 A 24 24 0 0 1 19 6" fill="none" stroke-width="3.5" stroke-linecap="round" opacity="0.5"/>
+  <g transform="rotate(-12 32 32)">
+    <rect x="14" y="14" width="36" height="36" rx="10" fill="none" stroke="url(#fwqGradF)" stroke-width="6"/>
+    <circle cx="22" cy="22" r="4" fill="#0E7C9C" opacity="0.45"/>
+    <circle cx="32" cy="32" r="5.5" fill="#C22F6E"/>
+  </g>
+</svg>

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="512" height="512">
+  <title>Fun with Quantum — mark (C2a-6)</title>
+  <desc>A mid-roll die with a gradient frame: one solid magenta pip (the measured one) and six ghost cyan pips (the superposed six), with a motion arc. God does play dice.</desc>
+  <defs>
+    <linearGradient id="fwqGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0E7C9C"/>
+      <stop offset="1" stop-color="#C22F6E"/>
+    </linearGradient>
+  </defs>
+  <path d="M10 14 A 26 26 0 0 1 22 7" fill="none" stroke="#1C1D27" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+  <g transform="rotate(-14 32 36)">
+    <rect x="14" y="16" width="38" height="38" rx="9" fill="none" stroke="url(#fwqGrad)" stroke-width="5"/>
+    <circle cx="24" cy="26" r="3.1" fill="#0E7C9C" opacity="0.4"/>
+    <circle cx="24" cy="35" r="3.1" fill="#0E7C9C" opacity="0.4"/>
+    <circle cx="24" cy="44" r="3.1" fill="#0E7C9C" opacity="0.4"/>
+    <circle cx="42" cy="26" r="3.1" fill="#0E7C9C" opacity="0.4"/>
+    <circle cx="42" cy="35" r="3.1" fill="#0E7C9C" opacity="0.4"/>
+    <circle cx="42" cy="44" r="3.1" fill="#0E7C9C" opacity="0.4"/>
+    <circle cx="33" cy="35" r="4.5" fill="#C22F6E"/>
+  </g>
+</svg>

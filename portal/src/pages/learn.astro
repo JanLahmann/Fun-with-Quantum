@@ -1,0 +1,27 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import ProjectRow from '../components/ProjectRow.astro';
+
+const projects = (await getCollection('projects'))
+  .filter((p) => p.data.door === 'learn')
+  .sort((a, b) => a.data.order - b.data.order);
+---
+
+<Base
+  title="Learn — interactive tutorials & workshops | Fun with Quantum"
+  description="Learn quantum computing hands-on: interactive doQumentation tutorials that run in your browser, ready-made workshop agendas, and always-current Qiskit coding environments."
+>
+  <section class="section">
+    <div class="wrap">
+      <div class="kicker">Learn</div>
+      <h2>From first qubit to your own experiments</h2>
+      <p class="lead">
+        Everything here runs in the browser — start with interactive tutorials, follow a workshop
+        agenda, and keep coding in a ready-made environment when the tutorial ends.
+      </p>
+
+      {projects.map((p) => <ProjectRow project={p} />)}
+    </div>
+  </section>
+</Base>

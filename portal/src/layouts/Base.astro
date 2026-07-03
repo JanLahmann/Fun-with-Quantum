@@ -1,0 +1,90 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+const nav = [
+  { href: '/play/', label: 'Play' },
+  { href: '/build/', label: 'Build' },
+  { href: '/learn/', label: 'Learn' },
+  { href: '/about/', label: 'About' },
+];
+const path = Astro.url.pathname;
+const family = [
+  { href: 'https://rasqberry.org', label: 'RasQberry Two' },
+  { href: 'https://rasqberry.one', label: 'RasQberry One' },
+  { href: 'https://quantego.org', label: 'Quantego' },
+  { href: 'https://qamposer.org', label: 'QAMPoser' },
+  { href: 'https://doqumentation.org', label: 'doQumentation' },
+  { href: 'https://qubins.org', label: 'QuBins' },
+  { href: 'https://qoffee-maker.org', label: 'Qoffee-Maker' },
+];
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="canonical" href={new URL(path, Astro.site)} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL('/og-card.png', Astro.site)} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={new URL(path, Astro.site)} />
+    <meta name="twitter:card" content="summary_large_image" />
+    {/* Umami analytics (cookieless) — uncomment once the fun-with-quantum.org
+        website is created in the Umami Cloud dashboard and the ID is known:
+    <script defer src="https://cloud.umami.is/script.js" data-website-id="REPLACE-WITH-WEBSITE-ID"></script>
+    */}
+  </head>
+  <body>
+    <header>
+      <div class="wrap nav">
+        <a class="brand" href="/">
+          <picture>
+            <source srcset="/fwq-mark-dark.svg" media="(prefers-color-scheme: dark)" />
+            <img src="/fwq-mark.svg" alt="" width="34" height="34" />
+          </picture>
+          <span>Fun with Quantum</span>
+        </a>
+        {nav.map((item) => (
+          <a class="item" href={item.href} aria-current={path.startsWith(item.href) ? 'page' : undefined}>
+            {item.label}
+          </a>
+        ))}
+        <a class="ext" href="https://github.com/JanLahmann/Fun-with-Quantum">GitHub ↗</a>
+      </div>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer>
+      <div class="wrap">
+        <div class="tag">GOD DOES PLAY DICE. COME LEARN.</div>
+        <div class="family">
+          <strong>Part of the Fun with Quantum family:</strong>
+          {family.map((s) => <a href={s.href}>{s.label}</a>)}
+        </div>
+        <div>
+          Open source, built by <a href="https://www.linkedin.com/in/JanLahmann">Jan-R. Lahmann</a> and the
+          RasQberry community. No accounts, no cookies.
+        </div>
+        <div class="fineprint">
+          <a href="https://github.com/JanLahmann/Fun-with-Quantum">Source on GitHub</a>{' '}·{' '}<a href="https://quantego.biz">Shop</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

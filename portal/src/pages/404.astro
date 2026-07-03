@@ -1,0 +1,27 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  title="404 — unexpected state | Fun with Quantum"
+  description="This page doesn't exist."
+>
+  <section class="section notfound">
+    <div class="wrap">
+      <picture>
+        <source srcset="/fwq-mark-dark.svg" media="(prefers-color-scheme: dark)" />
+        <img src="/fwq-mark.svg" alt="" width="96" height="96" />
+      </picture>
+      <h2>404 — you measured an unexpected state</h2>
+      <p>
+        This page isn't in our superposition. Try one of the doors instead:{' '}<a href="/play/">Play</a>, <a href="/build/">Build</a>, <a href="/learn/">Learn</a>{' '}— or go back <a href="/">home</a>.
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .notfound { text-align: center; padding: 96px 0; }
+  .notfound img { margin: 0 auto 24px; }
+  .notfound p { color: var(--muted); max-width: 460px; margin: 12px auto 0; }
+</style>

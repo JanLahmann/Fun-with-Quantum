@@ -1,0 +1,48 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+const games = (await getCollection('games')).sort((a, b) => a.data.order - b.data.order);
+const playProjects = (await getCollection('projects'))
+  .filter((p) => p.data.door === 'play')
+  .sort((a, b) => a.data.order - b.data.order);
+---
+
+<Base
+  title="Play — quantum games | Fun with Quantum"
+  description="Quantum games you play in the browser: beat a quantum computer at coin flipping, win impossible team games with entanglement, solve puzzles with Grover's algorithm."
+>
+  <section class="section">
+    <div class="wrap">
+      <div class="kicker">Play</div>
+      <h2>Games where quantum mechanics is the trick</h2>
+      <p class="lead">
+        Each game runs as an interactive notebook in your browser — one click, ~30 seconds of
+        cold start, no account. Play first, then open the curtain and see the circuit.
+      </p>
+      <div class="grid cols-2">
+        {games.map((g) => (
+          <a class="card" href={`/play/${g.id}/`}>
+            <span class="icon">{g.data.icon}</span>
+            <h3>{g.data.title}</h3>
+            <p>{g.data.tagline}</p>
+            <span class="meta">{g.data.concept} · {g.data.duration}</span>
+          </a>
+        ))}
+      </div>
+
+      <h2 style="margin-top: 56px;">Beyond the notebooks</h2>
+      <p class="lead">Two more ways to play, from the same family.</p>
+      <div class="grid cols-2">
+        {playProjects.map((p) => (
+          <a class="card" href={p.data.url}>
+            <span class="icon">{p.data.icon}</span>
+            <h3>{p.data.title} ↗</h3>
+            <p>{p.data.tagline}</p>
+            {p.data.url && <span class="meta">{new URL(p.data.url).hostname}</span>}
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>
