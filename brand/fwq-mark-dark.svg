@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="512" height="512">
+  <title>Fun with Quantum — mark (C2a-6), dark-background variant</title>
+  <desc>Mid-roll die mark tuned for dark backgrounds: brighter gradient, light motion arc.</desc>
+  <defs>
+    <linearGradient id="fwqGradD" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#45C3DD"/>
+      <stop offset="1" stop-color="#EF6F9F"/>
+    </linearGradient>
+  </defs>
+  <path d="M10 14 A 26 26 0 0 1 22 7" fill="none" stroke="#E9EAF1" stroke-width="3" stroke-linecap="round" opacity="0.55"/>
+  <g transform="rotate(-14 32 36)">
+    <rect x="14" y="16" width="38" height="38" rx="9" fill="none" stroke="url(#fwqGradD)" stroke-width="5"/>
+    <circle cx="24" cy="26" r="3.1" fill="#45C3DD" opacity="0.45"/>
+    <circle cx="24" cy="35" r="3.1" fill="#45C3DD" opacity="0.45"/>
+    <circle cx="24" cy="44" r="3.1" fill="#45C3DD" opacity="0.45"/>
+    <circle cx="42" cy="26" r="3.1" fill="#45C3DD" opacity="0.45"/>
+    <circle cx="42" cy="35" r="3.1" fill="#45C3DD" opacity="0.45"/>
+    <circle cx="42" cy="44" r="3.1" fill="#45C3DD" opacity="0.45"/>
+    <circle cx="33" cy="35" r="4.5" fill="#EF6F9F"/>
+  </g>
+</svg>
