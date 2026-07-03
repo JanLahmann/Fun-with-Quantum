@@ -142,5 +142,5 @@ Part 3.2 "GHZ Game on real devices": [![Binder](https://mybinder.org/badge_logo.
 A recording of the three 1h tutorial sessions ["Serious Games for Quantum Computing"](https://qce.quantum.ieee.org/tutorials/#tut-lahmann-heider) from the [IEEE International Conference on Quantum Computing and Engineering (QCE20)](https://qce.quantum.ieee.org/) are available here: [part 1](https://ibm.box.com/v/IEEE-QCE20-QSeriousGames-1), [part 2](https://ibm.box.com/v/IEEE-QCE20-QSeriousGames-2), [part 3](https://ibm.box.com/v/IEEE-QCE20-QSeriousGames-3). The agenda for the three parts is [here](https://ibm.box.com/v/IEEE-QCE20-QSeriousGames-0).
 
 ---
-Jan-R. Lahmann, http://twitter.com/JanLahmann
+Jan-R. Lahmann, https://www.linkedin.com/in/JanLahmann
 
