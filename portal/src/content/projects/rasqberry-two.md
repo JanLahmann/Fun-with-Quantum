@@ -6,6 +6,7 @@ icon: "🍓"
 order: 1
 url: https://rasqberry.org
 repoUrl: https://github.com/JanLahmann/RasQberry-Two
+ecosystemUrl: https://qisk.it/e-dfa4cfd2
 facts:
   - The family flagship — print it at home, assemble it, run Qiskit on it
   - Functional model of IBM Quantum System Two
