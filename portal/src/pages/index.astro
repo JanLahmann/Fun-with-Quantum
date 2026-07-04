@@ -12,8 +12,8 @@ const doors = [
     href: '/play/',
     icon: '🎲',
     title: 'Play',
-    text: 'Beat a quantum computer at coin flipping, drag gates in the composer, order coffee with a circuit.',
-    meta: `${games.length} games · QAMPoser · Qoffee-Maker`,
+    text: 'Beat a quantum computer at coin flipping, win an impossible team game with entanglement, order coffee with a circuit.',
+    meta: `${games.length} games · Qoffee-Maker`,
   },
   {
     href: '/build/',
@@ -26,31 +26,31 @@ const doors = [
     href: '/learn/',
     icon: '📚',
     title: 'Learn',
-    text: 'Interactive tutorials, guided workshops, and ready-made coding environments.',
-    meta: 'doQumentation · Workshops · QuBins',
+    text: 'Free interactive courses to get started — with more family learning resources on the way.',
+    meta: 'IBM Quantum Learning · more coming soon',
   },
 ];
 
 const tryItems = [
   {
-    href: 'https://qamposer.org',
-    icon: '🎛️',
-    title: 'Compose a circuit',
-    text: 'Drag gates onto the wires, run it live in your browser — the composer behind the Qoffee-Maker.',
-    meta: 'qamposer.org ↗',
+    href: featured.data.binderUrl,
+    icon: '🪙',
+    title: 'Flip a quantum coin',
+    text: 'Play the Quantum Coin Game against a quantum computer, right in your browser — no account, no install.',
+    meta: 'launches on Binder',
   },
   {
-    href: 'https://qubins.org',
-    icon: '📦',
-    title: 'Launch any notebook',
-    text: 'Paste a repo or notebook URL, get a one-click Binder environment on always-current Qiskit.',
-    meta: 'qubins.org ↗',
+    href: 'https://qoffee-maker.org',
+    icon: '☕',
+    title: 'Order coffee with a circuit',
+    text: 'Build a quantum circuit whose measurement decides which drink the machine brews.',
+    meta: 'qoffee-maker.org ↗',
   },
   {
     href: 'https://quantego.org',
     icon: '🧱',
-    title: 'Spin the models',
-    text: 'All three Quantego LEGO models in interactive 3D, at true relative scale.',
+    title: 'Build it from LEGO',
+    text: 'Three LEGO models of IBM Quantum computers, with full brick lists and instructions.',
     meta: 'quantego.org ↗',
   },
 ];
@@ -58,15 +58,15 @@ const tryItems = [
 
 <Base
   title="Fun with Quantum — play, print & run quantum computing"
-  description="Quantum games, 3D-printed and LEGO quantum computer models, interactive courses, and ready-made coding environments. Open source, nothing to install."
+  description="Quantum games, 3D-printed and LEGO quantum computer models, and hands-on ways to learn. Open source, nothing to install."
 >
   <section class="hero">
     <div class="wrap hero-grid">
       <div class="hero-copy">
         <h1>Quantum computing you can play, print&nbsp;&amp;&nbsp;run — nothing to install.</h1>
         <p>
-          Games, LEGO and 3D-printed quantum computers, interactive courses, and ready-made coding
-          environments. Open source, workshop-tested, built by the RasQberry community.
+          Quantum games, LEGO and 3D-printed quantum computers, and hands-on ways to learn.
+          Open source, workshop-tested, built by the RasQberry community.
         </p>
         <div class="hero-actions">
           <a class="btn primary" href={featured.data.binderUrl}>▶ Play the {featured.data.title}</a>

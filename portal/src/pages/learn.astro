@@ -9,19 +9,30 @@ const projects = (await getCollection('projects'))
 ---
 
 <Base
-  title="Learn — interactive tutorials & workshops | Fun with Quantum"
-  description="Learn quantum computing hands-on: interactive doQumentation tutorials that run in your browser, ready-made workshop agendas, and always-current Qiskit coding environments."
+  title="Learn — quantum computing hands-on | Fun with Quantum"
+  description="Learn quantum computing hands-on, starting with IBM Quantum Learning's free interactive courses. More learning resources from the Fun with Quantum family are coming soon."
 >
   <section class="section">
     <div class="wrap">
       <div class="kicker">Learn</div>
       <h2>From first qubit to your own experiments</h2>
       <p class="lead">
-        Everything here runs in the browser — start with interactive tutorials, follow a workshop
-        agenda, and keep coding in a ready-made environment when the tutorial ends.
+        The best place to start today is IBM Quantum Learning — free, interactive, and made by the
+        people who build the machines.
       </p>
 
       {projects.map((p) => <ProjectRow project={p} />)}
+
+      <div class="soon card">
+        <span class="badge soon">coming soon</span>
+        More from the family is on the way: interactive tutorials that run entirely in your
+        browser, ready-made workshop agendas, and always-current Qiskit coding environments.
+      </div>
     </div>
   </section>
 </Base>
+
+<style>
+  .soon { font-size: 0.93rem; color: var(--muted); }
+  .soon .badge { margin-bottom: 10px; align-self: flex-start; }
+</style>

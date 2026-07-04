@@ -41,10 +41,6 @@ const others = (await getCollection('games'))
         <Content />
       </div>
 
-      <div class="deeper">
-        Want the theory behind it? Go deeper on{' '}<a href="https://doqumentation.org">doQumentation ↗</a>{' '}— interactive tutorials, code runs in the browser.
-      </div>
-
       <h3 class="more-title">More games</h3>
       <div class="grid cols-3">
         {others.map((g) => (
@@ -68,10 +64,6 @@ const others = (await getCollection('games'))
   .hero-note {
     margin-top: 10px; font-family: var(--mono); font-size: 0.72rem;
     letter-spacing: 0.04em; color: var(--muted);
-  }
-  .deeper {
-    margin: 36px 0; padding: 16px 20px; border-left: 3px solid var(--cyan);
-    background: var(--card); border-radius: 0 10px 10px 0; font-size: 0.93rem;
   }
   .more-title { margin: 40px 0 16px; }
 </style>

@@ -10,7 +10,7 @@ const playProjects = (await getCollection('projects'))
 
 <Base
   title="Play — quantum games | Fun with Quantum"
-  description="Quantum games you play in the browser: beat a quantum computer at coin flipping, win impossible team games with entanglement, solve puzzles with Grover's algorithm."
+  description="Quantum games you play in the browser: beat a quantum computer at coin flipping, win an impossible team game with entanglement, and run it all on real quantum hardware."
 >
   <section class="section">
     <div class="wrap">
@@ -32,7 +32,7 @@ const playProjects = (await getCollection('projects'))
       </div>
 
       <h2 style="margin-top: 56px;">Beyond the notebooks</h2>
-      <p class="lead">Two more ways to play, from the same family.</p>
+      <p class="lead">One more way to play, from the same family.</p>
       <div class="grid cols-2">
         {playProjects.map((p) => (
           <a class="card" href={p.data.url}>

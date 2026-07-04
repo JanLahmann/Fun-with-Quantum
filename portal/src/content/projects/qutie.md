@@ -12,4 +12,4 @@ facts:
 
 The smallest members of the family: cute, palm-sized models of quantum computers that print in
 one piece on any home 3D printer. No electronics, no assembly — just something to hold, give
-away, and start conversations with. Coming soon at qutie.org.
+away, and start conversations with. Coming very soon at qutie.org.
