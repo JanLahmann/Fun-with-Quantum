@@ -1,7 +1,7 @@
 ---
 title: IBM Quantum Learning
 door: learn
-tagline: IBM's official courses and tutorials — the next step after the playground.
+tagline: IBM's official courses and tutorials — not our work, but our warmest recommendation.
 icon: "🎖️"
 order: 4
 url: https://quantum.cloud.ibm.com/learning
@@ -10,5 +10,6 @@ facts:
   - Free access to real quantum hardware
 ---
 
-When you're ready for structured courses and certificates, IBM Quantum Learning is the official
-path: complete curricula, hands-on labs, and access to real quantum computers.
+IBM Quantum Learning is IBM's own platform, not part of our family — but it's the resource we
+point everyone to first: complete curricula from the basics up, hands-on labs, and access to
+real quantum computers, all free.

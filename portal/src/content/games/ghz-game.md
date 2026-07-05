@@ -6,7 +6,7 @@ icon: "🔗"
 order: 2
 duration: ~10 min
 audience: curious minds, workshop groups
-binderUrl: https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=GHZ-Game.ipynb
+binderUrl: https://qubins.org/launch/?image=latest-xl&repo=https%3A%2F%2Fgithub.com%2FJanLahmann%2FFun-with-Quantum&branch=master&path=GHZ-Game.ipynb
 notebook: GHZ-Game.ipynb
 ---
 

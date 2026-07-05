@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import ProjectRow from '../components/ProjectRow.astro';
-import rasqberryPhoto from '../assets/RasQberry2exploded.png';
+import rasqberryPhoto from '../assets/RasQberry2model.png';
 import quantegoPhoto from '../assets/quantego-two-photo.jpg';
 
 const projects = (await getCollection('projects'))
@@ -24,13 +24,17 @@ const projects = (await getCollection('projects'))
         Raspberry Pi inside to LEGO builds for the whole family.
       </p>
 
-      <div class="photos grid cols-2">
+      <div class="photos grid cols-3">
         <figure>
-          <Image src={rasqberryPhoto} alt="Exploded view of the RasQberry Two 3D-printed model" widths={[520, 800]} sizes="(max-width: 820px) 90vw, 520px" />
-          <figcaption>RasQberry Two, exploded view</figcaption>
+          <Image src={rasqberryPhoto} alt="RasQberry Two — a 3D-printed model of IBM Quantum System Two with glowing LEDs" widths={[420, 800]} sizes="(max-width: 820px) 90vw, 420px" />
+          <figcaption>RasQberry Two — 3D-printed at home</figcaption>
         </figure>
         <figure>
-          <Image src={quantegoPhoto} alt="Quantego Two — a LEGO model of an IBM Quantum computer" widths={[520, 800]} sizes="(max-width: 820px) 90vw, 520px" />
+          <video src="/quantego-one-animation.mp4" autoplay loop muted playsinline aria-label="Quantego One assembling itself brick by brick, animated"></video>
+          <figcaption>Quantego One, brick by brick</figcaption>
+        </figure>
+        <figure>
+          <Image src={quantegoPhoto} alt="Quantego Two — a LEGO model of an IBM Quantum computer" widths={[420, 800]} sizes="(max-width: 820px) 90vw, 420px" />
           <figcaption>Quantego Two, built from LEGO</figcaption>
         </figure>
       </div>
@@ -41,7 +45,8 @@ const projects = (await getCollection('projects'))
 </Base>
 
 <style>
-  .photos { margin-bottom: 36px; }
-  .photos img { border-radius: 14px; box-shadow: var(--shadow); width: 100%; height: auto; }
+  .photos { margin-bottom: 36px; align-items: stretch; }
+  .photos figure { display: flex; flex-direction: column; }
+  .photos img, .photos video { border-radius: 14px; box-shadow: var(--shadow); width: 100%; height: 100%; object-fit: cover; flex: 1; }
   .photos figcaption { margin-top: 8px; font-size: 0.8rem; color: var(--muted); text-align: center; }
 </style>

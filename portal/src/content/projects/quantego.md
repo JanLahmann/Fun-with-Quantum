@@ -7,7 +7,7 @@ order: 3
 url: https://quantego.org
 repoUrl: https://github.com/JanLahmann/Quantego
 facts:
-  - Three models, from desk-sized to display-worthy
+  - Three models — from palm-sized to display-worthy
   - Full brick lists and step-by-step building instructions
 ---
 
