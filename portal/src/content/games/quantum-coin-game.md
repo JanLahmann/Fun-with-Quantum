@@ -6,7 +6,10 @@ icon: "🪙"
 order: 1
 duration: ~5 min
 audience: everyone — no prerequisites
-binderUrl: https://qubins.org/launch/?image=2.1-xl&repo=https%3A%2F%2Fgithub.com%2FJanLahmann%2FFun-with-Quantum&branch=master&path=Quantum-Coin-Game.ipynb
+# RISE slideshow — must launch in this repo's own Binder env (notebook<7 + rise);
+# the QuBins images don't ship RISE yet. Switch back to a QuBins launch link once
+# jupyterlab-rise lands in the xl images.
+binderUrl: https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=Quantum-Coin-Game.ipynb
 notebook: Quantum-Coin-Game.ipynb
 featured: true
 ---
