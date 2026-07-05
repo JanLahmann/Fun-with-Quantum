@@ -11,7 +11,7 @@ const nav = [
   { href: '/play/', label: 'Play' },
   { href: '/build/', label: 'Build' },
   { href: '/learn/', label: 'Learn' },
-  { href: '/about/', label: 'About' },
+  { href: '/#about', label: 'About' },
 ];
 const path = Astro.url.pathname;
 const family = [
@@ -59,7 +59,7 @@ const family = [
             {item.label}
           </a>
         ))}
-        <a class="ext" href="https://github.com/JanLahmann/Fun-with-Quantum">GitHub ↗</a>
+        <a class="ext" href="https://github.com/JanLahmann/Fun-with-Quantum" target="_blank" rel="noopener">GitHub ↗</a>
       </div>
     </header>
 
@@ -72,14 +72,14 @@ const family = [
         <div class="tag">GOD DOES PLAY DICE. COME PLAY, BUILD, LEARN.</div>
         <div class="family">
           <strong>Part of the Fun with Quantum family:</strong>
-          {family.map((s) => <a href={s.href}>{s.label}</a>)}
+          {family.map((s) => <a href={s.href} target="_blank" rel="noopener">{s.label}</a>)}
         </div>
         <div>
-          Open source, built by <a href="https://www.linkedin.com/in/JanLahmann">Jan-R. Lahmann</a> and the
+          Open source, built by <a href="https://www.linkedin.com/in/JanLahmann" target="_blank" rel="noopener">Jan-R. Lahmann</a> and the
           RasQberry community. No accounts, no cookies.
         </div>
         <div class="fineprint">
-          <a href="https://github.com/JanLahmann/Fun-with-Quantum">Source on GitHub</a>{' '}·{' '}<a href="https://quantego.biz">Shop</a>
+          <a href="https://github.com/JanLahmann/Fun-with-Quantum" target="_blank" rel="noopener">Source on GitHub</a>{' '}·{' '}<a href="https://quantego.biz" target="_blank" rel="noopener">Shop</a>
         </div>
       </div>
     </footer>

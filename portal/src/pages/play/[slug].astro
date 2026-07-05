@@ -27,13 +27,13 @@ const others = (await getCollection('games'))
 
       <div class="launch card">
         <div>
-          <a class="btn primary" href={game.data.binderUrl}>▶ Launch on Binder</a>
+          <a class="btn primary" href={game.data.binderUrl} target="_blank" rel="noopener">▶ Launch on Binder</a>
           <div class="hero-note">
             {game.data.duration} · {game.data.audience} · runs in your browser, no account
           </div>
         </div>
         <div class="alt">
-          Prefer it local? <code>git clone</code> the{' '}<a href="https://github.com/JanLahmann/Fun-with-Quantum">repository</a>{' '}and open <code>{game.data.notebook}</code>.
+          Prefer it local? <code>git clone</code> the{' '}<a href="https://github.com/JanLahmann/Fun-with-Quantum" target="_blank" rel="noopener">repository</a>{' '}and open <code>{game.data.notebook}</code>.
         </div>
       </div>
 

@@ -69,8 +69,8 @@ const tryItems = [
           Open source, workshop-tested, built by the RasQberry community.
         </p>
         <div class="hero-actions">
-          <a class="btn primary" href={featured.data.binderUrl}>▶ Play the {featured.data.title}</a>
-          <a class="btn ghost" href="https://quantego.org">🧱 Quantego — just relaunched</a>
+          <a class="btn primary" href={featured.data.binderUrl} target="_blank" rel="noopener">▶ Play the {featured.data.title}</a>
+          <a class="btn ghost" href="https://quantego.org" target="_blank" rel="noopener">🧱 Quantego — just relaunched</a>
         </div>
         <div class="hero-note">launches in your browser via Binder · ~30 s cold start · no account needed</div>
       </div>
@@ -103,13 +103,33 @@ const tryItems = [
       <p class="lead">Three doors into the family — each a single click away.</p>
       <div class="grid cols-3">
         {tryItems.map((t) => (
-          <a class="card" href={t.href}>
+          <a class="card" href={t.href} target="_blank" rel="noopener">
             <span class="icon">{t.icon}</span>
             <h3>{t.title}</h3>
             <p>{t.text}</p>
             <span class="meta">{t.meta}</span>
           </a>
         ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="about">
+    <div class="wrap">
+      <div class="kicker">About</div>
+      <h2>One family, one idea: quantum computing is more fun hands-on</h2>
+      <div class="prose">
+        <p>
+          <em>Fun with Quantum</em> is the front door to a family of open-source quantum outreach
+          projects that grew over years of talks, workshops, and conference booths: quantum{' '}<a href="/play/">games</a>{' '}you play in the browser, quantum computer models you{' '}<a href="/build/">3D-print or build from LEGO</a>, and hands-on ways to{' '}<a href="/learn/">learn and teach</a>. Everything is open source, runs without
+          accounts or installs, and is tested on real audiences — from school classes to IEEE
+          conferences.
+        </p>
+        <p>
+          The family is built by <a href="https://www.linkedin.com/in/JanLahmann" target="_blank" rel="noopener">Jan-R.
+          Lahmann</a> and the RasQberry community. Contributions are welcome in every repository —
+          start at <a href="https://github.com/JanLahmann" target="_blank" rel="noopener">github.com/JanLahmann</a>.
+        </p>
       </div>
     </div>
   </section>

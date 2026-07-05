@@ -5,4 +5,7 @@ import { defineConfig } from 'astro/config';
 export default defineConfig({
   site: 'https://fun-with-quantum.org',
   trailingSlash: 'ignore',
+  redirects: {
+    '/about': '/#about',
+  },
 });

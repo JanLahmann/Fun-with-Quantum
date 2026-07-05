@@ -22,7 +22,7 @@ const qoffee = (await getCollection('projects')).find((p) => p.id === 'qoffee-ma
       </p>
 
       {qoffee && (
-        <a class="feature card" href={qoffee.data.url}>
+        <a class="feature card" href={qoffee.data.url} target="_blank" rel="noopener">
           <Image src={qoffeePhoto} alt="The Qoffee-Maker at a conference — a coffee machine wired to a quantum circuit composer" widths={[420, 800]} sizes="(max-width: 820px) 90vw, 420px" />
           <div>
             <h3>{qoffee.data.icon} {qoffee.data.title} ↗</h3>
