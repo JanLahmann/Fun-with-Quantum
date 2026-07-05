@@ -6,6 +6,8 @@ icon: "🌀"
 order: 3
 duration: ~10 min
 audience: puzzle lovers
+# RISE slideshow — needs this repo's own Binder env until jupyterlab-rise
+# is in the QuBins xl images (added upstream, awaiting rebuild).
 binderUrl: https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=Hardys-Paradox.ipynb
 notebook: Hardys-Paradox.ipynb
 ---

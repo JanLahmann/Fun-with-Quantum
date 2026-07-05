@@ -6,7 +6,8 @@ icon: "🎩"
 order: 5
 duration: ~15 min
 audience: puzzle lovers, students
-binderUrl: https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=Mermin%E2%80%93Peres-Game.ipynb
+# Plain notebook (no RISE) — QuBins prebuilt image is fine.
+binderUrl: https://qubins.org/launch/?image=2.1-xl&repo=https%3A%2F%2Fgithub.com%2FJanLahmann%2FFun-with-Quantum&branch=master&path=Mermin%E2%80%93Peres-Game.ipynb
 notebook: Mermin–Peres-Game.ipynb
 ---
 
