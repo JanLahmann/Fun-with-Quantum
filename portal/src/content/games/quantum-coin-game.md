@@ -6,7 +6,7 @@ icon: "🪙"
 order: 1
 duration: ~5 min
 audience: everyone — no prerequisites
-binderUrl: https://qubins.org/launch/?image=latest-xl&repo=https%3A%2F%2Fgithub.com%2FJanLahmann%2FFun-with-Quantum&branch=master&path=Quantum-Coin-Game.ipynb
+binderUrl: https://qubins.org/launch/?image=2.1-xl&repo=https%3A%2F%2Fgithub.com%2FJanLahmann%2FFun-with-Quantum&branch=master&path=Quantum-Coin-Game.ipynb
 notebook: Quantum-Coin-Game.ipynb
 featured: true
 ---

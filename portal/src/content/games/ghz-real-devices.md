@@ -6,7 +6,7 @@ icon: "📡"
 order: 6
 duration: ~20 min
 audience: developers
-binderUrl: https://qubins.org/launch/?image=latest-xl&repo=https%3A%2F%2Fgithub.com%2FJanLahmann%2FFun-with-Quantum&branch=master&path=GHZ-on-Real-Devices.ipynb
+binderUrl: https://qubins.org/launch/?image=2.1-xl&repo=https%3A%2F%2Fgithub.com%2FJanLahmann%2FFun-with-Quantum&branch=master&path=GHZ-on-Real-Devices.ipynb
 notebook: GHZ-on-Real-Devices.ipynb
 ---
 
