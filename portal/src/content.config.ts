@@ -20,20 +20,24 @@ const games = defineCollection({
 
 const projects = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/projects' }),
-  schema: z.object({
-    title: z.string(),
-    door: z.enum(['play', 'build', 'learn']),
-    tagline: z.string(),
-    icon: z.string(),
-    order: z.number(),
-    url: z.string().url().optional(),
-    repoUrl: z.string().url().optional(),
-    status: z.enum(['live', 'coming-soon', 'legacy']).default('live'),
-    facts: z.array(z.string()).default([]),
-    // Link to the project's entry on qiskit.github.io/ecosystem — only for
-    // projects that are actually listed members; controls the ecosystem badge.
-    ecosystemUrl: z.string().url().optional(),
-  }),
+  schema: ({ image }) =>
+    z.object({
+      title: z.string(),
+      door: z.enum(['play', 'build', 'learn']),
+      tagline: z.string(),
+      icon: z.string(),
+      order: z.number(),
+      url: z.string().url().optional(),
+      repoUrl: z.string().url().optional(),
+      status: z.enum(['live', 'coming-soon', 'legacy']).default('live'),
+      facts: z.array(z.string()).default([]),
+      // Link to the project's entry on qiskit.github.io/ecosystem — only for
+      // projects that are actually listed members; controls the ecosystem badge.
+      ecosystemUrl: z.string().url().optional(),
+      // Photo shown on the right of the project row.
+      image: image().optional(),
+      imageAlt: z.string().optional(),
+    }),
 });
 
 export const collections = { games, projects };

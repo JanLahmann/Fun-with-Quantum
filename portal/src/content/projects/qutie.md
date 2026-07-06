@@ -6,6 +6,8 @@ icon: "🧸"
 order: 2
 url: https://qutie.org
 repoUrl: https://github.com/JanLahmann/Qutie
+image: ../../assets/qutie-hero.jpg
+imageAlt: Qutie One and Qutie Two — palm-sized 3D-printed quantum computer models
 facts:
   - Prints in one piece — no assembly, no electronics
   - Fits in your hand, survives any conference bag
