@@ -188,6 +188,7 @@ footer .family a:hover { color: var(--cyan); }
 footer .tag { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.16em; }
 footer .fineprint { margin-top: 18px; font-size: 0.78rem; }
 footer .fineprint a { color: var(--muted); }
+footer .disclaimer { margin-top: 14px; font-size: 0.72rem; opacity: 0.8; max-width: 760px; }
 
 /* ---------- prose (markdown bodies) ---------- */
 .prose { max-width: 680px; }
