@@ -108,17 +108,19 @@ const doors = [
         <div class="card">
           <h3>Play Quantum Runner</h3>
           <p>Steer the runner with quantum gates — an H gate puts you in both lanes at once.</p>
-          <video
-            class="runner-video"
-            src="/quantum-runner.mp4"
-            autoplay
-            muted
-            loop
-            playsinline
-            aria-label="Quantum Runner gameplay: building a circuit steers the runner across lanes"
-          ></video>
+          <a class="runner-link" href="https://qamposer.org/quantum-runner/" target="_blank" rel="noopener" title="Play Quantum Runner">
+            <video
+              class="runner-video"
+              src="/quantum-runner.mp4"
+              autoplay
+              muted
+              loop
+              playsinline
+              aria-label="Quantum Runner gameplay: building a circuit steers the runner across lanes"
+            ></video>
+          </a>
           <span class="meta">
-            built on QAMPoser — playable embed coming shortly ·{' '}<a href="https://qamposer.org" target="_blank" rel="noopener">qamposer.org ↗</a>
+            built on QAMPoser ·{' '}<a href="https://qamposer.org/quantum-runner/" target="_blank" rel="noopener">play it live ↗</a>
           </span>
         </div>
 
@@ -268,9 +270,12 @@ const doors = [
   /* --- try band --- */
   #try .kicker { margin-bottom: 22px; }
   .try-grid .card h3 { font-size: 1.12rem; }
+  .runner-link { display: block; }
+  .runner-link:hover .runner-video { border-color: var(--cyan); }
   .runner-video {
     width: 100%; height: 175px; object-fit: cover; object-position: top;
     border: 1px solid var(--line); border-radius: 10px; background: #14151D;
+    transition: border-color 0.12s ease;
   }
   .launch-form { display: flex; gap: 10px; }
   .launch-form input {
