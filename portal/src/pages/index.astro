@@ -5,7 +5,7 @@ import Base from '../layouts/Base.astro';
 import heroPhoto from '../assets/RasQberry2model.png';
 import qoffeeMug from '../assets/qoffee-mug.png';
 import quantegoPhoto from '../assets/quantego-two-photo.jpg';
-import blochLearn from '../assets/bloch-learn.svg';
+import ibmLearning from '../assets/ibm-quantum-learning.png';
 
 const games = (await getCollection('games')).sort((a, b) => a.data.order - b.data.order);
 const featured = games.find((g) => g.data.featured) ?? games[0];
@@ -33,14 +33,14 @@ const doors = [
     links: [
       { label: 'RasQberry', href: 'https://rasqberry.org' },
       { label: 'Quantego', href: 'https://quantego.org' },
-      { label: 'Qutie', href: '/build/' },
+      { label: 'Qutie', href: 'https://qutie.org' },
     ],
   },
   {
     href: '/learn/',
-    img: blochLearn,
-    imgAlt: 'A Bloch sphere with a state vector next to a palette of quantum gates',
-    fit: 'contain',
+    img: ibmLearning,
+    imgAlt: 'The IBM Quantum Learning platform: “Learn quantum computing” with a library of courses',
+    fit: 'cover',
     title: 'Learn',
     text: 'Start with IBM Quantum Learning — free, interactive, and made by the people who build the machines. Keep coding in ready-made environments.',
     links: [
@@ -106,20 +106,19 @@ const doors = [
       <h2 class="sr-only">Try it right here</h2>
       <div class="grid cols-3 try-grid">
         <div class="card">
-          <h3>Compose a circuit</h3>
-          <p>Drag gates onto the wires, run it, order your quantum coffee.</p>
-          <svg class="mini-circuit" viewBox="0 0 320 96" role="img" aria-label="A small quantum circuit: an H gate and an X gate on two wires">
-            <line x1="12" y1="30" x2="308" y2="30" stroke="var(--line)" stroke-width="2"/>
-            <line x1="12" y1="66" x2="308" y2="66" stroke="var(--line)" stroke-width="2"/>
-            <rect x="64" y="14" width="32" height="32" rx="7" fill="#0E7C9C"/>
-            <text x="80" y="36" text-anchor="middle" font-family="var(--mono)" font-size="17" font-weight="bold" fill="#fff">H</text>
-            <rect x="150" y="50" width="32" height="32" rx="7" fill="#C22F6E"/>
-            <text x="166" y="72" text-anchor="middle" font-family="var(--mono)" font-size="17" font-weight="bold" fill="#fff">X</text>
-            <rect x="236" y="14" width="32" height="32" rx="7" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="4 4"/>
-            <text x="252" y="37" text-anchor="middle" font-family="var(--mono)" font-size="16" fill="var(--muted)">+</text>
-          </svg>
+          <h3>Play Quantum Runner</h3>
+          <p>Steer the runner with quantum gates — an H gate puts you in both lanes at once.</p>
+          <video
+            class="runner-video"
+            src="/quantum-runner.mp4"
+            autoplay
+            muted
+            loop
+            playsinline
+            aria-label="Quantum Runner gameplay: building a circuit steers the runner across lanes"
+          ></video>
           <span class="meta">
-            QamposerMicro embed — coming shortly ·{' '}<a href="https://qoffee-maker.org" target="_blank" rel="noopener">Qoffee preset ↗</a>
+            built on QAMPoser — playable embed coming shortly ·{' '}<a href="https://qamposer.org" target="_blank" rel="noopener">qamposer.org ↗</a>
           </span>
         </div>
 
@@ -269,9 +268,9 @@ const doors = [
   /* --- try band --- */
   #try .kicker { margin-bottom: 22px; }
   .try-grid .card h3 { font-size: 1.12rem; }
-  .mini-circuit {
-    width: 100%; height: auto; border: 1px solid var(--line); border-radius: 10px;
-    background: var(--paper); padding: 6px 0;
+  .runner-video {
+    width: 100%; height: 175px; object-fit: cover; object-position: top;
+    border: 1px solid var(--line); border-radius: 10px; background: #14151D;
   }
   .launch-form { display: flex; gap: 10px; }
   .launch-form input {
