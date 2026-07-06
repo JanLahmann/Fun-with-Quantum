@@ -126,27 +126,6 @@ const doors = [
         </div>
 
         <div class="card">
-          <h3>Launch any notebook</h3>
-          <p>Paste any GitHub repo or notebook URL and run it in one click — <strong>Qiskit comes preinstalled</strong>.</p>
-          <form class="launch-form" id="launch-form">
-            <input
-              id="launch-input"
-              type="text"
-              value="github.com/JanLahmann/Fun-with-Quantum/blob/master/Quantum-Coin-Game.ipynb"
-              placeholder="github.com/you/your-notebook"
-              aria-label="GitHub repository or notebook URL"
-              autocomplete="off"
-              spellcheck="false"
-            />
-            <button class="btn primary" type="submit">Launch ▸</button>
-          </form>
-          <div class="launch-hint" id="launch-hint" hidden>Use a github.com repository or .ipynb link.</div>
-          <span class="meta">
-            powered by the{' '}<a href="https://qubins.org" target="_blank" rel="noopener">live QuBins launch generator ↗</a>
-          </span>
-        </div>
-
-        <div class="card">
           <h3>Spin the models</h3>
           <p>Quantego, the LEGO model of IBM Quantum System Two — drag to spin, live in 3D.</p>
           <div class="model-wrap">
@@ -165,6 +144,27 @@ const doors = [
           </div>
           <span class="meta">
             all three models at{' '}<a href="https://quantego.org" target="_blank" rel="noopener">quantego.org ↗</a>
+          </span>
+        </div>
+
+        <div class="card">
+          <h3>Launch any notebook</h3>
+          <p>Paste any GitHub repo or notebook URL and run it in one click — <strong>Qiskit comes preinstalled</strong>.</p>
+          <form class="launch-form" id="launch-form">
+            <input
+              id="launch-input"
+              type="text"
+              value="github.com/JanLahmann/Fun-with-Quantum/blob/master/Quantum-Coin-Game.ipynb"
+              placeholder="github.com/you/your-notebook"
+              aria-label="GitHub repository or notebook URL"
+              autocomplete="off"
+              spellcheck="false"
+            />
+            <button class="btn primary" type="submit">Launch ▸</button>
+          </form>
+          <div class="launch-hint" id="launch-hint" hidden>Use a github.com repository or .ipynb link.</div>
+          <span class="meta">
+            powered by the{' '}<a href="https://qubins.org" target="_blank" rel="noopener">live QuBins launch generator ↗</a>
           </span>
         </div>
       </div>
