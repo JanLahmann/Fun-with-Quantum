@@ -6,10 +6,10 @@ icon: "🌀"
 order: 3
 duration: ~10 min
 audience: puzzle lovers
-# Own-repo Binder env (notebook<7 + classic RISE): jupyterlab-rise doesn't
-# render ipywidgets>=8 (jupyterlab-contrib/rise#119). Switch to
-# https://qubins.org/launch/?image=2.1-xl&...&ui=rise once that's fixed.
-binderUrl: https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=Hardys-Paradox.ipynb
+# QuBins classic-RISE launch (2.1-xl-rise = nbclassic + classic RISE);
+# jupyterlab-rise doesn't render ipywidgets>=8 (jupyterlab-contrib/rise#119).
+# Once fixed upstream, switch to image=2.1-xl&...&ui=rise (Lab presenter).
+binderUrl: https://qubins.org/launch/?image=2.1-xl-rise&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=Hardys-Paradox.ipynb&ui=rise-classic
 notebook: Hardys-Paradox.ipynb
 ---
 
