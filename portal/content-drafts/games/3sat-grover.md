@@ -6,9 +6,10 @@ icon: "🧩"
 order: 4
 duration: ~15 min
 audience: developers, students
-# QuBins prebuilt image; ui=rise lands in the jupyterlab-rise standalone
-# presenter — whole tab is the slideshow.
-binderUrl: https://qubins.org/launch/?image=2.1-xl&repo=https%3A%2F%2Fgithub.com%2FJanLahmann%2FFun-with-Quantum&branch=master&path=3sat-v2.ipynb&ui=rise
+# Own-repo Binder env (notebook<7 + classic RISE): jupyterlab-rise doesn't
+# render ipywidgets>=8 (jupyterlab-contrib/rise#119). Switch to
+# https://qubins.org/launch/?image=2.1-xl&...&ui=rise once that's fixed.
+binderUrl: https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=3sat-v2.ipynb
 notebook: 3sat-v2.ipynb
 ---
 

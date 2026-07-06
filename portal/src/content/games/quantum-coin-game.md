@@ -6,9 +6,12 @@ icon: "🪙"
 order: 1
 duration: ~5 min
 audience: everyone — no prerequisites
-# QuBins prebuilt image (no mybinder rebuilds, warm cache); ui=rise lands in
-# the jupyterlab-rise standalone presenter — whole tab is the slideshow.
-binderUrl: https://qubins.org/launch/?image=2.1-xl&repo=https%3A%2F%2Fgithub.com%2FJanLahmann%2FFun-with-Quantum&branch=master&path=Quantum-Coin-Game.ipynb&ui=rise
+# Own-repo Binder env (notebook<7 + classic RISE): the only combo where the
+# slideshow AND the ipywidgets dropdowns (the actual gameplay) both work.
+# jupyterlab-rise doesn't render ipywidgets>=8 (jupyterlab-contrib/rise#119),
+# so the QuBins ui=rise launch shows widgets as text. Switch back to
+# https://qubins.org/launch/?image=2.1-xl&...&ui=rise once that's fixed.
+binderUrl: https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=Quantum-Coin-Game.ipynb
 notebook: Quantum-Coin-Game.ipynb
 featured: true
 ---
