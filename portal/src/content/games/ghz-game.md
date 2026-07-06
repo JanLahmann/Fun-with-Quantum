@@ -6,11 +6,9 @@ icon: "🔗"
 order: 2
 duration: ~10 min
 audience: curious minds, workshop groups
-# QuBins prebuilt image (no mybinder rebuilds, warm cache), landing in the
-# jupyterlab-rise standalone presenter (/rise/<nb> — whole tab is the slideshow,
-# no Lab chrome). Direct mybinder URL because qubins.org/launch/ only emits
-# lab/tree paths today; switch to a qubins.org link once launch.js gains ui=rise.
-binderUrl: https://mybinder.org/v2/gh/QuBins/qiskit-images/2.1-xl?urlpath=git-pull%3Frepo%3Dhttps%253A%252F%252Fgithub.com%252FJanLahmann%252FFun-with-Quantum%26branch%3Dmaster%26urlpath%3Drise%252FFun-with-Quantum%252FGHZ-Game.ipynb
+# QuBins prebuilt image (no mybinder rebuilds, warm cache); ui=rise lands in
+# the jupyterlab-rise standalone presenter — whole tab is the slideshow.
+binderUrl: https://qubins.org/launch/?image=2.1-xl&repo=https%3A%2F%2Fgithub.com%2FJanLahmann%2FFun-with-Quantum&branch=master&path=GHZ-Game.ipynb&ui=rise
 notebook: GHZ-Game.ipynb
 ---
 

@@ -6,10 +6,9 @@ icon: "🧩"
 order: 4
 duration: ~15 min
 audience: developers, students
-# QuBins prebuilt image, landing in the jupyterlab-rise standalone presenter
-# (/rise/<nb>). Direct mybinder URL because qubins.org/launch/ only emits
-# lab/tree paths today; switch to a qubins.org link once launch.js gains ui=rise.
-binderUrl: https://mybinder.org/v2/gh/QuBins/qiskit-images/2.1-xl?urlpath=git-pull%3Frepo%3Dhttps%253A%252F%252Fgithub.com%252FJanLahmann%252FFun-with-Quantum%26branch%3Dmaster%26urlpath%3Drise%252FFun-with-Quantum%252F3sat-v2.ipynb
+# QuBins prebuilt image; ui=rise lands in the jupyterlab-rise standalone
+# presenter — whole tab is the slideshow.
+binderUrl: https://qubins.org/launch/?image=2.1-xl&repo=https%3A%2F%2Fgithub.com%2FJanLahmann%2FFun-with-Quantum&branch=master&path=3sat-v2.ipynb&ui=rise
 notebook: 3sat-v2.ipynb
 ---
 
