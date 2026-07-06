@@ -40,7 +40,7 @@ const doors = [
     href: '/learn/',
     img: ibmLearning,
     imgAlt: 'The IBM Quantum Learning platform: “Learn quantum computing” with a library of courses',
-    fit: 'cover',
+    fit: 'left',
     title: 'Learn',
     text: 'Start with IBM Quantum Learning — free, interactive, and made by the people who build the machines. Keep coding in ready-made environments.',
     links: [
@@ -81,7 +81,7 @@ const doors = [
       <div class="grid cols-3">
         {doors.map((d) => (
           <div class="card door">
-            <div class={`thumb ${d.fit === 'contain' ? 'contain' : ''}`}>
+            <div class={`thumb ${d.fit}`}>
               <Image src={d.img} alt={d.imgAlt} widths={[480, 760]} sizes="(max-width: 820px) 90vw, 340px" />
             </div>
             <h3><a href={d.href}>{d.title} <span class="arrow">→</span></a></h3>

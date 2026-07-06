@@ -129,6 +129,7 @@ a.card:hover { text-decoration: none; transform: translateY(-2px); border-color:
 }
 .card .thumb img { width: 100%; height: 100%; object-fit: cover; }
 .card .thumb.contain img { object-fit: contain; padding: 12px; }
+.card .thumb.left img { object-position: left center; }
 
 /* door cards: whole card clickable via stretched link, meta links stay clickable */
 .card.door { position: relative; transition: transform 0.12s ease, border-color 0.12s ease; }
