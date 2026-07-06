@@ -6,6 +6,8 @@ icon: "🧱"
 order: 3
 url: https://quantego.org
 repoUrl: https://github.com/JanLahmann/Quantego
+image: ../../assets/quantego-1024-photo.jpg
+imageAlt: Quantego Two 1024 — a large LEGO model of an IBM Quantum computer
 facts:
   - Three models — from palm-sized to display-worthy
   - Full brick lists and step-by-step building instructions

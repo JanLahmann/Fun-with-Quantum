@@ -7,6 +7,8 @@ order: 4
 url: https://rasqberry.one
 repoUrl: https://github.com/JanLahmann/RasQberry
 ecosystemUrl: https://qisk.it/e-dfa4cfd2
+image: ../../assets/rasqberry-one-front.jpg
+imageAlt: RasQberry One — the 3D-printed model of IBM Q System One with a Raspberry Pi inside
 facts:
   - The first major project of the family — it sparked this community
   - Featured by Hackster, EE Times & Springer

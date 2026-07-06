@@ -10,14 +10,14 @@ const qoffee = (await getCollection('projects')).find((p) => p.id === 'qoffee-ma
 
 <Base
   title="Play — quantum games | Fun with Quantum"
-  description="Quantum games you play in the browser: beat a quantum computer at coin flipping, win an impossible team game with entanglement, and order your coffee with a quantum circuit."
+  description="Quantum games you play in the browser: beat a quantum computer at coin flipping, win an impossible team game with entanglement, steer Quantum Runner with gates, and order your coffee with a quantum circuit."
 >
   <section class="section">
     <div class="wrap">
       <div class="kicker">Play</div>
       <h2>Games where quantum mechanics is the trick</h2>
       <p class="lead">
-        Nothing to install, no account — every game here runs in your browser or, in one case,
+        Nothing to install, no account — every game here runs in your browser. One of them
         brews your coffee.
       </p>
 
@@ -36,6 +36,27 @@ const qoffee = (await getCollection('projects')).find((p) => p.id === 'qoffee-ma
           </div>
         </a>
       )}
+
+      <a class="feature card" href="https://qamposer.org/quantum-runner/" target="_blank" rel="noopener">
+        <video
+          src="/quantum-runner.mp4"
+          autoplay
+          muted
+          loop
+          playsinline
+          aria-label="Quantum Runner gameplay: building a circuit steers the runner across lanes"
+        ></video>
+        <div>
+          <h3>🏃 Quantum Runner ↗</h3>
+          <p class="feature-tag">Steer the runner with quantum gates — an H gate puts you in both lanes at once.</p>
+          <p class="feature-text">
+            A quantum-circuit puzzle game where the circuit is the controller: the state of your
+            qubit decides which lane the runner takes, superposition lets you collect coins in
+            both, and the simulation results are the game logic. Built on QAMPoser.
+          </p>
+          <span class="meta">qamposer.org/quantum-runner ↗</span>
+        </div>
+      </a>
 
       <h2 class="games-title">The notebook games</h2>
       <p class="lead">
@@ -62,7 +83,8 @@ const qoffee = (await getCollection('projects')).find((p) => p.id === 'qoffee-ma
     margin-bottom: 12px;
   }
   @media (max-width: 820px) { .feature { grid-template-columns: 1fr; } }
-  .feature img { border-radius: 12px; width: 100%; height: auto; }
+  .feature img, .feature video { border-radius: 12px; width: 100%; height: auto; }
+  .feature video { background: #14151D; }
   .feature h3 { font-size: 1.35rem; margin-bottom: 6px; }
   .feature-tag { color: var(--muted); font-size: 0.93rem; margin-bottom: 10px; }
   .feature-text { font-size: 0.93rem; color: var(--muted); margin-bottom: 12px; }

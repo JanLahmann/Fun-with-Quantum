@@ -20,6 +20,7 @@ const doors = [
     text: 'Beat a quantum computer at coin flipping, win an impossible team game with entanglement, order coffee with a circuit.',
     links: [
       { label: `${games.length} games`, href: '/play/' },
+      { label: 'Quantum Runner', href: 'https://qamposer.org/quantum-runner/' },
       { label: 'Qoffee-Maker', href: 'https://qoffee-maker.org' },
     ],
   },
@@ -126,11 +127,12 @@ const doors = [
 
         <div class="card">
           <h3>Launch any notebook</h3>
-          <p>Paste a GitHub repo or notebook URL, get a one-click Binder environment.</p>
+          <p>Paste any GitHub repo or notebook URL and run it in one click — <strong>Qiskit comes preinstalled</strong>.</p>
           <form class="launch-form" id="launch-form">
             <input
               id="launch-input"
               type="text"
+              value="github.com/JanLahmann/Fun-with-Quantum/blob/master/Quantum-Coin-Game.ipynb"
               placeholder="github.com/you/your-notebook"
               aria-label="GitHub repository or notebook URL"
               autocomplete="off"
@@ -149,7 +151,6 @@ const doors = [
           <p>Quantego, the LEGO model of IBM Quantum System Two — drag to spin, live in 3D.</p>
           <model-viewer
             src="https://quantego.org/assets/models/quantego-two.glb"
-            poster="https://quantego.org/Quantego-Two/Quantego-Two.png"
             alt="Interactive 3D model of Quantego Two, a LEGO IBM Quantum computer"
             camera-controls
             auto-rotate
@@ -290,8 +291,7 @@ const doors = [
   model-viewer {
     width: 100%; height: 175px;
     border: 1px solid var(--line); border-radius: 10px;
-    /* poster as background so the card isn't empty before the viewer script loads */
-    background: #fff url('https://quantego.org/Quantego-Two/Quantego-Two.png') center / contain no-repeat;
+    background: #fff;
     --poster-color: #fff;
   }
 </style>
