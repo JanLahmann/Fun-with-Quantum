@@ -149,14 +149,20 @@ const doors = [
         <div class="card">
           <h3>Spin the models</h3>
           <p>Quantego, the LEGO model of IBM Quantum System Two — drag to spin, live in 3D.</p>
-          <model-viewer
-            src="https://quantego.org/assets/models/quantego-two.glb"
-            alt="Interactive 3D model of Quantego Two, a LEGO IBM Quantum computer"
-            camera-controls
-            auto-rotate
-            loading="lazy"
-            touch-action="pan-y"
-          ></model-viewer>
+          <div class="model-wrap">
+            <model-viewer
+              src="https://quantego.org/assets/models/quantego-two.glb"
+              alt="Interactive 3D model of Quantego Two, a LEGO IBM Quantum computer"
+              camera-controls
+              auto-rotate
+              auto-rotate-delay="0"
+              rotation-per-second="8deg"
+              interaction-prompt="none"
+              loading="lazy"
+              touch-action="pan-y"
+            ></model-viewer>
+            <span class="spin-hint">↻ drag to spin</span>
+          </div>
           <span class="meta">
             all three models at{' '}<a href="https://quantego.org" target="_blank" rel="noopener">quantego.org ↗</a>
           </span>
@@ -221,9 +227,15 @@ const doors = [
       owner = short[1];
       repo = short[2];
     }
-    const q = new URLSearchParams({ image: '2.1-xl', repo: `https://github.com/${owner}/${repo}` });
+    // The FwQ slideshow games need the classic-RISE flavor to auto-start as a
+    // presentation (jupyterlab-rise can't render ipywidgets>=8); everything
+    // else gets the plain Lab image.
+    const RISE_GAMES = /^(Quantum-Coin-Game|GHZ-Game|Hardys-Paradox|3sat(-v2)?)\.ipynb$/;
+    const isRiseGame = owner === 'JanLahmann' && repo === 'Fun-with-Quantum' && RISE_GAMES.test(path);
+    const q = new URLSearchParams({ image: isRiseGame ? '2.1-xl-rise' : '2.1-xl', repo: `https://github.com/${owner}/${repo}` });
     if (branch) q.set('branch', branch);
     if (path) q.set('path', path);
+    if (isRiseGame) q.set('ui', 'rise-classic');
     return `https://qubins.org/launch/?${q.toString()}`;
   }
 
@@ -288,10 +300,19 @@ const doors = [
   .launch-form input:focus { outline: 2px solid var(--cyan); outline-offset: -1px; border-color: var(--cyan); }
   .launch-form .btn { padding: 9px 16px; font-size: 0.88rem; }
   .launch-hint { font-size: 0.78rem; color: var(--magenta); }
+  .model-wrap { position: relative; }
   model-viewer {
     width: 100%; height: 175px;
     border: 1px solid var(--line); border-radius: 10px;
     background: #fff;
     --poster-color: #fff;
+    cursor: grab;
+  }
+  .spin-hint {
+    position: absolute; right: 10px; bottom: 8px;
+    font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.05em;
+    color: var(--muted); background: var(--card);
+    border: 1px solid var(--line); border-radius: 20px; padding: 2px 9px;
+    pointer-events: none;
   }
 </style>
