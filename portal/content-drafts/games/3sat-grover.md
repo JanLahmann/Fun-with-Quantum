@@ -6,9 +6,9 @@ icon: "🧩"
 order: 4
 duration: ~15 min
 audience: developers, students
-# RISE slideshow — needs this repo's own Binder env until jupyterlab-rise
-# is in the QuBins xl images (added upstream, awaiting rebuild).
-binderUrl: https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=3sat-v2.ipynb
+# QuBins prebuilt image. Slideshow autostarts via the notebook's
+# `rise.autolaunch` metadata (jupyterlab-rise, in xl images since 2026-07-06).
+binderUrl: https://qubins.org/launch/?image=2.1-xl&repo=https%3A%2F%2Fgithub.com%2FJanLahmann%2FFun-with-Quantum&branch=master&path=3sat-v2.ipynb
 notebook: 3sat-v2.ipynb
 ---
 

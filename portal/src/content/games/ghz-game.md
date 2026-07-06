@@ -6,10 +6,10 @@ icon: "🔗"
 order: 2
 duration: ~10 min
 audience: curious minds, workshop groups
-# RISE slideshow — must launch in this repo's own Binder env (notebook<7 + rise);
-# the QuBins images don't ship RISE yet. Switch back to a QuBins launch link once
-# jupyterlab-rise lands in the xl images.
-binderUrl: https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=GHZ-Game.ipynb
+# QuBins prebuilt image (no mybinder rebuilds, warm cache). Slideshow autostarts
+# via the notebook's `rise.autolaunch` metadata (jupyterlab-rise, in xl images
+# since 2026-07-06).
+binderUrl: https://qubins.org/launch/?image=2.1-xl&repo=https%3A%2F%2Fgithub.com%2FJanLahmann%2FFun-with-Quantum&branch=master&path=GHZ-Game.ipynb
 notebook: GHZ-Game.ipynb
 ---
 
