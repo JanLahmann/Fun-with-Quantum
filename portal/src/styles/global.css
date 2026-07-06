@@ -11,6 +11,7 @@
   --grad: linear-gradient(135deg, var(--cyan), var(--magenta));
   --shadow: 0 2px 12px rgba(28, 29, 39, 0.08);
   --sans: "Avenir Next", "Futura", "Century Gothic", "Helvetica Neue", Arial, sans-serif;
+  --serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
   --mono: "SF Mono", "Menlo", "Consolas", monospace;
 }
 
@@ -40,6 +41,14 @@ body {
 }
 
 img { max-width: 100%; display: block; }
+
+/* editorial serif for reading copy; UI (nav, headings, buttons, meta) stays sans/mono */
+p, li, figcaption { font-family: var(--serif); }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
 
 a { color: var(--cyan); text-decoration: none; }
 a:hover { text-decoration: underline; }
@@ -103,13 +112,33 @@ h1, h2, h3 { line-height: 1.15; letter-spacing: -0.01em; }
 }
 .card .icon { font-size: 1.7rem; line-height: 1; }
 .card h3 { font-size: 1.12rem; }
-.card p { color: var(--muted); font-size: 0.93rem; flex-grow: 1; }
+.card p { color: var(--muted); font-size: 0.95rem; flex-grow: 1; }
 .card .meta {
   font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.06em;
   color: var(--muted);
 }
+.card .meta a { color: var(--cyan); position: relative; z-index: 1; }
 a.card { color: inherit; transition: transform 0.12s ease, border-color 0.12s ease; }
 a.card:hover { text-decoration: none; transform: translateY(-2px); border-color: var(--cyan); }
+
+/* image header bleeding to the card edges */
+.card .thumb {
+  margin: -24px -24px 8px; height: 150px; overflow: hidden;
+  border-radius: 13px 13px 0 0; border-bottom: 1px solid var(--line);
+  background: #fff;
+}
+.card .thumb img { width: 100%; height: 100%; object-fit: cover; }
+.card .thumb.contain img { object-fit: contain; padding: 12px; }
+.card .thumb.left img { object-position: left center; }
+
+/* door cards: whole card clickable via stretched link, meta links stay clickable */
+.card.door { position: relative; transition: transform 0.12s ease, border-color 0.12s ease; }
+.card.door:hover { transform: translateY(-2px); border-color: var(--cyan); }
+.card.door h3 a { color: inherit; }
+.card.door h3 a:hover { text-decoration: none; }
+.card.door h3 a::after { content: ""; position: absolute; inset: 0; }
+.card.door .arrow { color: var(--cyan); display: inline-block; transition: transform 0.12s ease; }
+.card.door:hover .arrow { transform: translateX(4px); }
 
 .badge {
   display: inline-block; font-family: var(--mono); font-size: 0.68rem;
