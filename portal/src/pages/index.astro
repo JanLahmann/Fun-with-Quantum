@@ -9,6 +9,7 @@ import ibmLearning from '../assets/ibm-quantum-learning.png';
 
 const games = (await getCollection('games')).sort((a, b) => a.data.order - b.data.order);
 const featured = games.find((g) => g.data.featured) ?? games[0];
+const qutie = (await getCollection('projects')).find((p) => p.id === 'qutie');
 
 const doors = [
   {
@@ -53,26 +54,23 @@ const doors = [
 ---
 
 <Base
-  title="Fun with Quantum — play, print & run quantum computing"
+  title="Fun with Quantum — quantum computing to play, build & learn"
   description="Quantum games, 3D-printed and LEGO quantum computer models, and hands-on ways to learn. Open source, nothing to install."
 >
   <section class="hero">
     <div class="wrap hero-grid">
       <div class="hero-copy">
-        <h1>Quantum computing you can <span class="hl-c">play</span>, <span class="hl-m">print&nbsp;&amp;&nbsp;run</span> — nothing to install.</h1>
+        <h1>Quantum computing you can <span class="hl-play">play</span>, <span class="hl-build">build</span> &amp; <span class="hl-learn">learn</span> — nothing to install.</h1>
         <p>
           Quantum games, LEGO and 3D-printed quantum computers, and hands-on ways to learn.
           Open source, workshop-tested, built by the RasQberry community.
         </p>
-        <div class="hero-actions">
-          <a class="btn primary" href={featured.data.binderUrl} target="_blank" rel="noopener">▶ Play the {featured.data.title}</a>
-          <a class="btn ghost" href="/#doors">Explore the family</a>
-        </div>
-        <div class="hero-note">launches in your browser via Binder · ~30 s cold start · no account needed</div>
       </div>
       <figure class="hero-photo">
-        <Image src={heroPhoto} alt="RasQberry Two — a 3D-printed model of IBM Quantum System Two with glowing LEDs" widths={[480, 760]} sizes="(max-width: 820px) 90vw, 520px" />
-        <figcaption>RasQberry Two — 3D-printed at home, quantum inside</figcaption>
+        <a href="https://rasqberry.org" target="_blank" rel="noopener">
+          <Image src={heroPhoto} alt="RasQberry Two — a 3D-printed model of IBM Quantum System Two with glowing LEDs" widths={[480, 760]} sizes="(max-width: 820px) 90vw, 520px" />
+        </a>
+        <figcaption><a href="https://rasqberry.org" target="_blank" rel="noopener">RasQberry Two ↗</a> — 3D-printed at home, quantum inside</figcaption>
       </figure>
     </div>
   </section>
@@ -97,6 +95,35 @@ const doors = [
             </span>
           </div>
         ))}
+      </div>
+
+      <div class="grid cols-3 feature-grid">
+        <div class="card door feature">
+          <span class="badge">play · featured</span>
+          <h3><a href={featured.data.binderUrl} target="_blank" rel="noopener">{featured.data.icon} {featured.data.title} <span class="arrow">→</span></a></h3>
+          <p>The friendliest introduction to superposition — play it right in your browser, no account needed.</p>
+          <span class="meta">
+            via Binder · ~30 s cold start ·{' '}<a href={`/play/${featured.id}/`}>about the game</a>
+          </span>
+        </div>
+
+        <div class="card door feature">
+          <span class="badge">build · featured</span>
+          <h3><a href={qutie.data.url} target="_blank" rel="noopener">{qutie.data.icon} {qutie.data.title} <span class="arrow">→</span></a></h3>
+          <p>{qutie.data.tagline} No electronics, no assembly — quantum for your desk.</p>
+          <span class="meta">
+            models &amp; print instructions at{' '}<a href={qutie.data.url} target="_blank" rel="noopener">qutie.org ↗</a>
+          </span>
+        </div>
+
+        <div class="card feature">
+          <span class="badge soon">learn · coming soon</span>
+          <h3>Fun with Quantum learning material</h3>
+          <p>Exclusive learning resources built on the same games, models, and workshop experience.</p>
+          <span class="meta">
+            meanwhile:{' '}<a href="https://learning.quantum.ibm.com" target="_blank" rel="noopener">IBM Quantum Learning ↗</a>
+          </span>
+        </div>
       </div>
     </div>
   </section>
@@ -259,26 +286,30 @@ const doors = [
   @media (max-width: 820px) { .hero-grid { grid-template-columns: 1fr; } }
   .hero h1 { font-size: 2.5rem; margin-bottom: 18px; }
   @media (max-width: 820px) { .hero h1 { font-size: 1.9rem; } }
-  .hero h1 .hl-c { color: var(--cyan); }
-  .hero h1 .hl-m {
+  .hero h1 .hl-play { color: var(--cyan); }
+  .hero h1 .hl-build {
     background: var(--grad);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
   }
-  .hero-copy p { color: var(--muted); max-width: 520px; margin-bottom: 26px; }
-  .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
-  .hero-note {
-    margin-top: 14px; font-family: var(--mono); font-size: 0.72rem;
-    letter-spacing: 0.04em; color: var(--muted);
-  }
+  .hero h1 .hl-learn { color: var(--magenta); }
+  .hero-copy p { color: var(--muted); max-width: 520px; }
+  .hero-photo > a { display: block; }
   .hero-photo img {
     border-radius: 16px; box-shadow: var(--shadow); width: 100%; height: auto;
+    transition: outline-color 0.12s ease; outline: 2px solid transparent;
   }
+  .hero-photo a:hover img { outline-color: var(--cyan); }
   .hero-photo figcaption {
     margin-top: 10px; font-size: 0.8rem; color: var(--muted); text-align: center;
   }
   .card.door h3 { font-size: 1.35rem; }
+
+  /* second row: one featured highlight per door */
+  .feature-grid { margin-top: 20px; }
+  .card.feature h3 { font-size: 1.08rem; }
+  .card.feature .badge { margin-bottom: 2px; }
 
   /* --- try band --- */
   #try .kicker { margin-bottom: 22px; }
