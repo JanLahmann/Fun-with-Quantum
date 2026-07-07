@@ -13,6 +13,7 @@ const qutie = (await getCollection('projects')).find((p) => p.id === 'qutie');
 
 const doors = [
   {
+    key: 'play',
     href: '/play/',
     img: qoffeeMug,
     imgAlt: 'The Qoffee-Maker mug with a quantum circuit printed on it',
@@ -26,6 +27,7 @@ const doors = [
     ],
   },
   {
+    key: 'build',
     href: '/build/',
     img: quantegoPhoto,
     imgAlt: 'Quantego — a LEGO model of an IBM Quantum computer, mid-build',
@@ -39,6 +41,7 @@ const doors = [
     ],
   },
   {
+    key: 'learn',
     href: '/learn/',
     img: ibmLearning,
     imgAlt: 'The IBM Quantum Learning platform: “Learn quantum computing” with a library of courses',
@@ -77,9 +80,10 @@ const doors = [
 
   <section class="section" id="doors">
     <div class="wrap">
+      <div class="kicker">Three ways in</div>
       <div class="grid cols-3">
         {doors.map((d) => (
-          <div class="card door">
+          <div class={`card door door-${d.key}`}>
             <div class={`thumb ${d.fit}`}>
               <Image src={d.img} alt={d.imgAlt} widths={[480, 760]} sizes="(max-width: 820px) 90vw, 340px" />
             </div>
@@ -97,9 +101,10 @@ const doors = [
         ))}
       </div>
 
+      <div class="kicker examples-kicker">Examples from each — no install, no account</div>
       <div class="grid cols-3 feature-grid">
         <div class="card door feature">
-          <span class="badge">play · right here</span>
+          <span class="badge cat-play">play · right here</span>
           <h3><a href={featured.data.binderUrl} target="_blank" rel="noopener">{featured.data.icon} {featured.data.title} <span class="arrow">→</span></a></h3>
           <p>The friendliest introduction to superposition — play it right in your browser, no account needed.</p>
           <span class="meta">
@@ -108,7 +113,7 @@ const doors = [
         </div>
 
         <div class="card door feature">
-          <span class="badge">build</span>
+          <span class="badge cat-build">build</span>
           <h3><a href={qutie.data.url} target="_blank" rel="noopener">{qutie.data.icon} {qutie.data.title} <span class="arrow">→</span></a></h3>
           <p>{qutie.data.tagline} No electronics, no assembly — quantum for your desk.</p>
           <span class="meta">
@@ -117,7 +122,7 @@ const doors = [
         </div>
 
         <div class="card feature">
-          <span class="badge soon">learn · coming soon</span>
+          <span class="badge cat-learn soon">learn · coming soon</span>
           <h3>Fun with Quantum learning material</h3>
           <p>Exclusive learning resources built on the same games, models, and workshop experience.</p>
           <span class="meta">
@@ -128,7 +133,7 @@ const doors = [
 
       <div class="grid cols-3 try-grid">
         <div class="card">
-          <span class="badge">play · right here</span>
+          <span class="badge cat-play">play · right here</span>
           <h3>Play Quantum Runner</h3>
           <p>Steer the runner with quantum gates — an H gate puts you in both lanes at once.</p>
           <a class="runner-link" href="https://qamposer.org/quantum-runner/" target="_blank" rel="noopener" title="Play Quantum Runner">
@@ -148,7 +153,7 @@ const doors = [
         </div>
 
         <div class="card">
-          <span class="badge">build</span>
+          <span class="badge cat-build">build</span>
           <h3>Spin the models</h3>
           <p>Quantego, the LEGO model of IBM Quantum System Two — drag to spin, live in 3D.</p>
           <div class="model-wrap">
@@ -171,7 +176,7 @@ const doors = [
         </div>
 
         <div class="card">
-          <span class="badge">learn · right here</span>
+          <span class="badge cat-learn">learn · right here</span>
           <h3>Launch any notebook</h3>
           <p>Paste any GitHub repo or notebook URL and run it in one click — <strong>Qiskit comes preinstalled</strong>.</p>
           <form class="launch-form" id="launch-form">
@@ -303,12 +308,28 @@ const doors = [
   }
   .card.door h3 { font-size: 1.35rem; }
 
-  /* second row: one highlight per door */
-  .feature-grid { margin-top: 20px; }
+  /* category colors: tie each column to its door (same hues as the hero) */
+  .door-build .arrow {
+    background: var(--grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .door-learn .arrow { color: var(--magenta); }
+  .badge.cat-play { border-color: var(--cyan); color: var(--cyan); }
+  .badge.cat-build {
+    background: var(--grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .badge.cat-learn { border-color: var(--magenta); color: var(--magenta); }
+
+  /* rows 2+3: examples from the categories above */
+  .examples-kicker { margin: 36px 0 14px; color: var(--muted); }
+  .feature-grid { margin-top: 0; }
   .card.feature h3 { font-size: 1.08rem; }
   .card.feature .badge { margin-bottom: 2px; }
-
-  /* third row: try it right here */
   .try-grid { margin-top: 20px; }
   .try-grid .card h3 { font-size: 1.12rem; }
   .try-grid .badge { margin-bottom: 2px; }
