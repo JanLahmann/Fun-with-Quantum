@@ -40,10 +40,8 @@ const family = [
     <meta property="og:type" content="website" />
     <meta property="og:url" content={new URL(path, Astro.site)} />
     <meta name="twitter:card" content="summary_large_image" />
-    {/* Umami analytics (cookieless) — uncomment once the fun-with-quantum.org
-        website is created in the Umami Cloud dashboard and the ID is known:
-    <script defer src="https://cloud.umami.is/script.js" data-website-id="REPLACE-WITH-WEBSITE-ID"></script>
-    */}
+    {/* Umami analytics (cookieless, shared family property — filter by hostname) */}
+    <script defer src="https://cloud.umami.is/script.js" data-website-id="97f347ac-e7ba-4be3-b26f-ab4b328bdbf2" data-domains="fun-with-quantum.org"></script>
   </head>
   <body>
     <header>
