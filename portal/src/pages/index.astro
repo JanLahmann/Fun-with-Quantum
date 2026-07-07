@@ -99,7 +99,7 @@ const doors = [
 
       <div class="grid cols-3 feature-grid">
         <div class="card door feature">
-          <span class="badge">play · featured</span>
+          <span class="badge">play · right here</span>
           <h3><a href={featured.data.binderUrl} target="_blank" rel="noopener">{featured.data.icon} {featured.data.title} <span class="arrow">→</span></a></h3>
           <p>The friendliest introduction to superposition — play it right in your browser, no account needed.</p>
           <span class="meta">
@@ -108,7 +108,7 @@ const doors = [
         </div>
 
         <div class="card door feature">
-          <span class="badge">build · featured</span>
+          <span class="badge">build</span>
           <h3><a href={qutie.data.url} target="_blank" rel="noopener">{qutie.data.icon} {qutie.data.title} <span class="arrow">→</span></a></h3>
           <p>{qutie.data.tagline} No electronics, no assembly — quantum for your desk.</p>
           <span class="meta">
@@ -125,15 +125,10 @@ const doors = [
           </span>
         </div>
       </div>
-    </div>
-  </section>
 
-  <section class="section" id="try">
-    <div class="wrap">
-      <div class="kicker">Try it right here — no install, no account</div>
-      <h2 class="sr-only">Try it right here</h2>
       <div class="grid cols-3 try-grid">
         <div class="card">
+          <span class="badge">play · right here</span>
           <h3>Play Quantum Runner</h3>
           <p>Steer the runner with quantum gates — an H gate puts you in both lanes at once.</p>
           <a class="runner-link" href="https://qamposer.org/quantum-runner/" target="_blank" rel="noopener" title="Play Quantum Runner">
@@ -153,6 +148,7 @@ const doors = [
         </div>
 
         <div class="card">
+          <span class="badge">build</span>
           <h3>Spin the models</h3>
           <p>Quantego, the LEGO model of IBM Quantum System Two — drag to spin, live in 3D.</p>
           <div class="model-wrap">
@@ -175,6 +171,7 @@ const doors = [
         </div>
 
         <div class="card">
+          <span class="badge">learn · right here</span>
           <h3>Launch any notebook</h3>
           <p>Paste any GitHub repo or notebook URL and run it in one click — <strong>Qiskit comes preinstalled</strong>.</p>
           <form class="launch-form" id="launch-form">
@@ -306,14 +303,15 @@ const doors = [
   }
   .card.door h3 { font-size: 1.35rem; }
 
-  /* second row: one featured highlight per door */
+  /* second row: one highlight per door */
   .feature-grid { margin-top: 20px; }
   .card.feature h3 { font-size: 1.08rem; }
   .card.feature .badge { margin-bottom: 2px; }
 
-  /* --- try band --- */
-  #try .kicker { margin-bottom: 22px; }
+  /* third row: try it right here */
+  .try-grid { margin-top: 20px; }
   .try-grid .card h3 { font-size: 1.12rem; }
+  .try-grid .badge { margin-bottom: 2px; }
   .runner-link { display: block; }
   .runner-link:hover .runner-video { border-color: var(--cyan); }
   .runner-video {
