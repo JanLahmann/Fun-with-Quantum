@@ -1,5 +1,5 @@
 {
-  "$comment": "Fun with Quantum family manifest. Canonical home: github.com/JanLahmann/fwq-family (this copy is the staging version until that repo exists). Edit HERE only; every member site and README renders from it.",
+  "$comment": "Fun with Quantum family manifest — the single roster for the whole family. Canonical home: github.com/JanLahmann/Fun-with-Quantum/family/family.json. Edit HERE only; every member site and README renders from it.",
   "version": 1,
   "updated": "2026-09-08",
   "brand": {

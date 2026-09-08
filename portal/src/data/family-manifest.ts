@@ -1,14 +1,13 @@
 /**
- * Fun with Quantum family manifest loader (build time only).
+ * Fun with Quantum family manifest (build time only).
  *
- * Source of truth: family.json in JanLahmann/fwq-family (until that repo exists, the staging
- * copy in this repo's /family folder). At build time we fetch the live manifest so a roster
- * change anywhere reaches this site on the next build; if the fetch fails (offline dev,
- * GitHub hiccup) we fall back to the vendored copy in src/data/family.json.
- *
- * Override with FWQ_FAMILY_URL (custom source) or FWQ_FAMILY_OFFLINE=1 (vendored copy only).
+ * Source of truth: /family/family.json in this repo — the portal reads it straight from disk,
+ * so the footer can never lag behind the roster. Other member sites fetch the same file from
+ * https://raw.githubusercontent.com/JanLahmann/Fun-with-Quantum/master/family/family.json
+ * (with a vendored fallback) and get rebuilt via repository_dispatch when it changes.
  */
-import vendored from './family.json';
+import { existsSync, readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 export interface FamilyMember {
   id: string;
@@ -35,36 +34,26 @@ export interface FamilyManifest {
   members: FamilyMember[];
 }
 
-const DEFAULT_URL = 'https://raw.githubusercontent.com/JanLahmann/fwq-family/main/family.json';
 export const SELF_ID = 'fun-with-quantum';
 
-function isManifest(x: unknown): x is FamilyManifest {
-  const m = x as FamilyManifest;
-  return !!m && m.version === 1 && Array.isArray(m.members) && typeof m.brand?.name === 'string';
+/** The build runs with cwd = portal/ (locally and in withastro/action); tolerate the repo root too. */
+function manifestPath(): string {
+  const candidates = ['../family/family.json', 'family/family.json'].map((p) => resolve(process.cwd(), p));
+  const hit = candidates.find((p) => existsSync(p));
+  if (!hit) throw new Error(`family/family.json not found (looked in: ${candidates.join(', ')})`);
+  return hit;
 }
 
-let cached: Promise<FamilyManifest> | undefined;
+let cached: FamilyManifest | undefined;
 
-export function loadFamily(): Promise<FamilyManifest> {
-  if (!cached) cached = load();
-  return cached;
-}
-
-async function load(): Promise<FamilyManifest> {
-  const fallback = vendored as FamilyManifest;
-  if (process.env.FWQ_FAMILY_OFFLINE === '1') return fallback;
-  const url = process.env.FWQ_FAMILY_URL ?? DEFAULT_URL;
-  try {
-    const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const json = await res.json();
-    if (!isManifest(json)) throw new Error('unexpected manifest shape');
-    console.log(`[family] manifest from ${url} (updated ${json.updated})`);
-    return json;
-  } catch (err) {
-    console.warn(`[family] live manifest unavailable (${(err as Error).message}); using vendored copy (updated ${fallback.updated})`);
-    return fallback;
+export function loadFamily(): FamilyManifest {
+  if (cached) return cached;
+  const m = JSON.parse(readFileSync(manifestPath(), 'utf8')) as FamilyManifest;
+  if (m.version !== 1 || !Array.isArray(m.members) || typeof m.brand?.name !== 'string') {
+    throw new Error(`family/family.json: unexpected manifest shape`);
   }
+  cached = m;
+  return m;
 }
 
 /** Every visible member except this site, in manifest order. */

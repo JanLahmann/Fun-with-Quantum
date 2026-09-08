@@ -5,7 +5,7 @@
  */
 import { loadFamily, footerLinks, SELF_ID } from '../data/family-manifest';
 
-const family = await loadFamily();
+const family = loadFamily();
 const links = footerLinks(family, SELF_ID);
 ---
 

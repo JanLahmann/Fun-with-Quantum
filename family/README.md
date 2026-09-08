@@ -1,30 +1,36 @@
-# Fun with Quantum — family manifest (staging)
+# Fun with Quantum — family manifest
 
 **One file, every site.** `family.json` is the single roster of the Fun with Quantum family:
 brand line, taglines, and one entry per member (name, URL, repo, door, one-line tagline, and a
-`footer` flag that decides whether it appears in the family footer).
+`footer` flag that decides whether it appears in the family footer). This folder is its permanent
+home; every member site and README renders from it.
 
-This folder is the *staging* home. Its permanent home is the `JanLahmann/fwq-family` repo; once
-that exists, this folder moves there unchanged and the consumers below point at
-`https://raw.githubusercontent.com/JanLahmann/fwq-family/main/family.json`.
+Raw URL for consumers outside this repo:
+`https://raw.githubusercontent.com/JanLahmann/Fun-with-Quantum/master/family/family.json`
 
 ## How it flows
 
 ```
-family.json ──► build-time renderers ──► every member site + README
-                 ├─ Astro component      (portal, Qutie)           portal/src/components/FamilyFooter.astro
-                 ├─ Docusaurus footer    (doQumentation, CertiQ)   themeConfig.footer.links from JSON
-                 ├─ static HTML snippet  (Quantego, Qoffee, QuBins, Entangible)   render/html-snippet.mjs
-                 ├─ Next.js component    (RasQberry Two)
-                 └─ Markdown block       (every README, incl. traQmania)          render/readme-block.mjs
+family/family.json ──► build-time renderers ──► every member site + README
+                        ├─ Astro component      (portal reads the file directly; Qutie fetches)   portal/src/components/FamilyFooter.astro
+                        ├─ Docusaurus footer    (doQumentation, CertiQ)   themeConfig.footer.links from JSON
+                        ├─ static HTML snippet  (Quantego, Qoffee, QuBins, Entangible)   render/html-snippet.mjs
+                        ├─ Next.js component    (RasQberry Two)
+                        └─ Markdown block       (every README, incl. traQmania)          render/readme-block.mjs
 ```
 
-* **Sites** fetch the manifest at build time (with a vendored fallback copy so a GitHub outage
-  never breaks a build) and render the footer from it. When the manifest changes, a workflow in
-  `fwq-family` fires `repository_dispatch: family-updated` at every member repo → each rebuilds.
-* **READMEs** can't run code, so the same workflow re-renders the block between
-  `<!-- FWQ-FAMILY:START -->` / `<!-- FWQ-FAMILY:END -->` and opens a PR per repo.
-* A weekly cron re-sync is the backstop for anything that missed a dispatch.
+* **The portal** reads the file from disk at build time — it can never lag behind.
+* **Other sites** fetch the raw URL at build time, with a vendored fallback copy so a GitHub
+  hiccup never breaks a build. When the manifest changes on `master`,
+  `.github/workflows/family-dispatch.yml` fires `repository_dispatch: family-updated` at every
+  member repo listed in the manifest → each rebuilds its Pages. A weekly cron run is the backstop.
+* **READMEs** can't run code, so the same workflow will re-render the block between
+  `<!-- FWQ-FAMILY:START -->` / `<!-- FWQ-FAMILY:END -->` and open a PR per repo (added with the
+  member rollout).
+
+The dispatch needs one secret in this repo: `FWQ_FAMILY_TOKEN`, a fine-grained PAT with
+*Contents: read & write* on the member repos (that is the permission GitHub requires for
+`repository_dispatch`). Without the secret the workflow logs a notice and does nothing.
 
 ## Renderers
 
@@ -39,4 +45,5 @@ node family/render/html-snippet.mjs family/family.json quantego > family-footer.
 
 * Add a member: one object in `members`. Order in the array = order in every footer.
 * Hide/show in footers: flip `footer`. Members currently hidden and why are in their `note`.
+* Bump `updated` when you change the roster (it shows up in build logs downstream).
 * Never edit a rendered footer or README block by hand — it will be overwritten on the next sync.
