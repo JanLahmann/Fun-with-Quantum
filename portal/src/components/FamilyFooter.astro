@@ -1,0 +1,20 @@
+---
+/**
+ * The family footer block — rendered from the shared manifest, never hand-edited.
+ * Markup and class names are unchanged from the previous hard-coded version so global.css applies.
+ */
+import { loadFamily, footerLinks, SELF_ID } from '../data/family-manifest';
+
+const family = await loadFamily();
+const links = footerLinks(family, SELF_ID);
+---
+
+<div class="tag">{family.brand.tagline.l}</div>
+<div class="family">
+  <strong>{family.brand.footer_lead}</strong>
+  {links.map((s) => <a href={s.url} target="_blank" rel="noopener">{s.name}</a>)}
+</div>
+<div>
+  Open source, built by <a href={family.brand.credit_url} target="_blank" rel="noopener">Jan-R. Lahmann</a> and the
+  RasQberry community. No accounts, no cookies.
+</div>

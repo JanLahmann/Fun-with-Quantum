@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import FamilyFooter from '../components/FamilyFooter.astro';
 
 interface Props {
   title: string;
@@ -14,13 +15,6 @@ const nav = [
   { href: '/#about', label: 'About' },
 ];
 const path = Astro.url.pathname;
-const family = [
-  { href: 'https://rasqberry.org', label: 'RasQberry Two' },
-  { href: 'https://rasqberry.one', label: 'RasQberry One' },
-  { href: 'https://quantego.org', label: 'Quantego' },
-  { href: 'https://qutie.org', label: 'Qutie' },
-  { href: 'https://qoffee-maker.org', label: 'Qoffee-Maker' },
-];
 ---
 
 <html lang="en">
@@ -68,15 +62,7 @@ const family = [
 
     <footer>
       <div class="wrap">
-        <div class="tag">GOD DOES PLAY DICE. COME PLAY, BUILD, LEARN.</div>
-        <div class="family">
-          <strong>Part of the Fun with Quantum family:</strong>
-          {family.map((s) => <a href={s.href} target="_blank" rel="noopener">{s.label}</a>)}
-        </div>
-        <div>
-          Open source, built by <a href="https://www.linkedin.com/in/JanLahmann" target="_blank" rel="noopener">Jan-R. Lahmann</a> and the
-          RasQberry community. No accounts, no cookies.
-        </div>
+        <FamilyFooter />
         <div class="fineprint">
           <a href="https://github.com/JanLahmann/Fun-with-Quantum" target="_blank" rel="noopener">Source on GitHub</a>{' '}·{' '}<a href="https://quantego.biz" target="_blank" rel="noopener">Shop</a>
         </div>
