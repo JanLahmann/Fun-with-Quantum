@@ -182,9 +182,17 @@ footer {
   margin-top: 56px;
   font-size: 0.88rem; color: var(--muted);
 }
-footer .family { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 12px 0 20px; }
+footer .family {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px 20px; margin: 12px 0 20px;
+}
+footer .family strong { grid-column: 1 / -1; }
 footer .family a { color: var(--muted); }
 footer .family a:hover { color: var(--cyan); }
+footer .family .member { display: block; line-height: 1.3; }
+footer .family .member span { display: block; color: var(--ink); }
+footer .family .member:hover span { color: var(--cyan); }
+footer .family .member small { display: block; font-size: 0.76rem; color: var(--muted); }
 footer .tag { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.16em; }
 footer .fineprint { margin-top: 18px; font-size: 0.78rem; }
 footer .fineprint a { color: var(--muted); }

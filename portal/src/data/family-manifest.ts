@@ -13,6 +13,7 @@ export interface FamilyMember {
   id: string;
   name: string;
   url: string;
+  short?: string;
   repo?: string;
   door?: 'home' | 'play' | 'build' | 'learn';
   tagline?: string;
