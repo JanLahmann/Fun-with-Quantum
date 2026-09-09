@@ -1,7 +1,7 @@
 {
   "$comment": "Fun with Quantum family manifest — the single roster for the whole family. Canonical home: github.com/JanLahmann/Fun-with-Quantum/family/family.json. Edit HERE only; every member site and README renders from it.",
   "version": 1,
-  "updated": "2026-09-08",
+  "updated": "2026-09-09",
   "brand": {
     "name": "Fun with Quantum",
     "id": "fun-with-quantum",
@@ -23,10 +23,10 @@
     { "id": "qutie", "name": "Qutie", "url": "https://qutie.org", "repo": "JanLahmann/Qutie", "door": "build", "tagline": "Palm-sized 3D-printable quantum computer models", "footer": true },
     { "id": "qoffee-maker", "name": "Qoffee-Maker", "url": "https://qoffee-maker.org", "repo": "JanLahmann/Qoffee-Maker", "door": "play", "tagline": "Quantum circuits that pick your coffee", "footer": true },
     { "id": "entangible", "name": "Entangible", "url": "https://entangible.org", "repo": "JanLahmann/entangible", "door": "play", "tagline": "Physical quantum circuit composer for booths and classrooms", "footer": true },
-    { "id": "traqmania", "name": "traQmania", "url": "https://github.com/JanLahmann/traQmania", "repo": "JanLahmann/traQmania", "door": "play", "tagline": "Quantum reinforcement-learning racing demo", "footer": true, "note": "No domain yet — links to the repo until one exists." },
+    { "id": "traqmania", "name": "traQmania", "url": "https://github.com/JanLahmann/traQmania", "repo": "JanLahmann/traQmania", "door": "play", "tagline": "Quantum reinforcement-learning racing demo", "footer": false, "note": "Jan 2026-09-09: don't show yet. No domain yet either — URL points to the repo. Flip footer to true when ready." },
     { "id": "certiq", "name": "CertiQ", "url": "https://certiq.dev", "repo": "JanLahmann/qiskit-developer-certification-prep", "door": "learn", "tagline": "Machine-verified prep for the IBM Qiskit developer certification", "footer": true },
     { "id": "qubins", "name": "QuBins", "url": "https://qubins.org", "repo": "QuBins/qiskit-images", "door": "learn", "tagline": "Prebuilt Qiskit environments — one click in Binder or docker pull", "footer": false, "note": "July 2026 launch-list hold ('cannot show qubins and doqumentation yet'). Flip footer to true to show." },
     { "id": "doqumentation", "name": "doQumentation", "url": "https://doqumentation.org", "repo": "JanLahmann/doQumentation", "door": "learn", "tagline": "Qiskit documentation — executable and multilingual", "footer": false, "note": "July 2026 launch-list hold. Flip footer to true to show." },
-    { "id": "qamposer", "name": "QAMPoser", "url": "https://qamposer.org", "repo": "QAMP-62/qamposer-website", "door": "play", "tagline": "Web-based quantum circuit composer", "footer": false, "note": "Co-owned (QAMP-62). Show only after co-lead alignment." }
+    { "id": "qamposer", "name": "QAMPoser", "url": "https://qamposer.org", "repo": "QAMP-62/qamposer-website", "door": "play", "tagline": "Web-based quantum circuit composer", "footer": true, "note": "Co-owned with QAMP-62 — showing it in footers OK'd by Jan 2026-09-09; changes on qamposer.org itself still need co-lead alignment." }
   ]
 }
