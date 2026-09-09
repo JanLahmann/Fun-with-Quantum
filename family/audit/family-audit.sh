@@ -36,7 +36,8 @@ for m in "${MEMBERS[@]}"; do
   # a real TXT answer is a quoted string; a wildcard CNAME (*.domain → *.github.io) answers with a hostname instead
   txt=$(dig +short TXT "_github-pages-challenge-$owner.$d" | grep '^"' | head -1); [ -n "$txt" ] && txt=yes || txt=NO
   enforced=$(gh api "repos/$repo/pages" --jq '.https_enforced' 2>/dev/null || echo "?")
-  slug=$(echo "$d" | sed 's/\..*//; s/-//g'); ecomem=$(echo "$eco" | grep -qi "members/$slug" && echo member || echo no)
+  # member files are named <slug truncated to 11 chars>_<hash>.toml (e.g. doqumentati_…), so compare the truncated slug
+  slug=$(echo "$d" | sed 's/\..*//; s/-//g' | cut -c1-11); ecomem=$(echo "$eco" | grep -qi "members/$slug" && echo member || echo no)
   printf '%-22s %-5s %-6s %-8s %-5s %-6s %-7s %-6s %-6s %-6s %-7s %-8s %-6s\n' "$d" "$https" "$redir" "$icons" "$ico" "$apple" "$og" "$umami" "$footer" "$readme" "$txt" "$enforced" "$ecomem"
 done
 printf '%-22s ' traQmania; r=$(gh api repos/JanLahmann/traQmania/readme -H 'Accept: application/vnd.github.raw' 2>/dev/null | grep -q 'FWQ-FAMILY:START' && echo block || echo none); echo "(repo only) readme=$r"
