@@ -43,6 +43,12 @@ opens an issue in this repo (label `fwq-family-token`) when fewer than 30 days r
 the token stops working. Rotating = new classic PAT (repo scope) → update the secret → run the workflow
 once by hand.
 
+## Analytics events
+
+The html renderer and the site components tag every family-footer link with
+`data-umami-event="family-footer" data-umami-event-to="<member id>"`. The family-wide event vocabulary
+(launch, game, download, outbound, newsletter) is in [EVENTS.md](EVENTS.md).
+
 ## Renderers
 
 ```sh

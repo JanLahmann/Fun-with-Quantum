@@ -13,7 +13,7 @@ const links = footerLinks(family, SELF_ID);
 <div class="family">
   <strong>{family.brand.footer_lead}</strong>
   {links.map((s) => (
-    <a class="member" href={s.url} target="_blank" rel="noopener">
+    <a class="member" href={s.url} target="_blank" rel="noopener" data-umami-event="family-footer" data-umami-event-to={s.id}>
       <span>{s.name}</span>
       {s.short && <small>{s.short}</small>}
     </a>
