@@ -145,7 +145,7 @@ A recording of the three 1h tutorial sessions ["Serious Games for Quantum Comput
 Jan-R. Lahmann, https://www.linkedin.com/in/JanLahmann
 
 
-<!-- FWQ-FAMILY:START — generated from family.json, do not edit by hand -->
+<!-- FWQ-FAMILY:START format=list — generated from family.json, do not edit by hand -->
 ## Part of the Fun with Quantum family
 
 These games are the home of [**Fun with Quantum**](https://fun-with-quantum.org), a family of open-source quantum outreach projects: [RasQberry Two](https://rasqberry.org) · [RasQberry One](https://rasqberry.one) · [Quantego](https://quantego.org) · [Qutie](https://qutie.org) · [Qoffee-Maker](https://qoffee-maker.org) · [Entangible](https://entangible.org) · [CertiQ](https://certiq.dev) · [QuBins](https://qubins.org) · [QAMPoser](https://qamposer.org).
