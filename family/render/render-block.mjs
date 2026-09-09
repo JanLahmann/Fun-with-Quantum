@@ -47,7 +47,7 @@ if (format === 'html') {
     `  <div class="family-footer-lead"><strong>${esc(m.brand.footer_lead)}</strong></div>`,
     '  <div class="family-footer-members">',
     ...members.map((x) =>
-      `    <a class="member" href="${esc(x.url)}"><span>${esc(x.name)}</span>${x.short ? `<small>${esc(x.short)}</small>` : ''}</a>`),
+      `    <a class="member" href="${esc(x.url)}" data-umami-event="family-footer" data-umami-event-to="${esc(x.id)}"><span>${esc(x.name)}</span>${x.short ? `<small>${esc(x.short)}</small>` : ''}</a>`),
     '  </div>',
     `  <div class="family-footer-credit">${credit}</div>`,
     '</footer>',

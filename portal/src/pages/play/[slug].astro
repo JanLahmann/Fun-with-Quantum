@@ -13,6 +13,10 @@ const others = (await getCollection('games'))
   .filter((g) => g.id !== game.id)
   .sort((a, b) => a.data.order - b.data.order)
   .slice(0, 3);
+// Umami `launch` event properties (family taxonomy, see family/EVENTS.md)
+const launchUrl = new URL(game.data.binderUrl);
+const launchTarget = launchUrl.hostname.includes('qubins') ? 'qubins' : launchUrl.hostname.includes('mybinder') ? 'binder' : launchUrl.hostname;
+const launchImage = launchUrl.searchParams.get('image') ?? 'binder';
 ---
 
 <Base
@@ -27,7 +31,9 @@ const others = (await getCollection('games'))
 
       <div class="launch card">
         <div>
-          <a class="btn primary" href={game.data.binderUrl} target="_blank" rel="noopener">▶ Launch on Binder</a>
+          <a class="btn primary" href={game.data.binderUrl} target="_blank" rel="noopener"
+             data-umami-event="launch" data-umami-event-target={launchTarget} data-umami-event-image={launchImage}
+             data-umami-event-notebook={game.data.notebook}>▶ Launch on Binder</a>
           <div class="hero-note">
             {game.data.duration} · {game.data.audience} · runs in your browser, no account
           </div>
