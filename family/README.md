@@ -1,8 +1,9 @@
 # Fun with Quantum — family manifest
 
 **One file, every site.** `family.json` is the single roster of the Fun with Quantum family:
-brand line, taglines, and one entry per member (name, URL, repo, door, one-line tagline, and a
-`footer` flag that decides whether it appears in the family footer). This folder is its permanent
+brand line, taglines, and one entry per member (name, URL, `short` — a 3–5 word footer
+description —, repo, door, one-line `tagline` for README tables and About pages, and a `footer`
+flag that decides whether it appears in the family footer). This folder is its permanent
 home; every member site and README renders from it.
 
 Raw URL for consumers outside this repo:

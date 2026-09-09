@@ -1,7 +1,7 @@
 ---
 /**
  * The family footer block — rendered from the shared manifest, never hand-edited.
- * Markup and class names are unchanged from the previous hard-coded version so global.css applies.
+ * Each member shows its name and the manifest's `short` line (3–5 words).
  */
 import { loadFamily, footerLinks, SELF_ID } from '../data/family-manifest';
 
@@ -12,7 +12,12 @@ const links = footerLinks(family, SELF_ID);
 <div class="tag">{family.brand.tagline.l}</div>
 <div class="family">
   <strong>{family.brand.footer_lead}</strong>
-  {links.map((s) => <a href={s.url} target="_blank" rel="noopener">{s.name}</a>)}
+  {links.map((s) => (
+    <a class="member" href={s.url} target="_blank" rel="noopener">
+      <span>{s.name}</span>
+      {s.short && <small>{s.short}</small>}
+    </a>
+  ))}
 </div>
 <div>
   Open source, built by <a href={family.brand.credit_url} target="_blank" rel="noopener">Jan-R. Lahmann</a> and the
