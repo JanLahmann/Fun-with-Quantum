@@ -100,3 +100,48 @@ jobs:
               sync_one "$repo" "$id" "$b"
             done
           done
+
+  # Reminder: the automation dies silently when FWQ_FAMILY_TOKEN expires or is revoked. Every API
+  # call made with the token returns its expiry in a response header; on the weekly run (and on
+  # manual runs) open an issue when fewer than 30 days remain, or right away if the token no
+  # longer works. One open issue at a time (label fwq-family-token).
+  token-check:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    env:
+      FWQ_FAMILY_TOKEN: ${{ secrets.FWQ_FAMILY_TOKEN }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Check token validity and expiry
+        run: |
+          if [ -z "$FWQ_FAMILY_TOKEN" ]; then
+            title="FWQ_FAMILY_TOKEN is not set — family automation is off"
+            body="The secret is empty or missing, so the dispatch and sync jobs skip every run. Create a classic PAT with the repo scope and store it as FWQ_FAMILY_TOKEN in this repo's Actions secrets (see family/README.md)."
+          else
+            hdr=$(curl -s -D - -o /dev/null -H "Authorization: Bearer $FWQ_FAMILY_TOKEN" https://api.github.com/user)
+            status=$(printf '%s' "$hdr" | head -1 | awk '{print $2}')
+            exp=$(printf '%s' "$hdr" | grep -i '^github-authentication-token-expiration:' | cut -d' ' -f2- | tr -d '\r')
+            if [ "$status" != "200" ]; then
+              title="FWQ_FAMILY_TOKEN no longer works (HTTP $status) — family automation is stopped"
+              body="The token behind the family dispatch/sync workflow was rejected by the GitHub API (HTTP $status): expired or revoked. Create a new classic PAT (repo scope) and update the FWQ_FAMILY_TOKEN secret; then re-run the workflow manually. Details: family/README.md."
+            elif [ -n "$exp" ]; then
+              days=$(( ( $(date -u -d "$exp" +%s) - $(date -u +%s) ) / 86400 ))
+              echo "FWQ_FAMILY_TOKEN valid, expires $exp ($days days left)"
+              if [ "$days" -le 30 ]; then
+                title="FWQ_FAMILY_TOKEN expires in $days days ($exp)"
+                body="Rotate it before then or the family footer automation stops silently: create a new classic PAT (repo scope, note fwq-family-sync) at https://github.com/settings/tokens/new, paste it into Settings → Secrets and variables → Actions → FWQ_FAMILY_TOKEN, then run this workflow once by hand. Details: family/README.md."
+              fi
+            else
+              echo "token valid, no expiry header (token without expiration)"
+            fi
+          fi
+          [ -z "${title:-}" ] && exit 0
+          if [ -z "$(gh issue list -R "$GITHUB_REPOSITORY" --label fwq-family-token --state open --json number --jq '.[0].number')" ]; then
+            gh label create fwq-family-token -R "$GITHUB_REPOSITORY" --description "Family automation token lifecycle" --color D93F0B 2>/dev/null || true
+            gh issue create -R "$GITHUB_REPOSITORY" --title "$title" --label fwq-family-token --body "$body"
+            echo "::warning::$title — issue opened"
+          else
+            echo "::warning::$title — issue already open"
+          fi
