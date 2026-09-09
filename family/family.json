@@ -16,12 +16,12 @@
     "credit_url": "https://www.linkedin.com/in/JanLahmann"
   },
   "members": [
-    { "id": "fun-with-quantum", "name": "Fun with Quantum", "url": "https://fun-with-quantum.org", "repo": "JanLahmann/Fun-with-Quantum", "door": "home", "tagline": "Quantum games in Jupyter notebooks — the family home", "footer": true },
-    { "id": "rasqberry-two", "name": "RasQberry Two", "url": "https://rasqberry.org", "repo": "JanLahmann/RasQberry-Two", "door": "build", "tagline": "Functional quantum computer model on a Raspberry Pi", "footer": true },
-    { "id": "rasqberry-one", "name": "RasQberry One", "url": "https://rasqberry.one", "repo": "JanLahmann/RasQberry", "door": "build", "tagline": "The original RasQberry (legacy)", "footer": true },
-    { "id": "quantego", "name": "Quantego", "url": "https://quantego.org", "repo": "JanLahmann/Quantego", "door": "build", "tagline": "Brick-built quantum computer models", "footer": true },
+    { "id": "fun-with-quantum", "name": "Fun with Quantum", "url": "https://fun-with-quantum.org", "repo": "JanLahmann/Fun-with-Quantum", "door": "home", "tagline": "The family portal — quantum games, builds, and learning", "footer": true },
+    { "id": "rasqberry-two", "name": "RasQberry Two", "url": "https://rasqberry.org", "repo": "JanLahmann/RasQberry-Two", "door": "build", "tagline": "3D-printed model of IBM Quantum System Two with a Raspberry Pi inside", "footer": true },
+    { "id": "rasqberry-one", "name": "RasQberry One", "url": "https://rasqberry.one", "repo": "JanLahmann/RasQberry", "door": "build", "tagline": "The original — functional model of IBM Q System One", "footer": true },
+    { "id": "quantego", "name": "Quantego", "url": "https://quantego.org", "repo": "JanLahmann/Quantego", "door": "build", "tagline": "Quantum computers built from LEGO bricks", "footer": true },
     { "id": "qutie", "name": "Qutie", "url": "https://qutie.org", "repo": "JanLahmann/Qutie", "door": "build", "tagline": "Palm-sized 3D-printable quantum computer models", "footer": true },
-    { "id": "qoffee-maker", "name": "Qoffee-Maker", "url": "https://qoffee-maker.org", "repo": "JanLahmann/Qoffee-Maker", "door": "play", "tagline": "Quantum circuits that pick your coffee", "footer": true },
+    { "id": "qoffee-maker", "name": "Qoffee-Maker", "url": "https://qoffee-maker.org", "repo": "JanLahmann/Qoffee-Maker", "door": "play", "tagline": "Order coffee with a quantum circuit", "footer": true },
     { "id": "entangible", "name": "Entangible", "url": "https://entangible.org", "repo": "JanLahmann/entangible", "door": "play", "tagline": "Physical quantum circuit composer for booths and classrooms", "footer": true },
     { "id": "traqmania", "name": "traQmania", "url": "https://github.com/JanLahmann/traQmania", "repo": "JanLahmann/traQmania", "door": "play", "tagline": "Quantum reinforcement-learning racing demo", "footer": false, "note": "Jan 2026-09-09: don't show yet. No domain yet either — URL points to the repo. Flip footer to true when ready." },
     { "id": "certiq", "name": "CertiQ", "url": "https://certiq.dev", "repo": "JanLahmann/qiskit-developer-certification-prep", "door": "learn", "tagline": "Machine-verified prep for the IBM Qiskit developer certification", "footer": true },
