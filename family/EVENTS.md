@@ -16,8 +16,18 @@ Most events need **no JavaScript**: Umami's tracker records a click on any eleme
 | `outbound` | `host`, `category` (ibm \| github \| shop \| social \| other) | all sites (doQumentation has a JS tracker; elsewhere attributes on the few links that matter) | Where do we send people? |
 | `newsletter` | `step` (open \| subscribed) | rasqberry.org | Does the footer newsletter line convert? |
 
-Rollout status is tracked in the hygiene report. First wave (2026-09-09): `family-footer` everywhere via the
-renderers, `launch` on the portal, `download` on Qutie, `newsletter` on rasqberry.org, `outbound` for the shop link.
+## Rollout status
+
+| Event | Live | Pending |
+|---|---|---|
+| `family-footer` | all 11 sites (renderers + components) | — |
+| `launch` | portal game pages; QuBins launch page (renamed from `launch-redirect`) | doQumentation (PR: Binder/Colab → `launch`) |
+| `download` | Qutie STL button; Quantego instructions/Studio/LDraw/PAB files | rasqberry.org image redirect (PR); doQumentation notebook download (PR) |
+| `game` | — | Entangible Runner start/finish + Golf finishes (PR) |
+| `outbound` | portal + Qutie shop link | doQumentation (PR: `Outbound` → `outbound`, drops the duplicate `Outbound IBM`) |
+| `newsletter` | rasqberry.org footer link (`open`) | `subscribed` on the form |
+
+Not instrumented: traQmania (Python app, no web tracker) and qamposer.org (no Umami tag yet — co-owned).
 
 ## Reading it in Umami
 
