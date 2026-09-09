@@ -38,6 +38,11 @@ owned by JanLahmann covers his repos; the org-owned ones (QuBins/qiskit-images, 
 the token approved for those orgs or a classic token with `repo` scope. Without the secret both
 jobs log a notice and do nothing, so the workflow is safe to merge first.
 
+Token lifecycle: the weekly run's `token-check` job reads the expiry GitHub reports for the token and
+opens an issue in this repo (label `fwq-family-token`) when fewer than 30 days remain, or at once if
+the token stops working. Rotating = new classic PAT (repo scope) → update the secret → run the workflow
+once by hand.
+
 ## Renderers
 
 ```sh
