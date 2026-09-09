@@ -17,7 +17,7 @@
   },
   "members": [
     { "id": "fun-with-quantum", "name": "Fun with Quantum", "url": "https://fun-with-quantum.org", "short": "Quantum games & the family home", "repo": "JanLahmann/Fun-with-Quantum", "door": "home", "tagline": "The family portal — quantum games, builds, and learning", "footer": true },
-    { "id": "rasqberry-two", "name": "RasQberry Two", "url": "https://rasqberry.org", "short": "Pi-powered quantum computer model", "repo": "JanLahmann/RasQberry-Two", "door": "build", "tagline": "3D-printed model of IBM Quantum System Two with a Raspberry Pi inside", "footer": true },
+    { "id": "rasqberry-two", "name": "RasQberry Two", "url": "https://rasqberry.org", "short": "Pi-powered quantum computer model", "repo": "JanLahmann/RasQberry-Two", "sync_branches": ["gh-pages"], "door": "build", "tagline": "3D-printed model of IBM Quantum System Two with a Raspberry Pi inside", "footer": true },
     { "id": "rasqberry-one", "name": "RasQberry One", "url": "https://rasqberry.one", "short": "The original Pi model", "repo": "JanLahmann/RasQberry", "door": "build", "tagline": "The original — functional model of IBM Q System One", "footer": true },
     { "id": "quantego", "name": "Quantego", "url": "https://quantego.org", "short": "Quantum computers from LEGO bricks", "repo": "JanLahmann/Quantego", "door": "build", "tagline": "Quantum computers built from LEGO bricks", "footer": true },
     { "id": "qutie", "name": "Qutie", "url": "https://qutie.org", "short": "Palm-sized 3D-printed models", "repo": "JanLahmann/Qutie", "door": "build", "tagline": "Palm-sized 3D-printable quantum computer models", "footer": true },
