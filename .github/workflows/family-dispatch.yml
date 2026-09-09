@@ -40,9 +40,10 @@ jobs:
             echo "${repo}: HTTP ${code}"
           done
 
-  # READMEs can't render at build time, so re-render the block between the FWQ-FAMILY markers in
-  # every member repo that has opted in (= already carries the markers) and open a PR when it changed.
-  readme-sync:
+  # Files can't fetch at build time everywhere (READMEs, Jekyll sites, plain HTML), so re-render every
+  # file that carries the FWQ-FAMILY markers (that is the opt-in), refresh any vendored copy named
+  # fwq-family.json, and open a PR per repo (and per extra branch listed in the member's sync_branches).
+  family-sync:
     runs-on: ubuntu-latest
     env:
       FWQ_FAMILY_TOKEN: ${{ secrets.FWQ_FAMILY_TOKEN }}
@@ -52,37 +53,46 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Re-render README blocks and open PRs where they changed
+      - name: Re-render family blocks and open PRs where they changed
         run: |
           if [ -z "$FWQ_FAMILY_TOKEN" ]; then
-            echo "::notice::FWQ_FAMILY_TOKEN not set — skipping README sync."
+            echo "::notice::FWQ_FAMILY_TOKEN not set — skipping family sync."
             exit 0
           fi
           git config --global user.name "fwq-family-bot"
           git config --global user.email "fwq-family-bot@users.noreply.github.com"
           manifest="$PWD/family/family.json"
-          render="$PWD/family/render/readme-block.mjs"
+          render="$PWD/family/render/render-block.mjs"
+          sync_one() {  # repo, id, branch ("" = default)
+            local repo="$1" id="$2" branch="$3" dir; dir=$(mktemp -d)
+            local bopt=(); [ -n "$branch" ] && bopt=(--branch "$branch")
+            if ! git clone -q --depth 1 "${bopt[@]}" "https://x-access-token:${FWQ_FAMILY_TOKEN}@github.com/${repo}" "$dir" 2>/dev/null; then
+              echo "${repo}@${branch:-default}: clone failed (no access?) — skipped"; return
+            fi
+            local base; base=$(git -C "$dir" rev-parse --abbrev-ref HEAD)
+            local files; files=$(git -C "$dir" grep -l 'FWQ-FAMILY:START' -- ':!*.lock' 2>/dev/null || true)
+            local copies; copies=$(git -C "$dir" ls-files | grep -E '(^|/)fwq-family\.json$' || true)
+            if [ -z "$files" ] && [ -z "$copies" ]; then echo "${repo}@${base}: not opted in — skipped"; return; fi
+            for f in $files; do node "$render" "$manifest" "$id" "$dir/$f" >/dev/null; done
+            for c in $copies; do cp "$manifest" "$dir/$c"; done
+            if git -C "$dir" diff --quiet; then echo "${repo}@${base}: up to date"; return; fi
+            local head="fwq-family-sync-${base}"
+            git -C "$dir" checkout -q -B "$head"
+            git -C "$dir" commit -qam "Refresh Fun with Quantum family block (manifest ${{ github.sha }})"
+            git -C "$dir" push -q -f origin "$head"
+            if [ -z "$(gh pr list -R "$repo" --head "$head" --base "$base" --state open --json number --jq '.[0].number')" ]; then
+              gh pr create -R "$repo" --base "$base" --head "$head" \
+                --title "Refresh Fun with Quantum family block" \
+                --body "Automated re-render from [family.json](https://github.com/${{ github.repository }}/blob/master/family/family.json) (${{ github.sha }}): files between FWQ-FAMILY markers and any vendored fwq-family.json. Review and merge — nothing else touched."
+              echo "${repo}@${base}: PR opened"
+            else
+              echo "${repo}@${base}: existing PR updated"
+            fi
+          }
           for repo in $(jq -r '.members[].repo // empty' "$manifest" | sort -u); do
             id=$(jq -r --arg r "$repo" '[.members[] | select(.repo==$r)][0].id' "$manifest")
-            dir=$(mktemp -d)
-            if ! git clone -q --depth 1 "https://x-access-token:${FWQ_FAMILY_TOKEN}@github.com/${repo}" "$dir" 2>/dev/null; then
-              echo "${repo}: clone failed (no access?) — skipped"; continue
-            fi
-            if [ ! -f "$dir/README.md" ] || ! grep -q 'FWQ-FAMILY:START' "$dir/README.md"; then
-              echo "${repo}: no FWQ-FAMILY markers in README — not opted in, skipped"; continue
-            fi
-            node "$render" "$manifest" "$id" "$dir/README.md" >/dev/null
-            if git -C "$dir" diff --quiet; then echo "${repo}: README up to date"; continue; fi
-            base=$(git -C "$dir" rev-parse --abbrev-ref HEAD)
-            git -C "$dir" checkout -q -B fwq-family-sync
-            git -C "$dir" commit -qam "README: refresh Fun with Quantum family block (manifest ${{ github.sha }})"
-            git -C "$dir" push -q -f origin fwq-family-sync
-            if [ -z "$(gh pr list -R "$repo" --head fwq-family-sync --state open --json number --jq '.[0].number')" ]; then
-              gh pr create -R "$repo" --base "$base" --head fwq-family-sync \
-                --title "README: refresh Fun with Quantum family block" \
-                --body "Automated re-render of the family block from [family.json](https://github.com/${{ github.repository }}/blob/master/family/family.json) (${{ github.sha }}). Review and merge — no other files touched."
-              echo "${repo}: PR opened"
-            else
-              echo "${repo}: existing PR updated"
-            fi
+            sync_one "$repo" "$id" ""
+            for b in $(jq -r --arg r "$repo" '[.members[] | select(.repo==$r)][0].sync_branches // [] | .[]' "$manifest"); do
+              sync_one "$repo" "$id" "$b"
+            done
           done
