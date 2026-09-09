@@ -70,15 +70,19 @@ jobs:
               echo "${repo}@${branch:-default}: clone failed (no access?) — skipped"; return
             fi
             local base; base=$(git -C "$dir" rev-parse --abbrev-ref HEAD)
-            local files; files=$(git -C "$dir" grep -l 'FWQ-FAMILY:START' -- ':!*.lock' 2>/dev/null || true)
-            local copies; copies=$(git -C "$dir" ls-files | grep -E '(^|/)fwq-family\.json$' || true)
+            # Only real blocks: files that contain BOTH markers, in Markdown/HTML, never under .github/ or
+            # family/ (this workflow, the renderer and the docs mention the marker text themselves).
+            local files; files=$(git -C "$dir" grep -l --all-match -e '<!-- FWQ-FAMILY:START' -e '<!-- FWQ-FAMILY:END -->' \
+              -- '*.md' '*.mdx' '*.markdown' '*.html' ':!.github/**' ':!family/**' 2>/dev/null || true)
+            local copies; copies=$(git -C "$dir" ls-files -- '*fwq-family.json' ':!family/**' || true)
             if [ -z "$files" ] && [ -z "$copies" ]; then echo "${repo}@${base}: not opted in — skipped"; return; fi
             for f in $files; do node "$render" "$manifest" "$id" "$dir/$f" >/dev/null; done
             for c in $copies; do cp "$manifest" "$dir/$c"; done
             if git -C "$dir" diff --quiet; then echo "${repo}@${base}: up to date"; return; fi
             local head="fwq-family-sync-${base}"
             git -C "$dir" checkout -q -B "$head"
-            git -C "$dir" commit -qam "Refresh Fun with Quantum family block (manifest ${{ github.sha }})"
+            git -C "$dir" add -- $files $copies
+            git -C "$dir" commit -qm "Refresh Fun with Quantum family block (manifest ${{ github.sha }})"
             git -C "$dir" push -q -f origin "$head"
             if [ -z "$(gh pr list -R "$repo" --head "$head" --base "$base" --state open --json number --jq '.[0].number')" ]; then
               gh pr create -R "$repo" --base "$base" --head "$head" \
