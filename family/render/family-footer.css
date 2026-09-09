@@ -1,0 +1,11 @@
+/* Reference styles for the html-format family footer (render-block.mjs --format=html).
+   Copy into a member site's stylesheet and adapt colours to its theme; the markup only
+   relies on these class names. */
+.family-footer { margin: 3rem auto 0; padding-top: 1.25rem; border-top: 1px solid #d0d7de; font-size: .85rem; color: #57606a; }
+.family-footer > div { margin: .4rem 0; }
+.family-footer-tagline { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .74rem; letter-spacing: .08em; }
+.family-footer-members { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: .6rem 1.25rem; }
+.family-footer .member { display: block; line-height: 1.3; text-decoration: none; color: inherit; }
+.family-footer .member span { display: block; color: #24292f; }
+.family-footer .member:hover span { text-decoration: underline; }
+.family-footer .member small { display: block; font-size: .78rem; color: #57606a; }
