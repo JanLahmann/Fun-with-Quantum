@@ -5,8 +5,12 @@ on:
     branches: [master]
     paths:
       - 'portal/**'
+      - 'family/**'
       - '.github/workflows/deploy-portal.yml'
   workflow_dispatch:
+  # Fired by JanLahmann/fwq-family whenever family.json changes → footer re-renders.
+  repository_dispatch:
+    types: [family-updated]
 
 permissions:
   contents: read

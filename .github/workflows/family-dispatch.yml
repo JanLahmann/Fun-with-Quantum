@@ -1,0 +1,41 @@
+name: Family manifest → notify member repos
+
+# When family/family.json changes on master (or weekly as a backstop), tell every member repo
+# to rebuild so their family footers pick up the new roster. Member repos listen with:
+#   on: { repository_dispatch: { types: [family-updated] } }
+on:
+  push:
+    branches: [master]
+    paths: ['family/family.json']
+  schedule:
+    - cron: '17 6 * * 1'   # Mondays 06:17 UTC — backstop re-sync
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    env:
+      FWQ_FAMILY_TOKEN: ${{ secrets.FWQ_FAMILY_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fire repository_dispatch at every member repo
+        run: |
+          if [ -z "$FWQ_FAMILY_TOKEN" ]; then
+            echo "::notice::FWQ_FAMILY_TOKEN not set — skipping dispatch (add a fine-grained PAT with Contents: write on the member repos)."
+            exit 0
+          fi
+          self="${GITHUB_REPOSITORY}"
+          updated=$(jq -r '.updated' family/family.json)
+          raw="https://raw.githubusercontent.com/${self}/master/family/family.json"
+          for repo in $(jq -r '.members[].repo // empty' family/family.json | sort -u); do
+            [ "$repo" = "$self" ] && continue
+            code=$(curl -s -o /dev/null -w '%{http_code}' -X POST \
+              -H "Authorization: Bearer $FWQ_FAMILY_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/${repo}/dispatches" \
+              -d "{\"event_type\":\"family-updated\",\"client_payload\":{\"manifest_url\":\"${raw}\",\"updated\":\"${updated}\"}}")
+            echo "${repo}: HTTP ${code}"
+          done
