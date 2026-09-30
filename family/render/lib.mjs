@@ -13,3 +13,14 @@ export function loadManifest(path) {
 export function footerLinks(manifest, selfId) {
   return manifest.members.filter((x) => x.footer && x.id !== selfId);
 }
+
+/** Short site name used as the prefix of every Umami event ("<label>: <what happened>"). */
+export function eventLabel(manifest, id) {
+  const x = manifest.members.find((mm) => mm.id === id);
+  return x?.label ?? x?.name ?? id;
+}
+
+/** Umami event name for a click on a family-footer link on site `selfId`. */
+export function footerEvent(manifest, selfId) {
+  return `${eventLabel(manifest, selfId)}: family footer click`;
+}

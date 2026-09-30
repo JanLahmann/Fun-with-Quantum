@@ -46,8 +46,9 @@ once by hand.
 ## Analytics events
 
 The html renderer and the site components tag every family-footer link with
-`data-umami-event="family-footer" data-umami-event-to="<member id>"`. The family-wide event vocabulary
-(launch, game, download, outbound, newsletter) is in [EVENTS.md](EVENTS.md).
+`data-umami-event="<Site>: family footer click" data-umami-event-to="<member id>"`, where `<Site>` is
+the member's optional `label` (else its `name`; the portal's label is `Portal`). All events follow
+`<Site>: <what happened>` — the full list is in [EVENTS.md](EVENTS.md).
 
 ## Renderers
 

@@ -1,38 +1,48 @@
-# Fun with Quantum — Umami event taxonomy
+# Fun with Quantum — Umami event taxonomy (v2)
 
 All family sites report to one Umami Cloud property (`97f347ac…`, per-site `data-domains`). Page views
-come for free; the events below are the shared vocabulary so one report covers the whole family.
-Names are kebab-case; properties are the breakdown dimensions in Umami's event-data view.
+come for free; the events below are the shared vocabulary.
+
+**Naming: `<Site>: <what happened>`**, lower case after the colon. Every name says which site it came
+from, so any Umami report is readable without a hostname filter. `<Site>` is the member's manifest
+`label` (defaults to `name`; the portal is `Portal`). Details go in properties, never in the name.
+Family-wide totals: filter the event name with **contains**, e.g. `family footer click` or
+`notebook launch`.
 
 Most events need **no JavaScript**: Umami's tracker records a click on any element that carries
 `data-umami-event="<name>"`, and every `data-umami-event-<prop>="<value>"` becomes a property.
 
-| Event | Properties | Where | Answers |
-|---|---|---|---|
-| `family-footer` | `to` (member id) | every family footer — emitted by the renderers, so all sites get it from the manifest | Does the footer create cross-traffic, to whom? |
-| `launch` | `target` (qubins \| binder \| colab), `image`, `notebook`, `ui` | portal game pages, QuBins (`launch-redirect` is its predecessor), doQumentation, traQmania | Which notebooks get run, on which image? |
-| `game` | `name`, `step` (start \| finish \| share) | portal games, traQmania, Entangible runner/golf | Do people finish what they start? |
-| `download` | `kind` (stl \| pdf \| image \| zip), `file` | Qutie STL, Quantego instructions, RasQberry images, Entangible kits | What gets printed and built? |
-| `outbound` | `host`, `category` (ibm \| github \| shop \| social \| other) | all sites (doQumentation has a JS tracker; elsewhere attributes on the few links that matter) | Where do we send people? |
-| `newsletter` | `step` (open \| subscribed) | rasqberry.org | Does the footer newsletter line convert? |
-
-## Rollout status
-
-| Event | Live | Pending |
+| Event | Properties | Where |
 |---|---|---|
-| `family-footer` | all 11 sites (renderers + components) | — |
-| `launch` | portal game pages; QuBins launch page (renamed from `launch-redirect`) | doQumentation (PR: Binder/Colab → `launch`) |
-| `download` | Qutie STL button; Quantego instructions/Studio/LDraw/PAB files | rasqberry.org image redirect (PR); doQumentation notebook download (PR) |
-| `game` | — | Entangible Runner start/finish + Golf finishes (PR) |
-| `outbound` | portal + Qutie shop link | doQumentation (PR: `Outbound` → `outbound`, drops the duplicate `Outbound IBM`) |
-| `newsletter` | rasqberry.org footer link (`open`) | `subscribed` on the form |
+| `<Site>: family footer click` | `to` (member id) | every family footer — the name comes from the renderers / `footerEvent()`, so all sites get it from the manifest |
+| `Portal: notebook launch` | `target`, `image`, `notebook` | portal game pages |
+| `Portal: shop click` | `host` | portal footer |
+| `QuBins: notebook launch` | `image`, `mode`, `ui`, `notebook` | qubins.org/launch (sent before the redirect) |
+| `QuBins: hero launch click` · `example launch click` · `catalog launch click` | `tag` / `example` | qubins.org landing page |
+| `QuBins: hero docker copy` · `catalog docker copy` · `catalog filter minor` · `catalog filter flavor` · `catalog show all` | `tag` / `value` | qubins.org catalog |
+| `QuBins: launch url copy` · `launch badge copy` · `launch mode override` | as before | qubins.org launch-link builder |
+| `doQumentation: notebook launch` | `target` (binder \| colab), `notebook`, `page` | Binder banner, Colab buttons |
+| `doQumentation: notebook download` | `notebook`, `page` | download button |
+| `doQumentation: code run` · `run all` | `page` | executable code cells |
+| `doQumentation: tutorial feedback` · `translation feedback` | rating, `page`, `locale` | feedback widgets |
+| `doQumentation: outbound click` | `host`, `category`, `url` | every external link (JS tracker) |
+| `Quantego: file download` | `kind` (pdf \| studio \| pab), `file` | quantego.org instruction and model files |
+| `Qutie: STL download` | `file` | qutie.org |
+| `Qutie: shop click` | `host` | qutie.org footer |
+| `RasQberry Two: image download` | `stream`, `file` | rasqberry.org/latest redirect |
+| `RasQberry Two: newsletter open` | — | rasqberry.org footer |
+| `Entangible: golf hole finished` · `golf round finished` · `runner start` · `runner finish` | as today | entangible.org games |
+
+v1 names (`family-footer`, `launch`, `download`, `outbound`, `game`, `newsletter`, doQumentation's
+`Run Code` etc.) stop on the v2 rollout; boards read both until v1 data ages out.
 
 Not instrumented: traQmania (Python app, no web tracker) and qamposer.org (no Umami tag yet — co-owned).
+cleanjibe.org is not a family site; it moves to its own Umami website.
 
 ## Reading it in Umami
 
-Website dashboard → filter **Hostname** for one member → **Events** panel lists names; click one for its
-properties. Reports: *Breakdown* (hostname × event × property), *Funnel* (portal page view → family-footer →
-member page view — works across hostnames because all sites share one property), *Journey*, *Goals*, *UTM*.
-Boards to keep: Family overview · Cross-traffic · Engagement · Campaigns
+Website dashboard → **Events** lists names grouped by site prefix; click one for its properties.
+Reports: *Breakdown* (hostname × event × property), *Funnel* (portal page view → `Portal: family
+footer click` → member page view — works across hostnames because all sites share one property),
+*Journey*, *Goals*, *UTM*. Boards: Family overview · Family: events · Family: campaigns
 (`utm_source=linkedin&utm_medium=social&utm_campaign=<slug>` on every shared link).
