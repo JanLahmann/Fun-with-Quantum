@@ -10,7 +10,7 @@ ecosystemUrl: https://qisk.it/e-dd84980a
 facts:
   - Interactive Qiskit tutorials, executable in the browser
   - Workshop mode for guided sessions
-  - Available in 20+ languages
+  - Available in 18 languages
 ---
 
 The learning backbone of the family: hundreds of interactive pages covering quantum computing
