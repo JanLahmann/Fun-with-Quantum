@@ -38,7 +38,8 @@ v1 names (`family-footer`, `launch`, `download`, `outbound`, `game`, `newsletter
 `Run Code` etc.) stop on the v2 rollout; boards read both until v1 data ages out.
 
 Not instrumented: traQmania (Python app, no web tracker) and qamposer.org (no Umami tag yet — co-owned).
-cleanjibe.org is not a family site; it moves to its own Umami website.
+cleanjibe.org (Jan's WingFoil project, not a family site) also reports into this property — the
+Umami Hobby plan allows one website. Exclude hostname `cleanjibe.org` in family-wide reports.
 
 ## Reading it in Umami
 
