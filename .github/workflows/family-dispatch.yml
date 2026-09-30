@@ -14,6 +14,11 @@ on:
 permissions:
   contents: read
 
+# Co-owned member repos the automation never touches — no dispatch, no refresh PRs (space-separated).
+# QAMPoser: shared with the QAMP-62 team; Jan 2026-09-30 "we don't want to change that repo".
+env:
+  FWQ_NO_SYNC: QAMP-62/qamposer-website
+
 jobs:
   dispatch:
     runs-on: ubuntu-latest
@@ -32,6 +37,7 @@ jobs:
           raw="https://raw.githubusercontent.com/${self}/master/family/family.json"
           for repo in $(jq -r '.members[].repo // empty' family/family.json | sort -u); do
             [ "$repo" = "$self" ] && continue
+            case " $FWQ_NO_SYNC " in *" $repo "*) echo "${repo}: co-owned — skipped"; continue;; esac
             code=$(curl -s -o /dev/null -w '%{http_code}' -X POST \
               -H "Authorization: Bearer $FWQ_FAMILY_TOKEN" \
               -H "Accept: application/vnd.github+json" \
@@ -94,6 +100,7 @@ jobs:
             fi
           }
           for repo in $(jq -r '.members[].repo // empty' "$manifest" | sort -u); do
+            case " $FWQ_NO_SYNC " in *" $repo "*) echo "${repo}: co-owned — skipped"; continue;; esac
             id=$(jq -r --arg r "$repo" '[.members[] | select(.repo==$r)][0].id' "$manifest")
             sync_one "$repo" "$id" ""
             for b in $(jq -r --arg r "$repo" '[.members[] | select(.repo==$r)][0].sync_branches // [] | .[]' "$manifest"); do
