@@ -17,21 +17,22 @@ Most events need **no JavaScript**: Umami's tracker records a click on any eleme
 | `<Site>: family footer click` | `to` (member id) | every family footer — the name comes from the renderers / `footerEvent()`, so all sites get it from the manifest |
 | `Portal: notebook launch` | `target`, `image`, `notebook` | portal game pages |
 | `Portal: shop click` | `host` | portal footer |
-| `QuBins: notebook launch` | `image`, `mode`, `ui`, `notebook` | qubins.org/launch (sent before the redirect) |
+| `QuBins: notebook launch` | `image`, `mode`, `ui`, `notebook` | qubins.org/launch (waits ≤1.5 s for the tracker, then redirects) |
 | `QuBins: hero launch click` · `example launch click` · `catalog launch click` | `tag` / `example` | qubins.org landing page |
 | `QuBins: hero docker copy` · `catalog docker copy` · `catalog filter minor` · `catalog filter flavor` · `catalog show all` | `tag` / `value` | qubins.org catalog |
 | `QuBins: launch url copy` · `launch badge copy` · `launch mode override` | as before | qubins.org launch-link builder |
-| `doQumentation: notebook launch` | `target` (binder \| colab), `notebook`, `page` | Binder banner, Colab buttons |
-| `doQumentation: notebook download` | `notebook`, `page` | download button |
-| `doQumentation: code run` · `run all` | `page` | executable code cells |
-| `doQumentation: tutorial feedback` · `translation feedback` | rating, `page`, `locale` | feedback widgets |
-| `doQumentation: outbound click` | `host`, `category`, `url` | every external link (JS tracker) |
+| `doQumentation: notebook launch` | `target` (binder \| colab), `notebook`, `page`, `locale` | Binder banner, Colab buttons |
+| `doQumentation: notebook download` | `notebook`, `page`, `locale` | download button |
+| `doQumentation: code run` · `run all` | `page`, `locale` | executable code cells |
+| `doQumentation: tutorial feedback` · `translation feedback` | `rating`, `page`, `locale` | feedback widgets |
+| `doQumentation: outbound click` | `host`, `category`, `url`, `path`, `from`, `locale` | every external link (JS tracker) |
 | `Quantego: file download` | `kind` (pdf \| studio \| pab), `file` | quantego.org instruction and model files |
 | `Qutie: STL download` | `file` | qutie.org |
 | `Qutie: shop click` | `host` | qutie.org footer |
-| `RasQberry Two: image download` | `stream`, `file` | rasqberry.org/latest redirect |
+| `RasQberry Two: image download` | `file`, `stream`, `tag` | rasqberry.org/latest redirect |
 | `RasQberry Two: newsletter open` | — | rasqberry.org footer |
-| `Entangible: golf hole finished` · `golf round finished` · `runner start` · `runner finish` | as today | entangible.org games |
+| `Entangible: runner start` · `runner finish` | `level` (+ `score` on finish) | entangible.org Runner |
+| `Entangible: golf hole finished` · `golf round finished` | `qubits`, `score`, `course` / `course`, `scope` | entangible.org Golf |
 
 v1 names (`family-footer`, `launch`, `download`, `outbound`, `game`, `newsletter`, doQumentation's
 `Run Code` etc.) stop on the v2 rollout; boards read both until v1 data ages out.
