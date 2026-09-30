@@ -30,7 +30,8 @@ family/family.json ──► build-time renderers ──► every member site + 
   `family-sync` job in the same workflow re-renders every marker file in every member repo (the markers
   are the opt-in), refreshes any vendored copy named `fwq-family.json`, and opens a PR
   (`fwq-family-sync-<branch>`) when something changed. Members whose site lives on another branch
-  list it in `sync_branches` (Qoffee-Maker: `website`).
+  list it in `sync_branches` (Qoffee-Maker: `website`). Co-owned repos listed in the workflow's `FWQ_NO_SYNC`
+  (QAMPoser) are left out of both jobs: no dispatch, no refresh PRs.
 
 Both jobs need one secret in this repo: `FWQ_FAMILY_TOKEN`, a personal access token with
 *Contents: read & write* and *Pull requests: read & write* on the member repos. A fine-grained PAT
