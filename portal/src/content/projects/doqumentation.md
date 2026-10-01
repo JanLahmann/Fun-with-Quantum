@@ -7,6 +7,8 @@ order: 4
 url: https://doqumentation.org
 repoUrl: https://github.com/JanLahmann/doQumentation
 ecosystemUrl: https://qisk.it/e-dd84980a
+image: ../../assets/doqumentation-site.jpg
+imageAlt: "doqumentation.org — an open-source frontend to IBM Quantum's tutorials, guides, courses and modules"
 facts:
   - Interactive Qiskit tutorials, executable in the browser
   - Workshop mode for guided sessions
