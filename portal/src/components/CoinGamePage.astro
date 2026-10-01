@@ -1,0 +1,51 @@
+---
+/**
+ * The (unlisted) Quantum Coin Game page in one language: header, language switcher, the game,
+ * the notebook link. Used by /preview/coin-game/ (English) and /<lang>/preview/coin-game/.
+ * To launch publicly see portal/README.md.
+ */
+import Base from '../layouts/Base.astro';
+import CoinGame from './CoinGame.astro';
+import { LOCALES, MESSAGES, pagePath, type Locale } from '../lib/qcoin/i18n';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const m = MESSAGES[locale];
+const notebook =
+  'https://qubins.org/launch/?image=2.1-xl-rise&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=Quantum-Coin-Game.ipynb&ui=rise-classic';
+const alternates = [
+  ...LOCALES.map((l) => ({ lang: l, href: pagePath(l) })),
+  { lang: 'x-default', href: pagePath('en') },
+];
+---
+
+<Base title={m.page.title} description={m.page.description} noindex lang={m.lang} alternates={alternates}>
+  <section class="section">
+    <div class="wrap">
+      <div class="top">
+        <div class="kicker">{m.page.kicker}</div>
+        <nav class="langs" aria-label="Language">
+          {LOCALES.map((l) => (
+            <a href={pagePath(l)} hreflang={l} lang={l} aria-current={l === locale ? 'page' : undefined}>{MESSAGES[l].langName}</a>
+          ))}
+        </nav>
+      </div>
+      <h2>🪙 {m.page.heading}</h2>
+      <p class="lead">{m.page.lead}</p>
+      <CoinGame locale={locale} />
+      <p class="lead">
+        {m.page.notebook}{' '}
+        <a href={notebook} target="_blank" rel="noopener">{m.page.notebookLink}</a>
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .langs { display: flex; flex-wrap: wrap; gap: 4px 12px; font: 0.8rem var(--sans); }
+  .langs a { color: var(--muted); }
+  .langs a[aria-current='page'] { color: var(--ink); font-weight: 600; }
+</style>

@@ -7,9 +7,13 @@ interface Props {
   description: string;
   /** Unlisted pages (previews): keep them out of search engines. */
   noindex?: boolean;
+  /** Page language (BCP-47); the site chrome stays English. */
+  lang?: string;
+  /** Other language versions of this page, for hreflang. */
+  alternates?: { lang: string; href: string }[];
 }
 
-const { title, description, noindex = false } = Astro.props;
+const { title, description, noindex = false, lang = 'en', alternates = [] } = Astro.props;
 const nav = [
   { href: '/play/', label: 'Play' },
   { href: '/build/', label: 'Build' },
@@ -19,7 +23,7 @@ const nav = [
 const path = Astro.url.pathname;
 ---
 
-<html lang="en">
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -31,6 +35,7 @@ const path = Astro.url.pathname;
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="canonical" href={new URL(path, Astro.site)} />
+    {alternates.map((a) => <link rel="alternate" hreflang={a.lang} href={new URL(a.href, Astro.site)} />)}
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={new URL('/og-card.png', Astro.site)} />

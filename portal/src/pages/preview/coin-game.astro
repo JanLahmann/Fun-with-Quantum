@@ -1,32 +1,10 @@
 ---
 /**
- * UNLISTED preview of the browser Quantum Coin Game — reachable only by URL, linked from nowhere,
- * noindex. To launch it publicly: set `webGame: true` in src/content/games/quantum-coin-game.md
- * (the game page then shows it above the notebook, and the homepage / Play page link to it) and
- * delete this page.
+ * UNLISTED preview of the browser Quantum Coin Game (English) — reachable only by URL, linked from
+ * nowhere, noindex. Other languages: src/pages/[lang]/preview/coin-game.astro.
+ * To launch publicly: see portal/README.md.
  */
-import Base from '../../layouts/Base.astro';
-import CoinGame from '../../components/CoinGame.astro';
-
-const notebook =
-  'https://qubins.org/launch/?image=2.1-xl-rise&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=Quantum-Coin-Game.ipynb&ui=rise-classic';
+import CoinGamePage from '../../components/CoinGamePage.astro';
 ---
 
-<Base
-  title="Quantum Coin Game — preview | Fun with Quantum"
-  description="Preview: the Quantum Coin Game, playable in the browser."
-  noindex
->
-  <section class="section">
-    <div class="wrap">
-      <div class="kicker">Play · Superposition &amp; interference · preview</div>
-      <h2>🪙 Quantum Coin Game</h2>
-      <p class="lead">Beat a quantum computer at coin flipping — and find out why you never had a chance.</p>
-      <CoinGame />
-      <p class="lead">
-        The same game as a Jupyter notebook, in real Qiskit code:{' '}
-        <a href={notebook} target="_blank" rel="noopener">open the notebook ↗</a>
-      </p>
-    </div>
-  </section>
-</Base>
+<CoinGamePage locale="en" />

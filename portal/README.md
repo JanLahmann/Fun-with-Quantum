@@ -25,8 +25,10 @@ npm run build    # static site in dist/
 
 ## The Quantum Coin Game in the browser
 
-**Unlisted for now:** `/preview/coin-game/` (`src/pages/preview/coin-game.astro`) — linked from
-nowhere, `noindex`. To launch: set `webGame: true` in `src/content/games/quantum-coin-game.md`
+**Unlisted for now:** `/preview/coin-game/` and its translations `/de/`, `/ja/`, `/es/`, `/uk/`,
+`/it/`, `/fr/preview/coin-game/` (`src/pages/preview/coin-game.astro`,
+`src/pages/[lang]/preview/coin-game.astro`, both via `src/components/CoinGamePage.astro`) — linked
+from nowhere, `noindex`, with a language switcher and hreflang between them. To launch: set `webGame: true` in `src/content/games/quantum-coin-game.md`
 (the game page then shows it above the notebook, and the homepage and Play page link to it) and
 delete the preview page.
 
@@ -52,5 +54,18 @@ turn about the x+z diagonal, …), so what you see is what the maths says.
 | `src/components/CoinGame.astro` | markup + styles: the CSS-3D coin (two faces + rim), the box, the panel |
 | `public/coin/face-*.webp` | coin faces, cut from the RasQberry Kivy coin renders (`JanLahmann/RasQberry/Kivy/Images`) |
 | `test/qcoin.test.ts` | the notebook's truth table, H…H as the only sure win, coin normal = Bloch vector |
+| `src/lib/qcoin/i18n/` | the message catalogue: `types.ts` (the `Messages` type + translator conventions), `en.ts`, `de/ja/es/uk/it/fr.ts`, `index.ts` (locales, glossary links) |
+| `test/i18n.test.ts` | every locale complete, same `[words](#term)` links, tags, kets and values as English |
+
+### Translations and explanations
+
+All game text lives in `src/lib/qcoin/i18n/<locale>.ts`, typed by `Messages`, so a missing entry is
+a type error. In any string, `[words](#term)` becomes a button that opens the explanation of a
+glossary term (15 terms: qubit, superposition, measurement, Bloch sphere, gates, H/X/Z/S/I,
+interference, phase, circuit, what it's good for); **ⓘ Explain** lists them all. Every
+explanation links to IBM Quantum Learning in the player's language where IBM has it (ja, de, es,
+fr, it; else English) and to the same page on doQumentation in that language — paths and anchors
+in `TERM_PAGES` (`i18n/index.ts`). To add a language: copy `en.ts`, translate (keep tags, kets,
+`#term` anchors), add it to `LOCALES` and `MESSAGES`; `npm test` checks it.
 
 Analytics events (`Portal: coin game …`) are listed in `../family/EVENTS.md`.
