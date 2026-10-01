@@ -36,7 +36,7 @@ const entangible = projects.find((p) => p.id === 'entangible');
               Quantina's probabilities pick a drink. Made for booths, classrooms and kitchen tables;
               print the kit or use the on-screen boards.
             </p>
-            <span class="meta">entangible.org ↗</span>
+            <span class="meta">entangible.org ↗{entangible.data.ecosystemUrl && <>{' '}<img class="eco" src="/qiskit-ecosystem.svg" alt="Entangible is listed in the official Qiskit ecosystem" title="Entangible is listed in the official Qiskit ecosystem" width="127" height="20" loading="lazy" /></>}</span>
           </div>
         </a>
       )}
@@ -74,7 +74,7 @@ const entangible = projects.find((p) => p.id === 'entangible');
             qubit decides which lane the runner takes, superposition lets you collect coins in
             both, and the simulation results are the game logic. Built on QAMPoser.
           </p>
-          <span class="meta">qamposer.org/quantum-runner ↗</span>
+          <span class="meta">qamposer.org/quantum-runner ↗ <img class="eco" src="/qiskit-ecosystem.svg" alt="QAMPoser, the composer it is built on, is listed in the official Qiskit ecosystem" title="QAMPoser, the composer it is built on, is listed in the official Qiskit ecosystem" width="127" height="20" loading="lazy" /></span>
         </div>
       </a>
 
@@ -109,4 +109,5 @@ const entangible = projects.find((p) => p.id === 'entangible');
   .feature-tag { color: var(--muted); font-size: 0.93rem; margin-bottom: 10px; }
   .feature-text { font-size: 0.93rem; color: var(--muted); margin-bottom: 12px; }
   .games-title { margin-top: 48px; }
+  .meta .eco { display: inline-block; vertical-align: middle; margin-left: 8px; }
 </style>
