@@ -5,9 +5,11 @@ import FamilyFooter from '../components/FamilyFooter.astro';
 interface Props {
   title: string;
   description: string;
+  /** Unlisted pages (previews): keep them out of search engines. */
+  noindex?: boolean;
 }
 
-const { title, description } = Astro.props;
+const { title, description, noindex = false } = Astro.props;
 const nav = [
   { href: '/play/', label: 'Play' },
   { href: '/build/', label: 'Build' },
@@ -24,6 +26,7 @@ const path = Astro.url.pathname;
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />

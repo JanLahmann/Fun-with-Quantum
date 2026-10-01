@@ -25,7 +25,12 @@ npm run build    # static site in dist/
 
 ## The Quantum Coin Game in the browser
 
-`/play/quantum-coin-game/` — the notebook's coin game, five chapters, no Binder:
+**Unlisted for now:** `/preview/coin-game/` (`src/pages/preview/coin-game.astro`) — linked from
+nowhere, `noindex`. To launch: set `webGame: true` in `src/content/games/quantum-coin-game.md`
+(the game page then shows it above the notebook, and the homepage and Play page link to it) and
+delete the preview page.
+
+The notebook's coin game, five chapters, no Binder:
 
 1. **A fair game** — you vs. a classical computer, coin hidden in a box: 50:50. *Who starts?* is selectable in chapters 1–2: the starter is player A (first and last move).
 2. **vs. a quantum computer** — same rules; the computer secretly plays H, you, H and always wins. If *you* start, it only gets the middle move — and its H is worth nothing (50:50): the trick needs a move before and after yours.
