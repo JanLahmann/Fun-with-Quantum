@@ -1,0 +1,40 @@
+name: Portal CI
+
+# Tests, type check and build for every change to the portal — before it can reach master.
+# (deploy-portal.yml builds and deploys after the merge.)
+on:
+  pull_request:
+    paths:
+      - 'portal/**'
+      - 'family/**'
+      - '.github/workflows/portal-ci.yml'
+  push:
+    branches: [master]
+    paths:
+      - 'portal/**'
+      - '.github/workflows/portal-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: portal
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: portal/package-lock.json
+      - run: npm ci
+      - name: Unit tests (quantum coin math + game logic)
+        run: npm test
+      - name: Type check
+        run: npm run check
+      - name: Build
+        run: npm run build

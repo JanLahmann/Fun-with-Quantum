@@ -17,6 +17,10 @@ Most events need **no JavaScript**: Umami's tracker records a click on any eleme
 | `<Site>: family footer click` | `to` (member id) | every family footer — the name comes from the renderers / `footerEvent()`, so all sites get it from the manifest |
 | `Portal: notebook launch` | `target`, `image`, `notebook` | portal game pages |
 | `Portal: shop click` | `host` | portal footer |
+| `Portal: coin game chapter` | `chapter` (1–5) | /play/quantum-coin-game/ — the browser game, chapter opened |
+| `Portal: coin game round` | `chapter`, `result` (you win \| computer wins), `strategy` (chapter 4: your two moves) | a finished round |
+| `Portal: coin game peek` | — | "Look inside" pressed after losing to the quantum computer |
+| `Portal: coin game sandbox` | `action` (measure \| measure 100), `outcome` / `gates` | sandbox measurements |
 | `QuBins: notebook launch` | `image`, `mode`, `ui`, `notebook` | qubins.org/launch (waits ≤1.5 s for the tracker, then redirects) |
 | `QuBins: hero launch click` · `example launch click` · `catalog launch click` | `tag` / `example` | qubins.org landing page |
 | `QuBins: hero docker copy` · `catalog docker copy` · `catalog filter minor` · `catalog filter flavor` · `catalog show all` | `tag` / `value` | qubins.org catalog |

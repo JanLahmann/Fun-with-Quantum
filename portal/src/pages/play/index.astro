@@ -35,7 +35,7 @@ const projects = (await getCollection('projects'))
             <span class="icon">{g.data.icon}</span>
             <h3>{g.data.title}</h3>
             <p>{g.data.tagline}</p>
-            <span class="meta">{g.data.concept} · {g.data.duration}</span>
+            <span class="meta">{g.data.concept} · {g.data.duration}{g.data.webGame && ' · ▶ plays right here'}</span>
           </a>
         ))}
       </div>

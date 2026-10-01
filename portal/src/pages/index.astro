@@ -15,6 +15,7 @@ const games = (await getCollection('games')).sort((a, b) => a.data.order - b.dat
 const featured = games.find((g) => g.data.featured) ?? games[0];
 const allProjects = await getCollection('projects');
 const qutie = allProjects.find((p) => p.id === 'qutie');
+if (!qutie) throw new Error('projects/qutie.md missing — the homepage Build example needs it');
 // Door links list the projects in the same order as the door's own page (by `order`).
 const doorLinks = (door: string) =>
   allProjects
@@ -105,11 +106,13 @@ const doors = [
       <div class="grid cols-3 feature-grid">
         <div class="card door feature">
           <span class="badge cat-play">play · right here</span>
-          <h3><a href={featured.data.binderUrl} target="_blank" rel="noopener">{featured.data.icon} {featured.data.title} <span class="arrow">→</span></a></h3>
+          <h3><a href={featured.data.webGame ? `/play/${featured.id}/#coin-game` : featured.data.binderUrl} {...(featured.data.webGame ? {} : { target: '_blank', rel: 'noopener' })}>{featured.data.icon} {featured.data.title} <span class="arrow">→</span></a></h3>
           <p>The friendliest introduction to superposition — play it right in your browser, no account needed.</p>
           <Image class="feature-photo contain" src={quantumCoin} alt="The quantum coin — a Qiskit-logo coin, rendered in 3D" widths={[300, 600]} sizes="(max-width: 820px) 60vw, 300px" />
           <span class="meta">
-            via Binder · ~30 s cold start ·{' '}<a href={`/play/${featured.id}/`}>about the game</a>
+            {featured.data.webGame
+              ? <>plays instantly · then{' '}<a href={featured.data.binderUrl} target="_blank" rel="noopener">the Qiskit notebook ↗</a></>
+              : <>via Binder · ~30 s cold start ·{' '}<a href={`/play/${featured.id}/`}>about the game</a></>}
           </span>
         </div>
 

@@ -16,6 +16,8 @@ eggs/
 .eggs/
 lib/
 lib64/
+# …but the portal's TypeScript sources live in portal/src/lib
+!portal/src/lib/
 parts/
 sdist/
 var/

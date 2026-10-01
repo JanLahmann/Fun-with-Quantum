@@ -14,17 +14,19 @@ audience: everyone — no prerequisites
 binderUrl: https://qubins.org/launch/?image=2.1-xl-rise&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=Quantum-Coin-Game.ipynb&ui=rise-classic
 notebook: Quantum-Coin-Game.ipynb
 featured: true
+webGame: true
 ---
 
 You and a quantum computer take turns flipping a coin — without looking at it. If it shows heads
 at the end, the quantum computer wins. Play a few rounds and you'll notice something unsettling:
-you lose. Almost every time.
+you lose. Every time.
 
 The trick is that the quantum computer doesn't flip the coin, it puts it into **superposition** —
 a state that is neither heads nor tails. Whatever you do on your turn, its second move uses
 **interference** to steer the coin back to heads with certainty. The game is the friendliest
 possible introduction to the two effects that make quantum computers tick.
 
-The notebook lets you play interactively, then lifts the curtain: you see the quantum circuit
-behind each move, run it on a simulator, and can modify the strategy to convince yourself there
-is no way to win.
+Play it right here: five short chapters take you from a fair game to losing against a quantum
+computer, then open the box and show the coin standing on its edge — the coin's tilt *is* the
+qubit's state. The notebook is the same game in real Qiskit code: you see the circuit behind each
+move, run it on a simulator, and can change the strategy to convince yourself there is no way to win.

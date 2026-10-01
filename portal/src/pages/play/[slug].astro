@@ -1,6 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import CoinGame from '../../components/CoinGame.astro';
 
 export async function getStaticPaths() {
   const games = await getCollection('games');
@@ -29,6 +30,12 @@ const launchImage = launchUrl.searchParams.get('image') ?? 'binder';
       <h2>{game.data.icon} {game.data.title}</h2>
       <p class="lead">{game.data.tagline}</p>
 
+      {game.data.webGame && game.id === 'quantum-coin-game' && <CoinGame />}
+
+      {game.data.webGame && (
+        <h3 class="notebook-title">The real Qiskit code</h3>
+        <p class="notebook-lead">The same game as an interactive Jupyter notebook — the quantum circuit runs on Qiskit, and you can change it.</p>
+      )}
       <div class="launch card">
         <div>
           <a class="btn primary" href={game.data.binderUrl} target="_blank" rel="noopener"
@@ -72,4 +79,6 @@ const launchImage = launchUrl.searchParams.get('image') ?? 'binder';
     letter-spacing: 0.04em; color: var(--muted);
   }
   .more-title { margin: 40px 0 16px; }
+  .notebook-title { margin: 8px 0 4px; }
+  .notebook-lead { color: var(--muted); margin-bottom: 14px; max-width: 640px; }
 </style>

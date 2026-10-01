@@ -1,0 +1,211 @@
+---
+/**
+ * The Quantum Coin Game, playable in the browser — no Binder, no install.
+ * Logic in src/lib/qcoin (unit-tested), interaction in src/lib/qcoin/ui.ts.
+ * The coin's 3D orientation is the qubit's Bloch vector: flat = heads/tails, on its edge = superposition.
+ */
+const RIM_SEGMENTS = 44;
+---
+
+<section class="qcoin" id="coin-game" aria-label="The Quantum Coin Game — play it here">
+  <div class="qc-chapters" role="tablist" aria-label="Chapters">
+    <button role="tab" data-chapter="1"><span class="n">1</span> A fair game</button>
+    <button role="tab" data-chapter="2"><span class="n">2</span> vs. a quantum computer</button>
+    <button role="tab" data-chapter="3"><span class="n">3</span> Look inside</button>
+    <button role="tab" data-chapter="4"><span class="n">4</span> You be quantum</button>
+    <button role="tab" data-chapter="5"><span class="n">5</span> Sandbox</button>
+  </div>
+
+  <div class="qc-arena">
+    <div class="qc-stage">
+      <div class="qc-scene">
+        <div class="qc-shadow"></div>
+        <div class="qc-pos">
+          <div class="qc-coin">
+            <div class="qc-face qc-front"></div>
+            <div class="qc-face qc-back"></div>
+            {Array.from({ length: RIM_SEGMENTS }, (_, i) => (
+              <div class="qc-rim" style={`--i:${i};--n:${RIM_SEGMENTS}`}></div>
+            ))}
+          </div>
+        </div>
+        <div class="qc-box" aria-hidden="true"><span>?</span><small>the coin is in here</small></div>
+      </div>
+
+      <div class="qc-probs" aria-label="Measurement probabilities">
+        <div class="qc-prob"><span class="lbl">Heads</span><span class="bar"><i class="fill heads"></i></span><span class="pct" data-p="heads">100%</span></div>
+        <div class="qc-prob"><span class="lbl">Tails</span><span class="bar"><i class="fill tails"></i></span><span class="pct" data-p="tails">0%</span></div>
+      </div>
+      <div class="qc-state" aria-live="polite"></div>
+    </div>
+
+    <div class="qc-panel">
+      <h3 class="qc-title"></h3>
+      <div class="qc-text"></div>
+      <div class="qc-circuit" aria-label="The circuit so far"></div>
+      <p class="qc-status" aria-live="polite"></p>
+      <div class="qc-actions"></div>
+      <div class="qc-score" aria-live="polite"></div>
+    </div>
+  </div>
+  <noscript><p class="qc-noscript">The browser version needs JavaScript — the notebook below works without it.</p></noscript>
+</section>
+
+<script>
+  import { mountCoinGame } from '../lib/qcoin/ui';
+  const root = document.getElementById('coin-game');
+  if (root) mountCoinGame(root);
+</script>
+
+<style>
+  .qcoin {
+    --coin: 180px;
+    --thick: 12px;
+    background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+    box-shadow: var(--shadow); padding: 18px 22px 22px; margin-bottom: 36px;
+  }
+  .qc-chapters { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .qc-chapters button {
+    font: 600 0.82rem var(--sans); color: var(--muted); background: transparent;
+    border: 1px solid var(--line); border-radius: 20px; padding: 6px 12px; cursor: pointer;
+  }
+  .qc-chapters button .n {
+    display: inline-grid; place-items: center; width: 18px; height: 18px; margin-right: 4px;
+    border-radius: 50%; font: 600 0.7rem var(--mono); background: var(--line); color: var(--ink);
+  }
+  .qc-chapters button:hover { border-color: var(--cyan); color: var(--cyan); }
+  .qc-chapters button[aria-selected='true'] { color: var(--ink); border-color: var(--magenta); }
+  .qc-chapters button[aria-selected='true'] .n { background: var(--grad); color: #fff; }
+  .qc-chapters button.done .n { background: color-mix(in srgb, var(--cyan) 22%, transparent); color: var(--cyan); }
+
+  .qc-arena { display: grid; grid-template-columns: minmax(280px, 1fr) 1.15fr; gap: 26px; align-items: start; }
+  @media (max-width: 860px) {
+    .qc-arena { grid-template-columns: 1fr; gap: 14px; }
+    /* on phones keep the moves right under the coin; the explanation follows */
+    .qc-panel { display: flex; flex-direction: column; }
+    .qc-title { order: 0; }
+    .qc-circuit { order: 1; }
+    .qc-status { order: 2; }
+    .qc-actions { order: 3; }
+    .qc-score { order: 4; }
+    .qc-text { order: 5; margin-top: 12px; }
+  }
+
+  /* ---------- the 3D coin ---------- */
+  .qc-stage { position: relative; }
+  .qc-scene {
+    position: relative; height: 300px; perspective: 900px; perspective-origin: 50% 35%;
+    border-radius: 12px; overflow: hidden;
+    background:
+      radial-gradient(120% 70% at 50% 100%, color-mix(in srgb, var(--cyan) 10%, transparent), transparent 70%),
+      linear-gradient(to bottom, transparent 62%, color-mix(in srgb, var(--ink) 5%, transparent) 62%);
+  }
+  .qc-shadow {
+    position: absolute; left: 50%; top: 62%; width: calc(var(--coin) * 1.05); height: calc(var(--coin) * 0.32);
+    transform: translate(-50%, -38%) scaleX(var(--shadow-x, 1)); border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(0, 0, 0, 0.32), transparent);
+    opacity: var(--shadow-o, 1);
+  }
+  .qc-pos { position: absolute; left: 50%; top: 62%; width: 0; height: 0; transform-style: preserve-3d; }
+  .qc-coin {
+    position: absolute; width: var(--coin); height: var(--coin);
+    left: calc(var(--coin) / -2); top: calc(var(--coin) / -2);
+    transform-style: preserve-3d; will-change: transform;
+  }
+  .qc-face {
+    position: absolute; inset: 0; border-radius: 50%; background-size: cover;
+    backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    filter: brightness(var(--light, 1));
+  }
+  .qc-front { background-image: url('/coin/face-heads.webp'); transform: translateZ(calc(var(--thick) / 2)); }
+  .qc-back { background-image: url('/coin/face-tails.webp'); transform: rotateY(180deg) translateZ(calc(var(--thick) / 2)); }
+  .qc-rim {
+    position: absolute; left: 50%; top: 50%;
+    width: calc(3.1416 * var(--coin) / var(--n) + 1.2px); height: var(--thick);
+    margin-left: calc((3.1416 * var(--coin) / var(--n) + 1.2px) / -2); margin-top: calc(var(--thick) / -2);
+    transform: rotateZ(calc(360deg / var(--n) * var(--i))) translateY(calc(var(--coin) / -2)) rotateX(90deg);
+    background: linear-gradient(to right, #8d9097, #d9dbe0 45%, #a4a7ae);
+    filter: brightness(calc(0.7 + 0.35 * var(--light, 1)));
+  }
+
+  .qc-box {
+    position: absolute; left: 50%; top: 9%; width: 236px; height: 218px; margin-left: -118px;
+    border-radius: 22px 22px 10px 10px; background: var(--grad);
+    box-shadow: 0 18px 30px rgba(0, 0, 0, 0.28), inset 0 -10px 0 rgba(0, 0, 0, 0.12);
+    display: grid; place-items: center; align-content: center; gap: 2px; color: #fff;
+    transform: translateY(-125%) scale(0.96); opacity: 0; pointer-events: none;
+    transition: transform 0.55s cubic-bezier(.2,.8,.2,1), opacity 0.35s ease;
+  }
+  .qc-box span { font: 700 4.4rem/1 var(--sans); opacity: 0.92; }
+  .qc-box small { font: 0.7rem var(--mono); letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.85; }
+  .qcoin.covered .qc-box { transform: none; opacity: 1; }
+  .qcoin.shake .qc-box { animation: qc-shake 0.5s ease; }
+  @keyframes qc-shake {
+    0%, 100% { transform: none; }
+    20% { transform: translateX(-7px) rotate(-2deg); }
+    40% { transform: translateX(6px) rotate(2deg); }
+    60% { transform: translateX(-4px) rotate(-1deg); }
+    80% { transform: translateX(3px); }
+  }
+
+  .qc-probs { display: grid; gap: 6px; margin-top: 12px; }
+  .qc-prob { display: grid; grid-template-columns: 52px 1fr 48px; align-items: center; gap: 8px; font: 0.8rem var(--mono); color: var(--muted); }
+  .qc-prob .bar { height: 10px; border-radius: 6px; background: var(--line); overflow: hidden; }
+  .qc-prob .fill { display: block; height: 100%; width: 0; transition: width 0.45s ease; }
+  .qc-prob .fill.heads { background: var(--cyan); }
+  .qc-prob .fill.tails { background: var(--magenta); }
+  .qc-prob .pct { text-align: right; color: var(--ink); }
+  .qcoin.covered .qc-prob .fill { width: 0 !important; }
+  .qc-state { margin-top: 8px; min-height: 1.4em; font: 0.85rem var(--mono); color: var(--muted); text-align: center; }
+
+  /* ---------- panel ---------- */
+  .qc-title { font-size: 1.2rem; margin-bottom: 6px; }
+  .qc-text :global(p) { color: var(--muted); font-size: 0.97rem; margin-bottom: 8px; }
+  .qc-text :global(.math) { font-family: var(--mono); font-size: 0.85rem; color: var(--ink); }
+  .qc-status { font-size: 1.02rem; min-height: 1.6em; margin: 10px 0; }
+  .qc-status :global(strong) { color: var(--magenta); }
+  .qc-actions { display: flex; flex-wrap: wrap; gap: 8px; min-height: 44px; }
+  .qc-actions :global(button) {
+    font: 600 0.93rem var(--sans); padding: 10px 16px; border-radius: 10px; cursor: pointer;
+    border: 1.5px solid var(--line); background: var(--card); color: var(--ink);
+  }
+  .qc-actions :global(button:hover:not(:disabled)) { border-color: var(--cyan); color: var(--cyan); }
+  .qc-actions :global(button.primary) { background: var(--grad); color: #fff; border-color: transparent; }
+  .qc-actions :global(button.primary:hover:not(:disabled)) { color: #fff; filter: brightness(1.08); }
+  .qc-actions :global(button.quantum) { border-color: var(--magenta); }
+  .qc-actions :global(button:disabled) { opacity: 0.45; cursor: default; }
+  .qc-actions :global(button .g) { font-family: var(--mono); font-weight: 700; margin-right: 4px; }
+  .qc-actions :global(a) { align-self: center; font-size: 0.9rem; }
+  .qc-score { margin-top: 12px; font: 0.8rem var(--mono); color: var(--muted); letter-spacing: 0.04em; }
+
+  /* circuit: one wire, gate boxes, a meter */
+  .qc-circuit { display: flex; align-items: center; gap: 0; margin: 12px 0 4px; min-height: 64px; overflow-x: auto; padding: 4px 2px 8px; }
+  .qc-circuit:empty { display: none; }
+  :global(.qc-wire-label) { font: 0.78rem var(--mono); color: var(--muted); margin-right: 6px; white-space: nowrap; }
+  :global(.qc-seg) { flex: 0 0 18px; height: 2px; background: var(--muted); opacity: 0.6; }
+  :global(.qc-gate) { position: relative; display: grid; place-items: center; flex: 0 0 auto; }
+  :global(.qc-gate b) {
+    display: grid; place-items: center; width: 38px; height: 38px; border-radius: 7px;
+    font: 700 1rem var(--mono); border: 2px solid var(--muted); background: var(--card); color: var(--ink);
+  }
+  :global(.qc-gate.quantum b) { border-color: var(--magenta); color: var(--magenta); }
+  :global(.qc-gate.classical b) { border-color: var(--cyan); color: var(--cyan); }
+  :global(.qc-gate.secret b) { border-style: dashed; color: var(--muted); }
+  :global(.qc-gate.empty b) { border-style: dotted; opacity: 0.45; }
+  :global(.qc-gate.active b) { box-shadow: 0 0 0 4px color-mix(in srgb, var(--magenta) 25%, transparent); }
+  :global(.qc-gate i) { position: absolute; top: 42px; font: normal 0.62rem var(--mono); color: var(--muted); white-space: nowrap; }
+  :global(.qc-meter b) { border-color: var(--ink); font-size: 0.9rem; }
+
+  .qc-hist { display: flex; gap: 10px; align-items: flex-end; height: 70px; margin-top: 8px; }
+  .qc-noscript { color: var(--muted); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .qc-box, .qc-prob .fill { transition: none; }
+    .qcoin.shake .qc-box { animation: none; }
+  }
+  @media (max-width: 480px) {
+    .qcoin { --coin: 150px; padding: 14px; }
+    .qc-scene { height: 260px; }
+    .qc-box { width: 200px; height: 186px; margin-left: -100px; }
+  }
+</style>
