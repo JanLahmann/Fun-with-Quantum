@@ -15,6 +15,8 @@ const games = defineCollection({
     notebook: z.string(),
     theoryUrl: z.string().url().optional(),
     featured: z.boolean().default(false),
+    // Playable right on the page (no Binder): the game page renders its web component first.
+    webGame: z.boolean().default(false),
   }),
 });
 
