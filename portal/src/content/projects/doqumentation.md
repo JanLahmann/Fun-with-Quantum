@@ -3,7 +3,7 @@ title: doQumentation
 door: learn
 tagline: 381 interactive quantum computing pages — run the code in your browser, no account needed.
 icon: "📚"
-order: 1
+order: 4
 url: https://doqumentation.org
 repoUrl: https://github.com/JanLahmann/doQumentation
 ecosystemUrl: https://qisk.it/e-dd84980a

@@ -3,7 +3,7 @@ title: IBM Quantum Learning
 door: learn
 tagline: IBM's official courses and tutorials — not our work, but our warmest recommendation.
 icon: "🎖️"
-order: 4
+order: 1
 url: https://quantum.cloud.ibm.com/learning
 image: ../../assets/ibm-quantum-learning.png
 imageAlt: The IBM Quantum Learning platform — “Learn quantum computing” with a library of courses

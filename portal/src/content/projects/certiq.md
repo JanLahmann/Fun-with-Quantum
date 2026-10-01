@@ -3,7 +3,7 @@ title: CertiQ
 door: learn
 tagline: Free, machine-verified prep for the IBM Qiskit v2.x developer certification (C1000-179).
 icon: "🎓"
-order: 2
+order: 3
 url: https://certiq.dev
 repoUrl: https://github.com/JanLahmann/qiskit-developer-certification-prep
 facts:
