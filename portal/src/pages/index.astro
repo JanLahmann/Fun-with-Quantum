@@ -13,7 +13,14 @@ import qubinsSite from '../assets/qubins-site.png';
 
 const games = (await getCollection('games')).sort((a, b) => a.data.order - b.data.order);
 const featured = games.find((g) => g.data.featured) ?? games[0];
-const qutie = (await getCollection('projects')).find((p) => p.id === 'qutie');
+const allProjects = await getCollection('projects');
+const qutie = allProjects.find((p) => p.id === 'qutie');
+// Door links list the projects in the same order as the door's own page (by `order`).
+const doorLinks = (door: string) =>
+  allProjects
+    .filter((p) => p.data.door === door && p.data.url)
+    .sort((a, b) => a.data.order - b.data.order)
+    .map((p) => ({ label: p.data.title, href: p.data.url! }));
 
 const doors = [
   {
@@ -23,13 +30,8 @@ const doors = [
     imgAlt: 'The Qoffee-Maker mug with a quantum circuit printed on it',
     fit: 'contain',
     title: 'Play',
-    text: 'Beat a quantum computer at coin flipping, win an impossible team game with entanglement, order coffee with a circuit.',
-    links: [
-      { label: `${games.length} games`, href: '/play/' },
-      { label: 'Quantum Runner', href: 'https://qamposer.org/quantum-runner/' },
-      { label: 'Entangible', href: 'https://entangible.org' },
-      { label: 'Qoffee-Maker', href: 'https://qoffee-maker.org' },
-    ],
+    text: 'Build circuits with your hands, order coffee with a circuit, steer a runner with quantum gates — and beat a quantum computer at coin flipping.',
+    links: [...doorLinks('play'), { label: `${games.length} notebook games`, href: '/play/' }],
   },
   {
     key: 'build',
@@ -39,11 +41,7 @@ const doors = [
     fit: 'cover',
     title: 'Build',
     text: '3D-print or LEGO-build your own model of an IBM Quantum computer.',
-    links: [
-      { label: 'RasQberry', href: 'https://rasqberry.org' },
-      { label: 'Quantego', href: 'https://quantego.org' },
-      { label: 'Qutie', href: 'https://qutie.org' },
-    ],
+    links: doorLinks('build'),
   },
   {
     key: 'learn',
@@ -52,12 +50,8 @@ const doors = [
     imgAlt: 'The IBM Quantum Learning platform: “Learn quantum computing” with a library of courses',
     fit: 'left',
     title: 'Learn',
-    text: 'Run real Qiskit code in your browser, prepare for the IBM Qiskit certification, and keep coding in ready-made environments.',
-    links: [
-      { label: 'doQumentation', href: 'https://doqumentation.org' },
-      { label: 'CertiQ', href: 'https://certiq.dev' },
-      { label: 'QuBins', href: 'https://qubins.org' },
-    ],
+    text: 'Take the official courses, keep coding in ready-made environments, prepare for the Qiskit certification, run real Qiskit code in your browser — and build your own quantum games.',
+    links: doorLinks('learn'),
   },
 ];
 ---
