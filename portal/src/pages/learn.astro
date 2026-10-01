@@ -10,16 +10,16 @@ const projects = (await getCollection('projects'))
 
 <Base
   title="Learn — quantum computing hands-on | Fun with Quantum"
-  description="Learn quantum computing hands-on: executable Qiskit tutorials on doQumentation, certification prep on CertiQ, zero-setup Qiskit environments on QuBins, and IBM Quantum Learning."
+  description="Learn quantum computing hands-on: IBM Quantum Learning, zero-setup Qiskit environments on QuBins, certification prep on CertiQ, and executable Qiskit tutorials on doQumentation."
 >
   <section class="section">
     <div class="wrap">
       <div class="kicker">Learn</div>
       <h2>From first qubit to your own experiments</h2>
       <p class="lead">
-        Run real Qiskit code in your browser with doQumentation, get exam-ready with CertiQ, keep
-        coding in QuBins' ready-made environments — and IBM Quantum Learning for the official
-        courses, made by the people who build the machines.
+        Start with IBM Quantum Learning's official courses, made by the people who build the
+        machines. Then keep coding in QuBins' ready-made environments, get exam-ready with CertiQ,
+        and run real Qiskit code in your browser with doQumentation.
       </p>
 
       {projects.map((p) => <ProjectRow project={p} />)}

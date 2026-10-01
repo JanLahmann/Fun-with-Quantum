@@ -3,7 +3,7 @@ title: QuBins
 door: learn
 tagline: Signed, daily-rebuilt environments with Qiskit preinstalled — the zero-setup way to keep coding.
 icon: "📦"
-order: 3
+order: 2
 url: https://qubins.org
 repoUrl: https://github.com/QuBins/qiskit-images
 ecosystemUrl: https://qisk.it/e-6c640264
