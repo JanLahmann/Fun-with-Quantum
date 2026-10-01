@@ -37,6 +37,8 @@ const projects = defineCollection({
       // Photo shown on the right of the project row.
       image: image().optional(),
       imageAlt: z.string().optional(),
+      // Looping gameplay clip from /public, shown where a photo would be (used when there is no image).
+      video: z.string().optional(),
     }),
 });
 

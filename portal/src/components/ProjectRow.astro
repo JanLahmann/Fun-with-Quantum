@@ -12,7 +12,7 @@ const { Content } = await render(project);
 const d = project.data;
 ---
 
-<article class={`project card ${d.image ? 'has-photo' : ''}`}>
+<article class={`project card ${d.image || d.video ? 'has-photo' : ''}`}>
   <div class="main">
     <div class="head">
       <span class="icon">{d.icon}</span>
@@ -49,6 +49,11 @@ const d = project.data;
       <Image src={d.image} alt={d.imageAlt ?? d.title} widths={[320, 640]} sizes="(max-width: 820px) 90vw, 300px" />
     </div>
   )}
+  {!d.image && d.video && (
+    <div class="photo">
+      <video src={d.video} autoplay muted loop playsinline aria-label={d.imageAlt ?? d.title}></video>
+    </div>
+  )}
 </article>
 
 <style>
@@ -60,6 +65,7 @@ const d = project.data;
     .project.has-photo { grid-template-columns: 1fr; }
   }
   .main { display: flex; flex-direction: column; gap: 8px; }
+  .photo video { width: 100%; max-height: 240px; border-radius: 12px; background: #14151D; display: block; }
   .photo :global(img) {
     width: 100%; height: auto; max-height: 240px; object-fit: cover;
     border-radius: 12px;
