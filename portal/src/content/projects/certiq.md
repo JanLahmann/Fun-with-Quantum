@@ -6,6 +6,8 @@ icon: "🎓"
 order: 3
 url: https://certiq.dev
 repoUrl: https://github.com/JanLahmann/qiskit-developer-certification-prep
+image: ../../assets/certiq-site.jpg
+imageAlt: "certiq.dev — Pass the Qiskit v2.x Developer certification: a guided, machine-verified prep platform"
 facts:
   - Every code-bearing question executed against a pinned Qiskit 2.x stack
   - Guided path, drills and a faithful 68-question mock exam
