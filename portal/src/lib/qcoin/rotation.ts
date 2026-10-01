@@ -67,13 +67,15 @@ export function tipTo(r: Mat3, target: Vec3): { axis: Vec3; angle: number } {
 }
 
 /**
- * Bloch frame → CSS frame. CSS: x right, y down, z toward the viewer.
- * Bloch z (heads) = up = CSS −y; Bloch x (|+⟩) = toward the viewer = CSS +z; Bloch y = CSS −x
- * (right-handed: x × y = z).
- * Columns are the images of Bloch x, y, z.
+ * Bloch frame → CSS frame. CSS: x right, y down, z toward the viewer — a LEFT-handed frame on
+ * screen (y points down). Bloch z (heads) = up = CSS −y, Bloch x (|+⟩) = toward the viewer = CSS +z,
+ * and for a right-handed Bloch sphere Bloch y must then point to the viewer's right = CSS +x
+ * (the textbook picture: x out of the page, y right, z up). Because the screen frame is
+ * left-handed this matrix has det −1, and so does COIN_LOCAL below; their product keeps the coin
+ * texture unmirrored. Columns are the images of Bloch x, y, z.
  */
 const BLOCH_TO_CSS: Mat3 = [
-  0, -1, 0,
+  0, 1, 0,
   0, 0, -1,
   1, 0, 0,
 ];
@@ -82,12 +84,13 @@ const BLOCH_TO_CSS: Mat3 = [
  * The coin element's local frame (CSS-style: x right, y down, z = front-face normal) expressed in
  * the Bloch frame for the starting orientation (heads up). The glyph's "up" points toward the
  * viewer, so that after H — the coin standing on its edge, the picture everyone remembers — the Q
- * reads upright (H maps Bloch x to z). Lying flat the glyph is then upside down, but foreshortened.
- * local z → Bloch +z (normal up), local y (glyph's "down") → Bloch −x, local x → Bloch +y.
+ * reads upright and unmirrored (H maps Bloch x to z and y to −y). Lying flat the glyph is upside
+ * down, but foreshortened.
+ * local z → Bloch +z (normal up), local y (glyph's "down") → Bloch −x, local x → Bloch −y.
  */
 const COIN_LOCAL: Mat3 = [
   0, -1, 0,
-  1, 0, 0,
+  -1, 0, 0,
   0, 0, 1,
 ];
 
@@ -95,6 +98,24 @@ const COIN_LOCAL: Mat3 = [
 function camera(elevationDeg: number): Mat3 {
   // rotate the world about CSS x so the table tilts toward the viewer
   return axisAngle([1, 0, 0], (-elevationDeg * Math.PI) / 180);
+}
+
+/**
+ * A Bloch-frame vector as seen by the same camera as the coin, in CSS view space
+ * (x right, y down, z toward the viewer) — used to draw the Bloch sphere next to the coin so both
+ * are seen from the same angle.
+ */
+export function toView(v: Vec3, elevationDeg = 22): Vec3 {
+  return apply(mul(camera(elevationDeg), BLOCH_TO_CSS), v);
+}
+
+/**
+ * The Bloch sphere's own drawing angle: the textbook view, turned so the x axis (|+⟩) points to
+ * the lower left instead of straight at the viewer — from the coin's head-on camera |±⟩ would
+ * collapse onto the centre. It is the same vector as the coin's normal, just seen from the side.
+ */
+export function toSphereView(v: Vec3, azimuthDeg = -32, elevationDeg = 18): Vec3 {
+  return apply(mul(camera(elevationDeg), mul(BLOCH_TO_CSS, axisAngle([0, 0, 1], (azimuthDeg * Math.PI) / 180))), v);
 }
 
 /** CSS `matrix3d(...)` for the coin element, given its Bloch-frame orientation. */

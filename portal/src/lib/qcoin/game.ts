@@ -51,6 +51,12 @@ export const randomClassical: Strategy = (_turn, rand) => (rand() < 0.5 ? 'I' : 
 export const quantumA: Strategy = () => 'H';
 
 /**
+ * A quantum computer that only gets the middle move (because you started): its best is H — and
+ * that's worth nothing. Without a move before *and* after yours there is no interference to steer.
+ */
+export const quantumB: Strategy = () => 'H';
+
+/**
  * Exact win probability for A over every B move, for a fixed pair of A moves — used to prove in
  * tests (and show in the "look inside" chapter) that H…H wins against every B.
  */

@@ -5,9 +5,9 @@ import {
 } from '../src/lib/qcoin/qubit';
 import {
   CLASSICAL_MOVES, QUANTUM_MOVES, aWinProbability, emptyScore, isWinningStrategyForA, play,
-  quantumA, randomClassical, tally, winnerOf,
+  quantumA, quantumB, randomClassical, tally, winnerOf,
 } from '../src/lib/qcoin/game';
-import { IDENTITY, apply as rot, axisAngle, mul, normalOf, shade, tipTo, toCss, type Mat3 } from '../src/lib/qcoin/rotation';
+import { IDENTITY, apply as rot, axisAngle, mul, normalOf, shade, tipTo, toCss, toSphereView, toView, type Mat3 } from '../src/lib/qcoin/rotation';
 
 const close = (a: number, b: number, eps = 1e-9) => Math.abs(a - b) < eps;
 const closeVec = (a: readonly number[], b: readonly number[], eps = 1e-9) => a.every((v, i) => close(v, b[i], eps));
@@ -137,6 +137,15 @@ describe('coin game (Quantum-Coin-Game.ipynb)', () => {
     expect(aWins / 4000).toBeLessThan(0.55);
   });
 
+  it('who starts matters: a quantum B (middle move only) gets exactly 50:50 against every classical A', () => {
+    const b = quantumB(1, Math.random);
+    for (const a1 of CLASSICAL_MOVES) for (const a2 of CLASSICAL_MOVES) expect(aWinProbability(a1, b, a2)).toBe(0.5);
+  });
+
+  it('…and no B move — classical or quantum — beats H…H', () => {
+    for (const b of QUANTUM_MOVES) expect(aWinProbability('H', b, 'H')).toBe(b === 'H' ? 0.5 : 1);
+  });
+
   it('randomClassical only ever plays I or X', () => {
     const r = seq(0.1, 0.9);
     expect([randomClassical(1, r), randomClassical(1, r)]).toEqual(['I', 'X']);
@@ -179,6 +188,37 @@ describe('coin orientation = Bloch vector', () => {
       expect(l).toBeGreaterThanOrEqual(0);
       expect(l).toBeLessThanOrEqual(1);
     }
+  });
+
+  // matrix3d is column-major: columns 0, 1, 2 are the screen images of the coin's local x, y, z
+  const cols = (css: string) => { const n = css.slice(9, -1).split(',').map(Number); return [n.slice(0, 3), n.slice(4, 7), n.slice(8, 11)]; };
+  const det3 = ([a, b, c]: number[][]) =>
+    a[0] * (b[1] * c[2] - b[2] * c[1]) - b[0] * (a[1] * c[2] - a[2] * c[1]) + c[0] * (a[1] * b[2] - a[2] * b[1]);
+
+  it('the coin is never mirrored: the full transform is a proper rotation for every gate sequence', () => {
+    for (const s of [[], ['X'], ['H'], ['H', 'X'], ['H', 'Z'], ['H', 'S'], ['S', 'H', 'X', 'Z']] as GateName[][])
+      expect(close(det3(cols(toCss(orient(s), 0))), 1, 1e-6), s.join('')).toBe(true);
+  });
+
+  it('standing after H, the heads glyph faces us upright and unmirrored', () => {
+    const [x, y, z] = cols(toCss(orient(['H']), 0)); // camera level with the table
+    expect(closeVec(z, [0, 0, 1], 1e-6)).toBe(true); // face normal toward the viewer
+    expect(closeVec(y, [0, 1, 0], 1e-6)).toBe(true); // glyph's "down" points down
+    expect(closeVec(x, [1, 0, 0], 1e-6)).toBe(true); // glyph's right is the viewer's right
+  });
+
+  it('right-handed Bloch picture: x toward the viewer, y to the right, z up', () => {
+    expect(closeVec(toView([1, 0, 0], 0), [0, 0, 1], 1e-9)).toBe(true);
+    expect(closeVec(toView([0, 1, 0], 0), [1, 0, 0], 1e-9)).toBe(true);
+    expect(closeVec(toView([0, 0, 1], 0), [0, -1, 0], 1e-9)).toBe(true);
+  });
+
+  it('the sphere is drawn from the textbook angle: |+⟩ to the lower left, |0⟩ up, +i to the right', () => {
+    const plus = toSphereView([1, 0, 0]), zero = toSphereView([0, 0, 1]), yi = toSphereView([0, 1, 0]);
+    expect(plus[0]).toBeLessThan(-0.3); // left
+    expect(plus[1]).toBeGreaterThan(0); // and down (we look from slightly above)
+    expect(zero[1]).toBeLessThan(-0.9); // up
+    expect(yi[0]).toBeGreaterThan(0.7); // right
   });
 
   it('heads-up coin: front face points up and toward the camera; tails-up shows the back', () => {

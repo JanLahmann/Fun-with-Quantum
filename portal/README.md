@@ -27,15 +27,15 @@ npm run build    # static site in dist/
 
 `/play/quantum-coin-game/` — the notebook's coin game, five chapters, no Binder:
 
-1. **A fair game** — you vs. a classical computer, coin hidden in a box: 50:50.
-2. **vs. a quantum computer** — same rules; the computer secretly plays H, you, H and always wins.
+1. **A fair game** — you vs. a classical computer, coin hidden in a box: 50:50. *Who starts?* is selectable in chapters 1–2: the starter is player A (first and last move).
+2. **vs. a quantum computer** — same rules; the computer secretly plays H, you, H and always wins. If *you* start, it only gets the middle move — and its H is worth nothing (50:50): the trick needs a move before and after yours.
 3. **Look inside** — the same round step by step, box off, with the circuit and the math.
 4. **You be quantum** — you are A with I/X/H against a random classical B.
 5. **Sandbox** — any of I, X, H, Z, S; measure once or 100 times.
 
 **The coin is the qubit.** The coin's face normal is the Bloch vector: lying heads-up = |0⟩,
 tails-up = |1⟩, standing on its edge = superposition (heads side out = |+⟩, tails side out = |−⟩).
-Every gate is played out as the exact Bloch-sphere rotation it is (X = half turn about x, H = half
+Next to the coin a Bloch sphere (drawn from the textbook angle) shows the same vector as an arrow; while a gate plays, its rotation axis is dashed on the sphere and a line explains the turn ("H · half turn (180°) about the diagonal between x and z …"). Every gate is played out as the exact Bloch-sphere rotation it is (X = half turn about x, H = half
 turn about the x+z diagonal, …), so what you see is what the maths says.
 
 | File | |

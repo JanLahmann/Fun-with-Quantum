@@ -18,7 +18,8 @@ Most events need **no JavaScript**: Umami's tracker records a click on any eleme
 | `Portal: notebook launch` | `target`, `image`, `notebook` | portal game pages |
 | `Portal: shop click` | `host` | portal footer |
 | `Portal: coin game chapter` | `chapter` (1–5) | /play/quantum-coin-game/ — the browser game, chapter opened |
-| `Portal: coin game round` | `chapter`, `result` (you win \| computer wins), `strategy` (chapter 4: your two moves) | a finished round |
+| `Portal: coin game round` | `chapter`, `result` (you win \| computer wins), `starts` (you \| computer, chapters 1–2), `strategy` (chapter 4: your two moves) | a finished round |
+| `Portal: coin game order` | `chapter`, `starts` | "Who starts?" switched in chapters 1–2 |
 | `Portal: coin game peek` | — | "Look inside" pressed after losing to the quantum computer |
 | `Portal: coin game sandbox` | `action` (measure \| measure 100), `outcome` / `gates` | sandbox measurements |
 | `QuBins: notebook launch` | `image`, `mode`, `ui`, `notebook` | qubins.org/launch (waits ≤1.5 s for the tracker, then redirects) |
