@@ -1,0 +1,12 @@
+---
+/** The unlisted Quantum Coin Game preview in every non-English locale (/de/…, /ja/…, …). */
+import CoinGamePage from '../../../components/CoinGamePage.astro';
+import { LOCALES, type Locale } from '../../../lib/qcoin/i18n';
+
+export function getStaticPaths() {
+  return LOCALES.filter((l) => l !== 'en').map((lang) => ({ params: { lang } }));
+}
+const { lang } = Astro.params as { lang: Locale };
+---
+
+<CoinGamePage locale={lang} />

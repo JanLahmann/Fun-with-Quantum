@@ -4,16 +4,24 @@
  * Logic in src/lib/qcoin (unit-tested), interaction in src/lib/qcoin/ui.ts.
  * The coin's 3D orientation is the qubit's Bloch vector: flat = heads/tails, on its edge = superposition.
  */
+import { MESSAGES, type Locale } from '../lib/qcoin/i18n';
+
+interface Props {
+  locale?: Locale;
+}
+const { locale = 'en' } = Astro.props;
+const m = MESSAGES[locale];
 const RIM_SEGMENTS = 44;
 ---
 
-<section class="qcoin" id="coin-game" aria-label="The Quantum Coin Game — play it here">
-  <div class="qc-chapters" role="tablist" aria-label="Chapters">
-    <button role="tab" data-chapter="1"><span class="n">1</span> A fair game</button>
-    <button role="tab" data-chapter="2"><span class="n">2</span> vs. a quantum computer</button>
-    <button role="tab" data-chapter="3"><span class="n">3</span> Look inside</button>
-    <button role="tab" data-chapter="4"><span class="n">4</span> You be quantum</button>
-    <button role="tab" data-chapter="5"><span class="n">5</span> Sandbox</button>
+<section class="qcoin" id="coin-game" aria-label={m.page.heading} data-locale={locale}>
+  <div class="qc-top">
+    <div class="qc-chapters" role="tablist" aria-label={m.ui.chaptersLabel}>
+      {m.ui.chapters.map((label, i) => (
+        <button role="tab" data-chapter={i + 1}><span class="n">{i + 1}</span> {label}</button>
+      ))}
+    </div>
+    <button type="button" class="qc-explain-btn" aria-haspopup="dialog">ⓘ {m.ui.explain}</button>
   </div>
 
   <div class="qc-arena">
@@ -29,19 +37,20 @@ const RIM_SEGMENTS = 44;
             ))}
           </div>
         </div>
-        <div class="qc-box" aria-hidden="true"><span>?</span><small>the coin is in here</small></div>
+        <div class="qc-box" aria-hidden="true"><span>?</span><small>{m.ui.coinInBox}</small></div>
       </div>
 
       <div class="qc-readout">
         <div>
-          <div class="qc-probs" aria-label="Measurement probabilities">
-            <div class="qc-prob"><span class="lbl">Heads</span><span class="bar"><i class="fill heads"></i></span><span class="pct" data-p="heads">100%</span></div>
-            <div class="qc-prob"><span class="lbl">Tails</span><span class="bar"><i class="fill tails"></i></span><span class="pct" data-p="tails">0%</span></div>
+          <div class="qc-probs" aria-label={m.ui.probsLabel}>
+            <div class="qc-prob"><span class="lbl">{m.ui.heads}</span><span class="bar"><i class="fill heads"></i></span><span class="pct" data-p="heads">100%</span></div>
+            <div class="qc-prob"><span class="lbl">{m.ui.tails}</span><span class="bar"><i class="fill tails"></i></span><span class="pct" data-p="tails">0%</span></div>
+            <button type="button" class="qc-info" data-term="measurement" aria-label={m.glossary.measurement.title}>ⓘ</button>
           </div>
           <div class="qc-state" aria-live="polite"></div>
           <p class="qc-gatefx" aria-live="polite"></p>
         </div>
-        <figure class="qc-bloch" aria-label="Bloch sphere: the arrow is the qubit's state — and the coin's face normal">
+        <figure class="qc-bloch" aria-label={m.ui.blochCaption}>
           <svg viewBox="0 0 150 150" role="img">
             <g class="sphere"></g>
             <g class="axisline"></g>
@@ -49,7 +58,7 @@ const RIM_SEGMENTS = 44;
             <circle class="tip" cx="75" cy="75" r="4.5"></circle>
             <text class="hidden-q" x="75" y="82" text-anchor="middle">?</text>
           </svg>
-          <figcaption>Bloch sphere</figcaption>
+          <figcaption><button type="button" class="qc-term qc-caption" data-term="bloch">{m.ui.blochCaption} ⓘ</button></figcaption>
         </figure>
       </div>
     </div>
@@ -57,18 +66,22 @@ const RIM_SEGMENTS = 44;
     <div class="qc-panel">
       <h3 class="qc-title"></h3>
       <div class="qc-text"></div>
-      <div class="qc-order" role="group" aria-label="Who starts?" hidden>
-        <span>Who starts?</span>
-        <button type="button" data-order="computer" aria-pressed="true">The computer</button>
-        <button type="button" data-order="you" aria-pressed="false">You</button>
+      <div class="qc-order" role="group" aria-label={m.ui.whoStarts} hidden>
+        <span>{m.ui.whoStarts}</span>
+        <button type="button" data-order="computer" aria-pressed="true">{m.ui.theComputer}</button>
+        <button type="button" data-order="you" aria-pressed="false">{m.ui.you}</button>
       </div>
-      <div class="qc-circuit" aria-label="The circuit so far"></div>
+      <div class="qc-circuit" aria-label={m.ui.circuitLabel}></div>
       <p class="qc-status" aria-live="polite"></p>
       <div class="qc-actions"></div>
       <div class="qc-score" aria-live="polite"></div>
     </div>
   </div>
-  <noscript><p class="qc-noscript">The browser version needs JavaScript — the notebook below works without it.</p></noscript>
+  <dialog class="qc-explain" aria-label={m.ui.explainTitle}>
+    <button type="button" class="qc-close" aria-label={m.ui.close}>×</button>
+    <div class="qc-explain-body"></div>
+  </dialog>
+  <noscript><p class="qc-noscript">{m.ui.noscript}</p></noscript>
 </section>
 
 <script>
@@ -84,7 +97,41 @@ const RIM_SEGMENTS = 44;
     background: var(--card); border: 1px solid var(--line); border-radius: 16px;
     box-shadow: var(--shadow); padding: 18px 22px 22px; margin-bottom: 36px;
   }
-  .qc-chapters { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .qc-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+  .qc-chapters { display: flex; flex-wrap: wrap; gap: 6px; }
+  .qc-explain-btn {
+    flex: 0 0 auto; font: 600 0.82rem var(--sans); color: var(--cyan); background: transparent;
+    border: 1px solid var(--cyan); border-radius: 20px; padding: 6px 12px; cursor: pointer;
+  }
+  .qc-explain-btn:hover { background: color-mix(in srgb, var(--cyan) 10%, transparent); }
+  .qcoin :global(.qc-term) {
+    font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: help;
+    text-decoration: underline dotted color-mix(in srgb, var(--cyan) 70%, transparent); text-underline-offset: 3px;
+  }
+  .qcoin :global(.qc-term:hover) { color: var(--cyan); }
+  .qc-info {
+    position: absolute; right: -4px; top: -22px; width: 20px; height: 20px; border-radius: 50%;
+    border: 0; background: transparent; color: var(--cyan); cursor: help; font-size: 0.9rem;
+  }
+  .qc-caption { font: 0.66rem var(--mono) !important; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted) !important; }
+  .qc-explain {
+    margin: auto; /* global.css resets * { margin: 0 }, which un-centres a modal dialog */
+    max-width: min(520px, calc(100vw - 32px)); width: 100%; max-height: calc(100vh - 48px); overflow-y: auto; border: 1px solid var(--line); border-radius: 16px;
+    background: var(--card); color: var(--ink); padding: 24px 26px 20px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  }
+  .qc-explain::backdrop { background: rgba(20, 21, 29, 0.45); }
+  .qc-close {
+    position: absolute; top: 10px; right: 12px; width: 32px; height: 32px; border-radius: 50%;
+    border: 1px solid var(--line); background: var(--card); color: var(--muted); font-size: 1.2rem; cursor: pointer;
+  }
+  .qc-close:hover { color: var(--ink); border-color: var(--cyan); }
+  .qc-explain :global(h3) { font-size: 1.15rem; margin: 6px 36px 10px 0; }
+  .qc-explain :global(p) { color: var(--ink); font-size: 0.97rem; margin-bottom: 12px; }
+  .qc-explain :global(.qc-more) { font: 0.85rem var(--sans); line-height: 1.9; margin-bottom: 0; }
+  .qc-explain :global(.qc-back) { font: 0.8rem var(--mono); color: var(--cyan); background: none; border: 0; cursor: pointer; padding: 0; }
+  .qc-explain :global(.qc-terms) { list-style: none; columns: 2 200px; gap: 18px; padding: 0; }
+  .qc-explain :global(.qc-terms li) { margin: 0 0 8px; break-inside: avoid; }
+  .qc-explain :global(.qc-terms .qc-term) { text-align: left; }
   .qc-chapters button {
     font: 600 0.82rem var(--sans); color: var(--muted); background: transparent;
     border: 1px solid var(--line); border-radius: 20px; padding: 6px 12px; cursor: pointer;
@@ -170,7 +217,7 @@ const RIM_SEGMENTS = 44;
   }
 
   .qc-readout { display: grid; grid-template-columns: 1fr 132px; gap: 12px; align-items: center; margin-top: 10px; }
-  .qc-probs { display: grid; gap: 6px; }
+  .qc-probs { display: grid; gap: 6px; position: relative; }
   .qc-bloch { margin: 0; text-align: center; }
   .qc-bloch svg { width: 132px; height: 132px; display: block; overflow: visible; }
   .qc-bloch figcaption { font: 0.66rem var(--mono); color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-top: -4px; }

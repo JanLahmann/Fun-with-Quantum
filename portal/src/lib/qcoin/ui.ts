@@ -14,19 +14,10 @@
 import { GATE_ROTATIONS, HEADS, apply, bloch, measure, pHeads, stateLabel, type GateName, type State } from './qubit';
 import { emptyScore, quantumA, quantumB, randomClassical, tally, type Player, type Score, type Strategy } from './game';
 import { IDENTITY, axisAngle, lift, mul, normalOf, shade, tipTo, toCss, toSphereView as toView, type Mat3 } from './rotation';
+import { MESSAGES, doqLink, ibmLink, isLocale, rich, type Locale, type Messages, type TermKey } from './i18n';
 
 type Chapter = 1 | 2 | 3 | 4 | 5;
 const QUANTUM: ReadonlySet<GateName> = new Set(['H', 'Z', 'S']);
-const GATE_TEXT: Record<GateName, string> = { I: 'leave it', X: 'flip it', H: 'Hadamard', Z: 'phase flip', S: 'quarter phase' };
-
-/** What each gate does on the Bloch sphere — shown while the gate plays. */
-const GATE_FX: Record<GateName, string> = {
-  I: '<b>I</b> · no rotation — the arrow stays where it is.',
-  X: '<b>X</b> · half turn (180°) about the <b>x axis</b> (through |+⟩ and |−⟩): heads ↔ tails, while |+⟩ and |−⟩ stay put.',
-  H: '<b>H</b> · half turn (180°) about the <b>diagonal between x and z</b>: |0⟩ ↔ |+⟩ and |1⟩ ↔ |−⟩ — flat ↔ on its edge.',
-  Z: '<b>Z</b> · half turn (180°) about the <b>z axis</b> (through |0⟩ and |1⟩): |+⟩ ↔ |−⟩, while heads and tails stay put.',
-  S: '<b>S</b> · quarter turn (90°) about the <b>z axis</b>: |+⟩ → |+i⟩ — a phase only an H can turn into heads or tails.',
-};
 
 class Abort extends Error {}
 
@@ -54,7 +45,7 @@ class BlochView {
   private axisLayer: SVGGElement;
   private C = 75;
   private r = 52;
-  constructor(svg: SVGSVGElement) {
+  constructor(svg: SVGSVGElement, m: Messages) {
     this.vec = svg.querySelector('.vec')!;
     this.tip = svg.querySelector('.tip')!;
     this.axisLayer = svg.querySelector('.axisline')!;
@@ -81,7 +72,7 @@ class BlochView {
           el('polyline', { class: cls, points: run });
     }
     const labels: [readonly [number, number, number], string, number, number][] = [
-      [[0, 0, 1], '|0⟩ heads', 0, -7], [[0, 0, -1], '|1⟩ tails', 0, 13],
+      [[0, 0, 1], `|0⟩ ${m.ui.heads}`, 0, -7], [[0, 0, -1], `|1⟩ ${m.ui.tails}`, 0, 13],
       [[1, 0, 0], '|+⟩', -11, 10], [[-1, 0, 0], '|−⟩', 11, -5],
       [[0, 1, 0], '+i', 10, 3], [[0, -1, 0], '−i', -10, 3],
     ];
@@ -126,12 +117,12 @@ class CoinView {
   private pos: HTMLElement;
   private coin: HTMLElement;
   private scene: HTMLElement;
-  constructor(private root: HTMLElement) {
+  constructor(private root: HTMLElement, m: Messages) {
     this.pos = root.querySelector('.qc-pos')!;
     this.coin = root.querySelector('.qc-coin')!;
     this.scene = root.querySelector('.qc-scene')!;
     const svg = root.querySelector<SVGSVGElement>('.qc-bloch svg');
-    this.bloch = svg ? new BlochView(svg) : null;
+    this.bloch = svg ? new BlochView(svg, m) : null;
     this.render();
   }
   private radius() { return (this.coin.offsetWidth || 180) / 2; }
@@ -201,7 +192,10 @@ interface Slot { gate: GateName | '?' | null; who: string; active?: boolean; sec
 
 export function mountCoinGame(root: HTMLElement) {
   const $ = <T extends HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
-  const coin = new CoinView(root);
+  const lang = root.dataset.locale ?? 'en';
+  const locale: Locale = isLocale(lang) ? lang : 'en';
+  const m: Messages = MESSAGES[locale];
+  const coin = new CoinView(root, m);
   const title = $('.qc-title'), text = $('.qc-text'), status = $('.qc-status');
   const actions = $('.qc-actions'), scoreEl = $('.qc-score'), circuitEl = $('.qc-circuit'), stateEl = $('.qc-state');
   const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>('.qc-chapters button'));
@@ -216,12 +210,13 @@ export function mountCoinGame(root: HTMLElement) {
     setTimeout(() => (e === epoch ? res() : rej(new Abort())), reducedMotion() ? Math.min(ms, 150) : ms));
 
   /* ---- small renderers ---- */
-  const setText = (html: string) => { text.innerHTML = html; };
-  const say = (html: string) => { status.innerHTML = html; };
-  const showScore = (ch: Chapter, youAre: string) => {
+  const setText = (html: string) => { text.innerHTML = rich(html); };
+  const say = (html: string) => { status.innerHTML = rich(html); };
+  const showScore = (ch: Chapter) => {
     const s = scores[ch];
-    scoreEl.textContent = s.rounds ? `Score — ${youAre}: ${s.you} · computer: ${s.computer} · rounds: ${s.rounds}` : '';
+    scoreEl.textContent = s.rounds ? m.ui.score(s.you, s.computer, s.rounds) : '';
   };
+  const sideName = (o: 'heads' | 'tails') => (o === 'heads' ? m.ui.heads : m.ui.tails);
   const cover = (on: boolean) => root.classList.toggle('covered', on);
   const shake = async (e: number) => { root.classList.remove('shake'); void root.offsetWidth; root.classList.add('shake'); await wait(520, e); root.classList.remove('shake'); };
   const showProbs = () => {
@@ -232,18 +227,18 @@ export function mountCoinGame(root: HTMLElement) {
     root.querySelector('[data-p="heads"]')!.textContent = covered ? '?' : `${Math.round(p * 100)}%`;
     root.querySelector('[data-p="tails"]')!.textContent = covered ? '?' : `${Math.round((1 - p) * 100)}%`;
     const lbl = stateLabel(state);
-    stateEl.textContent = covered ? 'hidden in the box' : describe(state, lbl);
+    stateEl.textContent = covered ? m.ui.hiddenInBox : describe(state, lbl, m);
   };
-  const circuit = (slots: Slot[] | null, label = 'coin') => {
+  const circuit = (slots: Slot[] | null) => {
     if (!slots) { circuitEl.innerHTML = ''; return; }
-    const parts = [`<span class="qc-wire-label">${label} |0⟩</span>`];
+    const parts = [`<span class="qc-wire-label">${m.ui.coin} |0⟩</span>`];
     for (const s of slots) {
       const g = s.gate;
       const cls = g === null ? 'empty' : g === '?' ? 'secret' : QUANTUM.has(g) ? 'quantum' : 'classical';
       parts.push('<span class="qc-seg"></span>');
       parts.push(`<span class="qc-gate ${cls}${s.active ? ' active' : ''}"><b>${g ?? ''}</b><i>${s.who}</i></span>`);
     }
-    parts.push('<span class="qc-seg"></span><span class="qc-gate qc-meter"><b>⌒↗</b><i>look</i></span>');
+    parts.push(`<span class="qc-seg"></span><span class="qc-gate qc-meter"><b>⌒↗</b><i>${m.ui.look}</i></span>`);
     circuitEl.innerHTML = parts.join('');
   };
 
@@ -271,7 +266,7 @@ export function mountCoinGame(root: HTMLElement) {
 
   const gatefx = $('.qc-gatefx');
   function explainGate(g: GateName | null) {
-    gatefx.innerHTML = g ? GATE_FX[g] : '';
+    gatefx.innerHTML = g ? rich(m.gates.fx[g]) : '';
     coin.showAxis(g && g !== 'I' ? GATE_ROTATIONS[g].axis : null);
   }
 
@@ -293,7 +288,7 @@ export function mountCoinGame(root: HTMLElement) {
     const p = pHeads(state);
     const outcome = measure(state);
     if (p > 0 && p < 1) {
-      say('The coin is on its edge — heads <em>and</em> tails. Looking forces a choice…');
+      say(m.round.onEdge);
       await wait(700, e);
       await coin.fall(outcome, guardFor(e));
     }
@@ -319,53 +314,50 @@ export function mountCoinGame(root: HTMLElement) {
   async function roundVs(e: number, ch: 1 | 2, you: Player, computer: Strategy) {
     resetCoin();
     const seat = (i: 0 | 1 | 2) => ((i === 1) === (you === 'B') ? 'you' : 'computer');
-    const slots: Slot[] = [0, 1, 2].map((i) => ({ gate: null, who: seat(i as 0 | 1 | 2) }));
+    const who = (i: 0 | 1 | 2) => (seat(i) === 'you' ? m.ui.whoYou : m.ui.whoComputer);
+    const slots: Slot[] = [0, 1, 2].map((i) => ({ gate: null, who: who(i as 0 | 1 | 2) }));
     circuit(slots);
-    say('The coin starts <strong>heads</strong>. Into the box it goes…');
+    say(m.round.startsHeads);
     await wait(900, e);
     cover(true); showProbs();
     await wait(600, e);
 
     const moves: GateName[] = [];
-    const prompts = you === 'B'
-      ? ['', 'Your move. Turn the coin over, or leave it as it is?', '']
-      : ['You start. Turn the coin over, or leave it?', '', 'Your last move — still blind. Flip it, or leave it?'];
-    const computerLines = you === 'B'
-      ? ['The computer makes its first move — you can’t see it.', '', 'The computer makes its final move…']
-      : ['', 'The computer makes its move — you can’t see it.', ''];
+    const prompts = you === 'B' ? ['', m.round.yourMoveB, ''] : [m.round.youStartA, '', m.round.yourLastA];
+    const computerLines = you === 'B' ? [m.round.computerFirst, '', m.round.computerLast] : ['', m.round.computerMiddle, ''];
     for (const i of [0, 1, 2] as const) {
       if (seat(i) === 'you') {
-        slots[i] = { gate: null, who: 'you', active: true };
+        slots[i] = { gate: null, who: m.ui.whoYou, active: true };
         circuit(slots);
         say(prompts[i]);
-        const m = await ask<GateName>(e, [
-          { label: 'Flip it', value: 'X', gate: 'X', kind: 'primary' },
-          { label: 'Leave it', value: 'I', gate: 'I' },
+        const mv = await ask<GateName>(e, [
+          { label: m.round.flipIt, value: 'X', gate: 'X', kind: 'primary' },
+          { label: m.round.leaveIt, value: 'I', gate: 'I' },
         ]);
         actions.innerHTML = '';
-        moves.push(m);
-        slots[i] = { gate: m, who: 'you' };
+        moves.push(mv);
+        slots[i] = { gate: mv, who: m.ui.whoYou };
         circuit(slots);
         await shake(e);
-        await animateGate(m, e, false);
+        await animateGate(mv, e, false);
       } else {
-        const m = computer(i, Math.random);
-        moves.push(m);
-        slots[i] = { gate: '?', who: 'computer', active: true };
+        const mv = computer(i, Math.random);
+        moves.push(mv);
+        slots[i] = { gate: '?', who: m.ui.whoComputer, active: true };
         circuit(slots);
         say(computerLines[i]);
         await shake(e);
-        await animateGate(m, e, false);
+        await animateGate(mv, e, false);
         slots[i].active = false;
         circuit(slots);
       }
     }
 
-    say('Lifting the box!');
+    say(m.round.lifting);
     await wait(500, e);
     const outcome = await reveal(e);
     // The classical computer's moves aren't secret; the quantum computer's stay hidden until chapter 3.
-    if (ch === 1) { moves.forEach((m, i) => { slots[i].gate = m; }); circuit(slots); }
+    if (ch === 1) { moves.forEach((mv, i) => { slots[i].gate = mv; }); circuit(slots); }
     const winner: Player = outcome === 'heads' ? 'A' : 'B';
     const youWin = winner === you;
     scores[ch] = tally(scores[ch], you, winner);
@@ -374,69 +366,51 @@ export function mountCoinGame(root: HTMLElement) {
     return { youWin, outcome };
   }
 
-  const LOSS_LINES = [
-    'Heads. The quantum computer wins.',
-    'Heads again. Bad luck?',
-    'Heads. Three in a row — that’s not luck any more.',
-    'Heads. Every. Single. Time.',
-    'Heads. It doesn’t matter what you do, does it?',
-  ];
 
   /** Who starts in chapters 1–2: the starter is player A (first and last move). */
   const starter: Record<1 | 2, 'computer' | 'you'> = { 1: 'computer', 2: 'computer' };
   const orderEl = root.querySelector<HTMLElement>('.qc-order')!;
   const youSeat = (ch: 1 | 2): Player => (starter[ch] === 'you' ? 'A' : 'B');
-  const rulesLine = (ch: 1 | 2) => starter[ch] === 'computer'
-    ? 'The computer moves, then you, then the computer again.'
-    : 'You move, then the computer, then you again.';
-  const winLine = (ch: 1 | 2) => starter[ch] === 'computer'
-    ? '<strong>Tails: you win. Heads: the computer wins.</strong>'
-    : '<strong>Heads: you win. Tails: the computer wins.</strong> (Whoever starts wins on heads.)';
+  const rulesLine = (ch: 1 | 2) => (starter[ch] === 'computer' ? m.ch1.rulesComputerFirst : m.ch1.rulesYouFirst);
+  const winLine = (ch: 1 | 2) => (starter[ch] === 'computer' ? m.ch1.winComputerFirst : m.ch1.winYouFirst);
 
   async function chapter1(e: number) {
-    title.textContent = '1 · A fair game';
-    setText(`<p>You and the computer share one coin, hidden in a box. It starts <strong>heads</strong>. ${rulesLine(1)} Each move is <em>flip it</em> or <em>leave it</em>, and nobody sees the other's moves.</p>
-      <p>${winLine(1)} Can either side do better than a coin toss?</p>`);
-    showScore(1, 'you');
+    title.textContent = m.ch1.title;
+    setText(m.ch1.intro(rulesLine(1), winLine(1)));
+    showScore(1);
     for (;;) {
       const { youWin, outcome } = await roundVs(e, 1, youSeat(1), randomClassical);
-      const side = outcome === 'heads' ? 'Heads' : 'Tails';
-      say(youWin ? `<strong>${side} — you win!</strong> The computer was guessing too.` : `<strong>${side} — the computer wins.</strong> It had no secret, just luck.`);
-      showScore(1, 'you');
+      say(youWin ? m.ch1.youWin(sideName(outcome)) : m.ch1.computerWins(sideName(outcome)));
+      showScore(1);
       const s = scores[1];
       const next = await ask<'again' | 'next'>(e, [
-        { label: 'Play again', value: 'again', kind: s.rounds >= 3 ? undefined : 'primary' },
-        { label: 'Now play a quantum computer →', value: 'next', kind: s.rounds >= 3 ? 'primary' : undefined },
+        { label: m.round.playAgain, value: 'again', kind: s.rounds >= 3 ? undefined : 'primary' },
+        { label: m.ch1.next, value: 'next', kind: s.rounds >= 3 ? 'primary' : undefined },
       ]);
       if (next === 'next') { markDone(1); return go(2); }
     }
   }
 
   async function chapter2(e: number) {
-    title.textContent = '2 · Against a quantum computer';
+    title.textContent = m.ch2.title;
     const youStart = starter[2] === 'you';
-    setText(youStart
-      ? `<p>This time <strong>you start</strong>, so you get the first and the last move; the <strong>quantum computer</strong> only gets the move in the middle. ${winLine(2)}</p>
-         <p>Does quantum power still help it?</p>`
-      : `<p>Same box, same coin, same rules: ${rulesLine(2)} ${winLine(2)} Only your opponent has changed — it now runs on a <strong>quantum computer</strong>.</p>
-         <p>Play a few rounds. Try everything.</p>`);
-    showScore(2, 'you');
+    setText(youStart ? m.ch2.introYouFirst(winLine(2)) : m.ch2.introComputerFirst(rulesLine(2), winLine(2)));
+    showScore(2);
     for (;;) {
       const { youWin, outcome } = await roundVs(e, 2, youSeat(2), youStart ? quantumB : quantumA);
       const s = scores[2];
       if (youStart) {
-        say(youWin
-          ? '<strong>Heads — you win!</strong> With only the middle move, the quantum computer’s H can’t steer anything.'
-          : `<strong>${outcome === 'heads' ? 'Heads' : 'Tails'} — the computer wins this one.</strong> Pure luck: from the middle, quantum power is worth nothing.`);
+        say(youWin ? m.ch2.youStartWin : m.ch2.youStartLoss(sideName(outcome)));
       } else {
-        say(youWin ? 'Tails?! (This should be impossible — tell us how you did it.)' : `<strong>${LOSS_LINES[Math.min(s.computer - 1, LOSS_LINES.length - 1)]}</strong>`);
+        const lines = m.ch2.lossLines;
+        say(youWin ? m.ch2.impossible : `<strong>${lines[Math.min(s.computer - 1, lines.length - 1)]}</strong>`);
       }
-      showScore(2, 'you');
+      showScore(2);
       const opts: { label: string; value: 'again' | 'peek' | 'swap'; kind?: 'primary' }[] = [
-        { label: 'Play again', value: 'again', kind: s.rounds < 3 ? 'primary' : undefined },
+        { label: m.round.playAgain, value: 'again', kind: s.rounds < 3 ? 'primary' : undefined },
       ];
-      if (s.rounds >= 2) opts.push({ label: youStart ? 'Why? Look inside →' : 'How does it do that? Look inside →', value: 'peek', kind: s.rounds >= 3 ? 'primary' : undefined });
-      if (s.rounds >= 3) opts.push({ label: youStart ? 'Let the computer start' : 'Let me start instead', value: 'swap' });
+      if (s.rounds >= 2) opts.push({ label: youStart ? m.ch2.peekYouFirst : m.ch2.peekComputerFirst, value: 'peek', kind: s.rounds >= 3 ? 'primary' : undefined });
+      if (s.rounds >= 3) opts.push({ label: youStart ? m.ch2.swapToComputer : m.ch2.swapToYou, value: 'swap' });
       const next = await ask(e, opts);
       if (next === 'peek') { markDone(2); track('Portal: coin game peek'); return go(3); }
       if (next === 'swap') { setStarter(2, youStart ? 'computer' : 'you'); return; }
@@ -464,40 +438,37 @@ export function mountCoinGame(root: HTMLElement) {
     }));
 
   async function chapter3(e: number) {
-    title.textContent = '3 · Look inside the box';
+    title.textContent = m.ch3.title;
     let yourMove: GateName = lastQuantumRound;
     for (;;) {
       resetCoin();
-      const slots: Slot[] = [{ gate: 'H', who: 'computer' }, { gate: yourMove, who: 'you' }, { gate: 'H', who: 'computer' }];
+      const slots: Slot[] = [{ gate: 'H', who: m.ui.whoComputer }, { gate: yourMove, who: m.ui.whoYou }, { gate: 'H', who: m.ui.whoComputer }];
       circuit(slots);
-      const intro = `<p>Here is the round again — box off, one step at a time. The quantum computer's secret is one move a normal coin doesn't have: the <strong>Hadamard gate, H</strong> — played <em>before and after</em> your move. That's why it must start: with only the middle move (try “You start” in chapter 2), H gives no edge at all.</p>`;
-      const math = (m: string) => setText(intro + `<p class="math">${m}</p>`);
-      setText(intro);
-      say('Start: the coin lies <strong>heads</strong> up. In quantum terms: |0⟩, all chances on heads.');
-      await ask(e, [{ label: 'Next: the computer’s move ▸', value: 1, kind: 'primary' }]);
+      const math = (formula: string) => setText(m.ch3.intro + `<p class="math">${formula}</p>`);
+      setText(m.ch3.intro);
+      say(m.ch3.start);
+      await ask(e, [{ label: m.ch3.nextComputer, value: 1, kind: 'primary' }]);
 
       slots[0].active = true; circuit(slots);
       await animateGate('H', e);
-      say('<strong>H stands the coin on its edge.</strong> It is now heads <em>and</em> tails at once — a superposition, 50:50 if you looked now.');
-      math('|0⟩ → H → (|0⟩ + |1⟩)/√2');
-      await ask(e, [{ label: yourMove === 'X' ? 'Next: you flip it ▸' : 'Next: you leave it ▸', value: 1, kind: 'primary' }]);
+      say(m.ch3.afterH);
+      math(m.ch3.mathH);
+      await ask(e, [{ label: yourMove === 'X' ? m.ch3.nextFlip : m.ch3.nextLeave, value: 1, kind: 'primary' }]);
 
       slots[0].active = false; slots[1].active = true; circuit(slots);
       await animateGate(yourMove, e);
-      say(yourMove === 'X'
-        ? '<strong>You flipped it — and nothing changed.</strong> Turning over a coin that is heads and tails at once just swaps the two: it is still heads-and-tails.'
-        : '<strong>You left it.</strong> Still standing on its edge: heads and tails at once.');
-      math(yourMove === 'X' ? 'X: (|0⟩ + |1⟩)/√2 → (|1⟩ + |0⟩)/√2 — the same state' : 'I: (|0⟩ + |1⟩)/√2 stays (|0⟩ + |1⟩)/√2');
-      await ask(e, [{ label: 'Next: the computer’s second move ▸', value: 1, kind: 'primary' }]);
+      say(yourMove === 'X' ? m.ch3.afterFlip : m.ch3.afterLeave);
+      math(yourMove === 'X' ? m.ch3.mathFlip : m.ch3.mathLeave);
+      await ask(e, [{ label: m.ch3.nextComputer2, value: 1, kind: 'primary' }]);
 
       slots[1].active = false; slots[2].active = true; circuit(slots);
       await animateGate('H', e);
-      say('<strong>The second H lays it back down — heads, with certainty.</strong> The two ways of ending up tails cancel each other out; the two ways to heads add up. That is <em>interference</em>.');
-      math('H: (|0⟩ + |1⟩)/√2 → ½(|0⟩+|1⟩) + ½(|0⟩−|1⟩) = |0⟩');
+      say(m.ch3.afterH2);
+      math(m.ch3.mathH2);
       slots[2].active = false; circuit(slots);
       const next = await ask<'other' | 'next'>(e, [
-        { label: yourMove === 'X' ? 'Try it with “leave it”' : 'Try it with “flip it”', value: 'other' },
-        { label: 'Now you be the quantum computer →', value: 'next', kind: 'primary' },
+        { label: yourMove === 'X' ? m.ch3.tryLeave : m.ch3.tryFlip, value: 'other' },
+        { label: m.ch3.next, value: 'next', kind: 'primary' },
       ]);
       if (next === 'next') { markDone(3); return go(4); }
       yourMove = yourMove === 'X' ? 'I' : 'X';
@@ -505,44 +476,43 @@ export function mountCoinGame(root: HTMLElement) {
   }
 
   async function chapter4(e: number) {
-    title.textContent = '4 · You be the quantum computer';
-    setText(`<p>Swap seats: <strong>you are A</strong> now, with three moves — <em>flip</em> (X), <em>leave</em> (I) and the quantum <strong>H</strong>. The computer plays B, flipping or not at random, in secret.</p>
-      <p>Heads wins for you. Can you win every round?</p>`);
-    showScore(4, 'you');
+    title.textContent = m.ch4.title;
+    setText(m.ch4.intro);
+    showScore(4);
     let losses = 0;
     const MOVES = [
-      { label: 'Flip', value: 'X' as GateName, gate: 'X' as GateName },
-      { label: 'Leave', value: 'I' as GateName, gate: 'I' as GateName },
-      { label: 'Hadamard', value: 'H' as GateName, gate: 'H' as GateName, kind: 'quantum' as const },
+      { label: m.ch4.moveFlip, value: 'X' as GateName, gate: 'X' as GateName },
+      { label: m.ch4.moveLeave, value: 'I' as GateName, gate: 'I' as GateName },
+      { label: m.ch4.moveH, value: 'H' as GateName, gate: 'H' as GateName, kind: 'quantum' as const },
     ];
     for (;;) {
       resetCoin();
-      const slots: Slot[] = [{ gate: null, who: 'you', active: true }, { gate: null, who: 'computer' }, { gate: null, who: 'you' }];
+      const slots: Slot[] = [{ gate: null, who: m.ui.whoYou, active: true }, { gate: null, who: m.ui.whoComputer }, { gate: null, who: m.ui.whoYou }];
       circuit(slots);
-      say(losses >= 2 ? 'Your first move. (Hint: what made the coin stand on its edge in chapter 3?)' : 'Your first move — you can watch this one.');
+      say(losses >= 2 ? m.ch4.firstHint : m.ch4.first);
       const a1 = await ask(e, MOVES);
       actions.innerHTML = '';
-      slots[0] = { gate: a1, who: 'you' }; circuit(slots);
+      slots[0] = { gate: a1, who: m.ui.whoYou }; circuit(slots);
       await animateGate(a1, e);
       await wait(350, e);
 
-      say('Into the box — now the computer moves in secret.');
+      say(m.ch4.intoBox);
       cover(true); showProbs();
       await wait(500, e);
       const b = randomClassical(1, Math.random);
-      slots[1] = { gate: '?', who: 'computer', active: true }; circuit(slots);
+      slots[1] = { gate: '?', who: m.ui.whoComputer, active: true }; circuit(slots);
       await shake(e);
       await animateGate(b, e, false);
       slots[1].active = false; slots[2].active = true; circuit(slots);
 
-      say('Your last move — blind, the coin stays in the box.');
+      say(m.ch4.last);
       const a2 = await ask(e, MOVES);
       actions.innerHTML = '';
-      slots[2] = { gate: a2, who: 'you' }; circuit(slots);
+      slots[2] = { gate: a2, who: m.ui.whoYou }; circuit(slots);
       await shake(e);
       await animateGate(a2, e, false);
 
-      say('Lifting the box!');
+      say(m.round.lifting);
       await wait(400, e);
       const outcome = await reveal(e);
       slots[1].gate = b; circuit(slots);
@@ -551,21 +521,19 @@ export function mountCoinGame(root: HTMLElement) {
       track('Portal: coin game round', { chapter: 4, result: youWin ? 'you win' : 'computer wins', strategy: a1 + a2 });
       if (!youWin) losses++;
       const sure = a1 === 'H' && a2 === 'H';
-      say(youWin
-        ? (sure ? '<strong>Heads — and it always will be.</strong> H, anything, H: you just became the quantum computer.' : '<strong>Heads — you win!</strong> But was that skill or luck? The computer flipped ' + (b === 'X' ? 'the coin.' : 'nothing.'))
-        : `<strong>Tails — the computer wins.</strong> It ${b === 'X' ? 'flipped the coin' : 'left the coin alone'}.`);
-      showScore(4, 'you');
+      say(youWin ? (sure ? m.ch4.sureWin : m.ch4.luckyWin(b === 'X')) : m.ch4.loss(b === 'X'));
+      showScore(4);
       const next = await ask<'again' | 'next'>(e, [
-        { label: 'Play again', value: 'again', kind: sure ? undefined : 'primary' },
-        { label: 'Open the sandbox →', value: 'next', kind: sure ? 'primary' : undefined },
+        { label: m.round.playAgain, value: 'again', kind: sure ? undefined : 'primary' },
+        { label: m.ch4.next, value: 'next', kind: sure ? 'primary' : undefined },
       ]);
       if (next === 'next') { markDone(4); return go(5); }
     }
   }
 
   async function chapter5(e: number) {
-    title.textContent = '5 · Sandbox';
-    setText(`<p>Your coin, your gates. Add moves and watch the coin: lying flat is heads or tails, standing on its edge is a superposition. <strong>Z</strong> and <strong>S</strong> turn a standing coin around — invisible to a measurement until an H brings it back.</p>`);
+    title.textContent = m.ch5.title;
+    setText(m.ch5.intro);
     const gates: GateName[] = [];
     resetCoin();
     const draw = () => {
@@ -574,33 +542,33 @@ export function mountCoinGame(root: HTMLElement) {
       circuit(slots);
     };
     draw();
-    say('Add a gate.');
+    say(m.ch5.addGate);
     scoreEl.textContent = '';
     for (;;) {
       const full = gates.length >= 8;
       const choice = await ask<GateName | 'undo' | 'reset' | 'measure' | 'many'>(e, [
-        ...(['H', 'X', 'Z', 'S', 'I'] as GateName[]).map((g) => ({ label: GATE_TEXT[g], value: g, gate: g, kind: QUANTUM.has(g) ? ('quantum' as const) : undefined })),
-        { label: 'Look (measure)', value: 'measure' as const, kind: 'primary' as const },
-        { label: 'Measure 100×', value: 'many' as const },
-        { label: 'Undo', value: 'undo' as const },
-        { label: 'Reset', value: 'reset' as const },
+        ...(['H', 'X', 'Z', 'S', 'I'] as GateName[]).map((g) => ({ label: m.gates.name[g], value: g, gate: g, kind: QUANTUM.has(g) ? ('quantum' as const) : undefined })),
+        { label: m.ch5.measure, value: 'measure' as const, kind: 'primary' as const },
+        { label: m.ch5.measureMany, value: 'many' as const },
+        { label: m.ch5.undo, value: 'undo' as const },
+        { label: m.ch5.reset, value: 'reset' as const },
       ].filter((o) => !(full && typeof o.value === 'string' && o.value.length === 1)),
-      `<a href="https://qubins.org/launch/?image=2.1-xl-rise&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=Quantum-Coin-Game.ipynb&ui=rise-classic" target="_blank" rel="noopener" data-umami-event="Portal: notebook launch" data-umami-event-target="qubins" data-umami-event-image="2.1-xl-rise" data-umami-event-notebook="Quantum-Coin-Game.ipynb">The real Qiskit notebook ↗</a>`);
-      if (choice === 'reset') { gates.length = 0; resetCoin(); draw(); say('Back to heads.'); scoreEl.textContent = ''; continue; }
+      `<a href="https://qubins.org/launch/?image=2.1-xl-rise&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=Quantum-Coin-Game.ipynb&ui=rise-classic" target="_blank" rel="noopener" data-umami-event="Portal: notebook launch" data-umami-event-target="qubins" data-umami-event-image="2.1-xl-rise" data-umami-event-notebook="Quantum-Coin-Game.ipynb">${m.ch5.notebook}</a>`);
+      if (choice === 'reset') { gates.length = 0; resetCoin(); draw(); say(m.ch5.backToHeads); scoreEl.textContent = ''; continue; }
       if (choice === 'undo') {
         gates.pop(); resetCoin();
         for (const g of gates) { state = apply(g, state); coin.set(mul(axisAngle(GATE_ROTATIONS[g].axis, GATE_ROTATIONS[g].angle), coin.R)); }
-        showProbs(); draw(); say('Undone.'); continue;
+        showProbs(); draw(); say(m.ch5.undone); continue;
       }
       if (choice === 'many') {
         let h = 0; for (let i = 0; i < 100; i++) if (measure(state) === 'heads') h++;
-        scoreEl.textContent = `100 measurements: ${h}× heads, ${100 - h}× tails (expected ${Math.round(pHeads(state) * 100)} : ${Math.round((1 - pHeads(state)) * 100)})`;
+        scoreEl.textContent = m.ch5.many(h, 100 - h, Math.round(pHeads(state) * 100), Math.round((1 - pHeads(state)) * 100));
         track('Portal: coin game sandbox', { action: 'measure 100', gates: gates.join('') || '-' });
         continue;
       }
       if (choice === 'measure') {
         const outcome = await reveal(e);
-        say(`<strong>${outcome === 'heads' ? 'Heads' : 'Tails'}.</strong> Looking collapsed the coin — add more gates, or reset.`);
+        say(m.ch5.measured(sideName(outcome)));
         gates.length = 0; draw();
         track('Portal: coin game sandbox', { action: 'measure', outcome });
         continue;
@@ -608,9 +576,48 @@ export function mountCoinGame(root: HTMLElement) {
       gates.push(choice);
       draw();
       await animateGate(choice, e);
-      say(`${choice}: ${GATE_TEXT[choice]}.`);
+      say(m.ch5.played(choice, m.gates.name[choice]));
     }
   }
+
+  /* ---- explanations on demand ---- */
+  // Any element with data-term inside the game opens its explanation; "Explain" opens the index.
+  // Links go to IBM Quantum Learning (in the player's language where IBM has it) and to the same
+  // page on doQumentation, where the code runs.
+  const dlg = root.querySelector<HTMLDialogElement>('.qc-explain')!;
+  const dlgBody = dlg.querySelector<HTMLElement>('.qc-explain-body')!;
+  const TERMS = Object.keys(m.glossary) as TermKey[];
+  const isTerm = (x: string | undefined): x is TermKey => !!x && (TERMS as string[]).includes(x);
+  function explain(term: TermKey | null) {
+    if (term) {
+      const g = m.glossary[term];
+      dlgBody.innerHTML = `<button type="button" class="qc-back" data-term="">${m.ui.allTerms}</button>
+        <h3 tabindex="-1">${g.title}</h3>
+        <p>${rich(g.body)}</p>
+        <p class="qc-more">
+          <a href="${ibmLink(term, locale)}" target="_blank" rel="noopener" data-umami-event="Portal: coin game learn more" data-umami-event-site="ibm" data-umami-event-term="${term}">${m.ui.learnMoreIbm}</a><br>
+          <a href="${doqLink(term, locale)}" target="_blank" rel="noopener" data-umami-event="Portal: coin game learn more" data-umami-event-site="doqumentation" data-umami-event-term="${term}">${m.ui.learnMoreDoq}</a>
+        </p>`;
+      track('Portal: coin game explain', { term, lang: locale });
+    } else {
+      dlgBody.innerHTML = `<h3 tabindex="-1">${m.ui.explainTitle}</h3>
+        <ul class="qc-terms">${TERMS.map((t) => `<li><button type="button" class="qc-term" data-term="${t}">${m.glossary[t].title}</button></li>`).join('')}</ul>`;
+    }
+    if (!dlg.open) dlg.showModal();
+    dlgBody.querySelector<HTMLElement>('h3')?.focus();
+  }
+  root.addEventListener('click', (ev) => {
+    const el = (ev.target as HTMLElement).closest<HTMLElement>('[data-term]');
+    if (!el || !root.contains(el)) return;
+    ev.preventDefault();
+    explain(isTerm(el.dataset.term) ? el.dataset.term : null);
+  });
+  root.querySelector('.qc-explain-btn')?.addEventListener('click', () => explain(null));
+  dlg.querySelector('.qc-close')?.addEventListener('click', () => dlg.close());
+  dlg.addEventListener('click', (ev) => { // a click on the backdrop (outside the box) closes
+    const r = dlg.getBoundingClientRect();
+    if (ev.target === dlg && (ev.clientX < r.left || ev.clientX > r.right || ev.clientY < r.top || ev.clientY > r.bottom)) dlg.close();
+  });
 
   /* ---- navigation ---- */
   const CHAPTERS: Record<Chapter, (e: number) => Promise<void>> = { 1: chapter1, 2: chapter2, 3: chapter3, 4: chapter4, 5: chapter5 };
@@ -647,11 +654,11 @@ export function mountCoinGame(root: HTMLElement) {
   go(1, true);
 }
 
-function describe(s: State, lbl: string | null): string {
-  const [x, , z] = bloch(s);
-  if (lbl === '|0⟩') return '|0⟩ · heads, lying flat';
-  if (lbl === '|1⟩') return '|1⟩ · tails, lying flat';
-  if (lbl === '|+⟩') return '|+⟩ = (|0⟩+|1⟩)/√2 · on its edge, heads side out';
-  if (lbl === '|−⟩') return '|−⟩ = (|0⟩−|1⟩)/√2 · on its edge, tails side out';
-  return `on its edge, turned · Bloch (${x.toFixed(2)}, ${bloch(s)[1].toFixed(2)}, ${z.toFixed(2)})`;
+function describe(s: State, lbl: string | null, m: Messages): string {
+  const [x, y, z] = bloch(s);
+  if (lbl === '|0⟩') return m.states.zero;
+  if (lbl === '|1⟩') return m.states.one;
+  if (lbl === '|+⟩') return m.states.plus;
+  if (lbl === '|−⟩') return m.states.minus;
+  return m.states.other(x.toFixed(2), y.toFixed(2), z.toFixed(2));
 }
