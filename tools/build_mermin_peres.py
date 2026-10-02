@@ -6,9 +6,9 @@ import nbformat as nbf
 nb = nbf.v4.new_notebook()
 cells = []
 def md(src, slide='slide'):
-    c = nbf.v4.new_markdown_cell(src); c.metadata['slideshow'] = {'slide_type': slide}; cells.append(c)
+    c = nbf.v4.new_markdown_cell(src, id=f'cell-{len(cells)}'); c.metadata['slideshow'] = {'slide_type': slide}; cells.append(c)  # stable ids: rebuilds diff cleanly
 def code(src, slide='fragment'):
-    c = nbf.v4.new_code_cell(src); c.metadata['slideshow'] = {'slide_type': slide}; cells.append(c)
+    c = nbf.v4.new_code_cell(src, id=f'cell-{len(cells)}'); c.metadata['slideshow'] = {'slide_type': slide}; cells.append(c)
 
 md("""# The Mermin–Peres Magic Square
 
@@ -348,7 +348,7 @@ md("""# What does it mean?
 md("""## Learn more
 
 * [The CHSH game](https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/entanglement-in-action/chsh-game) — another nonlocal game, in IBM Quantum Learning's *Basics of quantum information*
-* S. Bravyi, D. Gosset, R. König, M. Tomamichel: [Quantum advantage with noisy shallow circuits](https://arxiv.org/abs/1904.01502), Nature Physics (2020) — section II.A describes this game with the same square and circuits. We follow their convention: Alice gets a column, Bob a row. They number columns and rows 01, 10, 11 (two bits) where we write 1, 2, 3, and many other texts swap Alice's and Bob's roles.
+* S. Bravyi, D. Gosset, R. König, M. Tomamichel: [Quantum advantage with noisy shallow circuits](https://doi.org/10.1038/s41567-020-0948-z), Nature Physics 16, 1040 (2020), [arXiv:1904.01502](https://arxiv.org/abs/1904.01502) — section II.A describes this game with the same square and circuits. We follow their convention: Alice gets a column, Bob a row. They number columns and rows 01, 10, 11 (two bits) where we write 1, 2, 3, and many other texts swap Alice's and Bob's roles.
 * [Quantum pseudo-telepathy](https://en.wikipedia.org/wiki/Quantum_pseudo-telepathy) on Wikipedia — the magic square game and its relatives
 * [This Proof Demonstrates a Quantum Advantage, Even for Noisy Quantum Computers](https://medium.com/qiskit/this-proof-demonstrates-a-quantum-advantage-even-for-noisy-quantum-computers-b44a738801ad) — the Qiskit blog post that inspired the first version
 * More games: the [Quantum Coin Game](Quantum-Coin-Game.ipynb) and the [GHZ Game](GHZ-Game.ipynb)""", slide='fragment')

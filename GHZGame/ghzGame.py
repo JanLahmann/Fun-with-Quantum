@@ -24,31 +24,31 @@ def ghz_state(qc,q):
 def runExperiment():
     for i in range (1,5):
         correctEinstein = False; correctSchr = False;
-        # create the quantum circuit with the chosen coin moves
-        q = QuantumRegister(3) # create a quantum register with one qubit
+        # create the quantum circuit for the three players
+        q = QuantumRegister(3) # create a quantum register with three qubits (Alice, Bob, you)
         # create a classical register that will hold the results of the measurement
         c = ClassicalRegister(3) 
         qc = QuantumCircuit(q, c) # creates the quantum circuit
         ghz_state(qc,q) # bring circuit in ghz_state
         if (i ==1): # ask all for color
             # team Einstein (classical)
-            if (a_color*b_color*y_color == -1): correctEinstein = True; # if the product of the x values = -1 -> win
+            if (a_color*b_color*y_color == -1): correctEinstein = True; # red = 1, blue = -1: product -1 <=> even number of red -> win
             # team Schrödinger (quantum)
             xxx(qc, q)
             counts = simulate(qc, q, c, 1)
-            if ("000" in counts or "011" in counts or "101" in counts or "110" in counts): correctSchr = True; # if the product of the x values = -1 -> win 
+            if ("000" in counts or "011" in counts or "101" in counts or "110" in counts): correctSchr = True; # even number of 1s (red) -> win 
         else:
-            if (i==2): # if the random number is 1 make an XYY-measurement
+            if (i==2): # color, shape, shape: XYY-measurement
                 if (a_color*b_shape*y_shape == 1): correctEinstein = True;
                 xyy(qc, q)
-            elif (i==3): # YXY-measurement
+            elif (i==3): # shape, color, shape: YXY-measurement
                 if (a_shape*b_color*y_shape == 1): correctEinstein = True;
                 yxy(qc, q)
-            elif (i==4): # YYX-measurement
+            elif (i==4): # shape, shape, color: YYX-measurement
                 if (a_shape*b_shape*y_color == 1): correctEinstein = True;
                 yyx(qc, q)
             counts = simulate(qc, q, c, 1)
-            if ("001" in counts or "010" in counts or "100" in counts or "111" in counts): correctSchr = True; # if product = 1 -> win
+            if ("001" in counts or "010" in counts or "100" in counts or "111" in counts): correctSchr = True; # odd number of 1s (red or star) -> win
         print ("Round ", i, ", Question ", i)
         if (correctSchr == True and correctEinstein != True): print ("Team Einstein was wrong, Team Schrödinger was right"); 
         elif (correctSchr != True and correctEinstein == True): print ("Team Einstein was right, Team Schrödinger was wrong");
@@ -80,8 +80,8 @@ def yxy(qc, q):
 def yyx(qc, q):
     qc.sdg(q[0])
     qc.h(q[0])
+    qc.sdg(q[1])
     qc.h(q[1])
-    qc.sdg(q[2])
     qc.h(q[2])
     return qc
 
@@ -98,20 +98,20 @@ def randomQuestion():
     x = randint (1,4)
     if (x == 1): print("Color, color, color"); 
     if (x == 2): print("Color, shape, shape");
-    if (x == 3): print("Shape, shape, color");
-    if (x == 4): print("Shape, color, shape");
+    if (x == 3): print("Shape, color, shape");
+    if (x == 4): print("Shape, shape, color");
     return x;
 
-def correctAnswer(x): # prints out the 
+def correctAnswer(x): # prints out the gates that answer question x
     print ("Copy the following code in the cell above:\n\n")
     if (x==1):
         print ("qc.h(q[0])\nqc.h(q[1])\nqc.h(q[2])")
     if (x==2):
         print ("qc.h(q[0])\nqc.sdg(q[1])\nqc.h(q[1])\nqc.sdg(q[2])\nqc.h(q[2])")
     if (x==3):
-        print ("qc.sdg(q[0])\nqc.h(q[0])\nqc.sdg(q[1])\nqc.h(q[1])\nqc.h(q[2])")
-    if (x==4):
         print ("qc.sdg(q[0])\nqc.h(q[0])\nqc.h(q[1])\nqc.sdg(q[2])\nqc.h(q[2])")
+    if (x==4):
+        print ("qc.sdg(q[0])\nqc.h(q[0])\nqc.sdg(q[1])\nqc.h(q[1])\nqc.h(q[2])")
 
 
 def circuitCheck(qc,q,c,x):
