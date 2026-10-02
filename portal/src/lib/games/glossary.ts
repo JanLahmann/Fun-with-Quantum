@@ -158,7 +158,7 @@ export const GLOSSARY_EN: Record<TermKey, GlossaryEntry> = {
   },
   iterations: {
     title: 'How many rounds?',
-    body: 'About π/4·√(N/M) rounds reach the first peak, for M solutions among N. Fewer rounds stop short; a few more overshoot and the chance falls — more is not better. (It rises again later, but every later peak costs more rounds.) If more than half of all assignments are solutions, don’t search at all — just measure. If M is unknown, quantum counting can estimate it, or you try growing numbers of rounds.',
+    body: 'About π/4·√(N/M) rounds reach the first peak, for M solutions among N. Fewer rounds stop short; a few more overshoot and the chance falls — more is not better. (It rises again later, but every later peak costs more rounds.) If half or more of all assignments are solutions, don’t search at all — just measure. If M is unknown, quantum counting can estimate it, or you try growing numbers of rounds.',
   },
   speedup: {
     title: 'Quadratic speed-up',

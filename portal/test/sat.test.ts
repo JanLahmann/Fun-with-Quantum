@@ -24,7 +24,8 @@ describe('formulas', () => {
 
   it('sort variables like Python (capitals first) and accept long names', () => {
     expect(variables(parse('Bob & ~alice | eve & (Dan | ~Bob)'))).toEqual(['Bob', 'Dan', 'alice', 'eve']);
-    expect(variables(parse('x10 | x2 | x1'))).toEqual(['x1', 'x10', 'x2']);
+    expect(variables(parse('x10 | x2 | x1'))).toEqual(['x1', 'x2', 'x10']); // natural order, as the notebook
+    expect(variables(parse('b2 | a10 | B | a2 | a'))).toEqual(['B', 'a', 'a2', 'a10', 'b2']);
     expect(variables(parse('_a & b_2'))).toEqual(['_a', 'b_2']);
   });
 
@@ -111,7 +112,9 @@ describe('Grover', () => {
 
   it('rounds to the first peak: floor(π/(4θ)); 0 when more than half are solutions; null without solutions', () => {
     expect(bestIterations(6, 1)).toBe(6);
-    expect(predicted(1, 1, bestIterations(1, 1)!)).toBeCloseTo(0.5, 12); // exactly half: 0 or 1 round, both 50%
+    expect(bestIterations(1, 1)).toBe(0); // exactly half: 0 rounds (1 round would also give 50%)
+    expect(bestIterations(3, 4)).toBe(0);
+    expect(predicted(3, 4, 1)).toBeCloseTo(predicted(3, 4, 0), 12);
     expect(bestIterations(3, 0)).toBeNull();
     expect(bestIterations(3, 8)).toBe(0); // every assignment a solution
     expect(bestIterations(2, 3)).toBe(0); // 'a | b': one round would drop 75% to 0%
@@ -119,7 +122,7 @@ describe('Grover', () => {
     // for M/N > ½ any single round lowers the chance; at the returned k the chance is the best of k = 0…k+1
     for (let n = 1; n <= 6; n++) for (let m = 1; m <= 2 ** n; m++) {
       const k = bestIterations(n, m)!;
-      if (m / 2 ** n > 0.5) expect(predicted(n, m, 1)).toBeLessThan(predicted(n, m, 0) + 1e-12);
+      if (2 * m >= 2 ** n) { expect(k).toBe(0); expect(predicted(n, m, 1)).toBeLessThan(predicted(n, m, 0) + 1e-12); }
       for (let j = 0; j <= k + 1; j++) expect(predicted(n, m, k), `n=${n} m=${m} k=${k} j=${j}`).toBeGreaterThanOrEqual(predicted(n, m, j) - 1e-12);
     }
   });

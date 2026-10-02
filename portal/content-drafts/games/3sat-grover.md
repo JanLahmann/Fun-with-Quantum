@@ -20,4 +20,4 @@ possibilities in roughly √N steps instead of N.
 
 You'll see the problem encoded as a phase oracle, watch amplitude amplification concentrate
 probability on the solutions, and read the answer off a histogram. It's the clearest small
-example of a quantum algorithm doing something measurably better than brute force.
+example of a quantum algorithm beating brute-force search — in the number of oracle calls it needs.

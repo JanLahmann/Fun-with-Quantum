@@ -17,10 +17,13 @@ FORMULAS = [
     'Bob & ~alice | eve & (Dan | ~Bob)',                    # mixed case, longer names
     '(p | q) & (~p | r) & (~q | ~r) & (r | s | ~t)',        # five variables
     'a & b & c & d & e & f',                                # six variables, one solution
+    'x10 & ~x2 | x1 & x2',                                  # natural order: x1, x2, x10
+    'a | b',                                                # 3 of 4: more than half are solutions
 ]
 
-def variables(expr):
-    return sorted(set(re.findall(r'[A-Za-z_]\w*', expr)))
+def variables(expr):  # as in 3sat.ipynb: natural order, x2 before x10
+    names = set(re.findall(r'[A-Za-z_]\w*', expr))
+    return sorted(names, key=lambda v: [int(t) if t.isdigit() else t for t in re.split(r'(\d+)', v)])
 
 out = {'qiskit': qiskit.__version__, 'cases': []}
 for f in FORMULAS:

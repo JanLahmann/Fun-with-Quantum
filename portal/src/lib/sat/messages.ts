@@ -104,7 +104,7 @@ export const STEP = {
   measured: (bits: string, what: string, ok: boolean) => `Measured <b>${bits}</b>${what ? ` — ${what}` : ''}: ${ok ? '<span class="win">a solution ✓</span>' : '<span class="lose">not a solution ✗</span> — check the answer, then run again'}.`,
   many: (hits: number, n: number) => `${n} measurements: <b>${hits}</b> solutions (${pct(hits / n)}).`,
   overshoot: (best: number) => (best === 0
-    ? 'More than half of all assignments are solutions, so a Grover round only lowers the chance — measuring right away is best ([how many rounds?](#iterations)).'
+    ? 'Half or more of all assignments are solutions, so a Grover round can’t raise the chance — measuring right away is best ([how many rounds?](#iterations)).'
     : `Too far: the chance fell again — the state turned past the solutions. The first peak was after ${best} round${best === 1 ? '' : 's'} ([how many rounds?](#iterations)).`),
   noSolution: 'No assignment satisfies this formula, so the oracle marks nothing and Grover can’t amplify anything — every assignment keeps the same small chance.',
   allSolutions: 'Every assignment satisfies this formula — there is nothing to search for.',
@@ -125,7 +125,7 @@ export const CH3 = {
 export const CH4 = {
   title: 'Your own puzzle',
   next: 'Next: how it works →',
-  intro: `<p>Write a formula with & (AND), | (OR), ~ (NOT) and parentheses — any variable names, up to 6 variables. ~ binds before &, & before |, as in Qiskit. The variables go onto qubits 0, 1, 2, … in sorted order (capital letters before small ones).</p>`,
+  intro: `<p>Write a formula with & (AND), | (OR), ~ (NOT) and parentheses — variable names of letters, digits and _, up to 6 variables. ~ binds before &, & before |, as in Qiskit. The variables go onto qubits 0, 1, 2, … in sorted order: capital letters before small ones, x2 before x10 — as in the notebook.</p>`,
   examples: [
     { label: 'Party', formula: '((A & B) | (C & D)) & ~(A & D)' },
     { label: 'Notebook’s turn', formula: '((A & C) | (B & D)) & ~(A & D)' },
@@ -140,7 +140,7 @@ export const CH4 = {
 export const summary = (nv: number, n: number, m: number, best: number | null, p: number | null) =>
   `${nv} variable${nv === 1 ? '' : 's'}, ${n} assignments, <b>${m}</b> solution${m === 1 ? '' : 's'}`
   + (best === null || p === null ? '.'
-    : best === 0 ? `. More than half are solutions, so Grover can’t help: measuring right away finds one ${pct(p)} of the time.`
+    : best === 0 ? `. Half or more are solutions, so Grover can’t help: measuring right away finds one ${pct(p)} of the time.`
     : `. About π/4·√(N/M) = <b>${best}</b> round${best === 1 ? '' : 's'} reach${best === 1 ? 'es' : ''} the first peak: a solution ${pct(p)} of the time.`);
 
 export const CH5 = {

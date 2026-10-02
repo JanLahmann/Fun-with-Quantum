@@ -4,7 +4,8 @@
  *
  * Formulas use & (AND), | (OR), ~ (NOT) and parentheses, with Python's precedence (~ before &
  * before |), as Qiskit's PhaseOracleGate reads them. Variables are put on qubits 0, 1, 2, … in
- * sorted order (the notebook's `variables()`); assignment index i has variable k = bit k of i.
+ * natural order, x2 before x10 (the notebook's `variables()`); assignment index i has variable k =
+ * bit k of i.
  *
  * Grover is simulated exactly on the real amplitudes: superposition (all equal), oracle (flip the
  * sign of every solution), diffuser (reflect about the average: a → 2·mean − a).
@@ -72,12 +73,28 @@ export function parse(src: string): Node {
   return n;
 }
 
-/** The variables of a formula, sorted (by code point, like Python's sorted()). */
+/**
+ * Natural order, as the notebook's variables(): split names into text and number runs, compare
+ * text by code point (capitals before small letters, like Python) and numbers by value.
+ */
+function naturalKey(v: string): (string | number)[] {
+  return v.split(/(\d+)/).map((t, i) => (i % 2 ? Number(t) : t));
+}
+export function compareNames(a: string, b: string): number {
+  const ka = naturalKey(a), kb = naturalKey(b);
+  for (let i = 0; i < Math.min(ka.length, kb.length); i++) {
+    const x = ka[i], y = kb[i];
+    if (x !== y) return x < y ? -1 : 1; // same position → same type (text, number, text, …)
+  }
+  return ka.length - kb.length;
+}
+
+/** The variables of a formula in natural order (x2 before x10). */
 export function variables(n: Node): string[] {
   const s = new Set<string>();
   const walk = (x: Node) => { if (x.t === 'var') s.add(x.name); else if (x.t === 'not') walk(x.a); else { walk(x.a); walk(x.b); } };
   walk(n);
-  return [...s].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+  return [...s].sort(compareNames);
 }
 
 export function evaluate(n: Node, v: Record<string, boolean>): boolean {
@@ -159,11 +176,13 @@ export function predicted(nVars: number, m: number, k: number): number {
 
 /**
  * The number of rounds that reaches the first peak of sin²((2k+1)θ): floor(π/(4θ)), about
- * π/4·√(N/M). It is 0 when more than half of the assignments are solutions — then any round
- * lowers the chance (|sin 3θ| < sin θ for sin²θ > ½), so you just measure. null without solutions.
+ * π/4·√(N/M). It is 0 when half or more of the assignments are solutions — then no round raises
+ * the chance (|sin 3θ| ≤ sin θ for sin²θ ≥ ½), so you just measure. null without solutions.
+ * Same as the notebook's best_iterations().
  */
 export function bestIterations(nVars: number, m: number): number | null {
   if (m === 0) return null;
+  if (2 * m >= 2 ** nVars) return 0;
   const theta = Math.asin(Math.sqrt(m / 2 ** nVars));
   return Math.floor(Math.PI / (4 * theta));
 }
