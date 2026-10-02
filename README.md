@@ -8,7 +8,7 @@
  4. Hardy's Paradox (complementary observables & the problem with classical logic) 
  5. GHZ Game (entanglement)
  6. GHZ Game on real devices
- 7. Mermin-Peres Magic Square (under development)
+ 7. Mermin-Peres Magic Square (entanglement beats every classical strategy)
  
  
 ---
@@ -96,10 +96,10 @@ This notebook compares several IBM Quantum devices, explains how to (manually) o
 View - and play the game online on real quantum devices, without any install - in Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=GHZ-on-Real-Devices.ipynb)
 
 ---
-### 7. Mermin-Peres Magic Square (under development)
-A base version of the Mermin-Peres magic square game demonstrating the computational power of quantum computers, which can be further extended to outperform classical machines - extended by Jan-R. Lahmann & David Drexlin with [Qiskit](https://qiskit.org). Based on the Medium article [This Proof Demonstrates a Quantum Advantage, Even for Noisy Quantum Computers](https://medium.com/qiskit/this-proof-demonstrates-a-quantum-advantage-even-for-noisy-quantum-computers-b44a738801ad). 
+### 7. Mermin-Peres Magic Square
+Alice and Bob, in separate rooms, each fill in one row or column of a 3×3 square of 0s and 1s under parity rules that no square of numbers can satisfy — the best classical team wins 8 of 9 questions. Sharing two entangled qubit pairs, they win every round. The notebook lets you hunt for a magic square yourself, brute-forces every classical strategy, then builds and runs the quantum circuits for all nine questions. Original version by David Drexlin & Jan-R. Lahmann (2021), rebuilt in 2026 with [Qiskit](https://www.ibm.com/quantum/qiskit); inspired by the Qiskit blog post [This Proof Demonstrates a Quantum Advantage, Even for Noisy Quantum Computers](https://medium.com/qiskit/this-proof-demonstrates-a-quantum-advantage-even-for-noisy-quantum-computers-b44a738801ad).
 
-View - and play the game online, without any install - in Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=Mermin–Peres-Game.ipynb)
+View - and play the game online, without any install - in Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=Mermin-Peres-Game.ipynb)
 
 ---
 ## Usage instructions for the RISE Slideshow Extension
