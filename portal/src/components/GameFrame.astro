@@ -1,0 +1,173 @@
+---
+/**
+ * The frame shared by the browser GHZ game and magic square: chapter tabs, "Explain" button, a
+ * stage (slot) next to the story panel, and the explanation dialog. Behavior: src/lib/games/shell.ts.
+ * Looks like the coin game (components/CoinGame.astro) on purpose — the three are a set.
+ */
+interface Props {
+  id: string;
+  label: string;
+  locale: string;
+  chapters: readonly string[];
+  chaptersLabel: string;
+  explain: string;
+  explainTitle: string;
+  close: string;
+  noscript: string;
+}
+const { id, label, locale, chapters, chaptersLabel, explain, explainTitle, close, noscript } = Astro.props;
+---
+
+<section class="qg" id={id} aria-label={label} data-locale={locale}>
+  <div class="qg-top">
+    <div class="qg-chapters" role="tablist" aria-label={chaptersLabel}>
+      {chapters.map((c, i) => (
+        <button role="tab" data-chapter={i + 1}><span class="n">{i + 1}</span> {c}</button>
+      ))}
+    </div>
+    <button type="button" class="qg-explain-btn" aria-haspopup="dialog">ⓘ {explain}</button>
+  </div>
+  <div class="qg-arena">
+    <div class="qg-stage"><slot /></div>
+    <div class="qg-panel">
+      <h3 class="qg-title"></h3>
+      <div class="qg-text"></div>
+      <div class="qg-circuit"></div>
+      <p class="qg-status" aria-live="polite"></p>
+      <div class="qg-actions"></div>
+      <div class="qg-score" aria-live="polite"></div>
+    </div>
+  </div>
+  <dialog class="qg-explain" aria-label={explainTitle}>
+    <button type="button" class="qg-close" aria-label={close}>×</button>
+    <div class="qg-explain-body"></div>
+  </dialog>
+  <noscript><p class="qg-noscript">{noscript}</p></noscript>
+</section>
+
+<style is:global>
+  .qg {
+    --alice: var(--cyan);
+    --bob: var(--magenta);
+    --you: #7357d6;
+    --win: #1f9d55;
+    --lose: #d64545;
+    background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+    box-shadow: var(--shadow); padding: 18px 22px 22px; margin-bottom: 36px;
+  }
+  @media (prefers-color-scheme: dark) {
+    .qg { --you: #a28bff; --win: #4cc38a; --lose: #f07575; }
+  }
+  .qg-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+  .qg-chapters { display: flex; flex-wrap: wrap; gap: 6px; }
+  .qg-chapters button {
+    font: 600 0.82rem var(--sans); color: var(--muted); background: transparent;
+    border: 1px solid var(--line); border-radius: 20px; padding: 6px 12px; cursor: pointer;
+  }
+  .qg-chapters button .n {
+    display: inline-grid; place-items: center; width: 18px; height: 18px; margin-right: 4px;
+    border-radius: 50%; font: 600 0.7rem var(--mono); background: var(--line); color: var(--ink);
+  }
+  .qg-chapters button:hover { border-color: var(--cyan); color: var(--cyan); }
+  .qg-chapters button[aria-selected='true'] { color: var(--ink); border-color: var(--magenta); }
+  .qg-chapters button[aria-selected='true'] .n { background: var(--grad); color: #fff; }
+  .qg-chapters button.done .n { background: color-mix(in srgb, var(--cyan) 22%, transparent); color: var(--cyan); }
+  .qg-explain-btn {
+    flex: 0 0 auto; font: 600 0.82rem var(--sans); color: var(--cyan); background: transparent;
+    border: 1px solid var(--cyan); border-radius: 20px; padding: 6px 12px; cursor: pointer;
+  }
+  .qg-explain-btn:hover { background: color-mix(in srgb, var(--cyan) 10%, transparent); }
+
+  .qg-arena { display: grid; grid-template-columns: minmax(280px, 1fr) 1.15fr; gap: 26px; align-items: start; }
+  .qg-stage { min-width: 0; }
+  .qg-panel { min-width: 0; }
+  @media (max-width: 860px) {
+    .qg-arena { grid-template-columns: 1fr; gap: 14px; }
+    /* on phones keep the moves right under the stage; the explanation follows */
+    .qg-panel { display: flex; flex-direction: column; }
+    .qg-title { order: 0; }
+    .qg-status { order: 1; }
+    .qg-actions { order: 2; }
+    .qg-score { order: 3; }
+    .qg-circuit { order: 4; }
+    .qg-text { order: 5; margin-top: 12px; }
+  }
+
+  .qg-title { font-size: 1.2rem; margin-bottom: 6px; }
+  .qg-text p { color: var(--muted); font-size: 0.97rem; margin-bottom: 8px; }
+  .qg-text p b, .qg-text p strong { color: var(--ink); }
+  .qg-text .math { font-family: var(--mono); font-size: 0.85rem; color: var(--ink); line-height: 1.7; }
+  .qg-text table { border-collapse: collapse; font: 0.8rem var(--mono); margin: 4px 0 10px; }
+  .qg-text th, .qg-text td { border-bottom: 1px solid var(--line); padding: 3px 8px 3px 0; text-align: left; color: var(--ink); }
+  .qg-text th { color: var(--muted); font-weight: 600; }
+  .qg-text blockquote { border-left: 3px solid var(--magenta); padding-left: 10px; margin: 6px 0 10px; color: var(--ink); font-family: var(--serif); font-style: italic; }
+  .qg-status { font-size: 1.02rem; min-height: 1.6em; margin: 10px 0; }
+  .qg-status strong { color: var(--magenta); }
+  .qg-status .win { color: var(--win); font-weight: 700; }
+  .qg-status .lose { color: var(--lose); font-weight: 700; }
+  .qg-actions { display: flex; flex-wrap: wrap; gap: 8px; min-height: 44px; }
+  .qg-actions button {
+    font: 600 0.93rem var(--sans); padding: 10px 16px; border-radius: 10px; cursor: pointer;
+    border: 1.5px solid var(--line); background: var(--card); color: var(--ink);
+  }
+  .qg-actions button:hover:not(:disabled) { border-color: var(--cyan); color: var(--cyan); }
+  .qg-actions button.primary { background: var(--grad); color: #fff; border-color: transparent; }
+  .qg-actions button.primary:hover:not(:disabled) { color: #fff; filter: brightness(1.08); }
+  .qg-actions button.quantum { border-color: var(--magenta); }
+  .qg-actions button.current { border-color: var(--magenta); color: var(--magenta); }
+  .qg-actions button:disabled { opacity: 0.45; cursor: default; }
+  .qg-actions a { align-self: center; font-size: 0.9rem; }
+  .qg-score { margin-top: 12px; font: 0.8rem var(--mono); color: var(--muted); letter-spacing: 0.04em; }
+
+  .qg-term {
+    font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: help;
+    text-decoration: underline dotted color-mix(in srgb, var(--cyan) 70%, transparent); text-underline-offset: 3px;
+  }
+  .qg-term:hover { color: var(--cyan); }
+
+  /* circuit (src/lib/games/circuit.ts) */
+  .qg-circuit { overflow-x: auto; margin: 6px 0 2px; }
+  .qg-circuit:empty { display: none; }
+  .qg-circuit-svg { display: block; width: 100%; height: auto; } /* fits the panel; wide ones scroll on phones (min-width inline) */
+  .qg-circuit-svg .wl { font: 11px var(--mono); fill: var(--muted); }
+  .qg-circuit-svg .wire { stroke: var(--muted); stroke-width: 1.2; opacity: 0.6; }
+  .qg-circuit-svg .barrier { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 3 3; opacity: 0.6; }
+  .qg-circuit-svg .gate rect { fill: var(--card); stroke: var(--muted); stroke-width: 1.8; }
+  .qg-circuit-svg .gate text { font: 700 13px var(--mono); fill: var(--ink); }
+  .qg-circuit-svg .gate .link, .qg-circuit-svg .gate path, .qg-circuit-svg .gate line { stroke: var(--muted); stroke-width: 1.8; fill: none; }
+  .qg-circuit-svg .gate .dot { fill: var(--muted); }
+  .qg-circuit-svg .gate .plus { fill: var(--card); stroke: var(--muted); stroke-width: 1.8; }
+  .qg-circuit-svg .meter rect { stroke: var(--ink); }
+  .qg-circuit-svg .meter path, .qg-circuit-svg .meter line { stroke: var(--ink); }
+  .qg-circuit-svg .tone-alice rect, .qg-circuit-svg .tone-alice .plus, .qg-circuit-svg .tone-alice .link { stroke: var(--alice); }
+  .qg-circuit-svg .tone-alice .dot { fill: var(--alice); }
+  .qg-circuit-svg .tone-alice text { fill: var(--alice); }
+  .qg-circuit-svg .tone-bob rect, .qg-circuit-svg .tone-bob .plus, .qg-circuit-svg .tone-bob .link, .qg-circuit-svg .tone-bob path { stroke: var(--bob); }
+  .qg-circuit-svg .tone-bob .dot { fill: var(--bob); }
+  .qg-circuit-svg .tone-bob text { fill: var(--bob); }
+  .qg-circuit-svg .tone-you rect { stroke: var(--you); }
+  .qg-circuit-svg .tone-you text { fill: var(--you); }
+
+  /* explanation dialog */
+  .qg-explain {
+    margin: auto; /* global.css resets * { margin: 0 }, which un-centres a modal dialog */
+    max-width: min(520px, calc(100vw - 32px)); width: 100%; max-height: calc(100vh - 48px); overflow-y: auto; border: 1px solid var(--line); border-radius: 16px;
+    background: var(--card); color: var(--ink); padding: 24px 26px 20px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  }
+  .qg-explain::backdrop { background: rgba(20, 21, 29, 0.45); }
+  .qg-close {
+    position: absolute; top: 10px; right: 12px; width: 32px; height: 32px; border-radius: 50%;
+    border: 1px solid var(--line); background: var(--card); color: var(--muted); font-size: 1.2rem; cursor: pointer;
+  }
+  .qg-close:hover { color: var(--ink); border-color: var(--cyan); }
+  .qg-explain h3 { font-size: 1.15rem; margin: 6px 36px 10px 0; }
+  .qg-explain h3:focus { outline: none; }
+  .qg-explain p { color: var(--ink); font-size: 0.97rem; margin-bottom: 12px; }
+  .qg-explain .qg-more { font: 0.85rem var(--sans); line-height: 1.9; margin-bottom: 0; }
+  .qg-explain .qg-back { font: 0.8rem var(--mono); color: var(--cyan); background: none; border: 0; cursor: pointer; padding: 0; }
+  .qg-explain .qg-terms { list-style: none; columns: 2 200px; gap: 18px; padding: 0; }
+  .qg-explain .qg-terms li { margin: 0 0 8px; break-inside: avoid; }
+  .qg-explain .qg-terms .qg-term { text-align: left; }
+  .qg-noscript { color: var(--muted); }
+  @media (max-width: 480px) { .qg { padding: 14px; } }
+</style>

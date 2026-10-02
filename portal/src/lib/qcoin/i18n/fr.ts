@@ -57,7 +57,7 @@ const fr: Messages = {
       X: '[<b>X</b>](#xgate) · demi-tour (180°) autour de l’<b>axe x</b> (qui passe par |+⟩ et |−⟩) : face ↔ pile, tandis que |+⟩ et |−⟩ ne bougent pas.',
       H: '[<b>H</b>](#hadamard) · demi-tour (180°) autour de la <b>diagonale entre x et z</b> : |0⟩ ↔ |+⟩ et |1⟩ ↔ |−⟩ — à plat ↔ sur la tranche.',
       Z: '[<b>Z</b>](#zgate) · demi-tour (180°) autour de l’<b>axe z</b> (qui passe par |0⟩ et |1⟩) : |+⟩ ↔ |−⟩, tandis que face et pile ne bougent pas.',
-      S: '[<b>S</b>](#sgate) · quart de tour (90°) autour de l’<b>axe z</b> : |+⟩ → |+i⟩ — une [phase](#phase) que seul un H peut transformer en face ou pile.',
+      S: '[<b>S</b>](#sgate) · quart de tour (90°) autour de l’<b>axe z</b> : |+⟩ → |+i⟩ — toujours 50:50, même après un H. Deux S donnent un Z : |+⟩ → |−⟩.',
     },
   },
 
@@ -152,7 +152,7 @@ const fr: Messages = {
 
   ch5: {
     title: '5 · Bac à sable',
-    intro: `<p>Ta pièce, tes [portes](#gate). Ajoute des coups et observe la pièce : à plat, c’est face ou pile ; debout sur la tranche, c’est une [superposition](#superposition). [<strong>Z</strong>](#zgate) et [<strong>S</strong>](#sgate) font pivoter une pièce debout — invisible pour une mesure, jusqu’à ce qu’un H la recouche.</p>`,
+    intro: `<p>Ta pièce, tes [portes](#gate). Ajoute des coups et observe la pièce : à plat, c’est face ou pile ; debout sur la tranche, c’est une [superposition](#superposition). [<strong>Z</strong>](#zgate) et [<strong>S</strong>](#sgate) font pivoter une pièce debout — une mesure ne le voit pas. Un H, si : H, Z, H finit sur pile. Un seul S est plus subtil : H, S, H reste à 50:50 — essaie H, S, S, H.</p>`,
     addGate: 'Ajoute une porte.',
     measure: 'Regarder (mesurer)',
     measureMany: 'Mesurer 100×',
@@ -185,7 +185,7 @@ const fr: Messages = {
     },
     ket: {
       title: 'La notation |0⟩',
-      body: '|0⟩ et |1⟩ (« ket zéro », « ket un ») sont les deux états de base : face et pile. (|0⟩ + |1⟩)/√2 = |+⟩ et (|0⟩ − |1⟩)/√2 = |−⟩ sont des superpositions. Les nombres devant sont des amplitudes ; leurs carrés sont les probabilités (½ chacune ici). Le signe entre les deux est la [phase](#phase).',
+      body: '|0⟩ et |1⟩ (« ket zéro », « ket un ») sont les deux états de base : face et pile. (|0⟩ + |1⟩)/√2 = |+⟩ et (|0⟩ − |1⟩)/√2 = |−⟩ sont des superpositions. Les nombres devant sont des amplitudes ; le carré de leur module, |a|², donne la probabilité (½ chacune ici). Le signe entre les deux est la [phase](#phase).',
     },
     gate: {
       title: 'Portes — les coups sur la pièce',

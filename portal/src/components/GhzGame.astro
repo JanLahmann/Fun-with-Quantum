@@ -1,0 +1,99 @@
+---
+/**
+ * The GHZ game, playable in the browser — no Binder, no install.
+ * Logic in src/lib/ghz/game.ts (unit-tested), interaction in src/lib/ghz/ui.ts.
+ */
+import GameFrame from './GameFrame.astro';
+import { QUESTIONS } from '../lib/ghz/game';
+import { PAGE, UI, questionLabel } from '../lib/ghz/messages';
+---
+
+<GameFrame id="ghz-game" label={PAGE.heading} locale="en" chapters={UI.chapters} chaptersLabel={UI.chaptersLabel}
+  explain={UI.explain} explainTitle={UI.explainTitle} close={UI.close} noscript={UI.noscript}>
+  <div class="gz-board" data-mode="off">
+    <div class="gz-questions" role="group" aria-label={UI.questionsLabel}>
+      {QUESTIONS.map((q, i) => <button type="button" data-q={i} aria-pressed="false">{questionLabel(q)}</button>)}
+    </div>
+    <div class="gz-players">
+      {UI.players.map((name, i) => (
+        <div class={`gz-player p${i}`}>
+          <div class="name">{name}</div>
+          <div class="ask"></div>
+          <button type="button" class="thing" data-player={i} aria-label={UI.changeThing(name)} disabled></button>
+          <div class="said"></div>
+        </div>
+      ))}
+    </div>
+    <p class="gz-verdict" aria-live="polite"></p>
+    <div class="gz-table"></div>
+    <div class="gz-hist"></div>
+  </div>
+</GameFrame>
+
+<script>
+  import { mountGhzGame } from '../lib/ghz/ui';
+  const root = document.getElementById('ghz-game');
+  if (root) mountGhzGame(root);
+</script>
+
+<style>
+  .gz-board { --red: #d64545; --blue: #2f6fdb; display: grid; gap: 12px; padding: 4px 0; }
+  @media (prefers-color-scheme: dark) { .gz-board { --red: #f07575; --blue: #6b9bff; } }
+
+  .gz-questions { display: none; flex-wrap: wrap; gap: 6px; justify-content: center; }
+  .gz-board[data-mode='pick'] .gz-questions, .gz-board[data-mode='hist'] .gz-questions,
+  .gz-board[data-mode='off'] .gz-questions:has([aria-pressed='true']) { display: flex; }
+  .gz-questions button {
+    font: 600 0.74rem var(--mono); color: var(--muted); background: transparent; cursor: pointer;
+    border: 1px solid var(--line); border-radius: 16px; padding: 5px 10px;
+  }
+  .gz-questions button:hover { border-color: var(--cyan); color: var(--cyan); }
+  .gz-questions button[aria-pressed='true'] { color: var(--ink); border-color: var(--magenta); background: color-mix(in srgb, var(--magenta) 10%, transparent); }
+
+  .gz-players { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .gz-board[data-mode='hist'] .gz-players { display: none; }
+  .gz-player {
+    --tone: var(--alice);
+    display: grid; justify-items: center; gap: 4px; padding: 10px 6px 12px; border-radius: 12px;
+    border: 2px solid color-mix(in srgb, var(--tone) 45%, transparent);
+    background: color-mix(in srgb, var(--tone) 6%, var(--card));
+  }
+  .gz-player.p1 { --tone: var(--bob); }
+  .gz-player.p2 { --tone: var(--you); }
+  .gz-player .name { font: 700 0.9rem var(--sans); color: var(--tone); }
+  .gz-player .ask { font: 0.75rem var(--mono); color: var(--muted); min-height: 1.2em; }
+  .gz-player .said { font: 600 0.85rem var(--sans); color: var(--ink); min-height: 1.3em; text-align: center; }
+  .thing { background: none; border: 0; padding: 2px; border-radius: 10px; cursor: default; color: var(--ink); }
+  .thing:disabled { opacity: 1; }
+  .gz-board[data-mode='edit'] .thing { cursor: pointer; outline: 1.5px dashed color-mix(in srgb, var(--tone) 60%, transparent); outline-offset: 2px; }
+  .gz-board[data-mode='edit'] .thing:hover { background: color-mix(in srgb, var(--tone) 12%, transparent); }
+  .thing :global(svg) { display: block; }
+  .thing :global(.red) { fill: var(--red); }
+  .thing :global(.blue) { fill: var(--blue); }
+  .thing :global(.outline) { fill: none; stroke: var(--ink); stroke-width: 2.5; }
+  .thing :global(text) { font: 700 26px var(--sans); fill: var(--muted); }
+
+  .gz-verdict { min-height: 1.5em; text-align: center; font: 0.95rem var(--sans); margin: 0; }
+  .gz-verdict :global(.win) { color: var(--win); font-weight: 700; }
+  .gz-verdict :global(.lose) { color: var(--lose); font-weight: 700; }
+  .gz-table :global(table) { width: 100%; border-collapse: collapse; font: 0.8rem var(--mono); }
+  .gz-table :global(td) { padding: 5px 6px; border-bottom: 1px solid var(--line); color: var(--ink); }
+  .gz-table :global(td.win) { color: var(--win); font-weight: 700; text-align: center; }
+  .gz-table :global(td.lose) { color: var(--lose); font-weight: 700; text-align: center; }
+
+  .gz-hist:empty { display: none; }
+  .gz-hist :global(.bars) { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; align-items: end; height: 180px; }
+  .gz-hist :global(.bar) { display: grid; grid-template-rows: 1.2em 1fr 1.4em; height: 100%; text-align: center; }
+  .gz-hist :global(.pct) { font: 0.68rem var(--mono); color: var(--muted); }
+  .gz-hist :global(.track) { position: relative; background: color-mix(in srgb, var(--line) 60%, transparent); border-radius: 6px 6px 0 0; }
+  .gz-hist :global(.fill) { position: absolute; left: 0; right: 0; bottom: 0; border-radius: 6px 6px 0 0; background: var(--muted); transition: height 0.4s ease; }
+  .gz-hist :global(.fill.win) { background: var(--win); }
+  .gz-hist :global(.fill.lose) { background: var(--lose); }
+  .gz-hist :global(.lbl) { font: 600 0.72rem var(--mono); color: var(--ink); padding-top: 3px; }
+  .gz-hist :global(.cap) { font: 0.75rem var(--mono); color: var(--muted); text-align: center; margin-top: 6px; }
+  @media (prefers-reduced-motion: reduce) { .gz-hist :global(.fill) { transition: none; } }
+  @media (max-width: 420px) {
+    .gz-players { gap: 6px; }
+    .gz-player .said { font-size: 0.78rem; }
+  }
+</style>

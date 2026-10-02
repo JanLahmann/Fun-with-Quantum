@@ -1,6 +1,6 @@
 ---
 title: Mermin–Peres Magic Square
-tagline: Fill a 3×3 grid under rules that mathematics forbids — quantum teamwork does it anyway.
+tagline: A 3×3 square game that no classical team wins every round — quantum teamwork always does.
 concept: Quantum contextuality
 icon: "🎩"
 order: 5

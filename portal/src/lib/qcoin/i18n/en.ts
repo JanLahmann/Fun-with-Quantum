@@ -57,7 +57,7 @@ const en: Messages = {
       X: '[<b>X</b>](#xgate) · half turn (180°) about the <b>x axis</b> (through |+⟩ and |−⟩): heads ↔ tails, while |+⟩ and |−⟩ stay put.',
       H: '[<b>H</b>](#hadamard) · half turn (180°) about the <b>diagonal between x and z</b>: |0⟩ ↔ |+⟩ and |1⟩ ↔ |−⟩ — flat ↔ on its edge.',
       Z: '[<b>Z</b>](#zgate) · half turn (180°) about the <b>z axis</b> (through |0⟩ and |1⟩): |+⟩ ↔ |−⟩, while heads and tails stay put.',
-      S: '[<b>S</b>](#sgate) · quarter turn (90°) about the <b>z axis</b>: |+⟩ → |+i⟩ — a [phase](#phase) only an H can turn into heads or tails.',
+      S: '[<b>S</b>](#sgate) · quarter turn (90°) about the <b>z axis</b>: |+⟩ → |+i⟩ — still 50:50, even after an H. Two S make a Z: |+⟩ → |−⟩.',
     },
   },
 
@@ -114,7 +114,7 @@ const en: Messages = {
 
   ch3: {
     title: '3 · Look inside the box',
-    intro: `<p>Here is the round again — box off, one step at a time. The quantum computer's secret is one move a normal coin doesn't have: the [Hadamard gate, H](#hadamard) — played <em>before and after</em> your move. That's why it must start: with only the middle move (try “You start” in chapter 2), H gives no edge at all.</p>`,
+    intro: `<p>Here is the round again — box off, one step at a time. The quantum computer's secret is one move a normal coin doesn't have: the [Hadamard gate, H](#hadamard) — played <em>before and after</em> your move. That's why it must start: with only the middle move (try “Let me start instead” in chapter 2), H gives no edge at all.</p>`,
     start: 'Start: the coin lies <strong>heads</strong> up. In quantum terms: [|0⟩](#ket), all chances on heads.',
     nextComputer: 'Next: the computer’s move ▸',
     afterH: '<strong>H stands the coin on its edge.</strong> It is now heads <em>and</em> tails at once — a [superposition](#superposition), 50:50 if you looked now.',
@@ -152,7 +152,7 @@ const en: Messages = {
 
   ch5: {
     title: '5 · Sandbox',
-    intro: `<p>Your coin, your [gates](#gate). Add moves and watch the coin: lying flat is heads or tails, standing on its edge is a [superposition](#superposition). [<strong>Z</strong>](#zgate) and [<strong>S</strong>](#sgate) turn a standing coin around — invisible to a measurement until an H brings it back.</p>`,
+    intro: `<p>Your coin, your [gates](#gate). Add moves and watch the coin: lying flat is heads or tails, standing on its edge is a [superposition](#superposition). [<strong>Z</strong>](#zgate) and [<strong>S</strong>](#sgate) turn a standing coin around — a measurement can’t see that. An H can: H, Z, H ends on tails. A single S is subtler: H, S, H stays 50:50 — try H, S, S, H.</p>`,
     addGate: 'Add a gate.',
     measure: 'Look (measure)',
     measureMany: 'Measure 100×',
@@ -185,7 +185,7 @@ const en: Messages = {
     },
     ket: {
       title: 'The |0⟩ notation',
-      body: '|0⟩ and |1⟩ (“ket zero”, “ket one”) are the two basic states: heads and tails. (|0⟩ + |1⟩)/√2 = |+⟩ and (|0⟩ − |1⟩)/√2 = |−⟩ are superpositions. The numbers in front are amplitudes; their squares are the probabilities (½ each here). The sign between them is the [phase](#phase).',
+      body: '|0⟩ and |1⟩ (“ket zero”, “ket one”) are the two basic states: heads and tails. (|0⟩ + |1⟩)/√2 = |+⟩ and (|0⟩ − |1⟩)/√2 = |−⟩ are superpositions. The numbers in front are amplitudes; the square of their size, |a|², is the probability (½ each here). The sign between them is the [phase](#phase).',
     },
     gate: {
       title: 'Gates — coin moves',

@@ -1,6 +1,6 @@
 ---
 title: GHZ Game
-tagline: Win a game as a team that no classical strategy can win — using entanglement.
+tagline: A team game that no classical strategy wins every round — with entanglement, you always do.
 concept: Entanglement (GHZ states)
 icon: "🔗"
 order: 2

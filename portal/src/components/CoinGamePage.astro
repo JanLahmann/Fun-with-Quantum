@@ -6,6 +6,7 @@
  */
 import Base from '../layouts/Base.astro';
 import CoinGame from './CoinGame.astro';
+import GameTrio from './GameTrio.astro';
 import { LOCALES, MESSAGES, pagePath, type Locale } from '../lib/qcoin/i18n';
 
 interface Props {
@@ -39,6 +40,7 @@ const alternates = [
         {m.page.notebook}{' '}
         <a href={notebook} target="_blank" rel="noopener">{m.page.notebookLink}</a>
       </p>
+      {locale === 'en' && <GameTrio current="coin" />}
     </div>
   </section>
 </Base>

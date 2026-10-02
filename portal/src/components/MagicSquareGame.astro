@@ -1,0 +1,88 @@
+---
+/**
+ * The Mermin–Peres magic square, playable in the browser — no Binder, no install.
+ * Logic in src/lib/magic/square.ts (unit-tested), interaction in src/lib/magic/ui.ts.
+ */
+import GameFrame from './GameFrame.astro';
+import { UI, PAGE } from '../lib/magic/messages';
+
+const idx = [1, 2, 3] as const;
+---
+
+<GameFrame id="magic-square" label={PAGE.heading} locale="en" chapters={UI.chapters} chaptersLabel={UI.chaptersLabel}
+  explain={UI.explain} explainTitle={UI.explainTitle} close={UI.close} noscript={UI.noscript}>
+  <div class="ms-board" data-mode="off">
+    <p class="ms-legend alice" set:html={UI.aliceGets} />
+    <div class="ms-grid">
+      <span></span>
+      {idx.map((c) => <button type="button" class="ms-colh" data-col={c} aria-pressed="false" disabled>{UI.column(c)}</button>)}
+      <span></span>
+      {idx.map((r) => (
+        <>
+          <button type="button" class="ms-rowh" data-row={r} aria-pressed="false" disabled>{UI.row(r)}</button>
+          {idx.map((c) => (
+            <button type="button" class="ms-cell" data-row={r} data-col={c} disabled><span class="v"></span><small class="ms-badge"></small></button>
+          ))}
+          <span class="ms-check row" data-row={r}></span>
+        </>
+      ))}
+      <span></span>
+      {idx.map((c) => <span class="ms-check col" data-col={c}></span>)}
+      <span></span>
+    </div>
+    <p class="ms-legend bob" set:html={UI.bobGets} />
+  </div>
+</GameFrame>
+
+<script>
+  import { mountMagicSquare } from '../lib/magic/ui';
+  const root = document.getElementById('magic-square');
+  if (root) mountMagicSquare(root);
+</script>
+
+<style>
+  .ms-board { display: grid; justify-items: center; gap: 8px; padding: 6px 0 4px; }
+  .ms-legend { font: 0.8rem var(--sans); color: var(--muted); margin: 0; text-align: center; }
+  .ms-legend.alice :global(b) { color: var(--alice); }
+  .ms-legend.bob :global(b) { color: var(--bob); }
+  .ms-grid {
+    display: grid; grid-template-columns: auto repeat(3, minmax(58px, 76px)) 22px; gap: 6px; align-items: center;
+  }
+  .ms-colh, .ms-rowh {
+    font: 600 0.72rem var(--mono); color: var(--muted); background: transparent; border: 1px solid transparent;
+    border-radius: 8px; padding: 4px 6px; white-space: nowrap; cursor: default;
+  }
+  .ms-colh { text-align: center; }
+  .ms-rowh { text-align: right; }
+  .ms-board[data-mode='pick'] .ms-colh, .ms-board[data-mode='explain'] .ms-colh { cursor: pointer; color: var(--alice); border-color: color-mix(in srgb, var(--alice) 40%, transparent); }
+  .ms-board[data-mode='pick'] .ms-rowh, .ms-board[data-mode='explain'] .ms-rowh { cursor: pointer; color: var(--bob); border-color: color-mix(in srgb, var(--bob) 40%, transparent); }
+  .ms-colh[aria-pressed='true'] { background: color-mix(in srgb, var(--alice) 16%, transparent); }
+  .ms-rowh[aria-pressed='true'] { background: color-mix(in srgb, var(--bob) 16%, transparent); }
+  .ms-colh:disabled, .ms-rowh:disabled { opacity: 1; }
+
+  .ms-cell {
+    position: relative; aspect-ratio: 1; border-radius: 10px; border: 2px solid var(--line);
+    background: var(--card); color: var(--ink); font: 700 1.6rem var(--mono); display: grid; place-items: center;
+    cursor: default; transition: background 0.2s ease, border-color 0.2s ease;
+  }
+  .ms-cell:disabled { opacity: 1; }
+  .ms-board[data-mode='edit'] .ms-cell, .ms-board[data-mode='explain'] .ms-cell { cursor: pointer; }
+  .ms-board[data-mode='edit'] .ms-cell:hover { border-color: var(--cyan); }
+  .ms-cell.obs { font-size: 0.92rem; font-weight: 600; }
+  .ms-cell.faint .v { opacity: 0.38; }
+  .ms-cell.in-col { background: color-mix(in srgb, var(--alice) 12%, var(--card)); border-color: color-mix(in srgb, var(--alice) 55%, transparent); }
+  .ms-cell.in-row { background: color-mix(in srgb, var(--bob) 12%, var(--card)); border-color: color-mix(in srgb, var(--bob) 55%, transparent); }
+  .ms-cell.in-col.in-row { background: color-mix(in srgb, var(--alice) 12%, color-mix(in srgb, var(--bob) 12%, var(--card))); border-color: var(--ink); }
+  .ms-cell.win, .ms-cell.in-col.in-row.win { border-color: var(--win); box-shadow: 0 0 0 3px color-mix(in srgb, var(--win) 30%, transparent); }
+  .ms-cell.lose, .ms-cell.in-col.in-row.lose { border-color: var(--lose); box-shadow: 0 0 0 3px color-mix(in srgb, var(--lose) 30%, transparent); font-size: 1.05rem; }
+  .ms-cell .ms-badge { position: absolute; bottom: 3px; right: 5px; font: 600 0.6rem var(--mono); color: var(--alice); }
+  .ms-check { font: 700 0.95rem var(--mono); color: var(--win); text-align: center; min-height: 1.2em; }
+  .ms-check.bad { color: var(--lose); }
+  @media (prefers-reduced-motion: reduce) { .ms-cell { transition: none; } }
+  @media (max-width: 420px) {
+    .ms-grid { grid-template-columns: auto repeat(3, minmax(52px, 1fr)) 18px; gap: 5px; }
+    .ms-colh, .ms-rowh { font-size: 0.64rem; padding: 3px; }
+    .ms-cell { font-size: 1.35rem; }
+    .ms-cell.obs { font-size: 0.8rem; }
+  }
+</style>

@@ -57,7 +57,7 @@ const de: Messages = {
       X: '[<b>X</b>](#xgate) · halbe Drehung (180°) um die <b>x-Achse</b> (durch |+⟩ und |−⟩): Kopf ↔ Zahl, während |+⟩ und |−⟩ bleiben, wo sie sind.',
       H: '[<b>H</b>](#hadamard) · halbe Drehung (180°) um die <b>Diagonale zwischen x und z</b>: |0⟩ ↔ |+⟩ und |1⟩ ↔ |−⟩ — flach ↔ auf der Kante.',
       Z: '[<b>Z</b>](#zgate) · halbe Drehung (180°) um die <b>z-Achse</b> (durch |0⟩ und |1⟩): |+⟩ ↔ |−⟩, während Kopf und Zahl bleiben, wo sie sind.',
-      S: '[<b>S</b>](#sgate) · Vierteldrehung (90°) um die <b>z-Achse</b>: |+⟩ → |+i⟩ — eine [Phase](#phase), die nur ein H in Kopf oder Zahl verwandeln kann.',
+      S: '[<b>S</b>](#sgate) · Vierteldrehung (90°) um die <b>z-Achse</b>: |+⟩ → |+i⟩ — weiter 50:50, auch nach einem H. Zwei S ergeben ein Z: |+⟩ → |−⟩.',
     },
   },
 
@@ -152,7 +152,7 @@ const de: Messages = {
 
   ch5: {
     title: '5 · Sandkasten',
-    intro: `<p>Deine Münze, deine [Gatter](#gate). Füge Züge hinzu und beobachte die Münze: Flach liegend ist sie Kopf oder Zahl, auf der Kante stehend eine [Superposition](#superposition). [<strong>Z</strong>](#zgate) und [<strong>S</strong>](#sgate) drehen eine stehende Münze herum — für eine Messung unsichtbar, bis ein H sie wieder hinlegt.</p>`,
+    intro: `<p>Deine Münze, deine [Gatter](#gate). Füge Züge hinzu und beobachte die Münze: Flach liegend ist sie Kopf oder Zahl, auf der Kante stehend eine [Superposition](#superposition). [<strong>Z</strong>](#zgate) und [<strong>S</strong>](#sgate) drehen eine stehende Münze herum — eine Messung sieht das nicht. Ein H schon: H, Z, H endet auf Zahl. Ein einzelnes S ist kniffliger: H, S, H bleibt 50:50 — probier H, S, S, H.</p>`,
     addGate: 'Füge ein Gatter hinzu.',
     measure: 'Hinschauen (messen)',
     measureMany: '100× messen',
@@ -185,7 +185,7 @@ const de: Messages = {
     },
     ket: {
       title: 'Die Schreibweise |0⟩',
-      body: '|0⟩ und |1⟩ („Ket null“, „Ket eins“) sind die beiden Grundzustände: Kopf und Zahl. (|0⟩ + |1⟩)/√2 = |+⟩ und (|0⟩ − |1⟩)/√2 = |−⟩ sind Superpositionen. Die Zahlen davor sind Amplituden; ihre Quadrate sind die Wahrscheinlichkeiten (hier je ½). Das Vorzeichen dazwischen ist die [Phase](#phase).',
+      body: '|0⟩ und |1⟩ („Ket null“, „Ket eins“) sind die beiden Grundzustände: Kopf und Zahl. (|0⟩ + |1⟩)/√2 = |+⟩ und (|0⟩ − |1⟩)/√2 = |−⟩ sind Superpositionen. Die Zahlen davor sind Amplituden; das Quadrat ihres Betrags, |a|², ist die Wahrscheinlichkeit (hier je ½). Das Vorzeichen dazwischen ist die [Phase](#phase).',
     },
     gate: {
       title: 'Gatter — Münzzüge',

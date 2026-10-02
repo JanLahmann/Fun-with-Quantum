@@ -28,6 +28,12 @@ describe('qubit', () => {
     expect(pHeads(run(['X', 'H', 'H']))).toBe(0);
   });
 
+  it('Z shows up after an H, a single S does not (as the sandbox texts say)', () => {
+    expect(pHeads(run(['H', 'Z', 'H']))).toBeCloseTo(0, 12); // tails
+    expect(pHeads(run(['H', 'S', 'H']))).toBeCloseTo(0.5, 12); // still 50:50
+    expect(pHeads(run(['H', 'S', 'S', 'H']))).toBeCloseTo(0, 12); // two S make a Z
+  });
+
   it('every gate is unitary (keeps total probability 1)', () => {
     const states: State[] = [HEADS, TAILS, apply('H', HEADS), apply('H', TAILS), apply('S', apply('H', HEADS))];
     for (const g of Object.keys(GATES) as GateName[])

@@ -1,7 +1,7 @@
 # fun-with-quantum.org — the portal
 
 Astro site for the Fun with Quantum family: three doors (Play · Build · Learn), the notebook games,
-and the browser version of the Quantum Coin Game. Deployed to GitHub Pages by
+and browser versions of three of them: the Quantum Coin Game, the GHZ game and the magic square. Deployed to GitHub Pages by
 `.github/workflows/deploy-portal.yml` on every push to `master`; `portal-ci.yml` runs tests, type
 check and build on pull requests.
 
@@ -69,3 +69,32 @@ in `TERM_PAGES` (`i18n/index.ts`). To add a language: copy `en.ts`, translate (k
 `#term` anchors), add it to `LOCALES` and `MESSAGES`; `npm test` checks it.
 
 Analytics events (`Portal: coin game …`) are listed in `../family/EVENTS.md`.
+
+## The GHZ game and the magic square in the browser
+
+**Unlisted for now** (English only): `/preview/ghz-game/` and `/preview/magic-square/` — `noindex`,
+linked only from each other and from the English coin game preview ("Three quantum games",
+`src/components/GameTrio.astro`). Same rules, same circuits as `GHZ-Game.ipynb` and
+`Mermin-Peres-Game.ipynb`.
+
+| Path | What |
+|---|---|
+| `src/lib/qsim.ts` | exact state-vector simulator for a few qubits (H, X, Y, Z, S, S†, CX, CZ, SWAP; Qiskit bit order) |
+| `src/lib/ghz/`, `src/lib/magic/` | game logic (`game.ts`, `square.ts`), texts (`messages.ts`), browser side (`ui.ts`) |
+| `src/lib/games/` | shared by both: chapters and buttons (`shell.ts`), circuit drawing (`circuit.ts`), explanations on demand (`glossary.ts`) |
+| `src/components/GameFrame.astro` | the frame both games use: chapter tabs, stage, story panel, explanation dialog |
+| `test/trio.test.ts` | the simulator, both games (quantum team always wins, classical best 3/4 and 8/9), explanation links |
+
+1. **GHZ game** — *Team classical* (pick an object per player, ask all four questions; why never 4 of 4) ·
+   *Team quantum* (GHZ state, X for colour, Y for shape; 1000 rounds) · *How it works* (the GHZ state,
+   exact answer statistics per question, why the proof fails, what it means).
+2. **Magic square** (Bravyi et al. convention: Alice gets a column, odd; Bob a row, even) — *Find a magic
+   square* (clickable, with the parity proof) · *The best classical team* (8 of 9, all 4096 strategies) ·
+   *The quantum team* (two Bell pairs, the circuits of the notebook) · *How it works* (the square of
+   measurements, commuting, Bell pairs in every basis, measuring X⊗Z by a basis change).
+
+Explanations link to IBM Quantum Learning and doQumentation like the coin game's. To translate, add
+per-language copies of `messages.ts` and `GLOSSARY_EN` as for `src/lib/qcoin/i18n`. To launch: add the
+web game to its `/play/` page (as `play/[slug].astro` does for the coin game with `webGame: true`; the
+magic square's game entry is still in `content-drafts/`), point `GameTrio.astro` at the `/play/` pages,
+and delete the preview pages.

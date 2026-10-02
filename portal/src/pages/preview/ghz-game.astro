@@ -1,0 +1,13 @@
+---
+/**
+ * UNLISTED preview of the browser GHZ game (English) — reachable only by URL, linked only from
+ * the other preview pages, noindex. To launch publicly: see portal/README.md.
+ */
+import GamePreviewPage from '../../components/GamePreviewPage.astro';
+import GhzGame from '../../components/GhzGame.astro';
+import { PAGE } from '../../lib/ghz/messages';
+---
+
+<GamePreviewPage page={PAGE} icon="🔗" notebook="GHZ-Game.ipynb" current="ghz">
+  <GhzGame />
+</GamePreviewPage>
