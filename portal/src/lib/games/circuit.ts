@@ -1,7 +1,7 @@
 /**
  * Draws a small quantum circuit as an SVG string: one wire per qubit, gates placed in the earliest
  * free column, two-qubit gates as dots / ⊕ / × joined by a line, a barrier, then the meters.
- * Colours come from CSS classes (`tone-…`), so it follows the page's light/dark theme.
+ * Colors come from CSS classes (`tone-…`), so it follows the page's light/dark theme.
  */
 import type { Op } from '../qsim';
 

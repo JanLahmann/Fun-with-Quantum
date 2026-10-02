@@ -52,7 +52,7 @@ export const GLOSSARY_EN: Record<TermKey, GlossaryEntry> = {
   },
   entanglement: {
     title: 'Entanglement',
-    body: 'Qubits that share one joint state, which cannot be split into a state for each qubit. Each qubit on its own gives random results, yet the results fit together perfectly. No signal passes between them — and still no list of answers written in advance can produce these correlations.',
+    body: 'Qubits that share one joint state, which cannot be split into a state for each qubit. In the states used in these games, each qubit on its own gives random results, yet the results fit together perfectly. No signal passes between them — and still no list of answers written in advance can produce these correlations.',
   },
   bell: {
     title: 'Bell pair',
@@ -84,7 +84,7 @@ export const GLOSSARY_EN: Record<TermKey, GlossaryEntry> = {
   },
   cnot: {
     title: 'CNOT and CZ',
-    body: 'Two-qubit gates. CNOT (drawn ● and ⊕) flips the second qubit if the first is 1. CZ (● and ●) multiplies by −1 when both are 1. With an H before them, they create [entanglement](#entanglement).',
+    body: 'Two-qubit gates. CNOT (drawn ● and ⊕) flips the second qubit if the first is 1. CZ (● and ●) multiplies by −1 when both are 1. An H on the first qubit before a CNOT creates [entanglement](#entanglement) — a [Bell pair](#bell); CZ does the same when both qubits get an H first.',
   },
   swap: {
     title: 'SWAP',
@@ -100,7 +100,7 @@ export const GLOSSARY_EN: Record<TermKey, GlossaryEntry> = {
   },
   classical: {
     title: 'Classical strategy',
-    body: 'Any plan without quantum help. Because the players cannot talk during the game, it comes down to a fixed table: what each player answers to each question. (Rolling dice never does better than the best table.) There are only a few tables — the computer can try them all.',
+    body: 'Any plan without quantum help. Because the players cannot talk during the game, it comes down to a fixed table: what each player answers to each question. (Rolling dice never does better than the best table.) There are only finitely many tables — 64 in the GHZ game, 4096 in the magic square — so the computer can try them all.',
   },
   nonlocal: {
     title: 'Nonlocal game',

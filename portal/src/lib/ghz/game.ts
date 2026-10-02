@@ -1,34 +1,34 @@
 /**
  * The GHZ game — the logic, same rules as GHZ-Game.ipynb.
  *
- * Three players (Alice, Bob, You) are each asked for the COLOUR (red/blue) or the SHAPE
- * (star/rectangle) of an object. The four questions: colour-colour-colour, colour-shape-shape,
- * shape-colour-shape, shape-shape-colour. The team wins
- *   - colour-colour-colour: if an EVEN number of players say red,
+ * Three players (Alice, Bob, You) are each asked for the COLOR (red/blue) or the SHAPE
+ * (star/rectangle) of an object. The four questions: color-color-color, color-shape-shape,
+ * shape-color-shape, shape-shape-color. The team wins
+ *   - color-color-color: if an EVEN number of players say red,
  *   - otherwise: if an ODD number of players say red or star.
  * Classically at most 3 of the 4 questions can be won (75%). Sharing a GHZ state
- * (|000⟩ + |111⟩)/√2 and measuring X for colour, Y for shape, the team wins every round:
+ * (|000⟩ + |111⟩)/√2 and measuring X for color, Y for shape, the team wins every round:
  * result 1 = red / star, 0 = blue / rectangle.
  */
 import { bitsOf, probabilities, run, sample, type Op } from '../qsim';
 import type { Step } from '../games/circuit';
 
-export type Ask = 'C' | 'S'; // colour or shape
+export type Ask = 'C' | 'S'; // color or shape
 export type Question = readonly [Ask, Ask, Ask];
 export const QUESTIONS: readonly Question[] = [['C', 'C', 'C'], ['C', 'S', 'S'], ['S', 'C', 'S'], ['S', 'S', 'C']];
 
-/** A player's object: colour 1 = red (0 = blue), shape 1 = star (0 = rectangle). */
+/** A player's object: color 1 = red (0 = blue), shape 1 = star (0 = rectangle). */
 export interface Thing { color: 0 | 1; shape: 0 | 1 }
 export const THINGS: readonly Thing[] = [
   { color: 1, shape: 1 }, { color: 1, shape: 0 }, { color: 0, shape: 1 }, { color: 0, shape: 0 },
 ];
 
-export const isAllColour = (q: Question) => q.every((a) => a === 'C');
+export const isAllColor = (q: Question) => q.every((a) => a === 'C');
 
 /** Does this answer (one bit per player: 1 = red/star) win question q? */
 export function wins(q: Question, bits: readonly number[]): boolean {
   const ones = bits.reduce((a, b) => a + b, 0);
-  return isAllColour(q) ? ones % 2 === 0 : ones % 2 === 1;
+  return isAllColor(q) ? ones % 2 === 0 : ones % 2 === 1;
 }
 
 export function classicalAnswer(team: readonly Thing[], q: Question): number[] {
@@ -54,7 +54,7 @@ export function bestClassical(): { tried: number; best: number } {
 
 export const GHZ: Op[] = [{ g: 'h', q: 0 }, { g: 'cx', a: 0, b: 1 }, { g: 'cx', a: 0, b: 2 }];
 
-/** Colour → measure X (H, then measure); shape → measure Y (S†, H, then measure). */
+/** Color → measure X (H, then measure); shape → measure Y (S†, H, then measure). */
 export function playerOps(a: Ask, q: number): Op[] {
   return a === 'C' ? [{ g: 'h', q }] : [{ g: 'sdg', q }, { g: 'h', q }];
 }

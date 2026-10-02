@@ -57,7 +57,7 @@ const it: Messages = {
       X: '[<b>X</b>](#xgate) · mezzo giro (180°) attorno all’<b>asse x</b> (passante per |+⟩ e |−⟩): testa ↔ croce, mentre |+⟩ e |−⟩ restano fermi.',
       H: '[<b>H</b>](#hadamard) · mezzo giro (180°) attorno alla <b>diagonale tra x e z</b>: |0⟩ ↔ |+⟩ e |1⟩ ↔ |−⟩ — distesa ↔ sul bordo.',
       Z: '[<b>Z</b>](#zgate) · mezzo giro (180°) attorno all’<b>asse z</b> (passante per |0⟩ e |1⟩): |+⟩ ↔ |−⟩, mentre testa e croce restano ferme.',
-      S: '[<b>S</b>](#sgate) · quarto di giro (90°) attorno all’<b>asse z</b>: |+⟩ → |+i⟩ — una [fase](#phase) che solo una H può trasformare in testa o croce.',
+      S: '[<b>S</b>](#sgate) · quarto di giro (90°) attorno all’<b>asse z</b>: |+⟩ → |+i⟩ — ancora 50:50, anche dopo una H. Due S fanno una Z: |+⟩ → |−⟩.',
     },
   },
 
@@ -114,7 +114,7 @@ const it: Messages = {
 
   ch3: {
     title: '3 · Guarda dentro la scatola',
-    intro: `<p>Ecco di nuovo la partita — senza scatola, un passo alla volta. Il segreto del computer quantistico è una mossa che una moneta normale non ha: la [porta di Hadamard, H](#hadamard) — giocata <em>prima e dopo</em> la tua mossa. Ecco perché deve cominciare lui: con la sola mossa di mezzo (prova “Cominci tu” nel capitolo 2), H non dà alcun vantaggio.</p>`,
+    intro: `<p>Ecco di nuovo la partita — senza scatola, un passo alla volta. Il segreto del computer quantistico è una mossa che una moneta normale non ha: la [porta di Hadamard, H](#hadamard) — giocata <em>prima e dopo</em> la tua mossa. Ecco perché deve cominciare lui: con la sola mossa di mezzo (prova “Fammi cominciare” nel capitolo 2), H non dà alcun vantaggio.</p>`,
     start: 'Inizio: la moneta è distesa con <strong>testa</strong> in su. In termini quantistici: [|0⟩](#ket), tutte le probabilità su testa.',
     nextComputer: 'Avanti: la mossa del computer ▸',
     afterH: '<strong>H mette la moneta in piedi sul bordo.</strong> Ora è testa <em>e</em> croce allo stesso tempo — una [sovrapposizione](#superposition), 50:50 se guardassi adesso.',
@@ -152,7 +152,7 @@ const it: Messages = {
 
   ch5: {
     title: '5 · Sandbox',
-    intro: `<p>La tua moneta, le tue [porte](#gate). Aggiungi mosse e osserva la moneta: distesa è testa o croce, in piedi sul bordo è una [sovrapposizione](#superposition). [<strong>Z</strong>](#zgate) e [<strong>S</strong>](#sgate) fanno ruotare una moneta in piedi — invisibile a una misurazione finché una H non la riporta giù.</p>`,
+    intro: `<p>La tua moneta, le tue [porte](#gate). Aggiungi mosse e osserva la moneta: distesa è testa o croce, in piedi sul bordo è una [sovrapposizione](#superposition). [<strong>Z</strong>](#zgate) e [<strong>S</strong>](#sgate) fanno ruotare una moneta in piedi — una misurazione non lo vede. Una H sì: H, Z, H finisce su croce. Una sola S è più sottile: H, S, H resta 50:50 — prova H, S, S, H.</p>`,
     addGate: 'Aggiungi una porta.',
     measure: 'Guarda (misura)',
     measureMany: 'Misura 100×',
@@ -185,7 +185,7 @@ const it: Messages = {
     },
     ket: {
       title: 'La notazione |0⟩',
-      body: '|0⟩ e |1⟩ (“ket zero”, “ket uno”) sono i due stati di base: testa e croce. (|0⟩ + |1⟩)/√2 = |+⟩ e (|0⟩ − |1⟩)/√2 = |−⟩ sono sovrapposizioni. I numeri davanti sono le ampiezze; i loro quadrati sono le probabilità (qui ½ ciascuna). Il segno tra loro è la [fase](#phase).',
+      body: '|0⟩ e |1⟩ (“ket zero”, “ket uno”) sono i due stati di base: testa e croce. (|0⟩ + |1⟩)/√2 = |+⟩ e (|0⟩ − |1⟩)/√2 = |−⟩ sono sovrapposizioni. I numeri davanti sono le ampiezze; il quadrato del loro modulo, |a|², è la probabilità (qui ½ ciascuna). Il segno tra loro è la [fase](#phase).',
     },
     gate: {
       title: 'Porte — le mosse della moneta',

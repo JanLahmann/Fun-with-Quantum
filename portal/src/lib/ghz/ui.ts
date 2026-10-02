@@ -2,7 +2,7 @@
  * Browser side of the GHZ game (markup: components/GhzGame.astro).
  *
  *   1  Team classical — pick an object per player, ask all four questions: at most 3 of 4.
- *   2  Team quantum   — a shared GHZ state, X for colour, Y for shape: every round won.
+ *   2  Team quantum   — a shared GHZ state, X for color, Y for shape: every round won.
  *   3  How it works   — the GHZ state, exact answer statistics, why the proof fails.
  */
 import { mountShell, track, type Shell } from '../games/shell';
@@ -18,7 +18,7 @@ type Mode = 'edit' | 'pick' | 'hist' | 'off';
 
 const STAR = 'M24 4 L29.6 17.4 L44 18.6 L33 28 L36.4 42 L24 34.6 L11.6 42 L15 28 L4 18.6 L18.4 17.4 Z';
 
-/** An object, an answer or a question mark: colour and/or shape (null = not known). */
+/** An object, an answer or a question mark: color and/or shape (null = not known). */
 function thingSvg(color: 0 | 1 | null, shape: 0 | 1 | null): string {
   const paint = color === null ? 'class="outline"' : `class="${color ? 'red' : 'blue'}"`;
   let body: string;
@@ -47,7 +47,7 @@ export function mountGhzGame(root: HTMLElement) {
   function paintPlayers(view: { ask?: (Ask | null)[]; color?: (0 | 1 | null)[]; shape?: (0 | 1 | null)[]; words?: string[] }) {
     players.forEach((p, i) => {
       const a = view.ask?.[i] ?? null;
-      p.querySelector('.ask')!.textContent = a === 'C' ? UI.colour : a === 'S' ? UI.shape : '';
+      p.querySelector('.ask')!.textContent = a === 'C' ? UI.color : a === 'S' ? UI.shape : '';
       p.querySelector('.thing')!.innerHTML = thingSvg(view.color?.[i] ?? null, view.shape?.[i] ?? null);
       p.querySelector('.said')!.textContent = view.words?.[i] ?? '';
       p.querySelector<HTMLButtonElement>('.thing')!.disabled = mode !== 'edit';

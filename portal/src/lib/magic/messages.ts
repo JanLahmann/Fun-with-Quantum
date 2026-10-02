@@ -28,7 +28,7 @@ export const PAGE = {
   description: 'Play the magic square game in your browser: no classical team can win every round — a quantum team with two entangled pairs of qubits always does.',
   kicker: 'Play · Contextuality · preview',
   heading: 'Mermin–Peres Magic Square',
-  lead: 'Fill in a 3×3 square that mathematics forbids — with entangled qubits, Alice and Bob win every round.',
+  lead: 'A 3×3 square game that no classical team can win every round — with entangled qubits, Alice and Bob always do.',
   notebook: 'The same game as a Jupyter notebook, in real Qiskit code:',
   notebookLink: 'open the notebook ↗',
 };
@@ -55,7 +55,7 @@ export const CH1 = {
 
 export const CH2 = {
   title: 'The best classical team',
-  intro: `<p>Alice and Bob can still prepare well. They agree on the square on the left. Every row has an even number of 1s — but column 3 has an even number too. So in column 3 Alice changes the bottom square to 0, as her rule demands. That is the only square where she and Bob disagree.</p>
+  intro: `<p>Alice and Bob can still prepare well. They agree on the square shown here. Every row has an even number of 1s — but column 3 has an even number too. So in column 3 Alice changes the bottom square to 0, as her rule demands. That is the only square where she and Bob disagree.</p>
 <p><b>Click a column and a row</b> to ask a question — or let the quiz master pick.</p>`,
   aliceDiffers: 'Alice: 0',
   ask: 'Quiz master asks',
@@ -98,16 +98,16 @@ export const CH4 = {
   title: 'How it works',
   sections: ['The square of measurements', 'Why the proof fails', 'Why they agree', 'How to measure X⊗Z', 'What it means'],
   texts: [
-    `<p>Instead of a square of numbers, Alice and Bob agree on a square of [measurements](#pauli) of their two qubits (left). Each gives +1 or −1, written 0 or 1. "X⊗Z" means X on the first qubit and Z on the second ([⊗](#tensor)).</p>
+    `<p>Instead of a square of numbers, Alice and Bob agree on a square of [measurements](#pauli) of their two qubits (in the square). Each gives +1 or −1; we write +1 as 0 and −1 as 1. "X⊗Z" means X on the first qubit and Z on the second ([⊗](#tensor)).</p>
 <p>• The three measurements of each <b>column</b> [commute](#commute) — Alice can make all three — and their results multiply to −1: an <b>odd</b> number of 1s.<br>• The three of each <b>row</b> commute too and multiply to +1: an <b>even</b> number.<br>• Where column and row cross, Alice and Bob measure the <b>same</b> thing on [entangled](#entanglement) qubits — so they get the same result.</p>
 <p>Click a column or row label to multiply it out, or a square to see who measures it, and how.</p>`,
-    `<p>Our proof multiplied all nine answers twice: column by column (−1) and row by row (+1). For numbers the order of multiplying doesn’t matter. For quantum measurements it does: <b>X·Z = −Z·X</b> — they don’t [commute](#commute).</p>
+    `<p>Our proof counted the 1s of all nine answers twice. Written as numbers +1 and −1 (0 → +1, 1 → −1, see [parity](#parity)), that is multiplying them: column by column (−1) and row by row (+1). For numbers the order of multiplying doesn’t matter. For quantum measurements it does: <b>X·Z = −Z·X</b> — they don’t [commute](#commute).</p>
 <p class="math">X·Z = −iY, but Z·X = +iY<br>column 3: (X⊗X)·(Z⊗Z)·(Y⊗Y) = (X·Z·Y)⊗(X·Z·Y) = (−i)·(−i) = −1<br>row 3: (−X⊗Z)·(−Z⊗X)·(Y⊗Y) = (X·Z·Y)⊗(Z·X·Y) = (−i)·(+i) = +1</p>
 <p>Within a column or a row the measurements commute, so each player can make their three together. Across columns and rows they don’t — X⊗I and Z⊗I, for instance — so the nine results never exist all at once, and there is no complete square to count. That is [contextuality](#contextuality).</p>`,
     `<p>Each [Bell pair](#bell) looks just as simple in every basis:</p>
 <p class="math">(|00⟩ + |11⟩)/√2<br>= (|++⟩ + |−−⟩)/√2<br>= (|+i,−i⟩ + |−i,+i⟩)/√2</p>
 <p>So when Alice and Bob measure their qubits of one pair both in Z or both in X, they always get the <b>same</b> result; both in Y, always <b>opposite</b> results.</p>
-<p>Think of each square as one measurement on each pair. In −X⊗Z, X on pair 1 agrees and Z on pair 2 agrees, so the products agree. Y appears only in Y⊗Y: both pairs give opposite results, and the two flips cancel.</p>`,
+<p>Think of each square as one measurement on each pair. In −X⊗Z, X on pair 1 agrees and Z on pair 2 agrees, so the products agree (both carry the same minus sign). Y appears only in Y⊗Y: both pairs give opposite results, and the two flips cancel.</p>`,
     `<p>A quantum computer only measures Z. To measure anything else, rotate first: gates U followed by a Z measurement measure <b>U†·Z·U</b> ([another basis](#basis)). With one qubit: H·Z·H = X, so "H, then measure" measures X.</p>
 <p>Each player measures the first two observables of their column or row this way; the third answer follows from their rule.</p>
 <table><tr><th></th><th>gates</th><th>measures</th></tr>
@@ -117,10 +117,10 @@ export const CH4 = {
 <tr><td>Bob, row 1</td><td>H⊗H</td><td>X⊗I, I⊗X</td></tr>
 <tr><td>Bob, row 2</td><td>SWAP</td><td>I⊗Z, Z⊗I</td></tr>
 <tr><td>Bob, row 3</td><td>(H⊗H)·CZ·(Z⊗Z)</td><td>−X⊗Z, −Z⊗X</td></tr></table>
-<p>Read products right to left: (H⊗I)·SWAP means [SWAP](#swap) first, then H. In row 3 the two Z gates supply the minus signs ([CNOT and CZ](#cnot)). Click a square to see its circuit.</p>`,
+<p>Read products right to left: (H⊗I)·SWAP means [SWAP](#swap) first, then H ([CNOT and CZ](#cnot) are two-qubit gates too). In row 3 the two Z gates supply the minus signs. Click a square to see its circuit.</p>`,
     `<p><b>No communication.</b> Alice’s answers on their own are perfectly random, and nothing Bob does changes what she sees. Still the answers always fit together — "quantum pseudo-telepathy", a [nonlocal game](#nonlocal).</p>
-<p><b>No hidden script.</b> Answers written down in advance are a [classical strategy](#classical), and those win at most 8 of 9. So the quantum results cannot have existed before the measurement ([hidden variables](#hidden), [contextuality](#contextuality)).</p>
-<p><b>On real quantum computers</b> noise lowers the 100% somewhat — the game becomes a test of the hardware. Game, square and circuits follow Bravyi, Gosset, König and Tomamichel, <a href="https://arxiv.org/abs/1904.01502" target="_blank" rel="noopener">Quantum advantage with noisy shallow circuits</a> (Nature Physics, 2020), with the magic square of N. David Mermin and Asher Peres (1990).</p>`,
+<p><b>No hidden script.</b> Answers written down in advance are a [classical strategy](#classical), and those win at most 8 of 9. So the results cannot have been written down in advance, independent of which column or row is asked ([hidden variables](#hidden), [contextuality](#contextuality)).</p>
+<p><b>On real quantum computers</b> noise lowers the 100% somewhat — the game becomes a test of the hardware. Game, square and circuits follow Bravyi, Gosset, König and Tomamichel, <a href="https://doi.org/10.1038/s41567-020-0948-z" target="_blank" rel="noopener">Quantum advantage with noisy shallow circuits</a>, Nature Physics 16, 1040 (2020), <a href="https://arxiv.org/abs/1904.01502" target="_blank" rel="noopener">arXiv:1904.01502</a>, with the magic square of N. David Mermin and Asher Peres (1990).</p>`,
   ],
   product: (key: string) => {
     const odd = key.startsWith('c');

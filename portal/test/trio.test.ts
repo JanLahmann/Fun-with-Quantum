@@ -49,6 +49,21 @@ describe('qsim', () => {
   });
 });
 
+describe('glossary claims', () => {
+  // a 2-qubit pure state is entangled iff its 2×2 amplitude matrix has a nonzero determinant
+  const entangled = (ops: Op[]) => {
+    const s = run(2, ops);
+    const [a, b, c, d] = [0, 1, 2, 3].map((i) => ({ re: s.re[i], im: s.im[i] })); // |q1 q0⟩: 00, 01, 10, 11
+    const det = { re: a.re * d.re - a.im * d.im - (b.re * c.re - b.im * c.im), im: a.re * d.im + a.im * d.re - (b.re * c.im + b.im * c.re) };
+    return Math.hypot(det.re, det.im) > 1e-9;
+  };
+  it('H then CNOT entangles; CZ needs an H on both qubits', () => {
+    expect(entangled([{ g: 'h', q: 0 }, { g: 'cx', a: 0, b: 1 }])).toBe(true);
+    expect(entangled([{ g: 'h', q: 0 }, { g: 'cz', a: 0, b: 1 }])).toBe(false);
+    expect(entangled([{ g: 'h', q: 0 }, { g: 'h', q: 1 }, { g: 'cz', a: 0, b: 1 }])).toBe(true);
+  });
+});
+
 describe('magic square', () => {
   it('no square satisfies all six rules (the parity proof, by brute force)', () => {
     let found = 0;

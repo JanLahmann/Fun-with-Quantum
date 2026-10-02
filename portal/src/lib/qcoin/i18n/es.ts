@@ -57,7 +57,7 @@ const es: Messages = {
       X: '[<b>X</b>](#xgate) · media vuelta (180°) alrededor del <b>eje x</b> (que pasa por |+⟩ y |−⟩): cara ↔ cruz, mientras |+⟩ y |−⟩ no se mueven.',
       H: '[<b>H</b>](#hadamard) · media vuelta (180°) alrededor de la <b>diagonal entre x y z</b>: |0⟩ ↔ |+⟩ y |1⟩ ↔ |−⟩, es decir, plana ↔ de canto.',
       Z: '[<b>Z</b>](#zgate) · media vuelta (180°) alrededor del <b>eje z</b> (que pasa por |0⟩ y |1⟩): |+⟩ ↔ |−⟩, mientras cara y cruz no se mueven.',
-      S: '[<b>S</b>](#sgate) · un cuarto de vuelta (90°) alrededor del <b>eje z</b>: |+⟩ → |+i⟩, una [fase](#phase) que solo una H puede convertir en cara o cruz.',
+      S: '[<b>S</b>](#sgate) · un cuarto de vuelta (90°) alrededor del <b>eje z</b>: |+⟩ → |+i⟩: sigue al 50:50, incluso tras una H. Dos S forman una Z: |+⟩ → |−⟩.',
     },
   },
 
@@ -152,7 +152,7 @@ const es: Messages = {
 
   ch5: {
     title: '5 · Laboratorio',
-    intro: `<p>Tu moneda, tus [puertas](#gate). Añade jugadas y observa la moneda: plana es cara o cruz; de canto es una [superposición](#superposition). [<strong>Z</strong>](#zgate) y [<strong>S</strong>](#sgate) hacen girar una moneda que está de canto, algo invisible para una medición hasta que una H la vuelve a tumbar.</p>`,
+    intro: `<p>Tu moneda, tus [puertas](#gate). Añade jugadas y observa la moneda: plana es cara o cruz; de canto es una [superposición](#superposition). [<strong>Z</strong>](#zgate) y [<strong>S</strong>](#sgate) hacen girar una moneda que está de canto, algo que una medición no ve. Una H sí: H, Z, H termina en cruz. Una sola S es más sutil: H, S, H sigue al 50:50; prueba H, S, S, H.</p>`,
     addGate: 'Añade una puerta.',
     measure: 'Mirar (medir)',
     measureMany: 'Medir 100×',
@@ -185,7 +185,7 @@ const es: Messages = {
     },
     ket: {
       title: 'La notación |0⟩',
-      body: '|0⟩ y |1⟩ (“ket cero”, “ket uno”) son los dos estados básicos: cara y cruz. (|0⟩ + |1⟩)/√2 = |+⟩ y (|0⟩ − |1⟩)/√2 = |−⟩ son superposiciones. Los números de delante son amplitudes; sus cuadrados son las probabilidades (aquí, ½ cada una). El signo entre ellas es la [fase](#phase).',
+      body: '|0⟩ y |1⟩ (“ket cero”, “ket uno”) son los dos estados básicos: cara y cruz. (|0⟩ + |1⟩)/√2 = |+⟩ y (|0⟩ − |1⟩)/√2 = |−⟩ son superposiciones. Los números de delante son amplitudes; el cuadrado de su módulo, |a|², es la probabilidad (aquí, ½ cada una). El signo entre ellas es la [fase](#phase).',
     },
     gate: {
       title: 'Puertas: jugadas con la moneda',
