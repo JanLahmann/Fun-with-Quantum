@@ -1,5 +1,5 @@
 /**
- * Explanations on demand for the GHZ game and the magic square (the coin game has its own, in
+ * Explanations on demand for the browser games (the coin game has its own, in
  * src/lib/qcoin/i18n). Same conventions: `[words](#term)` in any game text becomes a button that
  * opens the term; each term links to IBM Quantum Learning and to the same page on doQumentation
  * (shared paths and anchors, checked 2026-10-02).
@@ -62,7 +62,7 @@ export const GLOSSARY_EN: Record<TermKey, GlossaryEntry> = {
   },
   entanglement: {
     title: 'Entanglement',
-    body: 'Qubits that share one joint state, which cannot be split into a state for each qubit. In the states used in these games, each qubit on its own gives random results, yet the results fit together perfectly. No signal passes between them — and still no list of answers written in advance can produce these correlations.',
+    body: 'Qubits that share one joint state, which cannot be split into a state for each qubit. In the states used in the GHZ game and the magic square, each qubit on its own gives random results, yet the results fit together perfectly. No signal passes between them — and still no list of answers written in advance can produce these correlations.',
   },
   bell: {
     title: 'Bell pair',
@@ -102,7 +102,7 @@ export const GLOSSARY_EN: Record<TermKey, GlossaryEntry> = {
   },
   circuit: {
     title: 'Quantum circuit',
-    body: 'A recipe of [gates](#gate), read from left to right: one line per qubit, the measurements at the end. The dashed line separates preparing the shared state from what each player does.',
+    body: 'A recipe of [gates](#gate), read from left to right: one line per qubit, the measurements at the end. Boxes such as “oracle” and “diffuser” stand for groups of gates. In the GHZ game and the magic square, a dashed line separates preparing the shared state from what each player does.',
   },
   parity: {
     title: 'Even and odd (parity)',
@@ -122,7 +122,7 @@ export const GLOSSARY_EN: Record<TermKey, GlossaryEntry> = {
   },
   sat: {
     title: 'Boolean satisfiability (SAT)',
-    body: 'Given a formula of true/false variables joined with AND, OR and NOT: is there an assignment that makes it true? Checking a proposed assignment is quick. Finding one can take very long, because the number of possible assignments doubles with every variable.',
+    body: 'Given a formula of true/false variables joined with AND, OR and NOT: is there an assignment that makes it true? Checking a proposed assignment is quick. Finding one can take very long: the number of possible assignments doubles with every variable, and no known method avoids searching through a large part of them in the worst case.',
   },
   cnf: {
     title: 'Clauses and 3-SAT',
@@ -134,7 +134,7 @@ export const GLOSSARY_EN: Record<TermKey, GlossaryEntry> = {
   },
   search: {
     title: 'Unstructured search',
-    body: 'Finding one of M marked items among N when all you can do is check items one at a time — no index, no structure to exploit. Classically that takes about N/M checks; Grover’s search needs about √(N/M) rounds.',
+    body: 'Finding one of M marked items among N when all you can do is check items one at a time — no index, no structure to exploit. Classically that takes about N/M checks; Grover’s search needs about π/4·√(N/M) rounds.',
   },
   grover: {
     title: 'Grover’s search',
@@ -142,7 +142,7 @@ export const GLOSSARY_EN: Record<TermKey, GlossaryEntry> = {
   },
   oracle: {
     title: 'Oracle',
-    body: 'The part of the circuit that recognizes solutions: it flips the sign of the [amplitude](#amplitude) of every assignment that satisfies the formula and leaves all others alone. Building it needs only the formula, not the solutions. A sign alone changes no probability — the [diffuser](#diffuser) turns it into one.',
+    body: 'The part of the circuit that recognizes solutions: it flips the sign of the [amplitude](#amplitude) of every assignment that satisfies the formula and leaves all others alone. Building it needs only the formula, not the solutions. A sign alone changes no probability — the [diffuser](#diffuser) turns it into a change of probability.',
   },
   diffuser: {
     title: 'Diffuser',
@@ -158,11 +158,11 @@ export const GLOSSARY_EN: Record<TermKey, GlossaryEntry> = {
   },
   iterations: {
     title: 'How many rounds?',
-    body: 'About π/4·√(N/M) rounds reach the first peak, for M solutions among N. Fewer rounds stop short; a few more overshoot and the chance falls — more is not better. (It rises again later, but every later peak costs more rounds.) If half or more of all assignments are solutions, don’t search at all — just measure. If M is unknown, quantum counting can estimate it, or you try growing numbers of rounds.',
+    body: 'With M solutions among N and sin²θ = M/N, the first peak comes after ⌊π/(4θ)⌋ rounds — about π/4·√(N/M) when solutions are rare. Fewer rounds stop short; a few more overshoot and the chance falls — more is not better. (It rises again later, but every later peak costs more rounds.) If half or more of all assignments are solutions, don’t search at all — just measure. If M is unknown, quantum counting can estimate it, or you try growing numbers of rounds.',
   },
   speedup: {
     title: 'Quadratic speed-up',
-    body: 'Grover needs about √(N/M) rounds where a classical search needs about N/M checks. With n variables, N = 2ⁿ: still exponential in n, but with half the exponent. For 40 variables and one solution that is up to about 10¹² classical checks against about 820,000 Grover rounds.',
+    body: 'Grover needs about π/4·√(N/M) rounds where a classical search needs about N/M checks. With n variables, N = 2ⁿ: still exponential in n, but with half the exponent. For 40 variables and one solution that is up to about 10¹² classical checks against about 820,000 Grover rounds.',
   },
   contextuality: {
     title: 'Contextuality',

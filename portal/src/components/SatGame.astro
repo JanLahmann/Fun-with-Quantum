@@ -104,7 +104,7 @@ import { CH4, CH5, PAGE, UI } from '../lib/sat/messages';
   .sat-summary { margin: 0; font: 0.88rem var(--sans); min-height: 1.3em; }
   .sat-summary :global(.lose) { color: var(--lose); }
   .sat-chart {
-    position: relative; height: 210px; display: flex; gap: 2px; align-items: stretch;
+    position: relative; height: 210px; display: flex; gap: 2px; align-items: stretch; padding-right: 48px; /* gutter for the "average" label */
     border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
     background: linear-gradient(to bottom, transparent calc(50% - 0.5px), var(--muted) calc(50% - 0.5px), var(--muted) calc(50% + 0.5px), transparent calc(50% + 0.5px));
     margin-bottom: 34px;
@@ -121,7 +121,7 @@ import { CH4, CH5, PAGE, UI } from '../lib/sat/messages';
     writing-mode: vertical-rl; font: 0.6rem var(--mono); color: var(--muted); white-space: nowrap;
   }
   .sat-chart :global(.avg) { position: absolute; left: 0; right: 0; border-top: 1.5px dashed var(--ink); z-index: 1; transition: bottom 0.5s ease; pointer-events: none; }
-  .sat-chart :global(.avg span) { position: absolute; right: 0; top: -15px; font: 0.62rem var(--mono); color: var(--ink); background: var(--card); padding: 0 3px; }
+  .sat-chart :global(.avg span) { position: absolute; right: 0; top: -8px; width: 46px; text-align: right; font: 0.62rem var(--mono); color: var(--ink); background: var(--card); padding: 0 2px; }
   .sat-legend { margin: 0; font: 0.75rem var(--sans); color: var(--muted); display: flex; align-items: center; gap: 6px; }
   .sat-legend .sw { display: inline-block; width: 12px; height: 12px; border-radius: 2px; background: color-mix(in srgb, var(--cyan) 55%, transparent); margin-left: 6px; }
   .sat-legend .sw.solution { background: var(--magenta); margin-left: 0; }

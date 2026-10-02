@@ -30,7 +30,7 @@ describe('formulas', () => {
   });
 
   it('reject broken formulas with a position', () => {
-    const bad: [string, number][] = [['', 0], ['A &', 3], ['(A | B', 6], ['A B', 2], ['A ^ B', 2], ['A & | B', 4], [')', 0], ['A & 2', 4], ['A && B', 3]];
+    const bad: [string, number][] = [['', -2], ['A &', -2], ['(A | B', -2], ['A B', 2], ['A ^ B', 2], ['A & | B', 4], [')', 0], ['A & 2', 4], ['A && B', 3]]; // −2 = at the end
     for (const [f, at] of bad) {
       let err: unknown = null;
       try { parse(f); } catch (e) { err = e; }
@@ -102,6 +102,15 @@ describe('Grover', () => {
     expect(predicted(4, 4, 2)).toBeCloseTo(0.25, 12); // overshoot back to 25%
     expect(predicted(3, 3, 1)).toBeCloseTo(27 / 32, 12); // 3-SAT: 84.4%
     expect(M.pct(27 / 32)).toBe('84.4%');
+    expect(M.pct(0.99978)).toBe('>99.9%'); // never shown as a certain 100%
+    expect(M.pct(0.0003)).toBe('<0.1%');
+    expect(M.pct(1)).toBe('100%');
+    expect(M.pct(0)).toBe('0%');
+    expect(M.pct(predicted(4, 4, 1))).toBe('100%');
+    expect(M.pct(predicted(3, 3, 3))).toBe('99%');
+    expect(M.summary(1, 2, 1, 0, 0.5)).toContain('Exactly half');
+    expect(M.summary(2, 4, 3, 0, 0.75)).toContain('More than half');
+    expect(M.summary(4, 16, 4, 1, 1)).toContain('first peak comes after <b>1</b> round:');
     expect(Math.asin(Math.sqrt(4 / 16)) * 180 / Math.PI).toBeCloseTo(30, 12); // θ = 30°
     expect(bestIterations(4, 4)).toBe(1);
     expect(bestIterations(3, 3)).toBe(1);

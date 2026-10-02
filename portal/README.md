@@ -96,7 +96,7 @@ same circuits as `GHZ-Game.ipynb`, `Mermin-Peres-Game.ipynb` and `3sat.ipynb`.
 3. **3-SAT with Grover** — *The party puzzle* (click a guest list; check all 16) · *Grover's search*
    (amplitudes step by step: H, oracle, diffuser, measure; overshoot after round 2) · *A classic 3-SAT*
    (the notebook's DIMACS problem: 3 of 8, one round = 84.4%) · *Your own puzzle* (any formula with &, |,
-   ~ and up to 6 variables; rounds to the first peak, 0 when more than half are solutions) · *How it
+   ~ and up to 6 variables; rounds to the first peak, 0 when half or more are solutions) · *How it
    works* (interference, sin²((2k+1)θ), scaling, limits).
 
 Explanations link to IBM Quantum Learning and doQumentation like the coin game's. To translate, add

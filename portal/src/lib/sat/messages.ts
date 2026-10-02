@@ -11,7 +11,7 @@ export const UI = {
   allTerms: '← all terms',
   close: 'Close',
   learnMoreIbm: 'Learn more on IBM Quantum Learning ↗',
-  learnMoreDoq: 'Run it in doQumentation ↗',
+  learnMoreDoq: 'Open it on doQumentation ↗',
   noscript: 'The browser version needs JavaScript — the notebook works without it.',
   friends: ['Alice', 'Bob', 'Carol', 'David'],
   invited: 'invited',
@@ -39,13 +39,15 @@ export const PAGE = {
   description: 'Solve logic puzzles with Grover’s search in your browser: watch the amplitudes of all guest lists, see the oracle mark the solutions and interference amplify them.',
   kicker: 'Play · Grover’s search algorithm · preview',
   heading: '3-SAT with Grover’s Algorithm',
-  lead: 'Some puzzles are easy to check but hard to solve. Watch a quantum computer find the solutions — with interference.',
+  lead: 'Some puzzles are easy to check but hard to solve. Watch Grover’s quantum search find the solutions — with interference.',
   notebook: 'The same puzzles as a Jupyter notebook, in real Qiskit code:',
   notebookLink: 'open the notebook ↗',
 };
 
 export function pct(p: number): string {
   const x = 100 * p;
+  if (x > 99.95 && x < 100 - 1e-9) return '>99.9%'; // never round "almost sure" up to 100%
+  if (x > 1e-9 && x < 0.05) return '<0.1%';
   if (Math.abs(x - Math.round(x)) < 0.05) return `${Math.round(x)}%`;
   return `${x.toFixed(1)}%`;
 }
@@ -86,7 +88,7 @@ export const CH2 = {
 };
 
 export const STEP = {
-  start: 'Start: all qubits are 0 — the empty list, with certainty.',
+  start: (party: boolean) => `Start: all qubits are 0 — ${party ? 'the empty guest list' : 'every variable false'}, with certainty.`,
   h: 'H on every qubit',
   hDone: (n: number, m: number) => `[Superposition](#superposition): all ${n} assignments now have the same amplitude. Measuring would give a random one — a solution ${m} times in ${n}.`,
   oracle: 'Oracle: mark the solutions',
@@ -94,19 +96,19 @@ export const STEP = {
   diffuser: 'Diffuser: reflect about the average',
   diffuserDone: (k: number, change: 'up' | 'down' | 'same') => `The [diffuser](#diffuser) reflected every amplitude about the average (dashed line)${
     change === 'up' ? ': the marked ones grew, the others shrank — [interference](#interference)'
-    : change === 'down' ? ' — but this time the marked ones shrank and the others grew' : ''}. Round ${k} done.`,
+    : change === 'down' ? ' — but the marked ones shrank and the others grew' : ': the chance stayed the same'}. Round ${k} done.`,
   bestDone: (k: number) => `Ran ${k} round${k === 1 ? '' : 's'} of oracle + diffuser.`,
   measure: 'Measure',
   measureMany: 'Measure 1000 times',
   again: 'Another round',
   best: (k: number) => `Run ${k} round${k === 1 ? '' : 's'}`,
   restart: 'Start over',
-  measured: (bits: string, what: string, ok: boolean) => `Measured <b>${bits}</b>${what ? ` — ${what}` : ''}: ${ok ? '<span class="win">a solution ✓</span>' : '<span class="lose">not a solution ✗</span> — check the answer, then run again'}.`,
+  measured: (bits: string, what: string, ok: boolean) => `Measured <b>${bits}</b>${what ? ` — ${what}` : ''}: ${ok ? '<span class="win">a solution ✓</span>' : '<span class="lose">not a solution ✗</span> — that’s why you always check; run again'}.`,
   many: (hits: number, n: number) => `${n} measurements: <b>${hits}</b> solutions (${pct(hits / n)}).`,
   overshoot: (best: number) => (best === 0
-    ? 'Half or more of all assignments are solutions, so a Grover round can’t raise the chance — measuring right away is best ([how many rounds?](#iterations)).'
-    : `Too far: the chance fell again — the state turned past the solutions. The first peak was after ${best} round${best === 1 ? '' : 's'} ([how many rounds?](#iterations)).`),
-  noSolution: 'No assignment satisfies this formula, so the oracle marks nothing and Grover can’t amplify anything — every assignment keeps the same small chance.',
+    ? 'Half or more of all assignments are solutions: a single Grover round can’t raise the chance, and no number of rounds is cheaper than simply measuring again ([how many rounds?](#iterations)).'
+    : `Too far: the chance fell — the state turned past the solutions. The first peak was after ${best} round${best === 1 ? '' : 's'} ([how many rounds?](#iterations)).`),
+  noSolution: 'No assignment satisfies this formula, so the oracle marks nothing and Grover can’t amplify anything — every assignment keeps the same chance.',
   allSolutions: 'Every assignment satisfies this formula — there is nothing to search for.',
 };
 
@@ -128,20 +130,20 @@ export const CH4 = {
   intro: `<p>Write a formula with & (AND), | (OR), ~ (NOT) and parentheses — variable names of letters, digits and _, up to 6 variables. ~ binds before &, & before |, as in Qiskit. The variables go onto qubits 0, 1, 2, … in sorted order: capital letters before small ones, x2 before x10 — as in the notebook.</p>`,
   examples: [
     { label: 'Party', formula: '((A & B) | (C & D)) & ~(A & D)' },
-    { label: 'Notebook’s turn', formula: '((A & C) | (B & D)) & ~(A & D)' },
+    { label: 'Notebook’s example', formula: '((A & C) | (B & D)) & ~(A & D)' },
     { label: 'Exactly one of three', formula: '(a | b | c) & ~(a & b) & ~(a & c) & ~(b & c)' },
     { label: 'One in 64', formula: 'a & b & c & d & e & f' },
     { label: 'No solution', formula: 'x & ~x' },
   ],
-  error: (msg: string, at: number) => (at < 0 ? `That formula is too big: ${msg}.` : `That formula doesn’t parse: ${msg} (at character ${at + 1}).`),
+  error: (msg: string, at: number) => (at === -1 ? `That formula is too big: ${msg}.` : at === -2 ? `That formula doesn’t parse: ${msg}.` : `That formula doesn’t parse: ${msg} (at character ${at + 1}).`),
 };
 
-/** "… about π/4·√(N/M) = k rounds reach the first peak: p%" */
+/** "…. The first peak comes after k rounds: a solution p of the time." */
 export const summary = (nv: number, n: number, m: number, best: number | null, p: number | null) =>
   `${nv} variable${nv === 1 ? '' : 's'}, ${n} assignments, <b>${m}</b> solution${m === 1 ? '' : 's'}`
   + (best === null || p === null ? '.'
-    : best === 0 ? `. Half or more are solutions, so Grover can’t help: measuring right away finds one ${pct(p)} of the time.`
-    : `. About π/4·√(N/M) = <b>${best}</b> round${best === 1 ? '' : 's'} reach${best === 1 ? 'es' : ''} the first peak: a solution ${pct(p)} of the time.`);
+    : best === 0 ? `. ${2 * m === n ? 'Exactly half' : 'More than half'} are solutions, so Grover rounds don’t pay off: measuring right away finds one ${pct(p)} of the time — if not, just measure again.`
+    : `. The first peak comes after <b>${best}</b> round${best === 1 ? '' : 's'}: a solution ${pct(p)} of the time.`);
 
 export const CH5 = {
   title: 'How it works',
@@ -151,13 +153,13 @@ export const CH5 = {
 <p>That is [interference](#interference): amplitudes add up for the solutions and partly cancel for everything else.</p>`,
     `<p>Each round turns the state by the same angle 2θ towards the solutions, where sin²θ = M/N (M solutions among N). After k rounds the chance of a solution is</p>
 <p class="math">sin²((2k + 1)·θ)</p>
-<p>The chart shows it for the party puzzle (M = 4, N = 16, θ = 30°): one round reaches exactly 100%, a second overshoots back to 25%. For the 3-SAT problem (M = 3, N = 8, θ ≈ 37.8°) the first peak is after one round, 84.4%. A later peak can come closer to 100% — 3 rounds give 99.0% — but costs three times the work. About π/4·√(N/M) rounds reach the first peak ([how many rounds?](#iterations)).</p>`,
+<p>The chart shows it for the party puzzle (M = 4, N = 16, θ = 30°): one round reaches exactly 100%, a second overshoots back to 25%. For the 3-SAT problem (M = 3, N = 8, θ ≈ 37.8°) the first peak is after one round, 84.4%. A later peak can come closer to 100% — 3 rounds give 99% — but costs three times the work. The first peak comes after ⌊π/(4θ)⌋ rounds — about π/4·√(N/M) when solutions are rare ([how many rounds?](#iterations)).</p>`,
     `<p>A classical search for one solution among N = 2ⁿ assignments needs up to N checks; Grover needs about π/4·√N rounds ([quadratic speed-up](#speedup)):</p>
 <table><tr><th>variables</th><th>assignments</th><th>Grover rounds</th></tr>{{TABLE}}</table>
 <p>Still exponential in the number of variables — but with half the exponent.</p>`,
     `<p><b>No shortcut for NP-complete problems.</b> SAT is [NP-complete](#npcomplete); a quadratic speed-up does not make it easy, and most researchers expect that quantum computers cannot solve such problems efficiently.</p>
 <p><b>Real SAT solvers are clever.</b> They use the structure of the formula and routinely handle industrial problems with millions of clauses. Grover’s search assumes no structure at all ([unstructured search](#search)).</p>
-<p><b>Always check.</b> Grover finds a solution with high probability, not certainty — but checking a SAT answer is easy, so a wrong answer costs just one more run.</p>`,
+<p><b>Always check.</b> Grover finds a solution with high probability, usually not with certainty — but checking a SAT answer is easy, so a wrong answer costs just one more run.</p>`,
   ],
   chartLabel: 'Chance of a solution after k rounds',
   rounds: 'rounds',

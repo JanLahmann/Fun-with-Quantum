@@ -17,7 +17,7 @@ export type Node =
   | { t: 'and' | 'or'; a: Node; b: Node };
 
 export class FormulaError extends Error {
-  /** `at`: 0-based position of the problem in the formula, or −1 when it is not about one place. */
+  /** `at`: 0-based position of the problem, −2 at the end of the formula, −1 when it is not about one place. */
   constructor(message: string, public at: number) { super(message); }
 }
 
@@ -44,7 +44,7 @@ export function parse(src: string): Node {
   let p = 0;
   const peek = () => tok[p];
   const take = (k: Token['k']) => {
-    if (tok[p].k !== k) throw new FormulaError(k === ')' ? 'missing “)”' : `expected “${k}”`, tok[p].at);
+    if (tok[p].k !== k) throw new FormulaError(k === ')' ? 'missing “)”' : `expected “${k}”`, tok[p].k === 'end' ? -2 : tok[p].at);
     return tok[p++];
   };
   function or(): Node {
@@ -65,9 +65,9 @@ export function parse(src: string): Node {
     const t = peek();
     if (t.k === 'id') { p++; return { t: 'var', name: t.v }; }
     if (t.k === '(') { p++; const n = or(); take(')'); return n; }
-    throw new FormulaError(t.k === 'end' ? 'the formula ends too early' : `unexpected “${t.v}”`, t.at);
+    throw new FormulaError(t.k === 'end' ? 'the formula ends too early' : `unexpected “${t.v}”`, t.k === 'end' ? -2 : t.at);
   }
-  if (peek().k === 'end') throw new FormulaError('the formula is empty', 0);
+  if (peek().k === 'end') throw new FormulaError('the formula is empty', -2);
   const n = or();
   if (peek().k !== 'end') throw new FormulaError(`unexpected “${peek().v}”`, peek().at);
   return n;
@@ -176,8 +176,9 @@ export function predicted(nVars: number, m: number, k: number): number {
 
 /**
  * The number of rounds that reaches the first peak of sin²((2k+1)θ): floor(π/(4θ)), about
- * π/4·√(N/M). It is 0 when half or more of the assignments are solutions — then no round raises
- * the chance (|sin 3θ| ≤ sin θ for sin²θ ≥ ½), so you just measure. null without solutions.
+ * π/4·√(N/M) when solutions are rare. It is 0 when half or more of the assignments are solutions:
+ * one round never raises the chance then (|sin 3θ| ≤ sin θ for sin²θ ≥ ½), and later peaks cost
+ * more oracle calls than simply measuring again. null without solutions.
  * Same as the notebook's best_iterations().
  */
 export function bestIterations(nVars: number, m: number): number | null {

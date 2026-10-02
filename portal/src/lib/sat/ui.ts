@@ -89,7 +89,8 @@ export function mountSatGame(root: HTMLElement) {
     }
     if (phase === 'oracle') steps.push({ g: 'box', label: UI.oracle, from: 0, to: last, tone: 'bob' });
     steps.push({ g: 'measure' });
-    return circuitSvg(p.vars.map((v, q) => `${v} (q${q})`), steps, UI.circuitTitle);
+    const short = (v: string) => (v.length > 8 ? `${v.slice(0, 7)}…` : v); // the label column is narrow
+    return circuitSvg(p.vars.map((v, q) => `${short(v)} (q${q})`), steps, UI.circuitTitle);
   }
 
   function describe(p: Puzzle, i: number): string {
@@ -109,8 +110,9 @@ export function mountSatGame(root: HTMLElement) {
       amps = new Array(1 << p.vars.length).fill(0); amps[0] = 1;
       phase = 'start'; rounds = 0; countsEl.innerHTML = '';
       paintChart(p, amps, false);
+      chanceEl.innerHTML = ''; // the chance line starts with H: before that there is nothing to search yet
       shell.circuit(circuitFor(p, phase, rounds));
-      shell.say(STEP.start);
+      shell.say(STEP.start(p === PARTY_PUZZLE));
     };
     reset();
     for (;;) {
@@ -188,7 +190,8 @@ export function mountSatGame(root: HTMLElement) {
       const v = m === 0 ? 0 : predicted(n, m, k);
       return `<div class="bar"><span class="pct">${pct(v)}</span><span class="track"><i class="fill" style="height:${(v * 100).toFixed(1)}%"></i></span><span class="lbl">${k}</span></div>`;
     });
-    roundsChart.innerHTML = `<div class="bars" role="img" aria-label="${CH5.chartLabel}">${bars.join('')}</div><p class="cap">${CH5.chartLabel} (${CH5.rounds} 0–8): ${p === PARTY_PUZZLE ? CH5.party : p === SAT3_PUZZLE ? CH5.sat3 : p.formula}</p>`;
+    const esc = (t: string) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    roundsChart.innerHTML = `<div class="bars" role="img" aria-label="${CH5.chartLabel}">${bars.join('')}</div><p class="cap">${CH5.chartLabel} (${CH5.rounds} 0–8): ${p === PARTY_PUZZLE ? CH5.party : p === SAT3_PUZZLE ? CH5.sat3 : esc(p.formula)}</p>`;
   }
 
   /* ---- stage events ---- */
@@ -262,7 +265,7 @@ export function mountSatGame(root: HTMLElement) {
     setMode('custom');
     shell.setTitle(CH4.title);
     shell.setText(CH4.intro);
-    if (!input.value) input.value = custom.formula;
+    input.value = custom.formula; // the box always shows the puzzle the chart describes
     paintSummary(custom);
     await stepper(e, custom, [{ label: CH4.next, value: 'next' }], true);
     shell.markDone(4);
@@ -279,6 +282,10 @@ export function mountSatGame(root: HTMLElement) {
     let s = 0;
     for (;;) {
       shell.setText(CH5.texts[s].replace('{{TABLE}}', table));
+      if (s === 1) { // this section's text describes the party puzzle's chart
+        root.querySelectorAll('.sat-rounds-pick button').forEach((b) => b.setAttribute('aria-pressed', String((b as HTMLElement).dataset.p === 'party')));
+        paintRounds(PARTY_PUZZLE);
+      }
       const v = await shell.ask(e, CH5.sections.map((label, i) => ({ label, value: i, kind: i === s ? ('current' as const) : undefined })));
       s = v;
       track('Portal: 3sat explain section', { section: s + 1 });
