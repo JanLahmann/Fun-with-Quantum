@@ -8,13 +8,13 @@ cells = []
 
 
 def md(src, slide='slide'):
-    c = nbf.v4.new_markdown_cell(src)
+    c = nbf.v4.new_markdown_cell(src, id=f'cell-{len(cells)}')  # stable ids: rebuilds diff cleanly
     c.metadata['slideshow'] = {'slide_type': slide}
     cells.append(c)
 
 
 def code(src, slide='fragment'):
-    c = nbf.v4.new_code_cell(src)
+    c = nbf.v4.new_code_cell(src, id=f'cell-{len(cells)}')
     c.metadata['slideshow'] = {'slide_type': slide}
     cells.append(c)
 
