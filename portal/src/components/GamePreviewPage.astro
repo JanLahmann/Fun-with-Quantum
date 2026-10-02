@@ -1,16 +1,16 @@
 ---
 /**
  * An unlisted browser-game page (English): header, the game (slot), the notebook link and the
- * trio of games. noindex, linked only from the other preview pages. To launch see portal/README.md.
+ * other browser games. noindex, linked only from the other preview pages. To launch see portal/README.md.
  */
 import Base from '../layouts/Base.astro';
-import GameTrio from './GameTrio.astro';
+import BrowserGames from './BrowserGames.astro';
 
 interface Props {
   page: { title: string; description: string; kicker: string; heading: string; lead: string; notebook: string; notebookLink: string };
   icon: string;
   notebook: string;
-  current: 'ghz' | 'magic';
+  current: 'ghz' | 'magic' | 'sat';
 }
 const { page, icon, notebook, current } = Astro.props;
 const launch = `https://qubins.org/launch/?image=2.1-xl-rise&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=${notebook}&ui=rise-classic`;
@@ -28,7 +28,7 @@ const launch = `https://qubins.org/launch/?image=2.1-xl-rise&repo=https://github
         <a href={launch} target="_blank" rel="noopener" data-umami-event="Portal: notebook launch" data-umami-event-target="qubins"
            data-umami-event-image="2.1-xl-rise" data-umami-event-notebook={notebook}>{page.notebookLink}</a>
       </p>
-      <GameTrio current={current} />
+      <BrowserGames current={current} />
     </div>
   </section>
 </Base>

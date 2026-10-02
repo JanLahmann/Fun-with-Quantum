@@ -5,7 +5,9 @@
  */
 import type { Op } from '../qsim';
 
-export type Step = (Op & { tone?: string }) | { g: 'barrier' } | { g: 'measure'; tone?: string };
+export type Step = (Op & { tone?: string }) | { g: 'barrier' } | { g: 'measure'; tone?: string }
+  /** A named block over qubits from…to, e.g. Grover's oracle. */
+  | { g: 'box'; label: string; from: number; to: number; tone?: string };
 
 const COL = 46, ROW = 44, LEFT = 92, TOP = 26, BOX = 30;
 const NAME: Record<string, string> = { h: 'H', x: 'X', y: 'Y', z: 'Z', s: 'S', sdg: 'S†' };
@@ -17,6 +19,7 @@ export function circuitSvg(labels: readonly string[], steps: readonly Step[], ti
   for (const step of steps) {
     let qs: number[];
     if (step.g === 'barrier' || step.g === 'measure') qs = labels.map((_, q) => q);
+    else if (step.g === 'box') qs = Array.from({ length: step.to - step.from + 1 }, (_, k) => step.from + k);
     else if ('q' in step) qs = [step.q];
     else { const lo = Math.min(step.a, step.b), hi = Math.max(step.a, step.b); qs = Array.from({ length: hi - lo + 1 }, (_, k) => lo + k); }
     const col = Math.max(...qs.map((q) => next[q]));
@@ -43,6 +46,10 @@ export function circuitSvg(labels: readonly string[], steps: readonly Step[], ti
         out.push(`<g class="gate meter${tone}"><rect x="${cx - BOX / 2}" y="${cy - BOX / 2}" width="${BOX}" height="${BOX}" rx="5"/>`
           + `<path d="M${cx - 9} ${cy + 6} A 10 10 0 0 1 ${cx + 9} ${cy + 6}"/><line x1="${cx}" y1="${cy + 6}" x2="${cx + 7}" y2="${cy - 8}"/></g>`);
       }
+    } else if (step.g === 'box') {
+      const top = y(step.from) - BOX / 2, h = y(step.to) - y(step.from) + BOX, w = COL - 8;
+      out.push(`<g class="gate box${tone}"><rect x="${cx - w / 2}" y="${top}" width="${w}" height="${h}" rx="6"/>`
+        + `<text x="${cx}" y="${top + h / 2 + 4}" text-anchor="middle" transform="rotate(-90 ${cx} ${top + h / 2})">${h < 70 ? step.label[0].toUpperCase() : step.label}</text></g>`);
     } else if ('q' in step) {
       const cy = y(step.q);
       out.push(`<g class="gate${tone}"><rect x="${cx - BOX / 2}" y="${cy - BOX / 2}" width="${BOX}" height="${BOX}" rx="5"/>`

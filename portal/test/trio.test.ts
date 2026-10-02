@@ -169,7 +169,7 @@ describe('explanations', () => {
 
   it('every [words](#term) link in the games and the glossary points to a real term', async () => {
     const { GLOSSARY_EN, termRefs } = await import('../src/lib/games/glossary');
-    const all = [...texts(await import('../src/lib/magic/messages')), ...texts(await import('../src/lib/ghz/messages')), ...texts(GLOSSARY_EN)];
+    const all = [...texts(await import('../src/lib/magic/messages')), ...texts(await import('../src/lib/ghz/messages')), ...texts(await import('../src/lib/sat/messages')), ...texts(GLOSSARY_EN)];
     const refs = all.flatMap(termRefs);
     expect(refs.length).toBeGreaterThan(30);
     for (const r of refs) expect(Object.keys(GLOSSARY_EN), r).toContain(r);
@@ -177,7 +177,7 @@ describe('explanations', () => {
 
   it('the Explain index of each game lists only real terms', async () => {
     const { GLOSSARY_EN } = await import('../src/lib/games/glossary');
-    for (const m of [await import('../src/lib/magic/messages'), await import('../src/lib/ghz/messages')])
+    for (const m of [await import('../src/lib/magic/messages'), await import('../src/lib/ghz/messages'), await import('../src/lib/sat/messages')])
       for (const t of m.TERMS) expect(Object.keys(GLOSSARY_EN)).toContain(t);
   });
 
