@@ -3,8 +3,8 @@
 "Fun with Quantum" is a collection of Jupyter notebooks that highlight specific aspects of Quantum Computing that are interesting and/or fun.
 
  1. Quantum Coin Game (superposition & interference))  
- 2. Simple Quantum Implementation for Boolean satisfiability problems 
- 3. Even Simpler Quantum Implementation for Boolean satisfiability problems (under development) 
+ 2. Solving logic puzzles with Grover's search (Boolean satisfiability, 3-SAT) 
+ 3. (merged into 2) 
  4. Hardy's Paradox (complementary observables & the problem with classical logic) 
  5. GHZ Game (entanglement)
  6. GHZ Game on real devices
@@ -55,18 +55,16 @@ View - and play the game online, without any install - in Binder: [![Binder](htt
 A slightly more current version of this Quantum Coin Game is now part of the official Qiskit Community Tutorials and can be played at http://ibm.biz/QiskitCoinGame
 
 ----
-### 2. Simple Quantum Implementation for Boolean satisfiability problems
+### 2. Solving logic puzzles with Grover's search (3-SAT)
 
-A simple implementation to solve Boolean satisfiability problems ("3SAT") using Qiskit and Grover's Quantum Search Algorithm. The aim is to show how easy such a problem can be solved on a Quantum Computer using Qiskit. To keep it as simple as possible, the theory is not explained in this notebook.
+Builds Grover's quantum search algorithm from scratch with Qiskit 2 and uses it on two puzzles: a party guest list that keeps everybody happy, and a classic 3-SAT formula given in DIMACS format. Explains oracle, diffuser and the √N speed-up, checks every answer classically, and lets you enter your own puzzle. (Rebuilt in 2026 from two Qiskit Aqua–era notebooks, which it replaces.)
 
 Walk through this demo (and change it if you like) in Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=3sat.ipynb)
 
 ---
-### 3. Even Simpler Quantum Implementation for Boolean satisfiability problems (under development)
+### 3. (merged into 2)
 
-An even simpler implementation to solve Boolean satisfiability problems ("3SAT") using Qiskit and Grover's Quantum Search Algorithm.
-
-Walk through this demo (and change it if you like) in Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=3sat-v2.ipynb)
+The party example of the former `3sat-v2.ipynb` is now part of the notebook above.
 
 ---
 ### 4. Hardy's Paradox

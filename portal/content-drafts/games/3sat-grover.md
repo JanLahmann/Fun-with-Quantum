@@ -9,13 +9,13 @@ audience: developers, students
 # QuBins classic-RISE launch (2.1-xl-rise = nbclassic + classic RISE);
 # jupyterlab-rise doesn't render ipywidgets>=8 (jupyterlab-contrib/rise#119).
 # Once fixed upstream, switch to image=2.1-xl&...&ui=rise (Lab presenter).
-binderUrl: https://qubins.org/launch/?image=2.1-xl-rise&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=3sat-v2.ipynb&ui=rise-classic
-notebook: 3sat-v2.ipynb
+binderUrl: https://qubins.org/launch/?image=2.1-xl-rise&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=3sat.ipynb&ui=rise-classic
+notebook: 3sat.ipynb
 ---
 
 Satisfiability — finding an assignment of true/false values that makes a logical formula true —
-is the archetypal hard search problem. This notebook takes a small **3-SAT** instance and solves
-it with **Grover's algorithm**, the quantum search routine that finds a marked item among N
+is the archetypal hard search problem. This notebook takes a party guest list and a small **3-SAT** instance and solves
+them with **Grover's algorithm**, the quantum search routine that finds a marked item among N
 possibilities in roughly √N steps instead of N.
 
 You'll see the problem encoded as a phase oracle, watch amplitude amplification concentrate
