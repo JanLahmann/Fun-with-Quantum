@@ -1,0 +1,13 @@
+---
+/**
+ * UNLISTED preview of the browser Mermin–Peres magic square (English) — reachable only by URL,
+ * linked only from the other preview pages, noindex. To launch publicly: see portal/README.md.
+ */
+import GamePreviewPage from '../../components/GamePreviewPage.astro';
+import MagicSquareGame from '../../components/MagicSquareGame.astro';
+import { PAGE } from '../../lib/magic/messages';
+---
+
+<GamePreviewPage page={PAGE} icon="🎩" notebook="Mermin-Peres-Game.ipynb" current="magic">
+  <MagicSquareGame />
+</GamePreviewPage>
