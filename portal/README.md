@@ -2,7 +2,8 @@
 
 Astro site for the Fun with Quantum family: three doors (Play · Build · Learn), the notebook games,
 and browser versions of four of them: the Quantum Coin Game, the GHZ game, the magic square and 3-SAT with Grover. Deployed to GitHub Pages by
-`.github/workflows/deploy-portal.yml` on every push to `master`; `portal-ci.yml` runs tests, type
+`.github/workflows/deploy-portal.yml` on every push to `master`, which also attaches the build as `fwq-portal-<commit>.tar.gz` (+ `.sha256`)
+to the `portal-bundles` release, for offline use on RasQberry Two; `portal-ci.yml` runs tests, type
 check and build on pull requests.
 
 ```sh
