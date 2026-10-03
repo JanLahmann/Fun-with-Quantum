@@ -88,3 +88,18 @@ describe('explanations', () => {
     expect(pagePath('ja')).toBe('/ja/preview/coin-game/');
   });
 });
+
+describe('chapter 6 formulas in every language', () => {
+  for (const l of LOCALES) {
+    it(`${l}: keeps every formula of the derivation`, () => {
+      const c = MESSAGES[l].ch6;
+      for (const f of ['α|0⟩ + β|1⟩', '|α|² + |β|² = 1', '|0⟩ → |1⟩', '|1⟩ → |0⟩', '|0⟩ → (|0⟩ + |1⟩)/√2', '|1⟩ → (|0⟩ − |1⟩)/√2'])
+        expect(c.intro, `${l} intro ${f}`).toContain(f);
+      expect(c.caseLeave).toContain('H(H|0⟩) = H((|0⟩ + |1⟩)/√2)<br>= (H|0⟩ + H|1⟩)/√2<br>= ½(|0⟩ + |1⟩) + ½(|0⟩ − |1⟩)<br>= |0⟩');
+      expect(c.caseFlip).toContain('X((|0⟩ + |1⟩)/√2) = (|1⟩ + |0⟩)/√2 = H|0⟩');
+      expect(c.caseFlip).toContain('H(X(H|0⟩)) = H(H|0⟩) = |0⟩');
+      expect(MESSAGES[l].ui.chapters).toHaveLength(6);
+      expect(c.title.startsWith('6 · ')).toBe(true);
+    });
+  }
+});

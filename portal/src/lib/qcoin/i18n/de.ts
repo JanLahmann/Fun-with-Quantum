@@ -16,7 +16,7 @@ const de: Messages = {
   },
 
   ui: {
-    chapters: ['Ein faires Spiel', 'gegen einen Quantencomputer', 'Blick in die Box', 'Du bist Quanten', 'Sandkasten'],
+    chapters: ['Ein faires Spiel', 'gegen einen Quantencomputer', 'Blick in die Box', 'Du bist Quanten', 'Sandkasten', 'Die Mathematik'],
     chaptersLabel: 'Kapitel',
     heads: 'Kopf',
     tails: 'Zahl',
@@ -166,6 +166,18 @@ const de: Messages = {
     played: (g, name) => `${g}: ${name}.`,
   },
 
+  ch6: {
+    title: '6 · Die Mathematik',
+    intro: '<p>Jeder Zustand eines Qubits ist α|0⟩ + β|1⟩, mit zwei komplexen Zahlen α und β — den Amplituden — und |α|² + |β|² = 1. Eine Messung ergibt Kopf (|0⟩) mit Wahrscheinlichkeit |α|² und Zahl (|1⟩) mit Wahrscheinlichkeit |β|².</p><p>Ein Gatter ist dadurch festgelegt, was es mit |0⟩ und |1⟩ macht; auf eine Superposition wirkt es auf jeden Teil einzeln:</p><p class="math">X: |0⟩ → |1⟩ und |1⟩ → |0⟩<br>H: |0⟩ → (|0⟩ + |1⟩)/√2 und |1⟩ → (|0⟩ − |1⟩)/√2</p>',
+    caseLeave: '<p>Lässt du die Münze so (I), ergeben die beiden H des Computers</p><p class="math">H(H|0⟩) = H((|0⟩ + |1⟩)/√2)<br>= (H|0⟩ + H|1⟩)/√2<br>= ½(|0⟩ + |1⟩) + ½(|0⟩ − |1⟩)<br>= |0⟩</p><p>Die beiden |1⟩-Teile heben sich auf — destruktive [Interferenz](#interference) —, die beiden |0⟩-Teile addieren sich.</p>',
+    caseFlip: '<p>Drehst du sie um (X), ändert sich nichts: X vertauscht die beiden Teile von (|0⟩ + |1⟩)/√2, und die sind gleich.</p><p class="math">X((|0⟩ + |1⟩)/√2) = (|1⟩ + |0⟩)/√2 = H|0⟩<br>also H(X(H|0⟩)) = H(H|0⟩) = |0⟩</p>',
+    conclusion: '<p>So oder so endet die Münze sicher auf Kopf — der Quantencomputer gewinnt jede Runde.</p>',
+    leave: 'Fall 1: du lässt sie so (I)',
+    flip: 'Fall 2: du drehst sie um (X)',
+    pick: 'Wähle einen Fall: Sieh der Münze zu und folge der Rechnung.',
+    done: 'Die Münze endet auf Kopf — mit Sicherheit.',
+  },
+
   glossary: {
     qubit: {
       title: 'Qubit — die Quantenmünze',
@@ -226,6 +238,10 @@ const de: Messages = {
     algorithms: {
       title: 'Wozu ist das gut?',
       body: 'Das Münzspiel ist eine Mini-Version dessen, was Quantencomputer tun: Durch [Superposition](#superposition) spielt eine Rechnung viele Möglichkeiten gemeinsam durch, und durch [Interferenz](#interference) löschen sich die falschen Antworten aus, während sich die richtige verstärkt. Grovers Suchalgorithmus und Shors Faktorisierungsalgorithmus beruhen auf dieser Idee — mit vielen Qubits statt einer Münze.',
+    },
+    math: {
+      title: 'Die Mathematik hinter dem Spiel',
+      body: 'Der Zustand eines Qubits ist α|0⟩ + β|1⟩ mit |α|² + |β|² = 1. H macht aus Kopf |0⟩ den Zustand (|0⟩ + |1⟩)/√2, ein zweites H macht daraus wieder |0⟩: ½(|0⟩ + |1⟩) + ½(|0⟩ − |1⟩) = |0⟩ — die |1⟩-Teile heben sich auf. X vertauscht |0⟩ und |1⟩ und lässt (|0⟩ + |1⟩)/√2 deshalb unverändert: Auch H, X, H endet auf Kopf. Alle Schritte stehen in Kapitel 6, „Die Mathematik“.',
     },
   },
 };

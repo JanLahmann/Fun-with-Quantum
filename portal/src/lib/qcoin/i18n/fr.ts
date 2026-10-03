@@ -16,7 +16,7 @@ const fr: Messages = {
   },
 
   ui: {
-    chapters: ['Un jeu équitable', 'Contre un ordinateur quantique', 'Regarde dedans', 'À toi d’être quantique', 'Bac à sable'],
+    chapters: ['Un jeu équitable', 'Contre un ordinateur quantique', 'Regarde dedans', 'À toi d’être quantique', 'Bac à sable', 'Les maths'],
     chaptersLabel: 'Chapitres',
     heads: 'Face',
     tails: 'Pile',
@@ -166,6 +166,18 @@ const fr: Messages = {
     played: (g, name) => `${g} : ${name}.`,
   },
 
+  ch6: {
+    title: '6 · Les maths',
+    intro: '<p>Tout état d’un qubit s’écrit α|0⟩ + β|1⟩, avec deux nombres complexes α et β — les amplitudes — et |α|² + |β|² = 1. Une mesure donne face (|0⟩) avec la probabilité |α|² et pile (|1⟩) avec la probabilité |β|².</p><p>Une porte est définie par ce qu’elle fait à |0⟩ et |1⟩ ; sur une superposition, elle agit sur chaque partie séparément :</p><p class="math">X : |0⟩ → |1⟩ et |1⟩ → |0⟩<br>H : |0⟩ → (|0⟩ + |1⟩)/√2 et |1⟩ → (|0⟩ − |1⟩)/√2</p>',
+    caseLeave: '<p>Si tu laisses la pièce (I), les deux H de l’ordinateur donnent</p><p class="math">H(H|0⟩) = H((|0⟩ + |1⟩)/√2)<br>= (H|0⟩ + H|1⟩)/√2<br>= ½(|0⟩ + |1⟩) + ½(|0⟩ − |1⟩)<br>= |0⟩</p><p>Les deux parties en |1⟩ s’annulent — [interférence](#interference) destructive — tandis que les deux parties en |0⟩ s’additionnent.</p>',
+    caseFlip: '<p>Si tu la retournes (X), rien ne change : X échange les deux parties de (|0⟩ + |1⟩)/√2, qui sont égales.</p><p class="math">X((|0⟩ + |1⟩)/√2) = (|1⟩ + |0⟩)/√2 = H|0⟩<br>donc H(X(H|0⟩)) = H(H|0⟩) = |0⟩</p>',
+    conclusion: '<p>Dans les deux cas, la pièce finit sur face, à coup sûr : l’ordinateur quantique gagne chaque manche.</p>',
+    leave: 'Cas 1 : tu la laisses (I)',
+    flip: 'Cas 2 : tu la retournes (X)',
+    pick: 'Choisis un cas : regarde la pièce et suis le calcul.',
+    done: 'La pièce finit sur face — à coup sûr.',
+  },
+
   glossary: {
     qubit: {
       title: 'Qubit — la pièce quantique',
@@ -226,6 +238,10 @@ const fr: Messages = {
     algorithms: {
       title: 'À quoi ça sert ?',
       body: 'Le jeu de la pièce est une version miniature de ce que font les ordinateurs quantiques : grâce à la [superposition](#superposition), un calcul explore plusieurs possibilités ensemble, et grâce à l’[interférence](#interference), les mauvaises réponses s’annulent tandis que la bonne s’additionne. L’algorithme de recherche de Grover et l’algorithme de factorisation de Shor reposent sur cette idée — avec beaucoup de qubits au lieu d’une seule pièce.',
+    },
+    math: {
+      title: 'Les maths du jeu',
+      body: 'L’état d’un qubit est α|0⟩ + β|1⟩ avec |α|² + |β|² = 1. H transforme face |0⟩ en (|0⟩ + |1⟩)/√2, et un second H le ramène à |0⟩ : ½(|0⟩ + |1⟩) + ½(|0⟩ − |1⟩) = |0⟩ — les parties en |1⟩ s’annulent. X échange |0⟩ et |1⟩ et laisse donc (|0⟩ + |1⟩)/√2 inchangé : H, X, H finit aussi sur face. Toutes les étapes sont au chapitre 6, « Les maths ».',
     },
   },
 };
