@@ -229,9 +229,10 @@ const doors = [
           Lahmann</a> and the RasQberry community. Contributions are welcome in every repository —
           start at <a href="https://github.com/JanLahmann" target="_blank" rel="noopener">github.com/JanLahmann</a>.
         </p>
-        <p>
-          Running a workshop or event? <a href="/workshops/">We help you prepare it</a>.
-        </p>
+        <div class="callout">
+          <p><strong>Running a workshop or event?</strong> We help you prepare it, free, as part of our open-source community work.</p>
+          <a class="btn primary" href="/workshops/" data-umami-event="Portal: workshops open">Workshops &amp; events ▸</a>
+        </div>
       </div>
     </div>
   </section>
@@ -297,6 +298,16 @@ const doors = [
 </script>
 
 <style>
+  .callout {
+    margin: 1.5em 0 0;
+    padding: 18px 22px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--cyan);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+  }
+  .callout p { margin: 0 0 12px; }
   .hero { padding: 56px 0 24px; }
   .hero-grid {
     display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 48px; align-items: center;

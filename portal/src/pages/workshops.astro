@@ -7,7 +7,7 @@ const requestUrl = 'https://github.com/JanLahmann/Fun-with-Quantum/issues/new?te
 
 <Base
   title="Workshops & events | Fun with Quantum"
-  description="Running a quantum computing workshop or event? We help you prepare it: custom versions, your branding, extensions, testing and advice."
+  description="Running a quantum computing workshop or event? We help you prepare it, free, as part of our open-source community work: custom versions, your branding, extensions, testing and advice."
 >
   <section class="section">
     <div class="wrap">
@@ -15,21 +15,23 @@ const requestUrl = 'https://github.com/JanLahmann/Fun-with-Quantum/issues/new?te
       <h2>You run the event — we help you prepare it</h2>
       <p class="lead">
         For workshops, classes, meetups and conference stands with any Fun with Quantum project.
+        Free, as part of our open-source community work.
       </p>
 
       <div class="prose">
-        <h2>What we offer</h2>
+        <h2>How we can help</h2>
         <ul>
           <li><strong>Custom versions</strong>, e.g. a RasQberry Two image made for your event.</li>
           <li><strong>Your branding</strong>: logo, splash screen, wallpaper, LED logo, browser start page.</li>
           <li><strong>Extensions</strong> for your topic.</li>
           <li><strong>Testing</strong>: we verify exactly the functions you will use.</li>
-          <li><strong>Advice</strong> on tools, setup (number of Pis, offline use, one Pi serving the participants' laptops) and the agenda.</li>
+          <li><strong>Advice</strong> on tools, setup (number of Pis, offline use, one of your Pis as a server for the participants' laptops) and the agenda.</li>
         </ul>
+        <p>You bring the hardware, such as your Raspberry Pis; we help you get it ready.</p>
 
         <h2>Projects</h2>
         <ul>
-          <li><a href="https://rasqberry.org/workshops/" target="_blank" rel="noopener">RasQberry Two</a> — a quantum computer model with a Raspberry Pi inside: demos, LEDs, Workshop Server.</li>
+          <li><a href="https://rasqberry.org/workshops/" target="_blank" rel="noopener">RasQberry Two</a> — a quantum computer model with a Raspberry Pi inside: demos, LEDs, and the Workshop &amp; Qiskit Server, which runs on one of your Pis and serves the whole group.</li>
           <li><a href="/play/">Fun with Quantum notebooks</a> — quantum games for a class.</li>
           <li><a href="https://qoffee-maker.org" target="_blank" rel="noopener">Qoffee-Maker</a> — order your coffee with a quantum circuit.</li>
           <li><a href="https://doqumentation.org" target="_blank" rel="noopener">doQumentation</a> — quantum computing tutorials with code you can run.</li>
@@ -38,17 +40,21 @@ const requestUrl = 'https://github.com/JanLahmann/Fun-with-Quantum/issues/new?te
         <p>Other projects of the family, too — just ask.</p>
 
         <h2>Past events</h2>
-        <p>RasQberry Two was shown at the IBM Quantum Developer Conference in November 2025.</p>
+        <p>
+          RasQberry Two was shown at the IBM Quantum Developer Conference in November 2025, and IBM Quantum{' '}
+          <a href="https://www.linkedin.com/posts/qiskit-ugcPost-7406757487208730624-4Tpr/" target="_blank" rel="noopener">featured it on LinkedIn</a>{' '}
+          in December 2025.
+        </p>
         {(QDC_2025.photos.length > 0 || QDC_2025.video) && (
           <figure class="qdc">
-            {QDC_2025.photos.length > 0 && (
-              <div class="qdc-photos">
-                {QDC_2025.photos.map((p) => <img src={p.src} alt={p.alt} loading="lazy" />)}
-              </div>
-            )}
-            <figcaption>
-              At QDC 2025{QDC_2025.video && <> · <a href={QDC_2025.video} target="_blank" rel="noopener">watch the video ↗</a></>}
-            </figcaption>
+            <div class="qdc-grid">
+              {QDC_2025.photos.map((p) => <img src={p.src} alt={p.alt} loading="lazy" />)}
+              {QDC_2025.video && (
+                <video src={QDC_2025.video} autoplay muted loop playsinline controls preload="metadata"
+                       aria-label="Opening the RasQberry Two model at the IBM Quantum Developer Conference 2025"></video>
+              )}
+            </div>
+            <figcaption>At the IBM Quantum Developer Conference 2025</figcaption>
           </figure>
         )}
 
@@ -67,7 +73,13 @@ const requestUrl = 'https://github.com/JanLahmann/Fun-with-Quantum/issues/new?te
 <style>
   .note { color: var(--muted); font-size: 0.85rem; }
   .qdc { margin: 0 0 1em; }
-  .qdc-photos { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
-  .qdc-photos img { width: 100%; height: auto; border: 1px solid var(--line); border-radius: 10px; }
+  /* photos (3:2) and the portrait clip as a 2x2 grid of equal tiles */
+  .qdc-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .qdc-grid img, .qdc-grid video {
+    width: 100%; aspect-ratio: 3 / 2; object-fit: cover;
+    border: 1px solid var(--line); border-radius: 10px;
+  }
+  .qdc-grid video { object-fit: contain; background: #161616; }
+  @media (max-width: 480px) { .qdc-grid { grid-template-columns: 1fr; } }
   .qdc figcaption { margin-top: 6px; font-size: 0.85rem; color: var(--muted); }
 </style>
