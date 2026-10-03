@@ -6,6 +6,7 @@
  *   3  Look inside           — the same round, box off, step by step: H · your move · H.
  *   4  You be quantum        — you are A with I/X/H against a random classical B.
  *   5  Sandbox               — any gates, live coin, measure many times.
+ *   6  The math              — the notebook's derivation, each case played on the coin.
  *
  * Each chapter is a small async script; `ask()` waits for a button press, so the flow reads top
  * to bottom. Switching chapters bumps `epoch`, which makes every pending wait of the old chapter
@@ -16,7 +17,7 @@ import { emptyScore, quantumA, quantumB, randomClassical, tally, type Player, ty
 import { IDENTITY, axisAngle, lift, mul, normalOf, shade, tipTo, toCss, toSphereView as toView, type Mat3 } from './rotation';
 import { MESSAGES, doqLink, ibmLink, isLocale, rich, type Locale, type Messages, type TermKey } from './i18n';
 
-type Chapter = 1 | 2 | 3 | 4 | 5;
+type Chapter = 1 | 2 | 3 | 4 | 5 | 6;
 const QUANTUM: ReadonlySet<GateName> = new Set(['H', 'Z', 'S']);
 
 class Abort extends Error {}
@@ -202,7 +203,7 @@ export function mountCoinGame(root: HTMLElement) {
 
   let state: State = HEADS;
   let epoch = 0;
-  const scores: Record<Chapter, Score> = { 1: emptyScore(), 2: emptyScore(), 3: emptyScore(), 4: emptyScore(), 5: emptyScore() };
+  const scores: Record<Chapter, Score> = { 1: emptyScore(), 2: emptyScore(), 3: emptyScore(), 4: emptyScore(), 5: emptyScore(), 6: emptyScore() };
   let lastQuantumRound: GateName = 'X'; // your move in the last chapter-2 round, replayed in chapter 3
 
   const guardFor = (e: number) => () => { if (e !== epoch) throw new Abort(); };
@@ -580,6 +581,38 @@ export function mountCoinGame(root: HTMLElement) {
     }
   }
 
+  /** Chapter 6: the derivation of both cases; each choice plays H, your move, H on the coin. */
+  async function chapter6(e: number) {
+    title.textContent = m.ch6.title;
+    resetCoin();
+    circuit(null);
+    setText(m.ch6.intro);
+    say(m.ch6.pick);
+    let last: 'I' | 'X' | null = null;
+    for (;;) {
+      const choice: 'I' | 'X' = await ask<'I' | 'X'>(e, [
+        { label: m.ch6.leave, value: 'I', gate: 'I', kind: last === null ? 'primary' : undefined },
+        { label: m.ch6.flip, value: 'X', gate: 'X', kind: last === 'I' ? 'primary' : undefined },
+      ]);
+      actions.innerHTML = '';
+      last = choice;
+      resetCoin();
+      setText(m.ch6.intro + (choice === 'I' ? m.ch6.caseLeave : m.ch6.caseFlip) + m.ch6.conclusion);
+      say('');
+      const slots: Slot[] = [{ gate: 'H', who: m.ui.whoComputer }, { gate: choice, who: m.ui.whoYou }, { gate: 'H', who: m.ui.whoComputer }];
+      for (let i = 0; i < 3; i++) {
+        slots.forEach((s, k) => { s.active = k === i; });
+        circuit(slots);
+        await animateGate(slots[i].gate as GateName, e);
+        await wait(350, e);
+      }
+      slots[2].active = false;
+      circuit(slots);
+      say(m.ch6.done);
+      track('Portal: coin game math', { case: choice });
+    }
+  }
+
   /* ---- explanations on demand ---- */
   // Any element with data-term inside the game opens its explanation; "Explain" opens the index.
   // Links go to IBM Quantum Learning (in the player's language where IBM has it) and to the same
@@ -620,7 +653,7 @@ export function mountCoinGame(root: HTMLElement) {
   });
 
   /* ---- navigation ---- */
-  const CHAPTERS: Record<Chapter, (e: number) => Promise<void>> = { 1: chapter1, 2: chapter2, 3: chapter3, 4: chapter4, 5: chapter5 };
+  const CHAPTERS: Record<Chapter, (e: number) => Promise<void>> = { 1: chapter1, 2: chapter2, 3: chapter3, 4: chapter4, 5: chapter5, 6: chapter6 };
   const DONE_KEY = 'fwq-coin-done';
   const done = new Set<number>((() => { try { return JSON.parse(localStorage.getItem(DONE_KEY) ?? '[]'); } catch { return []; } })());
   function markDone(ch: Chapter) {

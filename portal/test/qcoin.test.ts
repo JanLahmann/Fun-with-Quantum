@@ -235,3 +235,31 @@ describe('coin orientation = Bloch vector', () => {
     expect(nz(toCss(orient(['H'])))).toBeGreaterThan(0.9); // standing, facing us
   });
 });
+
+describe('chapter 6, the math', () => {
+  const same = (a: State, b: State) => closeVec([a[0].re, a[0].im, a[1].re, a[1].im], [b[0].re, b[0].im, b[1].re, b[1].im]);
+  const R = Math.SQRT1_2;
+  const plus: State = [{ re: R, im: 0 }, { re: R, im: 0 }];
+  const minus: State = [{ re: R, im: 0 }, { re: -R, im: 0 }];
+
+  it('the gates on |0⟩ and |1⟩, as stated', () => {
+    expect(same(apply('X', HEADS), TAILS)).toBe(true);
+    expect(same(apply('X', TAILS), HEADS)).toBe(true);
+    expect(same(apply('H', HEADS), plus)).toBe(true); // (|0⟩ + |1⟩)/√2
+    expect(same(apply('H', TAILS), minus)).toBe(true); // (|0⟩ − |1⟩)/√2
+  });
+
+  it('case 1: H(H|0⟩) = (H|0⟩ + H|1⟩)/√2 = |0⟩', () => {
+    const viaParts: State = [
+      { re: R * (apply('H', HEADS)[0].re + apply('H', TAILS)[0].re), im: 0 },
+      { re: R * (apply('H', HEADS)[1].re + apply('H', TAILS)[1].re), im: 0 },
+    ];
+    expect(same(apply('H', apply('H', HEADS)), viaParts)).toBe(true);
+    expect(same(viaParts, HEADS)).toBe(true);
+  });
+
+  it('case 2: X((|0⟩ + |1⟩)/√2) = H|0⟩, so H(X(H|0⟩)) = |0⟩', () => {
+    expect(same(apply('X', plus), apply('H', HEADS))).toBe(true);
+    expect(same(run(['H', 'X', 'H']), HEADS)).toBe(true);
+  });
+});

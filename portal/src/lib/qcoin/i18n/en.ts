@@ -16,7 +16,7 @@ const en: Messages = {
   },
 
   ui: {
-    chapters: ['A fair game', 'vs. a quantum computer', 'Look inside', 'You be quantum', 'Sandbox'],
+    chapters: ['A fair game', 'vs. a quantum computer', 'Look inside', 'You be quantum', 'Sandbox', 'The math'],
     chaptersLabel: 'Chapters',
     heads: 'Heads',
     tails: 'Tails',
@@ -166,6 +166,18 @@ const en: Messages = {
     played: (g, name) => `${g}: ${name}.`,
   },
 
+  ch6: {
+    title: '6 · The math',
+    intro: '<p>Any state of a qubit is α|0⟩ + β|1⟩, with two complex numbers α and β — the amplitudes — and |α|² + |β|² = 1. Measuring gives heads (|0⟩) with chance |α|² and tails (|1⟩) with chance |β|².</p><p>A gate is fixed by what it does to |0⟩ and |1⟩; on a superposition it acts on each part separately:</p><p class="math">X: |0⟩ → |1⟩ and |1⟩ → |0⟩<br>H: |0⟩ → (|0⟩ + |1⟩)/√2 and |1⟩ → (|0⟩ − |1⟩)/√2</p>',
+    caseLeave: '<p>If you leave the coin (I), the computer’s two H gates give</p><p class="math">H(H|0⟩) = H((|0⟩ + |1⟩)/√2)<br>= (H|0⟩ + H|1⟩)/√2<br>= ½(|0⟩ + |1⟩) + ½(|0⟩ − |1⟩)<br>= |0⟩</p><p>The two |1⟩ parts cancel — destructive [interference](#interference) — while the two |0⟩ parts add up.</p>',
+    caseFlip: '<p>If you flip it (X), nothing changes: X swaps the two parts of (|0⟩ + |1⟩)/√2, and they are equal.</p><p class="math">X((|0⟩ + |1⟩)/√2) = (|1⟩ + |0⟩)/√2 = H|0⟩<br>so H(X(H|0⟩)) = H(H|0⟩) = |0⟩</p>',
+    conclusion: '<p>Either way the coin ends on heads, with certainty — the quantum computer wins every round.</p>',
+    leave: 'Case 1: you leave it (I)',
+    flip: 'Case 2: you flip it (X)',
+    pick: 'Pick a case: watch the coin and follow the math.',
+    done: 'The coin ends on heads — with certainty.',
+  },
+
   glossary: {
     qubit: {
       title: 'Qubit — the quantum coin',
@@ -226,6 +238,10 @@ const en: Messages = {
     algorithms: {
       title: 'What is it good for?',
       body: 'The coin game is a tiny version of what quantum computers do: with [superposition](#superposition) a computation explores possibilities together, and with [interference](#interference) the wrong answers cancel while the right one adds up. Grover’s search and Shor’s factoring algorithm are built on this idea — with many qubits instead of one coin.',
+    },
+    math: {
+      title: 'The math behind the game',
+      body: 'A qubit’s state is α|0⟩ + β|1⟩ with |α|² + |β|² = 1. H turns heads |0⟩ into (|0⟩ + |1⟩)/√2, and a second H turns that back into |0⟩: ½(|0⟩ + |1⟩) + ½(|0⟩ − |1⟩) = |0⟩ — the |1⟩ parts cancel. X swaps |0⟩ and |1⟩ and so leaves (|0⟩ + |1⟩)/√2 unchanged: H, X, H ends on heads too. All steps are in chapter 6, “The math”.',
     },
   },
 };

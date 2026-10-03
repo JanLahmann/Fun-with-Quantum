@@ -47,6 +47,7 @@ export const TERM_PAGES: Record<TermKey, string> = {
   phase: 'modules/quantum-mechanics/superposition-with-qiskit#the-quantum-phase',
   circuit: 'courses/basics-of-quantum-information/quantum-circuits/circuits#quantum-circuits',
   algorithms: 'courses/fundamentals-of-quantum-algorithms',
+  math: 'courses/basics-of-quantum-information/single-systems/quantum-information#compositions-of-qubit-unitary-operations',
 };
 
 export function ibmLink(term: TermKey, locale: Locale): string {

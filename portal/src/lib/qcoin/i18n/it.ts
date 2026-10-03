@@ -16,7 +16,7 @@ const it: Messages = {
   },
 
   ui: {
-    chapters: ['Un gioco equo', 'Contro un computer quantistico', 'Guarda dentro', 'Fai tu il quantistico', 'Sandbox'],
+    chapters: ['Un gioco equo', 'Contro un computer quantistico', 'Guarda dentro', 'Fai tu il quantistico', 'Sandbox', 'La matematica'],
     chaptersLabel: 'Capitoli',
     heads: 'Testa',
     tails: 'Croce',
@@ -166,6 +166,18 @@ const it: Messages = {
     played: (g, name) => `${g}: ${name}.`,
   },
 
+  ch6: {
+    title: '6 · La matematica',
+    intro: '<p>Ogni stato di un qubit è α|0⟩ + β|1⟩, con due numeri complessi α e β — le ampiezze — e |α|² + |β|² = 1. Una misurazione dà testa (|0⟩) con probabilità |α|² e croce (|1⟩) con probabilità |β|².</p><p>Una porta è definita da ciò che fa a |0⟩ e |1⟩; su una sovrapposizione agisce su ciascuna parte separatamente:</p><p class="math">X: |0⟩ → |1⟩ e |1⟩ → |0⟩<br>H: |0⟩ → (|0⟩ + |1⟩)/√2 e |1⟩ → (|0⟩ − |1⟩)/√2</p>',
+    caseLeave: '<p>Se lasci la moneta (I), le due H del computer danno</p><p class="math">H(H|0⟩) = H((|0⟩ + |1⟩)/√2)<br>= (H|0⟩ + H|1⟩)/√2<br>= ½(|0⟩ + |1⟩) + ½(|0⟩ − |1⟩)<br>= |0⟩</p><p>Le due parti con |1⟩ si annullano — [interferenza](#interference) distruttiva — mentre le due con |0⟩ si sommano.</p>',
+    caseFlip: '<p>Se la giri (X), non cambia nulla: X scambia le due parti di (|0⟩ + |1⟩)/√2, che sono uguali.</p><p class="math">X((|0⟩ + |1⟩)/√2) = (|1⟩ + |0⟩)/√2 = H|0⟩<br>quindi H(X(H|0⟩)) = H(H|0⟩) = |0⟩</p>',
+    conclusion: '<p>In entrambi i casi la moneta finisce su testa con certezza: il computer quantistico vince ogni partita.</p>',
+    leave: 'Caso 1: la lasci (I)',
+    flip: 'Caso 2: la giri (X)',
+    pick: 'Scegli un caso: guarda la moneta e segui i calcoli.',
+    done: 'La moneta finisce su testa, con certezza.',
+  },
+
   glossary: {
     qubit: {
       title: 'Qubit — la moneta quantistica',
@@ -226,6 +238,10 @@ const it: Messages = {
     algorithms: {
       title: 'A cosa serve?',
       body: 'Il gioco della moneta è una versione in miniatura di ciò che fanno i computer quantistici: con la [sovrapposizione](#superposition) un calcolo esplora più possibilità insieme, e con l’[interferenza](#interference) le risposte sbagliate si annullano mentre quella giusta si rafforza. L’algoritmo di ricerca di Grover e quello di fattorizzazione di Shor si basano su questa idea — con molti qubit invece di una sola moneta.',
+    },
+    math: {
+      title: 'La matematica del gioco',
+      body: 'Lo stato di un qubit è α|0⟩ + β|1⟩ con |α|² + |β|² = 1. H trasforma testa |0⟩ in (|0⟩ + |1⟩)/√2, e una seconda H lo riporta a |0⟩: ½(|0⟩ + |1⟩) + ½(|0⟩ − |1⟩) = |0⟩ — le parti con |1⟩ si annullano. X scambia |0⟩ e |1⟩ e quindi lascia (|0⟩ + |1⟩)/√2 invariato: anche H, X, H finisce su testa. Tutti i passaggi sono nel capitolo 6, «La matematica».',
     },
   },
 };

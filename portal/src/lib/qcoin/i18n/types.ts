@@ -13,7 +13,7 @@ import type { GateName } from '../qubit';
 export type TermKey =
   | 'qubit' | 'superposition' | 'measurement' | 'bloch' | 'ket' | 'gate'
   | 'hadamard' | 'xgate' | 'zgate' | 'sgate' | 'igate'
-  | 'interference' | 'phase' | 'circuit' | 'algorithms';
+  | 'interference' | 'phase' | 'circuit' | 'algorithms' | 'math';
 
 export interface GlossaryEntry {
   title: string;
@@ -30,7 +30,7 @@ export interface Messages {
   page: { title: string; description: string; kicker: string; heading: string; lead: string; notebook: string; notebookLink: string; preview: string };
 
   ui: {
-    chapters: readonly [string, string, string, string, string];
+    chapters: readonly [string, string, string, string, string, string];
     chaptersLabel: string;
     heads: string;
     tails: string;
@@ -158,6 +158,19 @@ export interface Messages {
     many: (heads: number, tails: number, expHeads: number, expTails: number) => string;
     measured: (side: string) => string;
     played: (gate: GateName, name: string) => string;
+  };
+
+  /** Chapter 6: the notebook's derivation — why H, your move, H always ends on heads. */
+  ch6: {
+    title: string;
+    intro: string;
+    caseLeave: string;
+    caseFlip: string;
+    conclusion: string;
+    leave: string;
+    flip: string;
+    pick: string;
+    done: string;
   };
 
   glossary: Record<TermKey, GlossaryEntry>;
