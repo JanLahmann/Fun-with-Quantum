@@ -57,7 +57,7 @@ A slightly more current version of this Quantum Coin Game is now part of the off
 ----
 ### 2. Solving logic puzzles with Grover's search (3-SAT)
 
-Builds Grover's quantum search algorithm step by step from Qiskit 2 building blocks and uses it on two puzzles: a party guest list that keeps everybody happy, and a classic 3-SAT formula given in DIMACS format. Explains oracle, diffuser and the √N speed-up, checks the answers classically, and lets you enter your own puzzle. (Rebuilt in 2026 from two Qiskit Aqua–era notebooks, which it replaces.)
+Starts with the whole quantum program — the formula plus seven lines of Qiskit — then builds Grover's quantum search algorithm step by step from Qiskit 2 building blocks and uses it on two puzzles: a party guest list that keeps everybody happy, and a classic 3-SAT formula given in DIMACS format. Explains oracle, diffuser and the √N speed-up, checks the answers classically, and lets you enter your own puzzle. (Rebuilt in 2026 from two Qiskit Aqua–era notebooks, which it replaces.)
 
 Walk through this demo (and change it if you like) in Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=3sat.ipynb)
 

@@ -100,6 +100,10 @@ const { id, label, locale, chapters, chaptersLabel, explain, explainTitle, close
   .qg-text table { border-collapse: collapse; font: 0.8rem var(--mono); margin: 4px 0 10px; }
   .qg-text th, .qg-text td { border-bottom: 1px solid var(--line); padding: 3px 8px 3px 0; text-align: left; color: var(--ink); }
   .qg-text th { color: var(--muted); font-weight: 600; }
+  .qg-text details.code { margin: 6px 0 10px; border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; background: color-mix(in srgb, var(--cyan) 4%, var(--card)); }
+  .qg-text details.code summary { cursor: pointer; font: 600 0.9rem var(--sans); color: var(--cyan); }
+  .qg-text details.code pre { margin: 8px 0; overflow-x: auto; font: 0.72rem/1.45 var(--mono); color: var(--ink); white-space: pre; }
+  .qg-text details.code p { font-size: 0.85rem; margin: 0; }
   .qg-text blockquote { border-left: 3px solid var(--magenta); padding-left: 10px; margin: 6px 0 10px; color: var(--ink); font-family: var(--serif); font-style: italic; }
   .qg-status { font-size: 1.02rem; min-height: 1.6em; margin: 10px 0; }
   .qg-status strong { color: var(--magenta); }

@@ -32,8 +32,12 @@ import { CH4, CH5, PAGE, UI } from '../lib/sat/messages';
         </div>
       </form>
       <p class="sat-summary" aria-live="polite"></p>
-      <div class="sat-chart" role="img" aria-label={UI.chartLabel}></div>
+      <div class="sat-chart-wrap">
+        <div class="sat-axis" aria-hidden="true"><span>{UI.axis[0]}</span><span>{UI.axis[1]}</span><span>{UI.axis[2]}</span><i>{UI.axisTitle}</i></div>
+        <div class="sat-chart" role="img" aria-label={UI.chartLabel}></div>
+      </div>
       <p class="sat-legend"><i class="sw solution"></i> {UI.legendSolution} <i class="sw"></i> {UI.legendOther}</p>
+      <p class="sat-caption">{UI.chartCaption}</p>
       <p class="sat-chance" aria-live="polite"></p>
       <p class="sat-hint"></p>
       <div class="sat-counts"></div>
@@ -122,6 +126,16 @@ import { CH4, CH5, PAGE, UI } from '../lib/sat/messages';
   }
   .sat-chart :global(.avg) { position: absolute; left: 0; right: 0; border-top: 1.5px dashed var(--ink); z-index: 1; transition: bottom 0.5s ease; pointer-events: none; }
   .sat-chart :global(.avg span) { position: absolute; right: 0; top: -8px; width: 46px; text-align: right; font: 0.62rem var(--mono); color: var(--ink); background: var(--card); padding: 0 2px; }
+  .sat-chart-wrap { display: grid; grid-template-columns: 30px 1fr; gap: 4px; }
+  .sat-axis { position: relative; height: 210px; font: 0.62rem var(--mono); color: var(--muted); }
+  .sat-axis span { position: absolute; right: 2px; transform: translateY(-50%); }
+  .sat-axis span:nth-child(1) { top: 0; }
+  .sat-axis span:nth-child(2) { top: 50%; }
+  .sat-axis span:nth-child(3) { top: 100%; }
+  .sat-axis i { position: absolute; left: 0; top: 50%; transform: translate(-30%, -50%) rotate(-90deg); transform-origin: center; font-style: normal; letter-spacing: 0.04em; white-space: nowrap; top: 26%; }
+  .sat-chart :global(.pp) { position: absolute; left: 50%; transform: translateX(-50%); font: 600 0.58rem var(--mono); color: var(--magenta); white-space: nowrap; transition: bottom 0.5s ease, top 0.5s ease; pointer-events: none; }
+  .sat-chart[data-n='16'] :global(.pp) { font-size: 0.5rem; }
+  .sat-caption { margin: 0; font: 0.75rem var(--sans); color: var(--muted); }
   .sat-legend { margin: 0; font: 0.75rem var(--sans); color: var(--muted); display: flex; align-items: center; gap: 6px; }
   .sat-legend .sw { display: inline-block; width: 12px; height: 12px; border-radius: 2px; background: color-mix(in srgb, var(--cyan) 55%, transparent); margin-left: 6px; }
   .sat-legend .sw.solution { background: var(--magenta); margin-left: 0; }

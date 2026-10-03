@@ -76,6 +76,32 @@ describe('the two puzzles', () => {
   });
 });
 
+describe('what the page shows', () => {
+  it('the chance line names the solutions and their equal share', () => {
+    expect(M.UI.chance(1, 4)).toBe('Chance to measure a solution: <b>100%</b> (4 solutions, 25% each)');
+    expect(M.UI.chance(27 / 32, 3)).toBe('Chance to measure a solution: <b>84.4%</b> (3 solutions, 28.1% each)');
+    expect(M.UI.chance(predicted(6, 1, 6), 1)).toBe('Chance to measure a solution: <b>99.7%</b>');
+    expect(M.UI.chance(0, 0)).toBe('Chance to measure a solution: <b>0%</b>');
+    // all solutions really do share one amplitude, so p / m is each one's chance
+    const p = puzzle(M.PARTY);
+    for (let k = 0; k < 4; k++) {
+      const a = afterRounds(p, k).filter((_, i) => p.solution[i]);
+      a.forEach((x) => expect(x).toBeCloseTo(a[0], 12));
+    }
+  });
+
+  it('the code box is exactly the program that opens the notebook', async () => {
+    const fs = await import('node:fs');
+    const nb = JSON.parse(fs.readFileSync(new URL('../../3sat.ipynb', import.meta.url), 'utf8'));
+    const cell = nb.cells.find((c: { cell_type: string; source: string | string[] }) => c.cell_type === 'code' && [].concat(c.source as never).join('').includes('StatevectorSampler'));
+    const src: string = [].concat(cell.source).join('');
+    expect(src).toContain(M.PROGRAM);
+    expect(M.CH2.intro).toContain('&amp;'); // the formula's & escaped in the HTML
+    const lines = M.PROGRAM.split('\n').filter((l) => l.trim() && !l.trim().startsWith('#') && !l.startsWith('party ='));
+    expect(lines).toHaveLength(7); // "the formula and 7 lines of Qiskit"
+  });
+});
+
 describe('Grover', () => {
   it('agrees with Qiskit (PhaseOracleGate + grover_operator, as in the notebook) for k = 0…4 rounds', () => {
     expect(qiskit.cases.length).toBeGreaterThanOrEqual(9);

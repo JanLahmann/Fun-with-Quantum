@@ -56,12 +56,13 @@ export function mountSatGame(root: HTMLElement) {
   }
 
   /* ---- the amplitude chart ---- */
-  function paintChart(p: Puzzle, amps: readonly number[], showMean: boolean) {
+  /** Bars = amplitudes (±1 = full half height); with `chances`, each solution bar is labelled with its chance (up to 16 bars). */
+  function paintChart(p: Puzzle, amps: readonly number[], showMean: boolean, chances = true) {
     const n = amps.length, labels = n <= 16;
     if (chart.childElementCount !== n + 1 || chart.dataset.n !== String(n)) {
       chart.dataset.n = String(n);
       chart.innerHTML = `<div class="avg" hidden><span>${UI.average}</span></div>` + amps.map((_, i) =>
-        `<div class="col" title="${bitString(i, p.vars.length)}"><span class="amp"></span>${labels ? `<span class="lbl">${bitString(i, p.vars.length)}</span>` : ''}</div>`).join('');
+        `<div class="col" title="${bitString(i, p.vars.length)}"><span class="amp"></span><span class="pp" hidden></span>${labels ? `<span class="lbl">${bitString(i, p.vars.length)}</span>` : ''}</div>`).join('');
     }
     const cols = chart.querySelectorAll<HTMLElement>('.col');
     amps.forEach((a, i) => {
@@ -70,12 +71,19 @@ export function mountSatGame(root: HTMLElement) {
       bar.style.height = `${h}%`;
       bar.style.bottom = a >= 0 ? '50%' : `${50 - h}%`;
       bar.classList.toggle('solution', p.solution[i]);
+      const pp = cols[i].querySelector<HTMLElement>('.pp')!;
+      pp.hidden = !(chances && labels && p.solution[i]);
+      if (!pp.hidden) {
+        pp.textContent = pct(a * a);
+        if (a >= 0) { pp.style.bottom = `calc(${50 + h}% + 2px)`; pp.style.top = ''; }
+        else { pp.style.top = `calc(${50 + h}% + 2px)`; pp.style.bottom = ''; }
+      }
       cols[i].title = `${bitString(i, p.vars.length)}: amplitude ${a.toFixed(3)}, probability ${pct(a * a)}`;
     });
     const avg = chart.querySelector<HTMLElement>('.avg')!;
     avg.hidden = !showMean;
     avg.style.bottom = `${50 + Math.max(-1, Math.min(1, mean(amps))) * 50}%`;
-    chanceEl.innerHTML = UI.chance(successProbability(amps, p.solution));
+    chanceEl.innerHTML = UI.chance(successProbability(amps, p.solution), countSolutions(p));
     hintEl.textContent = UI.bitsHint(p.vars);
   }
 
@@ -109,7 +117,7 @@ export function mountSatGame(root: HTMLElement) {
     const reset = () => {
       amps = new Array(1 << p.vars.length).fill(0); amps[0] = 1;
       phase = 'start'; rounds = 0; countsEl.innerHTML = '';
-      paintChart(p, amps, false);
+      paintChart(p, amps, false, false);
       chanceEl.innerHTML = ''; // the chance line starts with H: before that there is nothing to search yet
       shell.circuit(circuitFor(p, phase, rounds));
       shell.say(STEP.start(p === PARTY_PUZZLE));

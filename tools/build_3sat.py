@@ -52,7 +52,41 @@ $$((A \wedge B) \vee (C \wedge D)) \wedge \neg(A \wedge D)$$
 
 In code we write & for AND, | for OR and ~ for NOT: `((A & B) | (C & D)) & ~(A & D)`. Which guest lists work? With 4 friends there are 2⁴ = 16 possible lists.""")
 
-md("""First we load the tools: Qiskit for the circuits, a simulator to run them, and a few helper functions. Click into the cell and press "Shift Enter".""", slide='fragment')
+md("""## The whole quantum program
+
+With Qiskit this takes the formula and **seven lines** of code. Qiskit builds the oracle from the formula; `grover_operator` adds the rest of Grover's search. For another puzzle only the formula and its variables change. Click into the cell and press "Shift Enter":""")
+code("""from qiskit import QuantumCircuit
+from qiskit.circuit.library import PhaseOracleGate, grover_operator
+from qiskit.primitives import StatevectorSampler
+from qiskit.visualization import plot_histogram
+
+party = '((A & B) | (C & D)) & ~(A & D)'  # the problem
+
+oracle = QuantumCircuit(4)  # the quantum program
+oracle.append(PhaseOracleGate(party, var_order=['A', 'B', 'C', 'D']), range(4))
+grover = QuantumCircuit(4)
+grover.h(range(4))  # all 16 guest lists at once
+grover.compose(grover_operator(oracle), inplace=True)  # one round
+grover.measure_all()
+counts = StatevectorSampler().run([grover], shots=1000).result()[0].data.meas.get_counts()
+
+plot_histogram(counts, title='Guest lists (bits read D C B A)')""")
+md("""Only the four valid guest lists come out, each about a quarter of the time — together 100%. Read the bit strings right to left as A, B, C, D (Qiskit puts qubit 0 on the right): `0011` is Alice and Bob, `1100` Carol and David.
+
+That is all it takes. The rest of this notebook looks inside: how Grover's search works, why one round is enough here, and how to check the answers.""", slide='fragment')
+
+md(r"""## How Grover's search works
+
+1. **Superposition:** a Hadamard gate on every qubit puts all 2ⁿ guest lists into the register at once, each with the same amplitude.
+2. **Oracle:** a circuit built from the formula flips the *sign* of every assignment that satisfies it. Nothing measurable changes yet — the solutions are only marked.
+3. **Diffuser:** reflects every amplitude about the average. The marked (negative) amplitudes grow, all others shrink. This is **interference**.
+4. **Repeat** oracle + diffuser $k$ times, then **measure**: a solution comes out with high probability.
+
+With M solutions among N assignments and $\sin^2\theta = M/N$, the chance after $k$ rounds is $\sin^2((2k+1)\theta)$. It peaks first at $k = \lfloor \pi/(4\theta) \rfloor$ — about $\frac{\pi}{4}\sqrt{N/M}$ when solutions are rare. One round too many spoils it: for the party puzzle 1 round gives 100%, 2 rounds only 25%. (If half or more of all assignments are solutions, don't search — just measure.)
+
+A classical search needs about N/M checks; Grover needs only about $\sqrt{N/M}$ rounds — a quadratic speed-up.""")
+
+md("""To look inside — draw the circuit, choose the number of rounds, check the answers, try your own puzzles — we load a few helper functions. Click into the cell and press "Shift Enter".""")
 code(r'''import math, re
 from itertools import product
 from IPython.display import HTML, display
@@ -109,24 +143,13 @@ def run(qc, shots=2000):
 
 print("Ready.")''')
 
-md(r"""## How Grover's search works
-
-1. **Superposition:** a Hadamard gate on every qubit puts all 2ⁿ guest lists into the register at once, each with the same amplitude.
-2. **Oracle:** a circuit built from the formula flips the *sign* of every assignment that satisfies it. Nothing measurable changes yet — the solutions are only marked.
-3. **Diffuser:** reflects every amplitude about the average. The marked (negative) amplitudes grow, all others shrink. This is **interference**.
-4. **Repeat** oracle + diffuser $k$ times, then **measure**: a solution comes out with high probability.
-
-With M solutions among N assignments and $\sin^2\theta = M/N$, the chance after $k$ rounds is $\sin^2((2k+1)\theta)$. It peaks first at $k = \lfloor \pi/(4\theta) \rfloor$ — about $\frac{\pi}{4}\sqrt{N/M}$ when solutions are rare. One round too many spoils it: for the party puzzle 1 round gives 100%, 2 rounds only 25%. (If half or more of all assignments are solutions, don't search — just measure.)
-
-A classical search needs about N/M checks; Grover needs only about $\sqrt{N/M}$ rounds — a quadratic speed-up.""")
-
 md("""Qiskit turns the formula into the oracle for us. (A "global phase" printed above the circuit is an overall sign that no measurement can see.)""", slide='fragment')
 code("""party = '((A & B) | (C & D)) & ~(A & D)'
 oracle = oracle_for(party)
 print("Variables on qubits 0, 1, 2, 3:", variables(party))
 grover_circuit(oracle, 1).draw(output='mpl')""")
 
-md("""## Run it
+md("""## How many rounds?
 
 Here we cheat a little: to choose the number of rounds we count the solutions classically first (16 checks are quick). For real problems the count is unknown — you can estimate it with *quantum counting*, or try increasing numbers of rounds.""")
 code("""party_vars = variables(party)
@@ -137,9 +160,7 @@ print(f"{n_solutions} solutions among {2 ** len(party_vars)} guest lists → {k}
 party_counts = run(grover_circuit(oracle, k))
 plot_histogram(party_counts, title='Guest lists (bits read D C B A)')""")
 
-md("""Every bit string is a guest list, read **right to left** as A, B, C, D (Qiskit puts qubit 0 on the right): `0011` means *Alice and Bob*, `1100` *Carol and David*.
-
-With 4 solutions among 16 lists, a single Grover round finds a solution **every time** — only the four valid lists appear. Let's double-check them classically:""")
+md("""With 4 solutions among 16 lists, one round reaches exactly 100%: only the four valid lists appear, each about 25% of the time (θ = 30°: after one round the state stands at 3θ = 90° — exactly on the solutions). Let's double-check them classically:""")
 code("""rows = []
 for bits, n in sorted(party_counts.items(), key=lambda x: -x[1]):
     guests = {v: b == '1' for v, b in zip(party_vars, reversed(bits))}
@@ -173,7 +194,7 @@ Three variables $x_1, x_2, x_3$ and five clauses with three literals each:
 
 $$\begin{aligned} f(x_1, x_2, x_3) = {} & (\neg x_1 \vee \neg x_2 \vee \neg x_3) \wedge (x_1 \vee \neg x_2 \vee x_3) \wedge (x_1 \vee x_2 \vee \neg x_3) \\ & \wedge (x_1 \vee \neg x_2 \vee \neg x_3) \wedge (\neg x_1 \vee x_2 \vee x_3) \end{aligned}$$
 
-SAT problems are usually exchanged in the **DIMACS CNF** text format: lines starting with `c` are comments, a line `p cnf <variables> <clauses>` gives the size, and then come the clauses as numbers — `k` for $x_k$, `-k` for $\neg x_k$, and `0` to end a clause. We translate it into a formula ourselves — that also shows what the format means.""")
+SAT problems are usually exchanged in the **DIMACS CNF** text format: lines starting with `c` are comments, a line `p cnf <variables> <clauses>` gives the size, and then come the clauses as numbers — `k` for $x_k$, `-k` for $\neg x_k$, and `0` to end a clause. We translate it into a formula ourselves — that also shows what the format means. The quantum part stays the same few lines; only the formula changes (`grover_circuit` is exactly those lines).""")
 code("""dimacs = '''c example DIMACS-CNF 3-SAT
 p cnf 3 5
 -1 -2 -3 0

@@ -22,7 +22,11 @@ export const UI = {
   fails: 'This list doesn’t work.',
   chartLabel: 'Amplitude of every assignment',
   average: 'average',
-  chance: (p: number) => `Chance to measure a solution: <b>${pct(p)}</b>`,
+  /** The chance of a solution; all solutions share one amplitude, so each has p / m. */
+  chance: (p: number, m: number) => `Chance to measure a solution: <b>${pct(p)}</b>${m > 1 && p > 0 ? ` (${m} solutions, ${pct(p / m)} each)` : ''}`,
+  chartCaption: 'Bars show amplitudes, from −1 to +1. The chance of getting an assignment is its amplitude squared: a bar half way up (0.5) means 25%.',
+  axis: ['+1', '0', '−1'],
+  axisTitle: 'amplitude',
   legendSolution: 'solution',
   legendOther: 'not a solution',
   bitsHint: (vars: readonly string[]) => `Bits read right to left: ${vars.join(', ')} (1 = true)`,
@@ -80,12 +84,30 @@ export const CH1 = {
   allResult: `<b>4 of the 16 lists work.</b> Checking a list is easy; finding the good ones took 16 checks — and every extra friend doubles the number of lists. That is what makes puzzles like this [hard](#npcomplete).`,
 };
 
+/** The notebook's whole quantum program for the party puzzle — test/sat.test.ts checks it matches 3sat.ipynb. */
+export const PROGRAM = `party = '((A & B) | (C & D)) & ~(A & D)'  # the problem
+
+oracle = QuantumCircuit(4)  # the quantum program
+oracle.append(PhaseOracleGate(party, var_order=['A', 'B', 'C', 'D']), range(4))
+grover = QuantumCircuit(4)
+grover.h(range(4))  # all 16 guest lists at once
+grover.compose(grover_operator(oracle), inplace=True)  # one round
+grover.measure_all()
+counts = StatevectorSampler().run([grover], shots=1000).result()[0].data.meas.get_counts()`;
+
+const html = (t: string) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+export const CODE_BOX = `<details class="code"><summary>The whole quantum program: the formula and 7 lines of Qiskit</summary>
+<pre>${html(PROGRAM)}</pre>
+<p>Qiskit builds the oracle from the formula; grover_operator adds the diffuser. For another puzzle only the formula and its variables change. The same program opens the notebook.</p></details>`;
+
 export const CH2 = {
   title: 'Grover’s search',
   next: 'Next: a classic 3-SAT →',
   intro: `<p>A quantum computer can search differently. Four [qubits](#qubit) hold a guest list — qubit 0 is Alice, 1 Bob, 2 Carol, 3 David; 1 means invited. The chart shows the [amplitude](#amplitude) of each of the 16 lists: the square of a bar is the chance to get that list when you [measure](#measurement).</p>
-<p>Step through [Grover’s search](#grover) and watch the bars.</p>`,
+<p>Step through [Grover’s search](#grover) and watch the bars.</p>
+${CODE_BOX}`,
 };
+
 
 export const STEP = {
   start: (party: boolean) => `Start: all qubits are 0 — ${party ? 'the empty guest list' : 'every variable false'}, with certainty.`,
@@ -118,7 +140,7 @@ export const CH3 = {
 <p class="math">(¬x₁ ∨ ¬x₂ ∨ ¬x₃) ∧ (x₁ ∨ ¬x₂ ∨ x₃) ∧ (x₁ ∨ x₂ ∨ ¬x₃) ∧ (x₁ ∨ ¬x₂ ∨ ¬x₃) ∧ (¬x₁ ∨ x₂ ∨ x₃)</p>
 <p>The same in DIMACS format, one clause per line (k for xₖ, −k for ¬xₖ, 0 ends a clause):</p>
 <p class="math">-1 -2 -3 0<br>1 -2 3 0<br>1 2 -3 0<br>1 -2 -3 0<br>-1 2 3 0</p>
-<p>Qubit 0 is x₁, 1 is x₂, 2 is x₃. Here 3 of the 8 assignments are solutions — so one round can’t reach 100%. Step through and see.</p>`,
+<p>Qubit 0 is x₁, 1 is x₂, 2 is x₃. The quantum program is the same seven lines as for the party — only the formula changes. Here 3 of the 8 assignments are solutions, so one round can’t reach 100%. Step through and see.</p>`,
   checkAll: 'Check all 8 classically',
   next: 'Next: your own puzzle →',
   allResult: (list: string) => `Checked classically: the solutions are ${list}. With 3 of 8, one Grover round finds one of them 84.4% of the time — so you always check the answer, which is easy for SAT.`,

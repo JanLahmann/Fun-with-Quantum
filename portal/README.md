@@ -94,7 +94,7 @@ same circuits as `GHZ-Game.ipynb`, `Mermin-Peres-Game.ipynb` and `3sat.ipynb`.
    *The quantum team* (two Bell pairs, the circuits of the notebook) · *How it works* (the square of
    measurements, commuting, Bell pairs in every basis, measuring X⊗Z by a basis change).
 3. **3-SAT with Grover** — *The party puzzle* (click a guest list; check all 16) · *Grover's search*
-   (amplitudes step by step: H, oracle, diffuser, measure; overshoot after round 2) · *A classic 3-SAT*
+   (amplitudes step by step on a ±1 scale, each solution's chance on its bar: H, oracle, diffuser, measure; overshoot after round 2; the notebook's 7-line program in a code box) · *A classic 3-SAT*
    (the notebook's DIMACS problem: 3 of 8, one round = 84.4%) · *Your own puzzle* (any formula with &, |,
    ~ and up to 6 variables; rounds to the first peak, 0 when half or more are solutions) · *How it
    works* (interference, sin²((2k+1)θ), scaling, limits).
