@@ -1,0 +1,76 @@
+name: Workshop or event request
+description: Running a workshop or event with a Fun with Quantum project? Ask for support.
+title: "[Workshop] "
+labels: ["workshop"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        You run the event, we help you prepare it: custom versions, your branding, extensions for your topic, testing and advice. Please get in touch early, about four weeks before your event. More at [fun-with-quantum.org/workshops](https://fun-with-quantum.org/workshops/).
+
+        Prefer e-mail? Write to info@fun-with-quantum.org. This issue is public: please don't post e-mail addresses or phone numbers here.
+  # The id is "project", not "projects": "projects" is a reserved query parameter on issues/new.
+  - type: dropdown
+    id: project
+    attributes:
+      label: Project(s)
+      multiple: true
+      options:
+        - RasQberry Two
+        - Fun with Quantum notebooks
+        - Qoffee-Maker
+        - doQumentation
+        - QuBins
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: event
+    attributes:
+      label: Event name
+    validations:
+      required: true
+  - type: input
+    id: date
+    attributes:
+      label: Date
+      placeholder: e.g. 12 March 2027
+    validations:
+      required: true
+  - type: input
+    id: audience
+    attributes:
+      label: Audience and size
+      placeholder: e.g. 25 sixth-form students, no programming experience
+    validations:
+      required: true
+  - type: checkboxes
+    id: wishes
+    attributes:
+      label: What you'd like
+      options:
+        - label: A custom version (e.g. a RasQberry Two image for your event)
+        - label: Your branding (logo, splash screen, wallpaper, LED logo, browser start page)
+        - label: Extensions for your topic
+        - label: Testing the functions you will use
+        - label: Advice on tools, setup (number of Pis, offline use, Workshop Server) or agenda
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: Your topic, what should happen on the day, anything else.
+  - type: textarea
+    id: hardware
+    attributes:
+      label: Hardware available
+      placeholder: e.g. 2 Raspberry Pi 5 with LED panels, 20 laptops, venue Wi-Fi (or none)
+  - type: dropdown
+    id: contact
+    attributes:
+      label: How should we get in touch?
+      options:
+        - Here in this issue
+        - E-mail (we'll arrange it privately)
+        - Video call
+    validations:
+      required: true

@@ -18,7 +18,7 @@ npm run build    # static site in dist/
 
 | Path | What |
 |---|---|
-| `src/pages/` | home, `/play/`, `/build/`, `/learn/`, one page per notebook game (`play/[slug].astro`) |
+| `src/pages/` | home, `/play/`, `/build/`, `/learn/`, `/workshops/`, one page per notebook game (`play/[slug].astro`) |
 | `src/content/games/*.md` | the notebook games (Binder/QuBins launch, `webGame: true` = also playable on the page) |
 | `src/content/projects/*.md` | the family projects, shown by door and `order` (homepage door links use the same order) |
 | `src/components/ProjectRow.astro` | the one row layout used on Play, Build and Learn |
