@@ -17,7 +17,6 @@ export const QDC_2025: { photos: { src: string; alt: string }[]; video: string }
     { src: '/events/qdc2025-model.jpg', alt: '3D-printed RasQberry Two model of IBM Quantum System Two at the QDC 2025 stand' },
     { src: '/events/qdc2025-led-panels.jpg', alt: 'RasQberry Two models with their LED panels lit at QDC 2025' },
     { src: '/events/qdc2025-booth.jpg', alt: 'The RasQberry Two stand at QDC 2025: models and a screen with the demos' },
-    { src: '/events/qdc2025-jan.jpg', alt: 'Jan-Rainer Lahmann at the RasQberry Two stand, QDC 2025' },
   ],
   video: '/events/qdc2025-opening.mp4',
 };
