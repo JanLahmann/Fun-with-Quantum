@@ -17,6 +17,7 @@ Most events need **no JavaScript**: Umami's tracker records a click on any eleme
 | `<Site>: family footer click` | `to` (member id) | every family footer — the name comes from the renderers / `footerEvent()`, so all sites get it from the manifest |
 | `Portal: notebook launch` | `target`, `image`, `notebook` | portal game pages |
 | `Portal: shop click` | `host` | portal footer |
+| `Portal: workshop request` | — | /workshops/ — "Request support" (opens the issue form) |
 | `Portal: coin game chapter` | `chapter` (1–5) | /play/quantum-coin-game/ — the browser game, chapter opened |
 | `Portal: coin game round` | `chapter`, `result` (you win \| computer wins), `starts` (you \| computer, chapters 1–2), `strategy` (chapter 4: your two moves) | a finished round |
 | `Portal: coin game order` | `chapter`, `starts` | "Who starts?" switched in chapters 1–2 |
