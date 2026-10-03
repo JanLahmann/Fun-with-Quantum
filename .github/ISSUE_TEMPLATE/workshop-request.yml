@@ -8,7 +8,7 @@ body:
       value: |
         You run the event, we help you prepare it: custom versions, your branding, extensions for your topic, testing and advice. Please get in touch early, about four weeks before your event. More at [fun-with-quantum.org/workshops](https://fun-with-quantum.org/workshops/).
 
-        Prefer e-mail? Write to EVENTS_EMAIL_TBD. This issue is public: please don't post e-mail addresses or phone numbers here.
+        Prefer e-mail? Write to info@fun-with-quantum.org. This issue is public: please don't post e-mail addresses or phone numbers here.
   # The id is "project", not "projects": "projects" is a reserved query parameter on issues/new.
   - type: dropdown
     id: project
