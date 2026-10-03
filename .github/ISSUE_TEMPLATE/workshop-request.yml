@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        You run the event, we help you prepare it: custom versions, your branding, extensions for your topic, testing and advice. Please get in touch early, about four weeks before your event. More at [fun-with-quantum.org/workshops](https://fun-with-quantum.org/workshops/).
+        You run the event, we help you prepare it, free, as part of our open-source community work: custom versions, your branding, extensions for your topic, testing and advice. You bring the hardware. Please get in touch early, about four weeks before your event. More at [fun-with-quantum.org/workshops](https://fun-with-quantum.org/workshops/).
 
         Prefer e-mail? Write to info@fun-with-quantum.org. This issue is public: please don't post e-mail addresses or phone numbers here.
   # The id is "project", not "projects": "projects" is a reserved query parameter on issues/new.
@@ -53,7 +53,7 @@ body:
         - label: Your branding (logo, splash screen, wallpaper, LED logo, browser start page)
         - label: Extensions for your topic
         - label: Testing the functions you will use
-        - label: Advice on tools, setup (number of Pis, offline use, Workshop Server) or agenda
+        - label: Advice on tools, setup (number of Pis, offline use, Workshop & Qiskit Server) or agenda
   - type: textarea
     id: details
     attributes:
@@ -62,7 +62,8 @@ body:
   - type: textarea
     id: hardware
     attributes:
-      label: Hardware available
+      label: Your hardware
+      description: What you will bring or have at the venue.
       placeholder: e.g. 2 Raspberry Pi 5 with LED panels, 20 laptops, venue Wi-Fi (or none)
   - type: dropdown
     id: contact

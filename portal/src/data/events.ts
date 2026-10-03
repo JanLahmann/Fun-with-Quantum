@@ -5,9 +5,10 @@
  * (no "@"), the page shows no e-mail line. Keep it in sync with the address in
  * ../../../.github/ISSUE_TEMPLATE/workshop-request.yml.
  *
- * QDC_2025: photos and a video from the IBM Quantum Developer Conference, November 2025.
- * Photos go in public/events/ (src '/events/qdc-2025-1.jpg'); video is a URL. While both
- * are empty, the "At QDC 2025" block is not rendered.
+ * QDC_2025: photos and a clip from the IBM Quantum Developer Conference, November 2025.
+ * Photos (3:2) go in public/events/ (src '/events/qdc-2025-1.jpg'); video is a URL and
+ * plays muted in a loop as the last tile of the grid. While both are empty, the block
+ * is not rendered.
  */
 export const EVENTS_EMAIL = 'info@fun-with-quantum.org';
 export const eventsEmail: string | null = EVENTS_EMAIL.includes('@') ? EVENTS_EMAIL : null;
