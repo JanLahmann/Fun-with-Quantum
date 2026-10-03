@@ -1,0 +1,13 @@
+---
+/**
+ * UNLISTED preview of the browser 3-SAT / Grover page (English) — reachable only by URL, linked
+ * only from the other preview pages, noindex. To launch publicly: see portal/README.md.
+ */
+import GamePreviewPage from '../../components/GamePreviewPage.astro';
+import SatGame from '../../components/SatGame.astro';
+import { PAGE } from '../../lib/sat/messages';
+---
+
+<GamePreviewPage page={PAGE} icon="🧩" notebook="3sat.ipynb" current="sat">
+  <SatGame />
+</GamePreviewPage>

@@ -13,7 +13,7 @@ export const UI = {
   allTerms: '← all terms',
   close: 'Close',
   learnMoreIbm: 'Learn more on IBM Quantum Learning ↗',
-  learnMoreDoq: 'Run it in doQumentation ↗',
+  learnMoreDoq: 'Open it on doQumentation ↗',
   noscript: 'The browser version needs JavaScript — the notebook works without it.',
   column: (c: Idx) => `column ${c}`,
   row: (r: Idx) => `row ${r}`,

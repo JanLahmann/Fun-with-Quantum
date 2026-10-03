@@ -1,0 +1,167 @@
+---
+/**
+ * 3-SAT with Grover's algorithm, playable in the browser — no Binder, no install.
+ * Logic in src/lib/sat/logic.ts (unit-tested against Qiskit), interaction in src/lib/sat/ui.ts.
+ */
+import GameFrame from './GameFrame.astro';
+import { CH4, CH5, PAGE, UI } from '../lib/sat/messages';
+---
+
+<GameFrame id="sat-game" label={PAGE.heading} locale="en" chapters={UI.chapters} chaptersLabel={UI.chaptersLabel}
+  explain={UI.explain} explainTitle={UI.explainTitle} close={UI.close} noscript={UI.noscript}>
+  <div class="sat-board" data-mode="off">
+    <div class="sat-party">
+      <div class="sat-friends">
+        {UI.friends.map((name, k) => (
+          <button type="button" class="sat-friend" data-k={k} aria-pressed="false"><b>{name}</b><span class="st"></span></button>
+        ))}
+      </div>
+      <ul class="sat-rules"></ul>
+      <p class="sat-verdict" aria-live="polite"></p>
+      <div class="sat-tiles"></div>
+    </div>
+
+    <div class="sat-grover">
+      <form class="sat-input">
+        <label>{UI.formulaLabel}
+          <input type="text" spellcheck="false" autocomplete="off" autocapitalize="off" />
+        </label>
+        <button type="submit">{UI.run}</button>
+        <div class="sat-examples" role="group" aria-label={UI.examplesLabel}>
+          {CH4.examples.map((x) => <button type="button" data-formula={x.formula}>{x.label}</button>)}
+        </div>
+      </form>
+      <p class="sat-summary" aria-live="polite"></p>
+      <div class="sat-chart-wrap">
+        <div class="sat-axis" aria-hidden="true"><span>{UI.axis[0]}</span><span>{UI.axis[1]}</span><span>{UI.axis[2]}</span><i>{UI.axisTitle}</i></div>
+        <div class="sat-chart" role="img" aria-label={UI.chartLabel}></div>
+      </div>
+      <p class="sat-legend"><i class="sw solution"></i> {UI.legendSolution} <i class="sw"></i> {UI.legendOther}</p>
+      <p class="sat-caption">{UI.chartCaption}</p>
+      <p class="sat-chance" aria-live="polite"></p>
+      <p class="sat-hint"></p>
+      <div class="sat-counts"></div>
+    </div>
+
+    <div class="sat-rounds">
+      <div class="sat-rounds-pick" role="group">
+        <button type="button" data-p="party" aria-pressed="true">{CH5.party}</button>
+        <button type="button" data-p="sat3" aria-pressed="false">{CH5.sat3}</button>
+        <button type="button" data-p="custom" aria-pressed="false">{UI.chapters[3]}</button>
+      </div>
+      <div class="sat-rounds-chart"></div>
+    </div>
+  </div>
+</GameFrame>
+
+<script>
+  import { mountSatGame } from '../lib/sat/ui';
+  const root = document.getElementById('sat-game');
+  if (root) mountSatGame(root);
+</script>
+
+<style>
+  .sat-board { display: grid; gap: 10px; padding: 4px 0; }
+  .sat-party, .sat-grover, .sat-rounds { display: none; }
+  .sat-board[data-mode='party'] .sat-party { display: grid; gap: 10px; }
+  .sat-board[data-mode='grover'] .sat-grover, .sat-board[data-mode='custom'] .sat-grover { display: grid; gap: 6px; }
+  .sat-board[data-mode='rounds'] .sat-rounds { display: grid; gap: 10px; }
+  .sat-input { display: none; }
+  .sat-board[data-mode='custom'] .sat-input { display: grid; grid-template-columns: 1fr auto; gap: 6px 8px; align-items: end; }
+
+  /* chapter 1 */
+  .sat-friends { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .sat-friend {
+    display: grid; gap: 2px; justify-items: center; padding: 12px 4px; border-radius: 12px; cursor: pointer;
+    border: 2px dashed var(--line); background: var(--card); color: var(--muted); font: 0.95rem var(--sans);
+  }
+  .sat-friend b { font-size: 1rem; }
+  .sat-friend .st { font: 0.68rem var(--mono); }
+  .sat-friend[aria-pressed='true'] { border: 2px solid var(--cyan); background: color-mix(in srgb, var(--cyan) 12%, var(--card)); color: var(--ink); }
+  .sat-rules { list-style: none; padding: 0; margin: 0; font: 0.9rem var(--sans); display: grid; gap: 4px; }
+  .sat-rules :global(.ok) { color: var(--win); }
+  .sat-rules :global(.bad) { color: var(--lose); }
+  .sat-verdict { margin: 0; font: 600 1rem var(--sans); }
+  .sat-verdict :global(.win) { color: var(--win); }
+  .sat-verdict :global(.lose) { color: var(--lose); }
+  .sat-tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+  .sat-tiles:empty { display: none; }
+  .sat-tiles :global(.tile) {
+    display: grid; gap: 1px; padding: 5px 6px; border-radius: 8px; border: 1px solid var(--line);
+    font: 0.66rem var(--sans); color: var(--muted); position: relative; min-height: 52px;
+  }
+  .sat-tiles :global(.tile b) { font: 600 0.72rem var(--mono); color: var(--ink); }
+  .sat-tiles :global(.tile i) { position: absolute; top: 4px; right: 6px; font-style: normal; font-weight: 700; }
+  .sat-tiles :global(.tile.ok) { border-color: var(--win); background: color-mix(in srgb, var(--win) 10%, var(--card)); }
+  .sat-tiles :global(.tile.ok i) { color: var(--win); }
+  .sat-tiles :global(.tile.bad i) { color: var(--lose); }
+  .sat-tiles :global(.tile.current) { outline: 2px solid var(--cyan); outline-offset: 1px; }
+
+  /* the amplitude chart */
+  .sat-input label { display: grid; gap: 4px; font: 600 0.8rem var(--sans); color: var(--muted); }
+  .sat-input input { font: 0.95rem var(--mono); padding: 8px 10px; border-radius: 8px; border: 1.5px solid var(--line); background: var(--card); color: var(--ink); width: 100%; }
+  .sat-input input:focus { outline: none; border-color: var(--cyan); }
+  .sat-input > button { font: 600 0.88rem var(--sans); padding: 9px 14px; border-radius: 8px; border: 0; background: var(--grad); color: #fff; cursor: pointer; }
+  .sat-examples { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; }
+  .sat-examples button { font: 0.74rem var(--mono); color: var(--muted); background: transparent; border: 1px solid var(--line); border-radius: 14px; padding: 4px 9px; cursor: pointer; }
+  .sat-examples button:hover { border-color: var(--cyan); color: var(--cyan); }
+  .sat-summary { margin: 0; font: 0.88rem var(--sans); min-height: 1.3em; }
+  .sat-summary :global(.lose) { color: var(--lose); }
+  .sat-chart {
+    position: relative; height: 210px; display: flex; gap: 2px; align-items: stretch; padding-right: 48px; /* gutter for the "average" label */
+    border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+    background: linear-gradient(to bottom, transparent calc(50% - 0.5px), var(--muted) calc(50% - 0.5px), var(--muted) calc(50% + 0.5px), transparent calc(50% + 0.5px));
+    margin-bottom: 34px;
+  }
+  .sat-chart[data-n='32'], .sat-chart[data-n='64'] { margin-bottom: 6px; gap: 1px; }
+  .sat-chart :global(.col) { position: relative; flex: 1 1 0; min-width: 0; }
+  .sat-chart :global(.amp) {
+    position: absolute; left: 12%; right: 12%; bottom: 50%; height: 0; border-radius: 2px;
+    background: color-mix(in srgb, var(--cyan) 55%, transparent); transition: height 0.5s ease, bottom 0.5s ease;
+  }
+  .sat-chart :global(.amp.solution) { background: var(--magenta); }
+  .sat-chart :global(.lbl) {
+    position: absolute; top: calc(100% + 4px); left: 50%; transform: translateX(-50%);
+    writing-mode: vertical-rl; font: 0.6rem var(--mono); color: var(--muted); white-space: nowrap;
+  }
+  .sat-chart :global(.avg) { position: absolute; left: 0; right: 0; border-top: 1.5px dashed var(--ink); z-index: 1; transition: bottom 0.5s ease; pointer-events: none; }
+  .sat-chart :global(.avg span) { position: absolute; right: 0; top: -8px; width: 46px; text-align: right; font: 0.62rem var(--mono); color: var(--ink); background: var(--card); padding: 0 2px; }
+  .sat-chart-wrap { display: grid; grid-template-columns: 30px 1fr; gap: 4px; }
+  .sat-axis { position: relative; height: 210px; font: 0.62rem var(--mono); color: var(--muted); }
+  .sat-axis span { position: absolute; right: 2px; transform: translateY(-50%); }
+  .sat-axis span:nth-child(1) { top: 0; }
+  .sat-axis span:nth-child(2) { top: 50%; }
+  .sat-axis span:nth-child(3) { top: 100%; }
+  .sat-axis i { position: absolute; left: 0; top: 50%; transform: translate(-30%, -50%) rotate(-90deg); transform-origin: center; font-style: normal; letter-spacing: 0.04em; white-space: nowrap; top: 26%; }
+  .sat-chart :global(.pp) { position: absolute; left: 50%; transform: translateX(-50%); font: 600 0.58rem var(--mono); color: var(--magenta); white-space: nowrap; transition: bottom 0.5s ease, top 0.5s ease; pointer-events: none; }
+  .sat-chart[data-n='16'] :global(.pp) { font-size: 0.5rem; }
+  .sat-caption { margin: 0; font: 0.75rem var(--sans); color: var(--muted); }
+  .sat-legend { margin: 0; font: 0.75rem var(--sans); color: var(--muted); display: flex; align-items: center; gap: 6px; }
+  .sat-legend .sw { display: inline-block; width: 12px; height: 12px; border-radius: 2px; background: color-mix(in srgb, var(--cyan) 55%, transparent); margin-left: 6px; }
+  .sat-legend .sw.solution { background: var(--magenta); margin-left: 0; }
+  .sat-chance { margin: 0; font: 0.95rem var(--sans); }
+  .sat-hint { margin: 0; font: 0.72rem var(--mono); color: var(--muted); }
+  .sat-counts :global(table) { width: 100%; border-collapse: collapse; font: 0.78rem var(--mono); }
+  .sat-counts :global(td) { padding: 3px 6px; border-bottom: 1px solid var(--line); color: var(--ink); }
+  .sat-counts :global(td.win) { color: var(--win); font-weight: 700; }
+  .sat-counts :global(td.lose) { color: var(--lose); font-weight: 700; }
+
+  /* chapter 5: chance after k rounds */
+  .sat-rounds-pick { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+  .sat-rounds-pick button { font: 600 0.74rem var(--mono); color: var(--muted); background: transparent; border: 1px solid var(--line); border-radius: 16px; padding: 5px 10px; cursor: pointer; }
+  .sat-rounds-pick button[aria-pressed='true'] { color: var(--ink); border-color: var(--magenta); background: color-mix(in srgb, var(--magenta) 10%, transparent); }
+  .sat-rounds-chart :global(.bars) { display: grid; grid-template-columns: repeat(9, 1fr); gap: 6px; height: 190px; }
+  .sat-rounds-chart :global(.bar) { display: grid; grid-template-rows: 1.3em 1fr 1.4em; text-align: center; }
+  .sat-rounds-chart :global(.pct) { font: 0.6rem var(--mono); color: var(--muted); }
+  .sat-rounds-chart :global(.track) { position: relative; background: color-mix(in srgb, var(--line) 60%, transparent); border-radius: 6px 6px 0 0; }
+  .sat-rounds-chart :global(.fill) { position: absolute; left: 0; right: 0; bottom: 0; border-radius: 6px 6px 0 0; background: var(--magenta); }
+  .sat-rounds-chart :global(.lbl) { font: 600 0.72rem var(--mono); color: var(--ink); padding-top: 3px; }
+  .sat-rounds-chart :global(.cap) { font: 0.75rem var(--mono); color: var(--muted); text-align: center; margin-top: 6px; overflow-wrap: anywhere; }
+
+  @media (prefers-reduced-motion: reduce) { .sat-chart :global(.amp), .sat-chart :global(.avg) { transition: none; } }
+  @media (max-width: 420px) {
+    .sat-friends { gap: 5px; }
+    .sat-friend { padding: 10px 2px; font-size: 0.85rem; }
+    .sat-tiles :global(.tile span) { display: none; }
+  }
+</style>

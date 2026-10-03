@@ -1,5 +1,5 @@
 /**
- * Browser side shared by the GHZ game and the magic square (markup: components/GameFrame.astro):
+ * Browser side shared by the GHZ game, the magic square and 3-SAT (markup: components/GameFrame.astro):
  * chapters as small async scripts, buttons you can await, explanations on demand.
  *
  * Same pattern as the coin game (src/lib/qcoin/ui.ts): `ask()` waits for a button press, so a

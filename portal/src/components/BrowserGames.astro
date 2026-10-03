@@ -1,22 +1,23 @@
 ---
 /**
- * "Three quantum games" strip linking the three browser games to each other. Used only on the
+ * "Quantum games in your browser" strip linking the browser games to each other. Used only on the
  * unlisted preview pages for now (English); when the games launch, point the links at /play/….
  */
 interface Props {
-  current: 'coin' | 'ghz' | 'magic';
+  current: 'coin' | 'ghz' | 'magic' | 'sat';
 }
 const { current } = Astro.props;
 const GAMES = [
   { id: 'coin', href: '/preview/coin-game/', icon: '🪙', title: 'Quantum Coin Game', concept: 'Superposition & interference' },
   { id: 'ghz', href: '/preview/ghz-game/', icon: '🔗', title: 'GHZ Game', concept: 'Entanglement' },
   { id: 'magic', href: '/preview/magic-square/', icon: '🎩', title: 'Magic Square', concept: 'Contextuality' },
+  { id: 'sat', href: '/preview/3sat-grover/', icon: '🧩', title: '3-SAT with Grover', concept: 'Grover’s search' },
 ] as const;
 ---
 
-<nav class="trio" aria-label="Three quantum games">
-  <h3>Three quantum games, right in your browser</h3>
-  <div class="grid cols-3">
+<nav class="games" aria-label="Quantum games in your browser">
+  <h3>Quantum games, right in your browser</h3>
+  <div class="grid cols-2">
     {GAMES.map((g) => (
       <a class="card" href={g.href} aria-current={g.id === current ? 'page' : undefined}>
         <span class="icon">{g.icon}</span>
@@ -28,7 +29,8 @@ const GAMES = [
 </nav>
 
 <style>
-  .trio { margin: 8px 0 12px; }
-  .trio > h3 { margin: 0 0 14px; }
-  .trio a[aria-current='page'] { border-color: var(--magenta); }
+  .games { margin: 8px 0 12px; }
+  .games > h3 { margin: 0 0 14px; }
+  .games a[aria-current='page'] { border-color: var(--magenta); }
+  @media (min-width: 900px) { .games .grid { grid-template-columns: repeat(4, 1fr); } }
 </style>
