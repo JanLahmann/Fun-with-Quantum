@@ -1,0 +1,59 @@
+---
+/**
+ * The homepage highlight box: family news from src/data/highlights.ts.
+ * Renders nothing while the list is empty.
+ */
+import { HIGHLIGHTS } from '../data/highlights';
+
+const external = (href: string) => /^https?:\/\//.test(href);
+---
+
+{HIGHLIGHTS.length > 0 && (
+  <div class="highlights">
+    {HIGHLIGHTS.map((h) => (
+      <aside class="highlight" aria-label={h.title}>
+        <span class="badge news">{h.badge}</span>
+        <h2>{h.title}</h2>
+        <p>{h.text}</p>
+        <div class="actions">
+          {h.links.map((l, i) => (
+            <a
+              class={i === 0 ? 'btn primary' : 'more'}
+              href={l.href}
+              {...(external(l.href) ? { target: '_blank', rel: 'noopener' } : {})}
+              data-umami-event="Portal: highlight click"
+              data-umami-event-id={h.id}
+              data-umami-event-target={l.target}
+            >
+              {l.label}{i === 0 ? ' ▸' : external(l.href) ? ' ↗' : ''}
+            </a>
+          ))}
+        </div>
+      </aside>
+    ))}
+  </div>
+)}
+
+<style>
+  .highlights { display: flex; flex-direction: column; gap: 14px; margin-top: 22px; max-width: 520px; }
+  .highlight {
+    position: relative;
+    display: flex; flex-direction: column; gap: 8px;
+    padding: 18px 22px 18px 26px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  /* the gradient edge marks news (the workshop callout has a plain cyan one) */
+  .highlight::before {
+    content: ""; position: absolute; inset: 0 auto 0 0; width: 4px; background: var(--grad);
+  }
+  .badge.news { border-color: var(--magenta); color: var(--magenta); }
+  .highlight h2 { font-size: 1.15rem; margin: 0; }
+  .highlight p { color: var(--muted); font-size: 0.95rem; }
+  .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; margin-top: 4px; }
+  .actions .btn { padding: 9px 18px; font-size: 0.92rem; }
+  .actions .more { font-weight: 600; font-size: 0.92rem; }
+</style>

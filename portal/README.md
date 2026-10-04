@@ -23,6 +23,7 @@ npm run build    # static site in dist/
 | `src/content/projects/*.md` | the family projects, shown by door and `order` (homepage door links use the same order) |
 | `src/components/ProjectRow.astro` | the one row layout used on Play, Build and Learn |
 | `src/data/family-manifest.ts` | reads `../family/family.json` for the family footer |
+| `src/data/highlights.ts` | family news for the homepage highlight box (`src/components/Highlights.astro`); empty list = no box |
 
 ## The Quantum Coin Game in the browser
 
