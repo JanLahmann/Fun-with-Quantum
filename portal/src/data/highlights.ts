@@ -34,7 +34,7 @@ export const HIGHLIGHTS: Highlight[] = [
     badge: 'New beta',
     title: 'RasQberry Two: the SD card stays in the Pi',
     text:
-      "The 3D-printed model of IBM Quantum System Two with a Raspberry Pi inside now installs new releases over the air, and falls back by itself if one doesn't work. New too: a Workshop & Qiskit Server for a whole class, learning paths through the demos, and this website on the Pi, offline.",
+      "The 3D-printed model of IBM Quantum System Two with a Raspberry Pi inside now installs new releases over the air, and falls back by itself if one doesn't work. New too: several new demos and games, a Workshop & Qiskit Server for a whole class, learning paths through the demos, and this website on the Pi, offline.",
     links: [
       { label: 'Try the beta', href: 'https://rasqberry.org/', target: 'rasqberry' },
       {
