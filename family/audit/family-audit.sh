@@ -40,5 +40,5 @@ for m in "${MEMBERS[@]}"; do
   slug=$(echo "$d" | sed 's/\..*//; s/-//g' | cut -c1-11); ecomem=$(echo "$eco" | grep -qi "members/$slug" && echo member || echo no)
   printf '%-22s %-5s %-6s %-8s %-5s %-6s %-7s %-6s %-6s %-6s %-7s %-8s %-6s\n' "$d" "$https" "$redir" "$icons" "$ico" "$apple" "$og" "$umami" "$footer" "$readme" "$txt" "$enforced" "$ecomem"
 done
-printf '%-22s ' traQmania; r=$(gh api repos/JanLahmann/traQmania/readme -H 'Accept: application/vnd.github.raw' 2>/dev/null | grep -q 'FWQ-FAMILY:START' && echo block || echo none); echo "(repo only) readme=$r"
+printf '%-22s ' racetraQ; r=$(gh api repos/JanLahmann/racetraQ/readme -H 'Accept: application/vnd.github.raw' 2>/dev/null | grep -q 'FWQ-FAMILY:START' && echo block || echo none); echo "(repo only) readme=$r"
 echo; echo "legend: icons = <link rel=icon> tags; ico = /favicon.ico status; umami = occurrences of the shared property id (Next.js embeds it in the RSC payload too, so 2 is normal; +other = another property present); footer = family-footer member links; txt = _github-pages-challenge TXT present; eco = Qiskit ecosystem member file (by domain slug — RasQberry legacy and QAMPoser entries checked separately)"
