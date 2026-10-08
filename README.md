@@ -10,6 +10,7 @@
  6. GHZ Game on real devices
  7. Mermin-Peres Magic Square (entanglement beats every classical strategy)
  8. CHSH Game (the Bell test: 85% with entanglement, 75% without)
+ 9. Quantum Prisoner's Dilemma (quantum game theory — and its catch)
  
  
 ---
@@ -103,6 +104,12 @@ View - and play the game online, without any install - in Binder: [![Binder](htt
 The best-known nonlocal game and the Bell test behind the 2022 Nobel Prize in Physics. Alice and Bob each get a random bit and answer with a bit, without talking; they win if their answers differ exactly when both bits are 1. No classical strategy wins more than 75% of the rounds; sharing one entangled qubit pair and measuring along well-chosen angles, they win cos²(22.5°) ≈ 85.4% — the most quantum mechanics allows (Tsirelson's bound). The notebook tries all 16 classical tables, plays the quantum strategy in Qiskit, lets you turn the measurement angles yourself, and shows why 75% and 85.4% are the limits. Based on Clauser, Horne, Shimony and Holt (1969); see also IBM Quantum Learning's [CHSH game lesson](https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/entanglement-in-action/chsh-game). Notebook by Jan-R. Lahmann (2026).
 
 View - and play the game online, without any install - in Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=CHSH-Game.ipynb)
+
+---
+### 9. Quantum Prisoner's Dilemma
+The classic dilemma of game theory: defecting pays more whatever the other player does, so rational players end at 1 point each instead of 3. In the quantum version of Eisert, Wilkens and Lewenstein (1999), a referee entangles the players' qubits and a new quantum move Q makes (Q, Q) an equilibrium worth 3 each — the dilemma disappears. The notebook builds the game in Qiskit, maps the payoffs and searches for equilibria — and then shows the catch found by Benjamin and Hayden (2001): with every one-qubit move allowed, each move has a counter, so equilibria exist only with random (mixed) strategies — for example both players choosing completely at random, worth 2.25 points each. Notebook by Jan-R. Lahmann (2026).
+
+View - and play the game online, without any install - in Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=Prisoners-Dilemma.ipynb)
 
 ---
 ## Usage instructions for the RISE Slideshow Extension

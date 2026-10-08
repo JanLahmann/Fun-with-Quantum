@@ -1,0 +1,90 @@
+---
+/**
+ * The quantum prisoner's dilemma, playable in the browser — no Binder, no install.
+ * Logic in src/lib/pd/game.ts (unit-tested, checked against Qiskit), interaction in src/lib/pd/ui.ts.
+ */
+import GameFrame from './GameFrame.astro';
+import { UI, PAGE } from '../lib/pd/messages';
+
+const ranges = [[0, 180], [0, 90], [0, 359]] as const;
+---
+
+<GameFrame id="prisoners-dilemma" label={PAGE.heading} locale="en" chapters={UI.chapters} chaptersLabel={UI.chaptersLabel}
+  explain={UI.explain} explainTitle={UI.explainTitle} close={UI.close} noscript={UI.noscript}>
+  <div class="pd-board" data-mode="off">
+    <div class="pd-bob" role="group" aria-label="Bob’s move">
+      <span class="label"></span>
+      {['C', 'D', 'Q'].map((m) => <button type="button" data-m={m} aria-pressed="false">{m}</button>)}
+    </div>
+    <div class="pd-you">
+      <div class="pd-presets" role="group" aria-label="Your move">
+        <span>{UI.yourMove}</span>
+        {['C', 'D', 'Q'].map((m) => <button type="button" data-m={m} aria-pressed="false">{m}</button>)}
+      </div>
+      {UI.sliders.map((label, i) => (
+        <label class={`pd-slider s${i}`}>
+          <span>{label}</span>
+          <input type="range" min={ranges[i][0]} max={ranges[i][1]} step="1" value="0" />
+          <output aria-hidden="true">0°</output>
+        </label>
+      ))}
+    </div>
+    <div class="pd-land"></div>
+    <div class="pd-odds"></div>
+    <div class="pd-matrix"></div>
+  </div>
+</GameFrame>
+
+<script>
+  import { mountPd } from '../lib/pd/ui';
+  const root = document.getElementById('prisoners-dilemma');
+  if (root) mountPd(root);
+</script>
+
+<style>
+  .pd-board { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; padding: 6px 0 4px; }
+  .pd-bob, .pd-you, .pd-land, .pd-odds { display: none; }
+  .pd-board[data-mode='quantum'] .pd-bob, .pd-board[data-mode='map'] .pd-bob, .pd-board[data-mode='full'] .pd-bob { display: flex; }
+  .pd-board[data-mode='quantum'] .pd-you, .pd-board[data-mode='map'] .pd-you, .pd-board[data-mode='full'] .pd-you { display: grid; }
+  .pd-board[data-mode='quantum'] .pd-odds, .pd-board[data-mode='map'] .pd-odds, .pd-board[data-mode='full'] .pd-odds { display: block; }
+  .pd-board[data-mode='map'] .pd-land { display: block; }
+  .pd-board[data-mode='map'] .pd-matrix, .pd-board[data-mode='full'] .pd-matrix { display: none; }
+  .pd-board:not([data-mode='full']) .pd-slider.s2 { display: none; }
+  .pd-board[data-mode='full'] .pd-bob button { display: none; }
+
+  .pd-bob, .pd-presets { align-items: center; gap: 6px; flex-wrap: wrap; font: 0.85rem var(--sans); color: var(--muted); }
+  .pd-presets { display: flex; }
+  .pd-bob .label { color: var(--bob); font-weight: 600; margin-right: 4px; }
+  .pd-presets span { color: var(--alice); font-weight: 600; margin-right: 4px; }
+  .pd-bob button, .pd-presets button {
+    font: 700 0.9rem var(--mono); min-width: 40px; padding: 6px 10px; border-radius: 8px; cursor: pointer;
+    border: 1.5px solid var(--line); background: var(--card); color: var(--ink);
+  }
+  .pd-bob button[aria-pressed='true'] { border-color: var(--bob); background: color-mix(in srgb, var(--bob) 14%, var(--card)); }
+  .pd-presets button[aria-pressed='true'] { border-color: var(--alice); background: color-mix(in srgb, var(--alice) 14%, var(--card)); }
+  .pd-you { gap: 6px; padding: 10px 12px; border-radius: 12px; border: 1.5px solid color-mix(in srgb, var(--alice) 40%, transparent); }
+  .pd-slider { display: grid; grid-template-columns: 1.6em minmax(0, 1fr) 3.2em; align-items: center; gap: 8px; font: 600 0.85rem var(--mono); color: var(--alice); }
+  .pd-slider input { accent-color: var(--alice); min-width: 0; width: 100%; }
+  .pd-slider output { color: var(--ink); text-align: right; }
+
+  .pd-matrix :global(table) { border-collapse: collapse; font: 0.85rem var(--mono); margin: 0 auto; }
+  .pd-matrix :global(caption) { font: 0.75rem var(--sans); color: var(--muted); margin-bottom: 4px; }
+  .pd-matrix :global(th), .pd-matrix :global(td) { border: 1px solid var(--line); padding: 6px 10px; text-align: center; color: var(--ink); }
+  .pd-matrix :global(th) { color: var(--muted); font-weight: 600; font-size: 0.75rem; }
+  .pd-matrix :global(td.on) { background: color-mix(in srgb, var(--magenta) 16%, var(--card)); border-color: var(--magenta); font-weight: 700; }
+
+  .pd-odds :global(.pd-bars) { display: grid; gap: 4px; }
+  .pd-odds :global(.pd-bar) { display: grid; grid-template-columns: 3.6em minmax(0, 1fr) 3.6em; gap: 8px; align-items: center; font: 0.8rem var(--mono); color: var(--ink); }
+  .pd-odds :global(.track) { height: 12px; border-radius: 6px; background: var(--line); overflow: hidden; }
+  .pd-odds :global(.fill) { display: block; height: 100%; background: var(--grad); }
+  .pd-odds :global(.num) { text-align: right; color: var(--muted); }
+  .pd-odds :global(.pd-bar.hit .lab) { color: var(--magenta); font-weight: 700; }
+  .pd-odds :global(.pd-exp) { font: 0.8rem var(--mono); color: var(--muted); margin: 6px 0 0; }
+
+  .pd-land :global(.pd-land-svg) { display: block; width: 100%; max-width: 340px; margin: 0 auto; height: auto; }
+  .pd-land :global(rect.lc) { cursor: pointer; stroke: var(--card); stroke-width: 0.5; }
+  .pd-land :global(rect.lc.me) { stroke: var(--ink); stroke-width: 2; }
+  .pd-land :global(rect.best) { fill: none; stroke: var(--magenta); stroke-width: 2; pointer-events: none; }
+  .pd-land :global(.ax) { font: 9px var(--mono); fill: var(--muted); }
+  .pd-land :global(.pd-land-cap) { font: 0.75rem var(--sans); color: var(--muted); text-align: center; margin: 2px 0 0; }
+</style>

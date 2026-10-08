@@ -1,7 +1,7 @@
 # fun-with-quantum.org — the portal
 
 Astro site for the Fun with Quantum family: three doors (Play · Build · Learn), the notebook games,
-and browser versions of six of them: the Quantum Coin Game, the GHZ game, the CHSH game, Hardy's paradox, the magic square and 3-SAT with Grover. Deployed to GitHub Pages by
+and browser versions of seven of them: the Quantum Coin Game, the GHZ game, the CHSH game, Hardy's paradox, the magic square, the quantum prisoner's dilemma and 3-SAT with Grover. Deployed to GitHub Pages by
 `.github/workflows/deploy-portal.yml` on every push to `master`, which also attaches the build as `fwq-portal-<commit>.tar.gz` (+ `.sha256`)
 to the `portal-bundles` release, for offline use on RasQberry Two; `portal-ci.yml` runs tests, type
 check and build on pull requests.
@@ -73,23 +73,24 @@ in `TERM_PAGES` (`i18n/index.ts`). To add a language: copy `en.ts`, translate (k
 
 Analytics events (`Portal: coin game …`) are listed in `../family/EVENTS.md`.
 
-## The GHZ game, the CHSH game, Hardy's paradox, the magic square and 3-SAT in the browser
+## The GHZ game, the CHSH game, Hardy's paradox, the magic square, the prisoner's dilemma and 3-SAT in the browser
 
-**Unlisted for now** (English only): `/preview/ghz-game/`, `/preview/chsh-game/`, `/preview/hardys-paradox/`, `/preview/magic-square/` and
+**Unlisted for now** (English only): `/preview/ghz-game/`, `/preview/chsh-game/`, `/preview/hardys-paradox/`, `/preview/magic-square/`, `/preview/prisoners-dilemma/` and
 `/preview/3sat-grover/` — `noindex`, linked only from each other and from the English coin game
 preview ("Quantum games, right in your browser", `src/components/BrowserGames.astro`). Same rules,
-same circuits as `GHZ-Game.ipynb`, `CHSH-Game.ipynb`, `Hardys-Paradox.ipynb`, `Mermin-Peres-Game.ipynb` and `3sat.ipynb`.
+same circuits as `GHZ-Game.ipynb`, `CHSH-Game.ipynb`, `Hardys-Paradox.ipynb`, `Mermin-Peres-Game.ipynb`, `Prisoners-Dilemma.ipynb` and `3sat.ipynb`.
 
 | Path | What |
 |---|---|
-| `src/lib/qsim.ts` | exact state-vector simulator for a few qubits (H, X, Y, Z, S, S†, Ry, CX, CZ, CRy, SWAP; Qiskit bit order) |
-| `src/lib/ghz/`, `src/lib/chsh/`, `src/lib/hardy/`, `src/lib/magic/`, `src/lib/sat/` | game logic (`game.ts`, `square.ts`, `logic.ts`), texts (`messages.ts`), browser side (`ui.ts`) |
+| `src/lib/qsim.ts` | exact state-vector simulator for a few qubits (H, X, Y, Z, S, S†, Ry, Rz, CX, CZ, CRy, RYY, SWAP; Qiskit bit order) |
+| `src/lib/ghz/`, `src/lib/chsh/`, `src/lib/hardy/`, `src/lib/magic/`, `src/lib/pd/`, `src/lib/sat/` | game logic (`game.ts`, `square.ts`, `logic.ts`), texts (`messages.ts`), browser side (`ui.ts`) |
 | `src/lib/games/` | shared: chapters and buttons (`shell.ts`), circuit drawing (`circuit.ts`), explanations on demand (`glossary.ts`) |
 | `src/components/GameFrame.astro` | the frame these games use: chapter tabs, stage, story panel, explanation dialog |
 | `test/trio.test.ts` | the simulator, GHZ and magic square (quantum team always wins, classical best 3/4 and 8/9), explanation links |
 | `test/sat.test.ts`, `test/fixtures/grover_qiskit.*` | formulas, the two puzzles, and Grover checked against Qiskit (`PhaseOracleGate` + `grover_operator`, as in the notebook) for 9 formulas × 0–4 rounds; regenerate the JSON with the `.py` next to it |
 | `test/chsh.test.ts`, `test/fixtures/chsh_qiskit.*` | 16 classical tables (best 3 of 4), the simulator against Qiskit for 14 angle pairs, cos²(Δ/2), win = 1/2 + S/8, S ≤ 2√2, no signaling |
 | `test/hardy.test.ts`, `test/fixtures/hardy_qiskit.*` | 16 spec-sheet pairs (5 keep the facts, none both diesel), the simulator against Qiskit (amplitudes, 7 angles × 4 checks), facts exact at every angle, 1/12, u²(1 − u)/(1 + u), the 9.02% maximum |
+| `test/pd.test.ts`, `test/fixtures/pd_qiskit.*` | the simulator against Qiskit and the EWL matrices (64 move pairs), the C/D/Q table, (Q, Q) the only equilibrium on a grid, counters worth 5, the 2.25 mix |
 
 1. **GHZ game** — *Team classical* (pick an object per player, ask all four questions; why never 4 of 4) ·
    *Team quantum* (GHZ state, X for colour, Y for shape; 1000 rounds) · *How it works* (the GHZ state,
@@ -106,7 +107,11 @@ same circuits as `GHZ-Game.ipynb`, `CHSH-Game.ipynb`, `Hardys-Paradox.ipynb`, `M
    gives two diesels; the 3-line proof) · *Quantum cars* (the factory state (|red,blue⟩ + |blue,red⟩ + |blue,blue⟩)/√3; facts hold,
    both diesel 1/12) · *What went wrong?* (the state, the counterfactual step, no spec sheets, Hardy 1992/1993) · *Find the 9%*
    (engine arrow φ; P = u²(1 − u)/(1 + u), u = cos²(φ/2); maximum (5√5 − 11)/2 at φ ≈ 76.35°).
-5. **3-SAT with Grover** — *The party puzzle* (click a guest list; check all 16) · *Grover's search*
+5. **Quantum prisoner's dilemma** (Eisert, Wilkens, Lewenstein 1999) — *The dilemma* (C or D against a random Bob;
+   defecting dominates) · *Quantum moves* (J = RYY(π/2), your U(θ, φ), Bob's C/D/Q, J†; the C/D/Q table) · *Why Q wins*
+   (payoff map; (Q, Q) the only equilibrium of the two-angle moves) · *The catch* (Benjamin & Hayden 2001: all one-qubit
+   moves — iσx counters Q, every move has a counter, random moves give 2.25 each; link to the coin game).
+6. **3-SAT with Grover** — *The party puzzle* (click a guest list; check all 16) · *Grover's search*
    (amplitudes step by step on a ±1 scale, each solution's chance on its bar: H, oracle, diffuser, measure; overshoot after round 2; the notebook's 7-line program in a code box) · *A classic 3-SAT*
    (the notebook's DIMACS problem: 3 of 8, one round = 84.4%) · *Your own puzzle* (any formula with &, |,
    ~ and up to 6 variables; rounds to the first peak, 0 when half or more are solutions) · *How it
@@ -115,5 +120,5 @@ same circuits as `GHZ-Game.ipynb`, `CHSH-Game.ipynb`, `Hardys-Paradox.ipynb`, `M
 Explanations link to IBM Quantum Learning and doQumentation like the coin game's. To translate, add
 per-language copies of `messages.ts` and `GLOSSARY_EN` as for `src/lib/qcoin/i18n`. To launch: add the
 web game to its `/play/` page (as `play/[slug].astro` does for the coin game with `webGame: true`; the
-magic square's, CHSH's, Hardy's and 3-SAT's game entries are still in `content-drafts/`), point `BrowserGames.astro` at the `/play/` pages,
+magic square's, CHSH's, Hardy's, the prisoner's dilemma's and 3-SAT's game entries are still in `content-drafts/`), point `BrowserGames.astro` at the `/play/` pages,
 and delete the preview pages.

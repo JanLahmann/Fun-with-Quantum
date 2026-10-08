@@ -11,7 +11,7 @@ export type TermKey =
   | 'parity' | 'classical' | 'nonlocal' | 'hidden' | 'contextuality'
   | 'sat' | 'cnf' | 'npcomplete' | 'search' | 'grover' | 'oracle' | 'diffuser' | 'amplitude'
   | 'interference' | 'iterations' | 'speedup'
-  | 'bloch' | 'inequality' | 'tsirelson' | 'signaling' | 'counterfactual';
+  | 'bloch' | 'inequality' | 'tsirelson' | 'signaling' | 'counterfactual' | 'nash';
 
 export interface GlossaryEntry {
   title: string;
@@ -183,6 +183,10 @@ export const GLOSSARY_EN: Record<TermKey, GlossaryEntry> = {
   tsirelson: {
     title: 'Tsirelson’s bound',
     body: 'No quantum strategy wins the CHSH game more often than cos²(π/8) = 1/2 + √2/4 ≈ 85.4% (S ≤ 2√2) — whatever the entangled state and the measurements. Boris Tsirelson proved it in 1980. A [Bell pair](#bell) measured along the right arrows reaches it exactly.',
+  },
+  nash: {
+    title: 'Nash equilibrium',
+    body: 'A choice of moves, one per player, where no player can gain by changing their own move alone. In the prisoner’s dilemma it is both defecting — although both cooperating pays more. A game can have several equilibria, or none in fixed moves; John Nash proved that every finite game has one if players may choose their moves at random (mixed strategies).',
   },
   counterfactual: {
     title: 'Counterfactual reasoning',
