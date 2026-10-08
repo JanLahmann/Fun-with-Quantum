@@ -10,7 +10,8 @@ export type TermKey =
   | 'pauli' | 'tensor' | 'commute' | 'basis' | 'gate' | 'cnot' | 'swap' | 'circuit'
   | 'parity' | 'classical' | 'nonlocal' | 'hidden' | 'contextuality'
   | 'sat' | 'cnf' | 'npcomplete' | 'search' | 'grover' | 'oracle' | 'diffuser' | 'amplitude'
-  | 'interference' | 'iterations' | 'speedup';
+  | 'interference' | 'iterations' | 'speedup'
+  | 'bloch' | 'inequality' | 'tsirelson' | 'signaling';
 
 export interface GlossaryEntry {
   title: string;
@@ -45,6 +46,9 @@ export const TERM_PAGES: Partial<Record<TermKey, string>> = {
   interference: 'courses/fundamentals-of-quantum-algorithms/grover-algorithm/analysis#geometric-picture',
   iterations: 'courses/fundamentals-of-quantum-algorithms/grover-algorithm/number-of-iterations#multiple-solutions',
   speedup: 'courses/fundamentals-of-quantum-algorithms/grover-algorithm/concluding-remarks',
+  bloch: 'modules/quantum-mechanics/superposition-with-qiskit#the-qubit-state-as-a-bloch-vector',
+  inequality: 'courses/basics-of-quantum-information/entanglement-in-action/chsh-game#limitation-of-classical-strategies',
+  tsirelson: 'courses/basics-of-quantum-information/entanglement-in-action/chsh-game#geometric-picture',
 };
 
 export const GLOSSARY_EN: Record<TermKey, GlossaryEntry> = {
@@ -62,7 +66,7 @@ export const GLOSSARY_EN: Record<TermKey, GlossaryEntry> = {
   },
   entanglement: {
     title: 'Entanglement',
-    body: 'Qubits that share one joint state, which cannot be split into a state for each qubit. In the states used in the GHZ game and the magic square, each qubit on its own gives random results, yet the results fit together perfectly. No signal passes between them — and still no list of answers written in advance can produce these correlations.',
+    body: 'Qubits that share one joint state, which cannot be split into a state for each qubit. In the states used in our games, each qubit on its own gives random results, yet the results fit together — perfectly in the GHZ game and the magic square, 85% of the time in the CHSH game. No signal passes between them — and still no list of answers written in advance can produce these correlations.',
   },
   bell: {
     title: 'Bell pair',
@@ -90,7 +94,7 @@ export const GLOSSARY_EN: Record<TermKey, GlossaryEntry> = {
   },
   gate: {
     title: 'Quantum gate',
-    body: 'An operation on qubits — the quantum version of a logic gate. H (Hadamard) creates [superposition](#superposition), X flips 0 and 1, Z, S and S† change the phase. Gates are reversible.',
+    body: 'An operation on qubits — the quantum version of a logic gate. H (Hadamard) creates [superposition](#superposition), X flips 0 and 1, Z, S and S† change the phase, Ry(θ) turns the qubit by θ on the [Bloch circle](#bloch). Gates are reversible.',
   },
   cnot: {
     title: 'CNOT and CZ',
@@ -102,7 +106,7 @@ export const GLOSSARY_EN: Record<TermKey, GlossaryEntry> = {
   },
   circuit: {
     title: 'Quantum circuit',
-    body: 'A recipe of [gates](#gate), read from left to right: one line per qubit, the measurements at the end. Boxes such as “oracle” and “diffuser” stand for groups of gates. In the GHZ game and the magic square, a dashed line separates preparing the shared state from what each player does.',
+    body: 'A recipe of [gates](#gate), read from left to right: one line per qubit, the measurements at the end. Boxes such as “oracle” and “diffuser” stand for groups of gates. In the GHZ game, the magic square and the CHSH game, a dashed line separates preparing the shared state from what each player does.',
   },
   parity: {
     title: 'Even and odd (parity)',
@@ -110,7 +114,7 @@ export const GLOSSARY_EN: Record<TermKey, GlossaryEntry> = {
   },
   classical: {
     title: 'Classical strategy',
-    body: 'Any plan without quantum help. Because the players cannot talk during the game, it comes down to a fixed table: what each player answers to each question. (Rolling dice never does better than the best table.) There are only finitely many tables — 64 in the GHZ game, 4096 in the magic square — so the computer can try them all.',
+    body: 'Any plan without quantum help. Because the players cannot talk during the game, it comes down to a fixed table: what each player answers to each question. (Rolling dice never does better than the best table.) There are only finitely many tables — 16 in the CHSH game, 64 in the GHZ game, 4096 in the magic square — so the computer can try them all.',
   },
   nonlocal: {
     title: 'Nonlocal game',
@@ -167,6 +171,22 @@ export const GLOSSARY_EN: Record<TermKey, GlossaryEntry> = {
   contextuality: {
     title: 'Contextuality',
     body: 'Each observable of the magic square sits in one row and one column. No fixed values for all nine work in every row and column — that is the [parity](#parity) proof. So a quantum result cannot be a value that exists in advance, independent of which other measurements are made with it (its context). This is the Kochen–Specker theorem; the magic square is one of its simplest proofs.',
+  },
+  bloch: {
+    title: 'Bloch circle',
+    body: 'Every qubit state is an arrow on the Bloch sphere: |0⟩ at the top, |1⟩ at the bottom. States with real amplitudes, cos(φ/2)|0⟩ + sin(φ/2)|1⟩, lie on one circle through the top and the bottom, at angle φ from the top: |+⟩ at 90°, |−⟩ at −90°. To measure along an arrow at angle φ, turn the qubit back with Ry(−φ) and measure: 0 means along the arrow, 1 the opposite way.',
+  },
+  inequality: {
+    title: 'CHSH inequality',
+    body: 'Score each question by its correlation E = P(same) − P(different). In the CHSH game the win rate is 1/2 + S/8 with S = E₀₀ + E₀₁ + E₁₀ − E₁₁. Every [classical strategy](#classical) — any local [hidden variables](#hidden) — has S ≤ 2, so it wins at most 75%. Quantum mechanics reaches S = 2√2 ≈ 2.83. Clauser, Horne, Shimony and Holt (1969) found this form of John Bell’s inequality, the form most experiments test.',
+  },
+  tsirelson: {
+    title: 'Tsirelson’s bound',
+    body: 'No quantum strategy wins the CHSH game more often than cos²(π/8) = 1/2 + √2/4 ≈ 85.4% (S ≤ 2√2) — whatever the entangled state and the measurements. Boris Tsirelson proved it in 1980. A [Bell pair](#bell) measured along the right arrows reaches it exactly.',
+  },
+  signaling: {
+    title: 'No signaling',
+    body: 'Entanglement does not let Alice and Bob send messages. Alice’s results on their own don’t depend on what Bob measures (in our games they are simply 50:50), so they tell her nothing about Bob’s question. The correlation appears only when both lists of results are brought together — and that needs ordinary communication.',
   },
 };
 
