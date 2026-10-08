@@ -17,7 +17,7 @@ family/family.json ──► build-time renderers ──► every member site + 
                         ├─ Docusaurus footer    (doQumentation, CertiQ)   themeConfig.footer.links from JSON
                         ├─ html block          (Quantego, Qoffee, QuBins — Jekyll/static)   render/render-block.mjs --format=html
                         ├─ Next.js component    (RasQberry Two)
-                        └─ Markdown block       (every README, incl. traQmania)          render/render-block.mjs
+                        └─ Markdown block       (every README, incl. racetraQ)           render/render-block.mjs
 ```
 
 * **The portal** reads the file from disk at build time — it can never lag behind.
