@@ -11,7 +11,7 @@ export type TermKey =
   | 'parity' | 'classical' | 'nonlocal' | 'hidden' | 'contextuality'
   | 'sat' | 'cnf' | 'npcomplete' | 'search' | 'grover' | 'oracle' | 'diffuser' | 'amplitude'
   | 'interference' | 'iterations' | 'speedup'
-  | 'bloch' | 'inequality' | 'tsirelson' | 'signaling';
+  | 'bloch' | 'inequality' | 'tsirelson' | 'signaling' | 'counterfactual';
 
 export interface GlossaryEntry {
   title: string;
@@ -106,7 +106,7 @@ export const GLOSSARY_EN: Record<TermKey, GlossaryEntry> = {
   },
   circuit: {
     title: 'Quantum circuit',
-    body: 'A recipe of [gates](#gate), read from left to right: one line per qubit, the measurements at the end. Boxes such as “oracle” and “diffuser” stand for groups of gates. In the GHZ game, the magic square and the CHSH game, a dashed line separates preparing the shared state from what each player does.',
+    body: 'A recipe of [gates](#gate), read from left to right: one line per qubit, the measurements at the end. Boxes such as “oracle” and “diffuser” stand for groups of gates. In the games with players far apart, a dashed line separates preparing the shared state from what each player (or inspector) does.',
   },
   parity: {
     title: 'Even and odd (parity)',
@@ -114,7 +114,7 @@ export const GLOSSARY_EN: Record<TermKey, GlossaryEntry> = {
   },
   classical: {
     title: 'Classical strategy',
-    body: 'Any plan without quantum help. Because the players cannot talk during the game, it comes down to a fixed table: what each player answers to each question. (Rolling dice never does better than the best table.) There are only finitely many tables — 16 in the CHSH game, 64 in the GHZ game, 4096 in the magic square — so the computer can try them all.',
+    body: 'Any plan without quantum help. Because the players cannot talk during the game, it comes down to a fixed table: what each player answers to each question. (Rolling dice never does better than the best table.) There are only finitely many tables — 16 in the CHSH game and in Hardy’s paradox, 64 in the GHZ game, 4096 in the magic square — so the computer can try them all.',
   },
   nonlocal: {
     title: 'Nonlocal game',
@@ -122,7 +122,7 @@ export const GLOSSARY_EN: Record<TermKey, GlossaryEntry> = {
   },
   hidden: {
     title: 'Hidden variables',
-    body: 'The idea, defended by Einstein, that every measurement result is fixed in advance, like a script each particle carries, and that nothing far away can change it. Such a script is exactly a [classical strategy](#classical) — so if the quantum team wins more often, the idea is wrong. The GHZ game shows it without any statistics.',
+    body: 'The idea, defended by Einstein, that every measurement result is fixed in advance, like a script each particle carries, and that nothing far away can change it. Such a script is exactly a [classical strategy](#classical) — so if the quantum team wins more often, the idea is wrong. The GHZ game and Hardy’s paradox show it without any inequality.',
   },
   sat: {
     title: 'Boolean satisfiability (SAT)',
@@ -183,6 +183,10 @@ export const GLOSSARY_EN: Record<TermKey, GlossaryEntry> = {
   tsirelson: {
     title: 'Tsirelson’s bound',
     body: 'No quantum strategy wins the CHSH game more often than cos²(π/8) = 1/2 + √2/4 ≈ 85.4% (S ≤ 2√2) — whatever the entangled state and the measurements. Boris Tsirelson proved it in 1980. A [Bell pair](#bell) measured along the right arrows reaches it exactly.',
+  },
+  counterfactual: {
+    title: 'Counterfactual reasoning',
+    body: 'Reasoning about the result of a check that was not made: “had we looked at the color, it would have been red.” For things that carry their properties with them, such as written spec sheets, this is harmless. For qubits it fails: a measurement that was not made has no result fixed in advance — “unperformed experiments have no results”, as Asher Peres titled a 1978 paper. Hardy’s paradox shows exactly where it breaks.',
   },
   signaling: {
     title: 'No signaling',

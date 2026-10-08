@@ -5,7 +5,7 @@
  1. Quantum Coin Game (superposition & interference)  
  2. Solving logic puzzles with Grover's search (Boolean satisfiability, 3-SAT) 
  3. (merged into 2) 
- 4. Hardy's Paradox (complementary observables & the problem with classical logic) 
+ 4. Hardy's Paradox (three certain facts, one impossible outcome — that happens anyway)
  5. GHZ Game (entanglement)
  6. GHZ Game on real devices
  7. Mermin-Peres Magic Square (entanglement beats every classical strategy)
@@ -70,9 +70,7 @@ The party example of the former `3sat-v2.ipynb` is now part of the notebook abov
 ---
 ### 4. Hardy's Paradox
 
-Hardy's Paradox nicely illustrates the fundamental difference of Quantum Mechanics and classical physics. Learn about complementary oberservables and why classical logic is not applicable to quantum mechanics.
- 
-A tutorial that discusses a specific version of the Einstein-Podolsky-Rosen (EPR) Paradox  - implemented by Jan-R. Lahmann & Bengt Wegner using [Qiskit](https://qiskit.org), [binder](https://mybinder.org) and [RISE](https://rise.readthedocs.io/en/stable/), based on an idea in a former version of the [Qiskit Textbook](https://qiskit.org/textbook)
+Two cars leave a factory; far apart, two inspectors each check a car's color or its engine. Three facts hold every single time — and by simple logic they rule out two diesel cars. Classical cars (any spec sheets, even random ones) obey that logic; quantum cars — two entangled qubits — still come out both diesel 1 time in 12, and up to (5√5 − 11)/2 ≈ 9% with the best measurement angle. The notebook tries all classical spec sheets, builds the quantum factory in Qiskit, shows where the logic fails ("unperformed experiments have no results") and finds the 9% maximum. Based on Lucien Hardy (1992, 1993) and a former chapter of the Qiskit Textbook. Original version by Jan-R. Lahmann (2020) and Bengt Wegner (2022), rebuilt in 2026 with [Qiskit](https://www.ibm.com/quantum/qiskit).
 
 View - and play the game online, without any install - in Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=Hardys-Paradox.ipynb) 
 

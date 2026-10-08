@@ -1,0 +1,113 @@
+---
+/**
+ * Hardy's paradox, playable in the browser — no Binder, no install.
+ * Logic in src/lib/hardy/game.ts (unit-tested, checked against Qiskit), interaction in src/lib/hardy/ui.ts.
+ */
+import GameFrame from './GameFrame.astro';
+import { UI, PAGE } from '../lib/hardy/messages';
+
+const checks = [0, 1] as const;
+---
+
+<GameFrame id="hardys-paradox" label={PAGE.heading} locale="en" chapters={UI.chapters} chaptersLabel={UI.chaptersLabel}
+  explain={UI.explain} explainTitle={UI.explainTitle} close={UI.close} noscript={UI.noscript}>
+  <div class="hp-board" data-mode="off">
+    <div class="hp-cars">
+      {([1, 2] as const).map((n) => (
+        <div class="hp-car" data-car={n}>
+          <svg class="hp-car-svg" viewBox="0 0 120 56" aria-hidden="true">
+            <path class="body" d="M8 38 Q8 28 18 27 L34 26 L46 12 Q49 9 54 9 L82 9 Q87 9 90 13 L100 26 L108 28 Q114 30 114 38 L114 42 Q114 45 110 45 L12 45 Q8 45 8 42 Z" />
+            <path class="glass" d="M50 14 L80 14 Q83 14 85 17 L92 26 L42 26 Z" />
+            <circle class="wheel" cx="32" cy="45" r="9" /><circle class="wheel" cx="92" cy="45" r="9" />
+          </svg>
+          <b>{UI.car(n)}</b>
+          <span class="hp-line"><span class="k">{UI.colorLabel}</span> <span class="cv">—</span><button type="button" class="hp-toggle" data-car={n} data-what="color">red</button></span>
+          <span class="hp-line"><span class="k">{UI.engineLabel}</span> <span class="ev">—</span><button type="button" class="hp-toggle" data-car={n} data-what="engine">gasoline</button></span>
+        </div>
+      ))}
+    </div>
+    <div class="hp-circle"></div>
+    <label class="hp-slider">
+      <span>{UI.slider}</span>
+      <input type="range" min="0" max="180" step="1" value="90" />
+      <output aria-hidden="true">90°</output>
+    </label>
+    <p class="hp-state"></p>
+    <div class="hp-grid">
+      {checks.map((c1) => checks.map((c2) => (
+        <button type="button" class="hp-q" data-c1={c1} data-c2={c2} disabled aria-pressed="false">
+          <span class="qh">{UI.check(c1, c2)}</span>
+          <span class="rule">{UI.rule(c1, c2)}</span>
+          <span class="val"></span>
+        </button>
+      )))}
+    </div>
+  </div>
+</GameFrame>
+
+<script>
+  import { mountHardy } from '../lib/hardy/ui';
+  const root = document.getElementById('hardys-paradox');
+  if (root) mountHardy(root);
+</script>
+
+<style>
+  .hp-board { --red: #d64545; --blue: #3b6fd8; display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; padding: 6px 0 4px; }
+  @media (prefers-color-scheme: dark) { .hp-board { --red: #f07575; --blue: #7aa2f7; } }
+  .hp-circle, .hp-slider, .hp-state { display: none; }
+  .hp-board[data-mode='angle'] .hp-circle { display: block; }
+  .hp-board[data-mode='angle'] .hp-slider { display: grid; }
+  .hp-board[data-mode='angle'] .hp-state { display: block; }
+  .hp-board[data-mode='angle'] .hp-cars, .hp-board[data-mode='explain'] .hp-cars { display: none; }
+
+  .hp-cars { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .hp-car { display: grid; gap: 4px; justify-items: start; padding: 10px 12px; border-radius: 12px; border: 1.5px solid var(--line); font: 0.85rem var(--sans); }
+  .hp-car-svg { width: 100%; max-width: 130px; height: auto; }
+  .hp-car-svg .body { fill: var(--line); stroke: var(--muted); stroke-width: 1.5; transition: fill 0.2s ease; }
+  .hp-car-svg .glass { fill: var(--card); opacity: 0.8; }
+  .hp-car-svg .wheel { fill: var(--ink); }
+  .hp-car.red .body { fill: var(--red); }
+  .hp-car.blue .body { fill: var(--blue); }
+  .hp-line { display: flex; flex-wrap: wrap; gap: 2px 6px; align-items: center; color: var(--ink); }
+  .hp-line .k { color: var(--muted); min-width: 3.6em; }
+  .hp-line .cv, .hp-line .ev { font: 600 0.85rem var(--mono); }
+  .hp-car.diesel .ev { color: var(--magenta); }
+  .hp-toggle { display: none; font: 600 0.85rem var(--mono); padding: 5px 10px; border-radius: 8px; border: 1.5px solid var(--line); background: var(--card); color: var(--ink); cursor: pointer; }
+  .hp-toggle:hover { border-color: var(--cyan); }
+  .hp-board[data-mode='cards'] .hp-toggle { display: inline-block; }
+  .hp-board[data-mode='cards'] .cv, .hp-board[data-mode='cards'] .ev { display: none; }
+
+  .hp-circle :global(.hp-circle-svg) { display: block; width: 100%; max-width: 330px; margin: 0 auto; height: auto; }
+  .hp-circle :global(.rim) { fill: none; stroke: var(--line); stroke-width: 2; }
+  .hp-circle :global(.axis) { stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 3 3; }
+  .hp-circle :global(.pole.red) { fill: var(--red); }
+  .hp-circle :global(.pole.blue) { fill: var(--blue); }
+  .hp-circle :global(.ket) { font: 11px var(--mono); fill: var(--muted); }
+  .hp-circle :global(.engine line), .hp-circle :global(line.engine) { stroke: var(--magenta); stroke-width: 3; }
+  .hp-circle :global(.engine polygon) { fill: var(--magenta); }
+  .hp-circle :global(line.engine.back) { stroke-dasharray: 4 4; stroke-width: 2; opacity: 0.6; }
+  .hp-circle :global(.elabel) { font: 600 11px var(--mono); fill: var(--magenta); }
+  .hp-slider { grid-template-columns: 8.5em 1fr 4.2em; align-items: center; gap: 8px; font: 0.8rem var(--sans); color: var(--muted); }
+  .hp-slider input { accent-color: var(--magenta); min-width: 0; width: 100%; }
+  .hp-slider output { font: 600 0.85rem var(--mono); color: var(--ink); text-align: right; }
+  .hp-state { font: 0.78rem var(--mono); color: var(--muted); margin: 0; text-align: center; }
+
+  .hp-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .hp-q {
+    display: grid; gap: 2px; text-align: left; padding: 8px 10px; border-radius: 10px; border: 2px solid var(--line);
+    background: var(--card); color: var(--ink); font: 0.8rem var(--sans); cursor: default;
+  }
+  .hp-q:disabled { opacity: 1; }
+  .hp-board[data-mode='pick'] .hp-q { cursor: pointer; }
+  .hp-board[data-mode='pick'] .hp-q:hover { border-color: var(--cyan); }
+  .hp-board[data-busy] .hp-q { cursor: progress; }
+  .hp-q .qh { font: 600 0.8rem var(--mono); }
+  .hp-q .rule { color: var(--muted); font-size: 0.75rem; }
+  .hp-q .val { font: 600 0.82rem var(--mono); min-height: 1.3em; }
+  .hp-q.on { border-color: var(--ink); }
+  .hp-q.ok { border-color: color-mix(in srgb, var(--win) 70%, transparent); }
+  .hp-q.bad { border-color: var(--lose); box-shadow: 0 0 0 3px color-mix(in srgb, var(--lose) 25%, transparent); }
+  .hp-q.paradox { border-color: var(--magenta); box-shadow: 0 0 0 3px color-mix(in srgb, var(--magenta) 22%, transparent); }
+  @media (prefers-reduced-motion: reduce) { .hp-car-svg .body { transition: none; } }
+  @media (max-width: 420px) { .hp-slider { grid-template-columns: 7em 1fr 3.8em; } .hp-car { padding: 8px; } .hp-line .k { min-width: 0; } .hp-toggle { padding: 4px 7px; font-size: 0.8rem; } }
+</style>

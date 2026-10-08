@@ -1,6 +1,6 @@
 /**
  * A tiny exact state-vector simulator for a handful of qubits — enough for the GHZ game (3), the
- * magic square (4), 3-SAT (up to 6) and the CHSH game (2, with Ry rotations). Qubit 0 is the least significant bit of a basis index, as in Qiskit.
+ * magic square (4), 3-SAT (up to 6), the CHSH game and Hardy's paradox (2, with Ry and controlled-Ry). Qubit 0 is the least significant bit of a basis index, as in Qiskit.
  *
  * Deterministic except where a caller passes a random source (sample), so it is unit-testable.
  */
@@ -11,7 +11,9 @@ export type Gate2 = 'cx' | 'cz' | 'swap';
  * One circuit step. For cx, `a` is the control and `b` the target. `ry` turns by `t` radians about
  * the y axis, as Qiskit's RYGate: [[cos t/2, −sin t/2], [sin t/2, cos t/2]].
  */
-export type Op = { g: Gate1; q: number } | { g: 'ry'; q: number; t: number } | { g: Gate2; a: number; b: number };
+export type Op = { g: Gate1; q: number } | { g: 'ry'; q: number; t: number } | { g: Gate2; a: number; b: number }
+  /** Controlled Ry: turns qubit `b` by `t` when qubit `a` is 1 (Qiskit's CRYGate). */
+  | { g: 'cry'; a: number; b: number; t: number };
 
 export interface State {
   n: number;
@@ -63,6 +65,15 @@ function apply2(s: State, g: Gate2, a: number, b: number) {
   }
 }
 
+function applyCry(s: State, a: number, b: number, t: number) {
+  const A = 1 << a, B = 1 << b, c = Math.cos(t / 2), sn = Math.sin(t / 2);
+  for (let i = 0; i < s.re.length; i++) {
+    if (!(i & A) || i & B) continue; // control set, target 0: rotate the pair (i, i|B)
+    const j = i | B, ar = s.re[i], ai = s.im[i], br = s.re[j], bi = s.im[j];
+    s.re[i] = c * ar - sn * br; s.im[i] = c * ai - sn * bi; s.re[j] = sn * ar + c * br; s.im[j] = sn * ai + c * bi;
+  }
+}
+
 function swapAmp(s: State, i: number, j: number) {
   const r = s.re[i], m = s.im[i];
   s.re[i] = s.re[j]; s.im[i] = s.im[j];
@@ -72,6 +83,7 @@ function swapAmp(s: State, i: number, j: number) {
 export function apply(s: State, op: Op): State {
   const t: State = { n: s.n, re: s.re.slice(), im: s.im.slice() };
   if ('q' in op) apply1(t, op.g, op.q, op.g === 'ry' ? op.t : 0);
+  else if (op.g === 'cry') applyCry(t, op.a, op.b, op.t);
   else apply2(t, op.g, op.a, op.b);
   return t;
 }

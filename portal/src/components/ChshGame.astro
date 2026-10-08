@@ -52,7 +52,7 @@ const bits = [0, 1] as const;
 </script>
 
 <style>
-  .ch-board { display: grid; gap: 10px; padding: 6px 0 4px; }
+  .ch-board { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; padding: 6px 0 4px; }
   .ch-strategy, .ch-sliders { display: none; }
   .ch-circle, .ch-hint { display: none; }
   .ch-board[data-mode='strategy'] .ch-strategy { display: grid; gap: 10px; }
@@ -95,6 +95,7 @@ const bits = [0, 1] as const;
   .ch-slider { display: grid; grid-template-columns: 7.5em 1fr 3.4em; align-items: center; gap: 8px; font: 0.8rem var(--sans); color: var(--muted); }
   .ch-slider.alice span { color: var(--alice); }
   .ch-slider.bob span { color: var(--bob); }
+  .ch-slider input { min-width: 0; width: 100%; }
   .ch-slider.alice input { accent-color: var(--alice); }
   .ch-slider.bob input { accent-color: var(--bob); }
   .ch-slider output { font: 600 0.85rem var(--mono); color: var(--ink); text-align: right; }
