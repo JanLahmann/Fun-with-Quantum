@@ -4,13 +4,14 @@
  * unlisted preview pages for now (English); when the games launch, point the links at /play/….
  */
 interface Props {
-  current: 'coin' | 'ghz' | 'magic' | 'sat' | 'chsh';
+  current: 'coin' | 'ghz' | 'magic' | 'sat' | 'chsh' | 'hardy';
 }
 const { current } = Astro.props;
 const GAMES = [
   { id: 'coin', href: '/preview/coin-game/', icon: '🪙', title: 'Quantum Coin Game', concept: 'Superposition & interference' },
   { id: 'ghz', href: '/preview/ghz-game/', icon: '🔗', title: 'GHZ Game', concept: 'Entanglement' },
   { id: 'chsh', href: '/preview/chsh-game/', icon: '🔔', title: 'CHSH Game', concept: 'Bell test' },
+  { id: 'hardy', href: '/preview/hardys-paradox/', icon: '🌀', title: 'Hardy’s Paradox', concept: 'Nonlocality' },
   { id: 'magic', href: '/preview/magic-square/', icon: '🎩', title: 'Magic Square', concept: 'Contextuality' },
   { id: 'sat', href: '/preview/3sat-grover/', icon: '🧩', title: '3-SAT with Grover', concept: 'Grover’s search' },
 ] as const;
@@ -34,5 +35,5 @@ const GAMES = [
   .games > h3 { margin: 0 0 14px; }
   .games a[aria-current='page'] { border-color: var(--magenta); }
   @media (min-width: 640px) { .games .grid { grid-template-columns: repeat(3, 1fr); } }
-  @media (min-width: 900px) { .games .grid { grid-template-columns: repeat(5, 1fr); } }
+  @media (min-width: 1000px) { .games .grid { grid-template-columns: repeat(6, 1fr); } }
 </style>

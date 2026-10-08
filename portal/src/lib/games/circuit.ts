@@ -60,7 +60,10 @@ export function circuitSvg(labels: readonly string[], steps: readonly Step[], ti
     } else {
       const ya = y(step.a), yb = y(step.b);
       out.push(`<g class="gate two${tone}"><line class="link" x1="${cx}" y1="${ya}" x2="${cx}" y2="${yb}"/>`);
-      if (step.g === 'cx') {
+      if (step.g === 'cry') { // control dot, then an Ry box on the target
+        out.push(`<circle class="dot" cx="${cx}" cy="${ya}" r="5"/><rect x="${cx - BOX / 2}" y="${yb - BOX / 2}" width="${BOX}" height="${BOX}" rx="5"/>`
+          + `<text x="${cx}" y="${yb + 5}" text-anchor="middle">Ry</text><text class="ang" x="${cx}" y="${yb + BOX / 2 + 11}" text-anchor="middle">${degrees(step.t)}</text>`);
+      } else if (step.g === 'cx') {
         out.push(`<circle class="dot" cx="${cx}" cy="${ya}" r="5"/><circle class="plus" cx="${cx}" cy="${yb}" r="11"/>`
           + `<line class="link" x1="${cx - 11}" y1="${yb}" x2="${cx + 11}" y2="${yb}"/><line class="link" x1="${cx}" y1="${yb - 11}" x2="${cx}" y2="${yb + 11}"/>`);
       } else if (step.g === 'cz') {

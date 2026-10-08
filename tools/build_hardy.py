@@ -1,0 +1,271 @@
+# Generates Hardys-Paradox.ipynb (outputs empty, RISE slide metadata). Edit here, then run:
+#   python tools/build_hardy.py   (needs nbformat)
+
+import nbformat as nbf
+
+nb = nbf.v4.new_notebook()
+cells = []
+def md(src, slide='slide'):
+    c = nbf.v4.new_markdown_cell(src, id=f'cell-{len(cells)}'); c.metadata['slideshow'] = {'slide_type': slide}; cells.append(c)  # stable ids: rebuilds diff cleanly
+def code(src, slide='fragment'):
+    c = nbf.v4.new_code_cell(src, id=f'cell-{len(cells)}'); c.metadata['slideshow'] = {'slide_type': slide}; cells.append(c)
+
+md("""# Hardy's Paradox
+
+### Three facts that hold every single time rule out one outcome — and quantum mechanics produces it anyway
+
+Two cars, two inspectors, three facts and one simple logical conclusion. Classical cars obey it. Quantum cars — two entangled qubits — break it, up to about **9%** of the time.
+
+Based on Lucien Hardy (1992, 1993). The two-qubit version (one "impossible" result in 12) follows the former Qiskit Textbook chapter [The Unique Properties of Qubits](https://github.com/qiskit-community/qiskit-textbook/blob/main/content/ch-states/old-unique-properties-qubits.ipynb); the car story comes from the first version of this notebook (2020).
+Original notebook by Jan-R. Lahmann (2020), improved by Bengt Wegner (2022), rebuilt in 2026 with [Qiskit](https://www.ibm.com/quantum/qiskit).
+Part of [Fun with Quantum](https://fun-with-quantum.org).
+
+(hit space or right arrow to move to the next slide)""")
+
+md("""## Usage instructions for the user interface
+
+* "Space" and "Shift Space" move through the slides
+* "Shift Enter" runs an interactive cell (you may need to click the cell first)
+* Run the cells on each slide in order — the first code cell loads everything else
+* "X" at the top left leaves the slideshow and shows the plain notebook""")
+
+md("""First we load a few tools. You don't need to understand them — just click into the cell and press "Shift Enter".""")
+code("""# tools: Qiskit for the quantum circuits, ipywidgets for the buttons, matplotlib for a plot
+from itertools import product
+import numpy as np
+import matplotlib.pyplot as plt
+import ipywidgets as widgets
+from qiskit import QuantumCircuit
+from qiskit.quantum_info import Statevector
+from qiskit_aer import AerSimulator
+
+simulator = AerSimulator()
+NAMES = {'color': ('red', 'blue'), 'engine': ('gasoline', 'diesel')}   # result 0, result 1
+CHECKS = [('color', 'color'), ('engine', 'color'), ('color', 'engine'), ('engine', 'engine')]
+FORBIDDEN = {('color', 'color'): ('red', 'red'),           # fact 1
+             ('engine', 'color'): ('diesel', 'blue'),      # fact 2
+             ('color', 'engine'): ('blue', 'diesel')}      # fact 3
+
+def factory(phi=90):
+    \"\"\"Two entangled qubits — car 1 is qubit 0, car 2 is qubit 1 — that keep all three facts
+    when the engine is measured along the arrow at angle phi (degrees) on the Bloch circle.\"\"\"
+    k, s = np.cos(np.radians(phi) / 2), np.sin(np.radians(phi) / 2)
+    a, c = k / np.sqrt(1 + k * k), s / np.sqrt(1 + k * k)    # the state a·(|red,blue⟩ + |blue,red⟩) + c·|blue,blue⟩
+    qc = QuantumCircuit(2, 2)
+    qc.ry(2 * np.arccos(a), 0)                # step 1: car 1 is red with amplitude a
+    qc.x(1)                                   # step 2: car 2 starts blue
+    qc.cry(-2 * np.arctan2(a, c), 0, 1)       # step 3: only if car 1 is blue, turn car 2
+    return qc
+
+def inspect(check1, check2, phi=90, measure=True):
+    \"\"\"The factory, then the two inspectors: color = measure Z; engine = turn back by phi, then measure.\"\"\"
+    qc = factory(phi)
+    qc.barrier()
+    if check1 == 'engine':
+        qc.ry(np.radians(-phi), 0)
+    if check2 == 'engine':
+        qc.ry(np.radians(-phi), 1)
+    if measure:
+        qc.measure([0, 1], [0, 1])
+    return qc
+
+def in_words(check1, check2, key):
+    \"\"\"Qiskit prints car 2 first: '10' means car 2 → 1, car 1 → 0.\"\"\"
+    return NAMES[check1][int(key[1])], NAMES[check2][int(key[0])]
+
+def exact(check1, check2, phi=90):
+    \"\"\"Exact probabilities of the four results, from the state vector.\"\"\"
+    p = Statevector(inspect(check1, check2, phi, measure=False)).probabilities()   # index = car 1 + 2·car 2
+    return {(NAMES[check1][r1], NAMES[check2][r2]): p[r1 + 2 * r2] for r2 in (0, 1) for r1 in (0, 1)}
+
+print("Ready.")""")
+
+md("""# The car factory""")
+md("""Every morning two cars leave a factory, in opposite directions. Far apart, two inspectors each check one car — either its **color** (red or blue) or its **engine** (gasoline or diesel). Each decides at random, at the last moment, what to check.
+
+Over many mornings they found three facts that hold **every single time**:
+
+1. When both check the color: never **both red**.
+2. If car 1's engine is **diesel**, car 2's color is **red**.
+3. If car 2's engine is **diesel**, car 1's color is **red**.
+
+Take a moment: when both inspectors check the engine — **can both cars be diesel?**""", slide='fragment')
+
+md("""## Spec sheets
+
+A classical factory can only give each car a hidden spec sheet: a color and an engine. Each inspector reads off what they check. There are 4 × 4 = 16 pairs of sheets — let the computer try them all:""")
+code("""keep = []
+for sheet1, sheet2 in product(product(NAMES['color'], NAMES['engine']), repeat=2):   # (color, engine) per car
+    read = lambda sheet, check: sheet[0] if check == 'color' else sheet[1]
+    if all((read(sheet1, c1), read(sheet2, c2)) != FORBIDDEN[(c1, c2)] for c1, c2 in FORBIDDEN):
+        keep.append((sheet1, sheet2))
+
+print(f"{len(keep)} of 16 pairs of sheets keep all three facts:")
+for sheet1, sheet2 in keep:
+    print(f"   car 1: {sheet1[0]:4} {sheet1[1]:8}   car 2: {sheet2[0]:4} {sheet2[1]:8}"
+          + ("   ← both diesel!" if sheet1[1] == sheet2[1] == 'diesel' else ""))""")
+md("""## Why two diesels are impossible
+
+Suppose both cars are diesel. Car 1 is diesel, so by fact 2 car 2 is red. Car 2 is diesel, so by fact 3 car 1 is red. Then both are red — and fact 1 says that never happens.
+
+So spec sheets that keep the facts never make both cars diesel. Rolling dice doesn't help: since the inspectors choose at random what to check, every pair of sheets the factory might use has to keep every fact. The chance of two diesels is **0%**.""")
+
+md("""# Quantum cars""")
+md("""Now the factory ships two **entangled qubits**.
+
+* Checking the **color** is a normal measurement (Z): 0 = red, 1 = blue.
+* Checking the **engine** is a measurement along the X axis of the Bloch circle: turn the qubit back by 90° with Ry(−90°), then measure: 0 = gasoline (|+⟩), 1 = diesel (|−⟩).
+
+The factory:
+
+1. Ry on car 1: red with probability 1/3, blue with 2/3.
+2. X on car 2: it starts blue.
+3. Only if car 1 is blue, turn car 2 by −90° (a controlled Ry): blue becomes (|red⟩ + |blue⟩)/√2.
+
+Together: (|red, blue⟩ + |blue, red⟩ + |blue, blue⟩)/√3, car 1 first.""")
+code("""inspect('engine', 'engine').draw(output='mpl')""")
+code("""state = Statevector(factory())
+for (c1, c2), amplitude in zip([(0, 0), (1, 0), (0, 1), (1, 1)], state.data):   # Qiskit index = car 1 + 2·car 2
+    print(f"car 1 {NAMES['color'][c1]:4}, car 2 {NAMES['color'][c2]:4}: amplitude {amplitude.real:+.4f}")
+print(f"\\n1/√3 = {1 / np.sqrt(3):.4f}")""")
+
+md("""## Check the facts
+
+1000 mornings for each of the three facts:""")
+code("""for check1, check2 in CHECKS[:3]:
+    counts = simulator.run(inspect(check1, check2), shots=1000).result().get_counts()
+    results = {in_words(check1, check2, key): n for key, n in counts.items()}
+    bad = results.get(FORBIDDEN[(check1, check2)], 0)
+    print(f"car 1 {check1:6}, car 2 {check2:6}: {dict(sorted(results.items()))}")
+    print(f"   forbidden {' + '.join(FORBIDDEN[(check1, check2)])}: {bad} times\\n")""")
+
+md("""## Both engines
+
+Now both inspectors check the engine. By our logic, two diesels are impossible …""")
+code("""counts = simulator.run(inspect('engine', 'engine'), shots=1000).result().get_counts()
+results = {in_words('engine', 'engine', key): n for key, n in counts.items()}
+print(dict(sorted(results.items())))
+print(f"\\nboth diesel: {results.get(('diesel', 'diesel'), 0)} of 1000 mornings")
+print(f"exactly: {exact('engine', 'engine')[('diesel', 'diesel')]:.4f}  (1/12 = {1 / 12:.4f})")""")
+md("""Choose what each inspector checks and run single mornings yourself:""", slide='fragment')
+code("""def one_morning(car_1='engine', car_2='engine'):
+    key = next(iter(simulator.run(inspect(car_1, car_2), shots=1).result().get_counts()))
+    r1, r2 = in_words(car_1, car_2, key)
+    print(f"car 1 ({car_1}): {r1}    car 2 ({car_2}): {r2}")
+    if (r1, r2) == ('diesel', 'diesel'):
+        print("Both diesel — 'impossible' by the three facts!")
+
+widgets.interact_manual(one_morning, car_1=['color', 'engine'], car_2=['color', 'engine']);""")
+
+md("""# What went wrong?""")
+md("""## The quantum cars
+
+The state (|red, blue⟩ + |blue, red⟩ + |blue, blue⟩)/√3 has no red–red part: **fact 1**.
+
+Whenever car 2 is blue, car 1 is in (|red⟩ + |blue⟩)/√2 = |+⟩ — gasoline for sure. So a diesel car 1 never comes with a blue car 2: **fact 2**; **fact 3** the same way round.
+
+In engine terms, gasoline is |+⟩ = (|red⟩ + |blue⟩)/√2 and diesel is |−⟩ = (|red⟩ − |blue⟩)/√2 — each blue car brings a minus sign. So the amplitude of diesel–diesel is ½·(0 − 1/√3 − 1/√3 + 1/√3) = −1/(2√3). Squared: **1/12 ≈ 8.33%**.""")
+code("""both_diesel = Statevector.from_label('--')                # |−⟩ ⊗ |−⟩: both diesel
+amplitude = both_diesel.inner(Statevector(factory()))
+print(f"⟨diesel, diesel|state⟩ = {amplitude.real:+.4f}   −1/(2√3) = {-1 / (2 * np.sqrt(3)):+.4f}")
+print(f"probability = {abs(amplitude) ** 2:.4f}   1/12 = {1 / 12:.4f}")
+print()
+for check1, check2 in CHECKS:
+    print(f"car 1 {check1:6}, car 2 {check2:6}:",
+          ', '.join(f"{r1}·{r2} {p:.4f}" for (r1, r2), p in exact(check1, check2).items()))""")
+md("""## The faulty step
+
+Look again at the proof: "car 1 is diesel, **so car 2 is red**". In a morning when both engines are checked, nobody looks at car 2's color. The proof uses the result of a check that was never made.
+
+For spec sheets that is fine — the color is written down whether anyone looks or not. For qubits it is not: a color that was not measured has no value — at least none fixed in advance on the car itself. Asher Peres titled a 1978 paper: *"Unperformed experiments have no results"*.
+
+## No spec sheets
+
+Spec sheets — even random ones — give two diesels 0% of the time; quantum cars give 8.33%. So the cars cannot carry their answers with them: no **local hidden variables** can explain it — as long as a car's sheet can't depend on what is checked on the other car, far away.
+
+No inequality and no averaging are needed: given the three facts, a **single** diesel–diesel morning rules out every spec sheet — *nonlocality without inequalities*, as the title of Hardy's 1993 paper puts it. Like the GHZ game, but with only two qubits — and the contradiction shows up only on some mornings, not every time. And no message travels: what one inspector finds doesn't depend on what the other checks.""")
+
+md("""# Find the 9%""")
+md("""The engine check doesn't have to be X. Let the engine be measured along an arrow at angle φ on the Bloch circle: gasoline along the arrow, diesel the opposite way. For each φ, the factory makes the state a·(|red, blue⟩ + |blue, red⟩) + c·|blue, blue⟩ with
+
+a = cos(φ/2)/√(1 + cos²(φ/2)), &nbsp; c = sin(φ/2)/√(1 + cos²(φ/2))
+
+which keeps all three facts. Then, with u = cos²(φ/2):
+
+**P(both diesel) = u²·(1 − u)/(1 + u)**
+
+Check both claims with Qiskit for every whole angle:""")
+code("""largest_fact, largest_gap = 0, 0
+for phi in range(0, 181):
+    largest_fact = max(largest_fact, *(exact(c1, c2, phi)[FORBIDDEN[(c1, c2)]] for c1, c2 in CHECKS[:3]))
+    u = np.cos(np.radians(phi) / 2) ** 2
+    largest_gap = max(largest_gap, abs(exact('engine', 'engine', phi)[('diesel', 'diesel')] - u * u * (1 - u) / (1 + u)))
+print(f"largest probability of a forbidden outcome: {largest_fact:.1e}")
+print(f"largest difference between Qiskit and the formula: {largest_gap:.1e}")""")
+md("""Turn the arrow yourself:""", slide='fragment')
+code("""def turn(phi=90):
+    for c1, c2 in CHECKS[:3]:
+        print(f"{c1:6} · {c2:6}: forbidden {' + '.join(FORBIDDEN[(c1, c2)]):13} {exact(c1, c2, phi)[FORBIDDEN[(c1, c2)]]:.2%}")
+    print(f"engine · engine: both diesel {exact('engine', 'engine', phi)[('diesel', 'diesel')]:.2%}")
+
+widgets.interact(turn, phi=widgets.IntSlider(value=90, min=0, max=180, step=1, continuous_update=False));""")
+code("""phis = np.linspace(0, 180, 361)
+u = np.cos(np.radians(phis) / 2) ** 2
+p = u * u * (1 - u) / (1 + u)
+u_best = (np.sqrt(5) - 1) / 2                         # where the derivative of u²(1 − u)/(1 + u) is 0: u² + u − 1 = 0
+phi_best = 2 * np.degrees(np.arccos(np.sqrt(u_best)))
+p_best = (5 * np.sqrt(5) - 11) / 2
+plt.figure(figsize=(7, 3.5))
+plt.plot(phis, p, label='both diesel')
+plt.plot(phi_best, p_best, 'o', color='#d02670')
+plt.annotate(f'φ = {phi_best:.2f}°: {p_best:.2%}', (phi_best, p_best), xytext=(12, -14), textcoords='offset points')
+plt.axvline(90, color='grey', ls=':', label='X (90°): 1/12')
+plt.xlabel('engine arrow φ (degrees)'); plt.ylabel('P(both diesel)'); plt.legend(loc='lower center'); plt.grid(alpha=0.3)
+plt.show()
+print(f"best: cos²(φ/2) = (√5 − 1)/2 = {u_best:.4f}, φ = {phi_best:.2f}°, P = (5√5 − 11)/2 = {p_best:.4f}")""")
+md("""* At **φ ≈ 76.35°** the cars are both diesel **(5√5 − 11)/2 ≈ 9.02%** of the time — Hardy's maximum for two qubits. (cos²(φ/2) = (√5 − 1)/2 ≈ 0.618 is one over the golden ratio.)
+* At **0°** the engine check *is* the color check; the state (|red, blue⟩ + |blue, red⟩)/√2 is **maximally entangled** — and the paradox vanishes. Hardy showed in 1993 that it works for every entangled pure two-qubit state *except* the maximally entangled ones.
+* At **180°** both cars are always blue: no entanglement, no paradox.""", slide='fragment')
+md("""Is 9.02% really the limit? Any two different checks per car (each with two outcomes) can be turned into "color = Z" by rotating each qubit, so it is enough to let the engine arrows point anywhere on the Bloch sphere — a different one for each car. For each choice, the three facts leave one state (three conditions in four dimensions). Try 20,000 random choices:""", slide='fragment')
+code("""def arrow(v):                                # gasoline (along v) and diesel (opposite) on the Bloch sphere
+    theta, phi = np.arccos(v[2]), np.arctan2(v[1], v[0])
+    along = np.array([np.cos(theta / 2), np.exp(1j * phi) * np.sin(theta / 2)])
+    opposite = np.array([-np.exp(-1j * phi) * np.sin(theta / 2), np.cos(theta / 2)])
+    return along, opposite
+
+red, blue = np.array([1, 0]), np.array([0, 1])
+p_best = (5 * np.sqrt(5) - 11) / 2
+rng = np.random.default_rng(1)
+best = 0
+for _ in range(20000):
+    v = rng.normal(size=(2, 3)); v /= np.linalg.norm(v, axis=1, keepdims=True)
+    (_, diesel1), (_, diesel2) = arrow(v[0]), arrow(v[1])
+    conditions = np.array([np.kron(red, red), np.kron(diesel1, blue), np.kron(blue, diesel2)]).conj()   # car 1 ⊗ car 2
+    state = np.linalg.svd(conditions)[2][-1].conj()          # the one state with all three conditions = 0
+    best = max(best, abs(np.kron(diesel1, diesel2).conj() @ state) ** 2)
+print(f"best found: {best:.4f}    (5√5 − 11)/2 = {p_best:.4f}")""")
+md("""The search comes close but never beats (5√5 − 11)/2 — a check, not a proof. The proof exists: no quantum system of any size does better (Rabelo, Zhi and Scarani, 2012).""", slide='fragment')
+
+md("""## Hardy's original thought experiment
+
+Lucien Hardy found the paradox in 1992 in a thought experiment with an electron and a positron, each sent through its own interferometer. The two interferometers overlap, and where they overlap the particles would annihilate each other. Checking which path a particle took plays the role of the color; letting it pass the last beam splitter and seeing which detector clicks plays the role of the engine — and the same "impossible" combination of clicks shows up. Later experiments tested it with photons. N. David Mermin retold it with two detectors, each with a switch and red and green lights (1994). More on [Wikipedia: Hardy's paradox](https://en.wikipedia.org/wiki/Hardy%27s_paradox).""")
+
+md("""## Learn more
+
+* L. Hardy: [Quantum mechanics, local realistic theories, and Lorentz-invariant realistic theories](https://doi.org/10.1103/PhysRevLett.68.2981), Phys. Rev. Lett. 68, 2981 (1992)
+* L. Hardy: [Nonlocality for two particles without inequalities for almost all entangled states](https://doi.org/10.1103/PhysRevLett.71.1665), Phys. Rev. Lett. 71, 1665 (1993)
+* A. Peres: [Unperformed experiments have no results](https://doi.org/10.1119/1.11393), Am. J. Phys. 46, 745 (1978)
+* N. D. Mermin: [Quantum mysteries refined](https://doi.org/10.1119/1.17733), Am. J. Phys. 62, 880 (1994)
+* R. Rabelo, L. Y. Zhi, V. Scarani: [Device-independent bounds for Hardy's experiment](https://doi.org/10.1103/PhysRevLett.109.180401), Phys. Rev. Lett. 109, 180401 (2012)
+* [Bell's inequality with Qiskit](https://quantum.cloud.ibm.com/learning/en/modules/quantum-mechanics/bells-inequality-with-qiskit) — IBM Quantum Learning
+* More games: the [CHSH Game](CHSH-Game.ipynb), the [GHZ Game](GHZ-Game.ipynb) and the [Mermin–Peres Magic Square](Mermin-Peres-Game.ipynb)""", slide='fragment')
+
+nb.cells = cells
+nb.metadata = {
+    'kernelspec': {'display_name': 'Python 3 (ipykernel)', 'language': 'python', 'name': 'python3'},
+    'language_info': {'name': 'python'},
+    'rise': {'autolaunch': True, 'scroll': True},
+}
+import pathlib
+nbf.write(nb, pathlib.Path(__file__).resolve().parent.parent / 'Hardys-Paradox.ipynb')
+print('written', len(cells), 'cells')

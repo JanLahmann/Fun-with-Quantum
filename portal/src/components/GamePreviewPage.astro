@@ -10,7 +10,7 @@ interface Props {
   page: { title: string; description: string; kicker: string; heading: string; lead: string; notebook: string; notebookLink: string };
   icon: string;
   notebook: string;
-  current: 'ghz' | 'magic' | 'sat' | 'chsh';
+  current: 'ghz' | 'magic' | 'sat' | 'chsh' | 'hardy';
 }
 const { page, icon, notebook, current } = Astro.props;
 const launch = `https://qubins.org/launch/?image=2.1-xl-rise&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=${notebook}&ui=rise-classic`;

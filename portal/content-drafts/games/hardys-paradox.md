@@ -1,7 +1,7 @@
 ---
 title: Hardy's Paradox
-tagline: A measurement outcome that logically cannot happen — happens.
-concept: EPR paradox, complementary observables
+tagline: Three facts that hold every time rule out one outcome — which happens anyway.
+concept: Nonlocality without inequalities
 icon: "🌀"
 order: 3
 duration: ~10 min
@@ -13,12 +13,11 @@ binderUrl: https://qubins.org/launch/?image=2.1-xl-rise&repo=https://github.com/
 notebook: Hardys-Paradox.ipynb
 ---
 
-Hardy's Paradox is the sharpest small demonstration of how quantum mechanics defies everyday
-logic. Four simple statements about two qubits, each verifiable by measurement, cannot all be
-true at once — and yet the experiment produces exactly the "impossible" outcome, about 9% of
-the time.
+Two cars leave a factory; far apart, two inspectors each check a car's color or its engine. Three
+facts hold every single time, and by simple logic they rule out two diesel cars. Any classical
+spec sheets — even random ones — obey that logic: two diesels **0%** of the time.
 
-The notebook builds the paradox step by step from a pair of entangled qubits and
-**complementary observables**, runs it, and lets you check every one of the four statements
-yourself. The resolution — that unmeasured properties simply don't have values — is quantum
-mechanics at its most honest.
+Quantum cars, two entangled qubits, keep all three facts and still come out both diesel 1 time
+in 12 — and up to **(5√5 − 11)/2 ≈ 9%** with the best measurement angle, the most two qubits
+allow. The notebook lets you try every spec sheet, builds the quantum factory in Qiskit, shows the
+faulty step in the logic ("unperformed experiments have no results") and finds the 9% maximum.

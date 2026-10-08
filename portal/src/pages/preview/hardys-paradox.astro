@@ -1,0 +1,13 @@
+---
+/**
+ * UNLISTED preview of the browser Hardy's paradox (English) — reachable only by URL, linked only
+ * from the other preview pages, noindex. To launch publicly: see portal/README.md.
+ */
+import GamePreviewPage from '../../components/GamePreviewPage.astro';
+import HardyGame from '../../components/HardyGame.astro';
+import { PAGE } from '../../lib/hardy/messages';
+---
+
+<GamePreviewPage page={PAGE} icon="🌀" notebook="Hardys-Paradox.ipynb" current="hardy">
+  <HardyGame />
+</GamePreviewPage>
