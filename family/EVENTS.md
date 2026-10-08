@@ -43,11 +43,19 @@ Most events need **no JavaScript**: Umami's tracker records a click on any eleme
 | `RasQberry Two: newsletter open` | — | rasqberry.org footer |
 | `Entangible: runner start` · `runner finish` | `level` (+ `score` on finish) | entangible.org Runner |
 | `Entangible: golf hole finished` · `golf round finished` | `qubits`, `score`, `course` / `course`, `scope` | entangible.org Golf |
+| `traQmania: mode change` · `track change` | `mode` (watch \| race \| evolution), `track` | janlahmann.github.io/traQmania (browser edition) — header tabs |
+| `traQmania: driver change` · `rival change` | `driver` (weights id), `qubits` / `rival` (none \| mlp \| pro) | browser edition — driver and rival chips |
+| `traQmania: race lap` | `track`, `lap_time` (s, 1 decimal), `clean` (yes \| no), `opponent` | a visitor's finished lap in Race mode |
+| `traQmania: composer open` | `qubits`, `track` | "Open this decision in IBM Quantum Composer" |
+| `traQmania: about open` | — | "What is this?" |
+| `traQmania: outbound click` | `host` | footer and About links |
 
 v1 names (`family-footer`, `launch`, `download`, `outbound`, `game`, `newsletter`, doQumentation's
 `Run Code` etc.) stop on the v2 rollout; boards read both until v1 data ages out.
 
-Not instrumented: traQmania (Python app, no web tracker) and qamposer.org (no Umami tag yet — co-owned).
+traQmania: only the browser edition (GitHub Pages, `data-domains="janlahmann.github.io"`) is
+instrumented — the Python demo app has no web tracker. Events are defined in `browser/src/analytics.ts`.
+Not instrumented: qamposer.org (no Umami tag yet — co-owned).
 cleanjibe.org (Jan's WingFoil project, not a family site) also reports into this property — the
 Umami Hobby plan allows one website. Exclude hostname `cleanjibe.org` in family-wide reports.
 
