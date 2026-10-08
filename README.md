@@ -9,6 +9,7 @@
  5. GHZ Game (entanglement)
  6. GHZ Game on real devices
  7. Mermin-Peres Magic Square (entanglement beats every classical strategy)
+ 8. CHSH Game (the Bell test: 85% with entanglement, 75% without)
  
  
 ---
@@ -98,6 +99,12 @@ View - and play the game online on real quantum devices, without any install - i
 Alice and Bob, in separate rooms, each fill in one row or column of a 3×3 square of 0s and 1s under parity rules that no square of numbers can satisfy — the best classical team wins 8 of 9 questions. Sharing two entangled qubit pairs, they win every round. The notebook lets you hunt for a magic square yourself, brute-forces every classical strategy, then builds and runs the quantum circuits for all nine questions. Original version by David Drexlin & Jan-R. Lahmann (2021), rebuilt in 2026 with [Qiskit](https://www.ibm.com/quantum/qiskit); inspired by the Qiskit blog post [This Proof Demonstrates a Quantum Advantage, Even for Noisy Quantum Computers](https://medium.com/qiskit/this-proof-demonstrates-a-quantum-advantage-even-for-noisy-quantum-computers-b44a738801ad).
 
 View - and play the game online, without any install - in Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=Mermin-Peres-Game.ipynb)
+
+---
+### 8. CHSH Game
+The best-known nonlocal game and the Bell test behind the 2022 Nobel Prize in Physics. Alice and Bob each get a random bit and answer with a bit, without talking; they win if their answers differ exactly when both bits are 1. No classical strategy wins more than 75% of the rounds; sharing one entangled qubit pair and measuring along well-chosen angles, they win cos²(22.5°) ≈ 85.4% — the most quantum mechanics allows (Tsirelson's bound). The notebook tries all 16 classical tables, plays the quantum strategy in Qiskit, lets you turn the measurement angles yourself, and shows why 75% and 85.4% are the limits. Based on Clauser, Horne, Shimony and Holt (1969); see also IBM Quantum Learning's [CHSH game lesson](https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/entanglement-in-action/chsh-game). Notebook by Jan-R. Lahmann (2026).
+
+View - and play the game online, without any install - in Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=CHSH-Game.ipynb)
 
 ---
 ## Usage instructions for the RISE Slideshow Extension

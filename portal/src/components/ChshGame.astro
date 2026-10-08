@@ -1,0 +1,121 @@
+---
+/**
+ * The CHSH game, playable in the browser — no Binder, no install.
+ * Logic in src/lib/chsh/game.ts (unit-tested, checked against Qiskit), interaction in src/lib/chsh/ui.ts.
+ */
+import GameFrame from './GameFrame.astro';
+import { UI, PAGE } from '../lib/chsh/messages';
+
+const bits = [0, 1] as const;
+---
+
+<GameFrame id="chsh-game" label={PAGE.heading} locale="en" chapters={UI.chapters} chaptersLabel={UI.chaptersLabel}
+  explain={UI.explain} explainTitle={UI.explainTitle} close={UI.close} noscript={UI.noscript}>
+  <div class="ch-board" data-mode="off">
+    <div class="ch-strategy">
+      {(['alice', 'bob'] as const).map((who) => (
+        <div class={`ch-player ${who}`}>
+          <b>{who === 'alice' ? UI.alice : UI.bob}</b>
+          {bits.map((q) => (
+            <span class="ch-rule">{UI.answerTo(who === 'alice' ? 'x' : 'y', q)} <button type="button" class="ch-ans" data-who={who} data-q={q} aria-label={`${who === 'alice' ? UI.alice : UI.bob}, ${UI.answerTo(who === 'alice' ? 'x' : 'y', q)} 0`}>0</button></span>
+          ))}
+        </div>
+      ))}
+    </div>
+    <div class="ch-circle" aria-live="off"></div>
+    <p class="ch-hint">{UI.circleHint}</p>
+    <div class="ch-sliders">
+      {UI.sliders.map((label, i) => (
+        <label class={`ch-slider ${i < 2 ? 'alice' : 'bob'}`}>
+          <span>{label}</span>
+          <input type="range" min="-180" max="180" step="5" value="0" />
+          <output aria-hidden="true">0°</output>
+        </label>
+      ))}
+    </div>
+    <div class="ch-grid">
+      {bits.map((x) => bits.map((y) => (
+        <button type="button" class="ch-q" data-x={x} data-y={y} disabled>
+          <span class="qh">{UI.question(x, y)}</span>
+          <span class="need">{UI.need(x, y)}</span>
+          <span class="val"></span>
+        </button>
+      )))}
+    </div>
+  </div>
+</GameFrame>
+
+<script>
+  import { mountChsh } from '../lib/chsh/ui';
+  const root = document.getElementById('chsh-game');
+  if (root) mountChsh(root);
+</script>
+
+<style>
+  .ch-board { display: grid; gap: 10px; padding: 6px 0 4px; }
+  .ch-strategy, .ch-sliders { display: none; }
+  .ch-circle, .ch-hint { display: none; }
+  .ch-board[data-mode='strategy'] .ch-strategy { display: grid; gap: 10px; }
+  .ch-board:not([data-mode='strategy']):not([data-mode='off']) .ch-circle { display: block; }
+  .ch-board[data-mode='pick'] .ch-hint { display: block; }
+  .ch-board[data-mode='angles'] .ch-sliders { display: grid; gap: 6px; }
+
+  .ch-player { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; padding: 10px 12px; border-radius: 12px; border: 1.5px solid var(--line); }
+  .ch-player.alice { border-color: color-mix(in srgb, var(--alice) 45%, transparent); }
+  .ch-player.bob { border-color: color-mix(in srgb, var(--bob) 45%, transparent); }
+  .ch-player.alice b { color: var(--alice); }
+  .ch-player.bob b { color: var(--bob); }
+  .ch-rule { font: 0.85rem var(--sans); color: var(--muted); white-space: nowrap; }
+  .ch-ans {
+    font: 700 1.2rem var(--mono); width: 40px; height: 40px; margin-left: 4px; border-radius: 10px; cursor: pointer;
+    border: 2px solid var(--line); background: var(--card); color: var(--ink);
+  }
+  .ch-ans:hover { border-color: var(--cyan); }
+
+  .ch-circle :global(.ch-circle-svg) { display: block; width: 100%; max-width: 280px; margin: 0 auto; height: auto; }
+  .ch-circle :global(.rim) { fill: none; stroke: var(--line); stroke-width: 2; }
+  .ch-circle :global(.axis) { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 3 3; opacity: 0.5; }
+  .ch-circle :global(.ket) { font: 12px var(--mono); fill: var(--muted); }
+  .ch-circle :global(.arrow line) { stroke-width: 2.5; opacity: 0.3; }
+  .ch-circle :global(.arrow polygon) { opacity: 0.3; }
+  .ch-circle :global(.arrow text) { font: 700 12px var(--mono); opacity: 0.45; }
+  .ch-circle :global(.arrow.on line), .ch-circle :global(.arrow.on polygon) { opacity: 1; }
+  .ch-circle :global(.arrow.on line) { stroke-width: 3.5; }
+  .ch-circle :global(.arrow.on text) { opacity: 1; }
+  .ch-circle :global(.arrow.alice line) { stroke: var(--alice); }
+  .ch-circle :global(.arrow.alice polygon), .ch-circle :global(.arrow.alice text) { fill: var(--alice); }
+  .ch-circle :global(.arrow.bob line) { stroke: var(--bob); stroke-dasharray: 7 4; } /* dashed: still visible when an arrow of Alice lies underneath */
+  .ch-circle :global(.arrow.bob polygon), .ch-circle :global(.arrow.bob text) { fill: var(--bob); }
+  .ch-circle :global(.dot) { stroke: var(--card); stroke-width: 2; }
+  .ch-circle :global(.dot.alice) { fill: var(--alice); }
+  .ch-circle :global(.dot.bob) { fill: var(--bob); }
+  .ch-circle :global(.dotv) { font: 700 11px var(--mono); fill: var(--card); }
+  .ch-hint { font: 0.75rem var(--sans); color: var(--muted); text-align: center; margin: -4px 0 0; }
+
+  .ch-slider { display: grid; grid-template-columns: 7.5em 1fr 3.4em; align-items: center; gap: 8px; font: 0.8rem var(--sans); color: var(--muted); }
+  .ch-slider.alice span { color: var(--alice); }
+  .ch-slider.bob span { color: var(--bob); }
+  .ch-slider.alice input { accent-color: var(--alice); }
+  .ch-slider.bob input { accent-color: var(--bob); }
+  .ch-slider output { font: 600 0.85rem var(--mono); color: var(--ink); text-align: right; }
+
+  .ch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .ch-q {
+    display: grid; gap: 2px; text-align: left; padding: 8px 10px; border-radius: 10px; border: 2px solid var(--line);
+    background: var(--card); color: var(--ink); font: 0.8rem var(--sans); cursor: default;
+  }
+  .ch-q:disabled { opacity: 1; }
+  .ch-board[data-mode='pick'] .ch-q, .ch-board[data-mode='explain'] .ch-q { cursor: pointer; }
+  .ch-board[data-mode='pick'] .ch-q:hover, .ch-board[data-mode='explain'] .ch-q:hover { border-color: var(--cyan); }
+  .ch-board[data-busy] .ch-q { cursor: progress; }
+  .ch-q .qh { font: 600 0.8rem var(--mono); }
+  .ch-q .need { color: var(--muted); font-size: 0.75rem; }
+  .ch-q .val { font: 600 0.85rem var(--mono); min-height: 1.3em; }
+  .ch-q.on { border-color: var(--ink); }
+  .ch-q.win { border-color: var(--win); box-shadow: 0 0 0 3px color-mix(in srgb, var(--win) 25%, transparent); }
+  .ch-q.lose { border-color: var(--lose); box-shadow: 0 0 0 3px color-mix(in srgb, var(--lose) 25%, transparent); }
+  @media (max-width: 420px) {
+    .ch-slider { grid-template-columns: 6.6em 1fr 3em; }
+    .ch-rule { font-size: 0.8rem; }
+  }
+</style>

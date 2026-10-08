@@ -10,7 +10,9 @@ export type Step = (Op & { tone?: string }) | { g: 'barrier' } | { g: 'measure';
   | { g: 'box'; label: string; from: number; to: number; tone?: string };
 
 const COL = 46, ROW = 44, LEFT = 92, TOP = 26, BOX = 30;
-const NAME: Record<string, string> = { h: 'H', x: 'X', y: 'Y', z: 'Z', s: 'S', sdg: 'S†' };
+const NAME: Record<string, string> = { h: 'H', x: 'X', y: 'Y', z: 'Z', s: 'S', sdg: 'S†', ry: 'Ry' };
+/** An Ry angle in degrees, as written above the gate: −45°. */
+const degrees = (t: number) => `${Math.round((t * 180) / Math.PI)}°`.replace('-', '−');
 
 export function circuitSvg(labels: readonly string[], steps: readonly Step[], title = ''): string {
   const n = labels.length;
@@ -53,7 +55,8 @@ export function circuitSvg(labels: readonly string[], steps: readonly Step[], ti
     } else if ('q' in step) {
       const cy = y(step.q);
       out.push(`<g class="gate${tone}"><rect x="${cx - BOX / 2}" y="${cy - BOX / 2}" width="${BOX}" height="${BOX}" rx="5"/>`
-        + `<text x="${cx}" y="${cy + 5}" text-anchor="middle">${NAME[step.g]}</text></g>`);
+        + `<text x="${cx}" y="${cy + 5}" text-anchor="middle">${NAME[step.g]}</text>`
+        + (step.g === 'ry' ? `<text class="ang" x="${cx}" y="${cy - BOX / 2 - 3}" text-anchor="middle">${degrees(step.t)}</text>` : '') + '</g>');
     } else {
       const ya = y(step.a), yb = y(step.b);
       out.push(`<g class="gate two${tone}"><line class="link" x1="${cx}" y1="${ya}" x2="${cx}" y2="${yb}"/>`);

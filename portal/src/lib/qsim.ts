@@ -1,14 +1,17 @@
 /**
- * A tiny exact state-vector simulator for a handful of qubits — enough for the GHZ game (3) and
- * the magic square (4). Qubit 0 is the least significant bit of a basis index, as in Qiskit.
+ * A tiny exact state-vector simulator for a handful of qubits — enough for the GHZ game (3), the
+ * magic square (4), 3-SAT (up to 6) and the CHSH game (2, with Ry rotations). Qubit 0 is the least significant bit of a basis index, as in Qiskit.
  *
  * Deterministic except where a caller passes a random source (sample), so it is unit-testable.
  */
 
 export type Gate1 = 'h' | 'x' | 'y' | 'z' | 's' | 'sdg';
 export type Gate2 = 'cx' | 'cz' | 'swap';
-/** One circuit step. For cx, `a` is the control and `b` the target. */
-export type Op = { g: Gate1; q: number } | { g: Gate2; a: number; b: number };
+/**
+ * One circuit step. For cx, `a` is the control and `b` the target. `ry` turns by `t` radians about
+ * the y axis, as Qiskit's RYGate: [[cos t/2, −sin t/2], [sin t/2, cos t/2]].
+ */
+export type Op = { g: Gate1; q: number } | { g: 'ry'; q: number; t: number } | { g: Gate2; a: number; b: number };
 
 export interface State {
   n: number;
@@ -24,8 +27,9 @@ export function zero(n: number): State {
 
 const R = Math.SQRT1_2;
 
-function apply1(s: State, g: Gate1, q: number) {
+function apply1(s: State, g: Gate1 | 'ry', q: number, t = 0) {
   const bit = 1 << q;
+  const c = Math.cos(t / 2), sn = Math.sin(t / 2);
   for (let i = 0; i < s.re.length; i++) {
     if (i & bit) continue;
     const j = i | bit;
@@ -37,6 +41,7 @@ function apply1(s: State, g: Gate1, q: number) {
       case 'z': s.re[j] = -br; s.im[j] = -bi; break;
       case 's': s.re[j] = -bi; s.im[j] = br; break; // ·i
       case 'sdg': s.re[j] = bi; s.im[j] = -br; break; // ·(−i)
+      case 'ry': s.re[i] = c * ar - sn * br; s.im[i] = c * ai - sn * bi; s.re[j] = sn * ar + c * br; s.im[j] = sn * ai + c * bi; break;
     }
   }
 }
@@ -66,7 +71,7 @@ function swapAmp(s: State, i: number, j: number) {
 
 export function apply(s: State, op: Op): State {
   const t: State = { n: s.n, re: s.re.slice(), im: s.im.slice() };
-  if ('q' in op) apply1(t, op.g, op.q);
+  if ('q' in op) apply1(t, op.g, op.q, op.g === 'ry' ? op.t : 0);
   else apply2(t, op.g, op.a, op.b);
   return t;
 }
