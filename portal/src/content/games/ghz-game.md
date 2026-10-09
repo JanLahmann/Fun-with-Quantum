@@ -5,7 +5,7 @@ concept: Entanglement (GHZ states)
 icon: "🔗"
 order: 2
 webGame: true
-duration: ~10 min
+duration: ~40 min
 audience: curious minds, workshop groups
 # QuBins classic-RISE launch (2.1-xl-rise = nbclassic + classic RISE): the
 # only env where the slideshow AND the ipywidgets dropdowns (the actual

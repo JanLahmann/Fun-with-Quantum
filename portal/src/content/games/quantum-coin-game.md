@@ -4,7 +4,7 @@ tagline: Beat a quantum computer at coin flipping — and find out why you never
 concept: Superposition & interference
 icon: "🪙"
 order: 1
-duration: ~5 min
+duration: ~20 min
 audience: everyone — no prerequisites
 # QuBins classic-RISE launch (2.1-xl-rise = nbclassic + classic RISE): the
 # only env where the slideshow AND the ipywidgets dropdowns (the actual

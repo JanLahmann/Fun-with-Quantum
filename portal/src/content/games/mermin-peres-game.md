@@ -4,7 +4,7 @@ tagline: A 3×3 square game that no classical team wins every round — quantum 
 concept: Quantum contextuality
 icon: "🎩"
 order: 4
-duration: ~15 min
+duration: ~25 min
 audience: puzzle lovers, students
 # RISE slideshow with ipywidgets, like the Coin and GHZ games → the classic-RISE image.
 binderUrl: https://qubins.org/launch/?image=2.1-xl-rise&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=Mermin-Peres-Game.ipynb&ui=rise-classic
