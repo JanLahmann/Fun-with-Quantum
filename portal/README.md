@@ -20,8 +20,8 @@ npm run a11y     # axe-core accessibility check of dist/ (WCAG 2.1 A/AA, light +
 
 | Path | What |
 |---|---|
-| `src/pages/` | home, `/play/`, `/build/`, `/learn/`, `/workshops/`, `/about/` (with the privacy note), one page per notebook game (`play/[slug].astro`) |
-| `src/content/games/*.md` | the notebook games (Binder/QuBins launch, `webGame: true` = also playable on the page) |
+| `src/pages/` | home, `/play/`, `/build/`, `/learn/`, `/workshops/`, `/teachers/` (+ printable `/teachers/handout/`), `/about/` (with the privacy note), one page per notebook game (`play/[slug].astro`) |
+| `src/content/games/*.md` | the notebook games (Binder/QuBins launch, `webGame: true` = also playable on the page) — the one games list: names, order, README table (`shows`), and the teacher facts (`level`, `prerequisites`, `goals`) for `/teachers/` and the "At a glance" box on each notebook's first slide (`../tools/games.py`, `../tools/build_games_list.py`) |
 | `src/content/projects/*.md` | the family projects, shown by door and `order` (homepage door links use the same order) |
 | `src/components/ProjectRow.astro` | the one row layout used on Play, Build and Learn |
 | `src/data/family-manifest.ts` | reads `../family/family.json` for the family footer |

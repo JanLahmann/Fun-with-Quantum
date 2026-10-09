@@ -13,6 +13,10 @@ const games = defineCollection({
     order: z.number(),
     duration: z.string(),
     audience: z.string(),
+    // for teachers: /teachers/ and the "At a glance" box on each notebook's first slide
+    level: z.enum(['Beginner', 'Intermediate', 'Advanced']),
+    prerequisites: z.string(),
+    goals: z.array(z.string()).min(2),
     binderUrl: z.string().url(),
     notebook: z.string(),
     theoryUrl: z.string().url().optional(),

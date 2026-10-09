@@ -3,6 +3,8 @@
 
 import nbformat as nbf
 
+from games import glance   # the "At a glance" box, from portal/src/content/games
+
 nb = nbf.v4.new_notebook()
 cells = []
 def md(src, slide='slide'):
@@ -21,6 +23,8 @@ Notebook by Jan-R. Lahmann (2026), built with [Qiskit](https://www.ibm.com/quant
 Part of [Fun with Quantum](https://fun-with-quantum.org).
 
 (hit space or right arrow to move to the next slide)""")
+md(glance('Prisoners-Dilemma.ipynb'), slide='-')   # on the title slide
+
 
 md("""## Usage instructions for the user interface
 

@@ -4,6 +4,8 @@
 import pathlib
 import nbformat as nbf
 
+from games import glance   # the "At a glance" box, from portal/src/content/games
+
 cells = []
 
 
@@ -28,6 +30,8 @@ Some puzzles are easy to *check* but hard to *solve*: is there a way to fill in 
 Part of [Fun with Quantum](https://fun-with-quantum.org). First versions by Jan-R. Lahmann (2019–2022), rebuilt in 2026 for Qiskit 2. The party puzzle comes from James Weaver's Qiskit workshop notebook "Grover search party"; the 3-SAT problem from the Qiskit tutorial "Using Grover search for 3-SAT problems" by Jay Gambetta and Richard Chen ([today in qiskit-community-tutorials](https://github.com/qiskit-community/qiskit-community-tutorials/blob/master/optimization/grover.ipynb)) and a hands-on workshop by David Mesterhazy.
 
 (hit space or right arrow to move to the next slide)""")
+md(glance('3sat.ipynb'), slide='-')   # on the title slide
+
 
 md("""## Usage instructions for the user interface
 

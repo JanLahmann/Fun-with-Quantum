@@ -7,6 +7,12 @@ icon: "🌀"
 order: 5
 duration: ~20 min
 audience: puzzle lovers
+level: Intermediate
+prerequisites: "Entanglement (the GHZ or CHSH Game) helps"
+goals:
+  - "Follow how three facts that always hold rule out one outcome for any classical explanation"
+  - "See that outcome happen anyway in 1 of 12 rounds with the entangled state (at most 9.02% for the best state)"
+  - "Recognize nonlocality without an inequality"
 # QuBins classic-RISE launch (2.1-xl-rise = nbclassic + classic RISE);
 # jupyterlab-rise doesn't render ipywidgets>=8 (jupyterlab-contrib/rise#119).
 # Once fixed upstream, switch to image=2.1-xl&...&ui=rise (Lab presenter).

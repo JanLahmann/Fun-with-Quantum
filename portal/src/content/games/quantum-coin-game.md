@@ -7,6 +7,12 @@ icon: "🪙"
 order: 1
 duration: ~20 min
 audience: everyone — no prerequisites
+level: Beginner
+prerequisites: "None"
+goals:
+  - "Describe superposition: a coin that is heads and tails at once until you look"
+  - "Explain why two Hadamard moves bring the coin back to heads (interference), so the quantum player wins every round"
+  - "Read a one-qubit circuit with H and X gates"
 # QuBins classic-RISE launch (2.1-xl-rise = nbclassic + classic RISE): the
 # only env where the slideshow AND the ipywidgets dropdowns (the actual
 # gameplay) both work — jupyterlab-rise doesn't render ipywidgets>=8

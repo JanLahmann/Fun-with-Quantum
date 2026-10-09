@@ -7,6 +7,12 @@ icon: "🧩"
 order: 7
 duration: ~15 min
 audience: developers, students
+level: Intermediate
+prerequisites: "Boolean logic (AND, OR, NOT); some Python"
+goals:
+  - "Write a logic puzzle as a Boolean formula and as a quantum oracle"
+  - "Build Grover's search from an oracle and the diffusion step"
+  - "See it find the answers among N candidates in about √N steps instead of N"
 # QuBins classic-RISE launch (2.1-xl-rise = nbclassic + classic RISE);
 # jupyterlab-rise doesn't render ipywidgets>=8 (jupyterlab-contrib/rise#119).
 # Once fixed upstream, switch to image=2.1-xl&...&ui=rise (Lab presenter).
