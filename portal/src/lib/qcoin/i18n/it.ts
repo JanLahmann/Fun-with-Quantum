@@ -12,6 +12,7 @@ const it: Messages = {
     lead: 'Batti un computer quantistico a testa o croce — e scopri perché non avevi nessuna possibilità.',
     notebook: 'Lo stesso gioco come notebook Jupyter, con vero codice Qiskit:',
     notebookLink: 'apri il notebook ↗',
+    notebookWait: 'Avvia una sessione Jupyter gratuita su mybinder.org (tramite QuBins); l’avvio può richiedere qualche minuto.',
     preview: 'Anteprima',
   },
 

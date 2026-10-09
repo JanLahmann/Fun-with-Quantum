@@ -12,6 +12,7 @@ const en: Messages = {
     lead: 'Beat a quantum computer at coin flipping — and find out why you never had a chance.',
     notebook: 'The same game as a Jupyter notebook, in real Qiskit code:',
     notebookLink: 'open the notebook ↗',
+    notebookWait: 'It starts a free Jupyter session on mybinder.org (via QuBins); starting it can take a few minutes.',
     preview: 'Preview',
   },
 

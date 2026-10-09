@@ -27,7 +27,7 @@ export interface Messages {
   /** Native language name for the language switcher, e.g. "Deutsch". */
   langName: string;
 
-  page: { title: string; description: string; kicker: string; heading: string; lead: string; notebook: string; notebookLink: string; preview: string };
+  page: { title: string; description: string; kicker: string; heading: string; lead: string; notebook: string; notebookLink: string; notebookWait: string; preview: string };
 
   ui: {
     chapters: readonly [string, string, string, string, string, string];

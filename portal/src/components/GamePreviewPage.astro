@@ -27,8 +27,13 @@ const launch = `https://qubins.org/launch/?image=2.1-xl-rise&repo=https://github
         {page.notebook}{' '}
         <a href={launch} target="_blank" rel="noopener" data-umami-event="Portal: notebook launch" data-umami-event-target="qubins"
            data-umami-event-image="2.1-xl-rise" data-umami-event-notebook={notebook}>{page.notebookLink}</a>
+        <span class="wait">It starts a free Jupyter session on mybinder.org (via QuBins); starting it can take a few minutes.</span>
       </p>
       <BrowserGames current={current} />
     </div>
   </section>
 </Base>
+
+<style>
+  .wait { display: block; margin-top: 4px; font-size: 0.8rem; color: var(--muted); }
+</style>

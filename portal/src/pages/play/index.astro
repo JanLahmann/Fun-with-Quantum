@@ -26,8 +26,9 @@ const projects = (await getCollection('projects'))
 
       <h2 class="games-title">The notebook games</h2>
       <p class="lead">
-        Each game is an interactive notebook — one click, a short cold start, no account.
-        Play first, then open the curtain and see the circuit.
+        Each game is an interactive Jupyter notebook — one click, no account. It opens a free
+        session on mybinder.org, so starting it can take a few minutes. Play first, then open
+        the curtain and see the circuit.
       </p>
       <div class="grid cols-2">
         {games.map((g) => (
