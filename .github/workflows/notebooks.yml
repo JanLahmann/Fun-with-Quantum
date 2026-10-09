@@ -1,0 +1,74 @@
+name: Notebooks
+
+# Every notebook at the repository root must run from top to bottom without an error — on the
+# Qiskit 2.1 stack of the QuBins image the games launch on (versions/2.1-xl in JanLahmann/QuBins),
+# and on the newest Qiskit. Generated notebooks must match their builders in tools/.
+# Weekly as well, so a new Qiskit release that breaks a notebook shows up before players see it.
+on:
+  pull_request:
+    paths:
+      - '*.ipynb'
+      - 'tools/**'
+      - 'GHZGame/**'
+      - 'environment.yml'
+      - '.github/workflows/notebooks.yml'
+  push:
+    branches: [master]
+    paths:
+      - '*.ipynb'
+      - 'tools/**'
+      - 'GHZGame/**'
+      - 'environment.yml'
+      - '.github/workflows/notebooks.yml'
+  schedule:
+    - cron: '23 5 * * 1'   # Mondays 05:23 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  generated:
+    name: Generated notebooks match their builders
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install nbformat
+      - name: Rebuild every generated notebook
+        run: for b in tools/build_*.py; do python "$b"; done
+      - name: No difference to the committed notebooks
+        run: |
+          if ! git diff --exit-code -- '*.ipynb'; then
+            echo "::error::A generated notebook differs from its builder: edit tools/build_….py, run it, and commit both."
+            exit 1
+          fi
+
+  run:
+    name: Run (${{ matrix.name }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Qiskit 2.1, as on QuBins
+            python: '3.11'
+            packages: >-
+              qiskit[visualization]~=2.1.0 qiskit-ibm-runtime~=0.43.1 qiskit-aer~=0.17
+              qiskit-experiments~=0.13.0
+          - name: newest Qiskit
+            python: '3.12'
+            packages: qiskit[visualization] qiskit-ibm-runtime qiskit-aer qiskit-experiments
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - uses: astral-sh/setup-uv@v6
+      - name: Install
+        run: uv pip install --system ${{ matrix.packages }} matplotlib seaborn pylatexenc ipywidgets nbformat nbclient ipykernel
+      - run: uv pip list --system | grep -i qiskit
+      - name: Run every notebook
+        run: python -u tools/run_notebooks.py

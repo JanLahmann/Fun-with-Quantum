@@ -1,6 +1,6 @@
 name: Portal CI
 
-# Tests, type check and build for every change to the portal — before it can reach master.
+# Tests, type check, build and internal links for every change to the portal — before it can reach master.
 # (deploy-portal.yml builds and deploys after the merge.)
 on:
   pull_request:
@@ -38,3 +38,16 @@ jobs:
         run: npm run check
       - name: Build
         run: npm run build
+      - name: Install lychee (link checker)
+        run: |
+          v=0.24.2 f=lychee-x86_64-unknown-linux-gnu.tar.gz
+          curl -sSfL -o "$RUNNER_TEMP/$f" "https://github.com/lycheeverse/lychee/releases/download/lychee-v$v/$f"
+          echo "1f4e0ef7f6554a6ed33dd7ac144fb2e1bbed98598e7af973042fc5cd43951c9a  $RUNNER_TEMP/$f" | sha256sum -c -
+          tar -xzf "$RUNNER_TEMP/$f" --strip-components=1 -C "$RUNNER_TEMP" lychee-x86_64-unknown-linux-gnu/lychee
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      # Offline: every link between our own pages (also written as https://fun-with-quantum.org/…)
+      # and every #anchor must exist in this build. External links: links.yml.
+      - name: Internal links and anchors
+        run: >-
+          lychee --no-progress --offline --include-fragments --root-dir "$PWD/dist" --index-files index.html
+          --remap "^https://fun-with-quantum\.org/(.*)\$ file://$PWD/dist/\$1" 'dist/**/*.html'

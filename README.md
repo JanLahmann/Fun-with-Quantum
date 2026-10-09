@@ -90,6 +90,8 @@ conda activate Qiskitenv
 jupyter notebook
 ```
 
+Checks (also run by GitHub Actions on every pull request and weekly): `python tools/run_notebooks.py` runs every notebook headless and stops at the first error (`.github/workflows/notebooks.yml` does this on Qiskit 2.1, as on QuBins, and on the newest Qiskit, and checks that the generated notebooks match their builders in `tools/`); `.github/workflows/links.yml` checks every link in this README, in the notebooks and on the portal.
+
 ## Slideshow controls
 
 The games open as [RISE](https://rise.readthedocs.io/) slideshows:
