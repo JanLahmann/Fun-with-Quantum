@@ -38,6 +38,8 @@ function sitemap() {
 // https://astro.build/config
 export default defineConfig({
   site,
+  // the offline build for RasQberry Two (src/data/offline.ts) goes to its own folder
+  outDir: process.env.PUBLIC_FWQ_OFFLINE === '1' ? './dist-offline' : './dist',
   trailingSlash: 'ignore',
   redirects: {
     // the coin game left its unlisted preview (launched 2026-10)

@@ -1,5 +1,6 @@
 ---
 import { getCollection, render } from 'astro:content';
+import { OFFLINE } from '../../data/offline';
 import Base from '../../layouts/Base.astro';
 import CoinGame from '../../components/CoinGame.astro';
 import GhzGame from '../../components/GhzGame.astro';
@@ -64,6 +65,14 @@ const launchVia = launchTarget === 'qubins' ? 'mybinder.org (via QuBins)' : laun
         <h3 class="notebook-title">The real Qiskit code</h3>
         <p class="notebook-lead">The same game as an interactive Jupyter notebook — the quantum circuit runs on Qiskit, and you can change it.</p>
       )}
+      {OFFLINE ? (
+      <div class="launch card">
+        <div>
+          On a <strong>RasQberry Two</strong>, the desktop icon <strong>Fun with Quantum</strong> opens the notebook games on
+          this Pi — no internet needed. Here, the notebook is <code>{game.data.notebook}</code>.
+        </div>
+      </div>
+      ) : (
       <div class="launch card">
         <div>
           <a class="btn primary" href={game.data.binderUrl} target="_blank" rel="noopener"
@@ -78,6 +87,7 @@ const launchVia = launchTarget === 'qubins' ? 'mybinder.org (via QuBins)' : laun
           Prefer it local? <code>git clone</code> the{' '}<a href="https://github.com/JanLahmann/Fun-with-Quantum" target="_blank" rel="noopener">repository</a>, create the conda environment from <code>environment.yml</code>, and open <code>{game.data.notebook}</code>.
         </div>
       </div>
+      )}
 
       <div class="prose">
         <Content />

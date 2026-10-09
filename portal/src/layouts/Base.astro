@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import FamilyFooter from '../components/FamilyFooter.astro';
+import { OFFLINE } from '../data/offline';
 
 interface Props {
   title: string;
@@ -47,8 +48,8 @@ const path = Astro.url.pathname;
     <meta property="og:type" content="website" />
     {!noindex && <meta property="og:url" content={new URL(path, Astro.site)} />}
     <meta name="twitter:card" content="summary_large_image" />
-    {/* Umami analytics (cookieless, shared family property — filter by hostname) */}
-    <script defer src="https://cloud.umami.is/script.js" data-website-id="97f347ac-e7ba-4be3-b26f-ab4b328bdbf2" data-domains="fun-with-quantum.org"></script>
+    {/* Umami analytics (cookieless, shared family property — filter by hostname); none offline */}
+    {!OFFLINE && <script defer src="https://cloud.umami.is/script.js" data-website-id="97f347ac-e7ba-4be3-b26f-ab4b328bdbf2" data-domains="fun-with-quantum.org"></script>}
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -91,5 +92,32 @@ const path = Astro.url.pathname;
         </div>
       </div>
     </footer>
+    {OFFLINE && (
+      <script is:inline>
+        // Offline (RasQberry Two): links to fun-with-quantum.org stay on this copy; every other
+        // link to the web gets an "online" label. ?kiosk: back to the home page after 3 idle minutes.
+        for (const a of document.querySelectorAll('a[href^="http"]')) {
+          const url = new URL(a.href);
+          if (url.hostname === 'fun-with-quantum.org') { a.href = url.pathname + url.hash; a.removeAttribute('target'); continue; }
+          if (url.host === location.host) continue;
+          if (!a.textContent.trim()) continue;   // an image link: its caption carries the label
+          const tag = document.createElement('span');
+          tag.className = 'online-tag';
+          tag.textContent = 'online';
+          tag.title = 'Needs the internet';
+          a.append(' ', tag);
+        }
+        try {
+          if (new URLSearchParams(location.search).has('kiosk')) sessionStorage.setItem('fwq-kiosk', '1');
+          if (sessionStorage.getItem('fwq-kiosk') === '1') {
+            let timer;
+            const home = () => { if (location.pathname !== '/') location.href = '/'; else scrollTo(0, 0); };
+            const reset = () => { clearTimeout(timer); timer = setTimeout(home, 180000); };
+            for (const e of ['pointerdown', 'keydown', 'scroll', 'touchstart']) addEventListener(e, reset, { passive: true });
+            reset();
+          }
+        } catch { /* storage blocked: no kiosk reset */ }
+      </script>
+    )}
   </body>
 </html>

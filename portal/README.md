@@ -13,6 +13,7 @@ npm run dev      # http://localhost:4321
 npm test         # unit tests (vitest)
 npm run check    # type check (astro check)
 npm run build    # static site in dist/
+PUBLIC_FWQ_OFFLINE=1 npm run build   # the offline variant for RasQberry Two in dist-offline/ (src/data/offline.ts)
 npm run a11y     # axe-core accessibility check of dist/ (WCAG 2.1 A/AA, light + dark; first time: npx playwright install chromium)
 ```
 
