@@ -1,0 +1,57 @@
+name: Links
+
+# Every link in the README, in the notebooks' text and on the built portal must work — external
+# ones included. Weekly as well, since sites move. Links to fun-with-quantum.org are checked
+# against this build. Not checked: LinkedIn (blocks every bot), Medium (blocks GitHub's runners)
+# and doi.org (the publishers behind it answer bots with 403; DOIs don't move).
+on:
+  pull_request:
+    paths:
+      - 'README.md'
+      - '*.ipynb'
+      - 'portal/src/**'
+      - '.github/workflows/links.yml'
+  schedule:
+    - cron: '41 5 * * 1'   # Mondays 05:41 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: portal/package-lock.json
+      - name: Build the portal
+        working-directory: portal
+        run: npm ci && npm run build
+      - name: Notebook text as Markdown, next to each notebook (so relative links resolve)
+        run: |
+          python3 -c "
+          import glob, json
+          for f in glob.glob('*.ipynb'):
+              cells = json.load(open(f))['cells']
+              open(f + '.md', 'w').write('\n\n'.join(''.join(c['source']) for c in cells if c['cell_type'] == 'markdown'))
+          "
+      - name: Install lychee (link checker)
+        run: |
+          v=0.24.2 f=lychee-x86_64-unknown-linux-gnu.tar.gz
+          curl -sSfL -o "$RUNNER_TEMP/$f" "https://github.com/lycheeverse/lychee/releases/download/lychee-v$v/$f"
+          echo "1f4e0ef7f6554a6ed33dd7ac144fb2e1bbed98598e7af973042fc5cd43951c9a  $RUNNER_TEMP/$f" | sha256sum -c -
+          tar -xzf "$RUNNER_TEMP/$f" --strip-components=1 -C "$RUNNER_TEMP" lychee-x86_64-unknown-linux-gnu/lychee
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      - name: Check every link
+        env:
+          GITHUB_TOKEN: ${{ github.token }}   # higher GitHub rate limit
+        run: >-
+          lychee --no-progress --max-retries 3 --retry-wait-time 5 --accept '200..=299,429'
+          --exclude '^https://www\.linkedin\.com/' --exclude '^https://medium\.com/' --exclude '^https://doi\.org/'
+          --root-dir "$PWD/portal/dist" --index-files index.html
+          --remap "^https://fun-with-quantum\.org/(.*)\$ file://$PWD/portal/dist/\$1"
+          README.md '*.ipynb.md' 'portal/dist/**/*.html'

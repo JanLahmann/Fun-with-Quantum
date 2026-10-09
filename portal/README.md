@@ -4,7 +4,8 @@ Astro site for the Fun with Quantum family: three doors (Play · Build · Learn)
 and browser versions of seven of them: the Quantum Coin Game, the GHZ game, the CHSH game, Hardy's paradox, the magic square, the quantum prisoner's dilemma and 3-SAT with Grover. Deployed to GitHub Pages by
 `.github/workflows/deploy-portal.yml` on every push to `master`, which also attaches the build as `fwq-portal-<commit>.tar.gz` (+ `.sha256`)
 to the `portal-bundles` release, for offline use on RasQberry Two; `portal-ci.yml` runs tests, type
-check and build on pull requests.
+check, build and an offline check of every internal link and `#anchor` on pull requests; `links.yml`
+checks the external links too (weekly and on pull requests).
 
 ```sh
 npm install
