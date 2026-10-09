@@ -11,7 +11,7 @@ level: Intermediate
 prerequisites: "Entanglement (the GHZ or CHSH Game) helps"
 goals:
   - "Follow how three facts that always hold rule out one outcome for any classical explanation"
-  - "See that outcome happen anyway in 1 of 12 rounds with the entangled state (at most 9.02% for the best state)"
+  - "See both cars come out diesel anyway in 1 of 12 mornings when both inspectors check the engine — up to 9.02% with the best measurement angle"
   - "Recognize nonlocality without an inequality"
 # QuBins classic-RISE launch (2.1-xl-rise = nbclassic + classic RISE);
 # jupyterlab-rise doesn't render ipywidgets>=8 (jupyterlab-contrib/rise#119).

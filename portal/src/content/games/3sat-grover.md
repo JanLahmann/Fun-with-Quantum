@@ -10,9 +10,9 @@ audience: developers, students
 level: Intermediate
 prerequisites: "Boolean logic (AND, OR, NOT); some Python"
 goals:
-  - "Write a logic puzzle as a Boolean formula and as a quantum oracle"
-  - "Build Grover's search from an oracle and the diffusion step"
-  - "See it find the answers among N candidates in about √N steps instead of N"
+  - "Write a logic puzzle as a Boolean formula and let Qiskit turn it into a quantum oracle"
+  - "Run Grover's search: an oracle marks the answers, a diffuser amplifies them by interference"
+  - "See it find the answers in about √(N/M) rounds instead of about N/M checks (N candidates, M answers)"
 # QuBins classic-RISE launch (2.1-xl-rise = nbclassic + classic RISE);
 # jupyterlab-rise doesn't render ipywidgets>=8 (jupyterlab-contrib/rise#119).
 # Once fixed upstream, switch to image=2.1-xl&...&ui=rise (Lab presenter).
