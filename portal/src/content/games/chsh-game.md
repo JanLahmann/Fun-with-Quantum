@@ -5,7 +5,7 @@ concept: Bell test, entanglement
 icon: "🔔"
 order: 3
 webGame: true
-duration: ~15 min
+duration: ~25 min
 audience: students, curious minds
 # RISE slideshow with ipywidgets, like the Coin and GHZ games → the classic-RISE image.
 binderUrl: https://qubins.org/launch/?image=2.1-xl-rise&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=CHSH-Game.ipynb&ui=rise-classic

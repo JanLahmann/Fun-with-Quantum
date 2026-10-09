@@ -4,7 +4,7 @@ tagline: Three facts that hold every time rule out one outcome — which happens
 concept: Nonlocality without inequalities
 icon: "🌀"
 order: 5
-duration: ~10 min
+duration: ~20 min
 audience: puzzle lovers
 # QuBins classic-RISE launch (2.1-xl-rise = nbclassic + classic RISE);
 # jupyterlab-rise doesn't render ipywidgets>=8 (jupyterlab-contrib/rise#119).
