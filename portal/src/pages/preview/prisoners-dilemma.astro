@@ -1,0 +1,13 @@
+---
+/**
+ * UNLISTED preview of the browser quantum prisoner's dilemma (English) — reachable only by URL,
+ * linked only from the other preview pages, noindex. To launch publicly: see portal/README.md.
+ */
+import GamePreviewPage from '../../components/GamePreviewPage.astro';
+import PrisonersDilemmaGame from '../../components/PrisonersDilemmaGame.astro';
+import { PAGE } from '../../lib/pd/messages';
+---
+
+<GamePreviewPage page={PAGE} icon="🤝" notebook="Prisoners-Dilemma.ipynb" current="pd">
+  <PrisonersDilemmaGame />
+</GamePreviewPage>

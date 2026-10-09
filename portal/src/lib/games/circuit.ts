@@ -10,7 +10,7 @@ export type Step = (Op & { tone?: string }) | { g: 'barrier' } | { g: 'measure';
   | { g: 'box'; label: string; from: number; to: number; tone?: string };
 
 const COL = 46, ROW = 44, LEFT = 92, TOP = 26, BOX = 30;
-const NAME: Record<string, string> = { h: 'H', x: 'X', y: 'Y', z: 'Z', s: 'S', sdg: 'S†', ry: 'Ry' };
+const NAME: Record<string, string> = { h: 'H', x: 'X', y: 'Y', z: 'Z', s: 'S', sdg: 'S†', ry: 'Ry', rz: 'Rz' };
 /** An Ry angle in degrees, as written above the gate: −45°. */
 const degrees = (t: number) => `${Math.round((t * 180) / Math.PI)}°`.replace('-', '−');
 
@@ -51,16 +51,19 @@ export function circuitSvg(labels: readonly string[], steps: readonly Step[], ti
     } else if (step.g === 'box') {
       const top = y(step.from) - BOX / 2, h = y(step.to) - y(step.from) + BOX, w = COL - 8;
       out.push(`<g class="gate box${tone}"><rect x="${cx - w / 2}" y="${top}" width="${w}" height="${h}" rx="6"/>`
-        + `<text x="${cx}" y="${top + h / 2 + 4}" text-anchor="middle" transform="rotate(-90 ${cx} ${top + h / 2})">${h < 70 ? step.label[0].toUpperCase() : step.label}</text></g>`);
+        + `<text x="${cx}" y="${top + h / 2 + 4}" text-anchor="middle"${step.label.length > 2 ? ` transform="rotate(-90 ${cx} ${top + h / 2})"` : ''}>${h < 70 && step.label.length > 2 ? step.label[0].toUpperCase() : step.label}</text></g>`);
     } else if ('q' in step) {
       const cy = y(step.q);
       out.push(`<g class="gate${tone}"><rect x="${cx - BOX / 2}" y="${cy - BOX / 2}" width="${BOX}" height="${BOX}" rx="5"/>`
         + `<text x="${cx}" y="${cy + 5}" text-anchor="middle">${NAME[step.g]}</text>`
-        + (step.g === 'ry' ? `<text class="ang" x="${cx}" y="${cy - BOX / 2 - 3}" text-anchor="middle">${degrees(step.t)}</text>` : '') + '</g>');
+        + (step.g === 'ry' || step.g === 'rz' ? `<text class="ang" x="${cx}" y="${cy - BOX / 2 - 3}" text-anchor="middle">${degrees(step.t)}</text>` : '') + '</g>');
     } else {
       const ya = y(step.a), yb = y(step.b);
       out.push(`<g class="gate two${tone}"><line class="link" x1="${cx}" y1="${ya}" x2="${cx}" y2="${yb}"/>`);
-      if (step.g === 'cry') { // control dot, then an Ry box on the target
+      if (step.g === 'ryy') { // one tall box over both qubits
+        const top = Math.min(ya, yb) - BOX / 2, h = Math.abs(yb - ya) + BOX;
+        out.push(`<rect x="${cx - BOX / 2}" y="${top}" width="${BOX}" height="${h}" rx="5"/><text x="${cx}" y="${top + h / 2 + 4}" text-anchor="middle">Ryy</text>`);
+      } else if (step.g === 'cry') { // control dot, then an Ry box on the target
         out.push(`<circle class="dot" cx="${cx}" cy="${ya}" r="5"/><rect x="${cx - BOX / 2}" y="${yb - BOX / 2}" width="${BOX}" height="${BOX}" rx="5"/>`
           + `<text x="${cx}" y="${yb + 5}" text-anchor="middle">Ry</text><text class="ang" x="${cx}" y="${yb + BOX / 2 + 11}" text-anchor="middle">${degrees(step.t)}</text>`);
       } else if (step.g === 'cx') {
