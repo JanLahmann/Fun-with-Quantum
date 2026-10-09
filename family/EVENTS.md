@@ -34,6 +34,7 @@ Most events need **no JavaScript**: Umami's tracker records a click on any eleme
 | `doQumentation: notebook download` | `notebook`, `page`, `locale` | download button |
 | `doQumentation: code run` · `run all` | `page`, `locale` | executable code cells |
 | `doQumentation: tutorial feedback` · `translation feedback` | `rating`, `page`, `locale` | feedback widgets |
+| `doQumentation: play box click` | `game` (coin \| ghz \| chsh \| ghzReal \| sat), `page`, `locale` | "Play it as a game" box at the end of matching tutorials, linking to fun-with-quantum.org/play/ (UTM `utm_source=doqumentation&utm_medium=referral&utm_campaign=play-box`) |
 | `doQumentation: outbound click` | `host`, `category`, `url`, `path`, `from`, `locale` | every external link (JS tracker) |
 | `Quantego: file download` | `kind` (pdf \| studio \| pab), `file` | quantego.org instruction and model files |
 | `Qutie: STL download` | `file` | qutie.org |
