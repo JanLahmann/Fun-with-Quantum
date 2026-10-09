@@ -12,6 +12,7 @@ const de: Messages = {
     lead: 'Besiege einen Quantencomputer beim Münzspiel — und finde heraus, warum du nie eine Chance hattest.',
     notebook: 'Dasselbe Spiel als Jupyter-Notebook, mit echtem Qiskit-Code:',
     notebookLink: 'Notebook öffnen ↗',
+    notebookWait: 'Es startet eine kostenlose Jupyter-Sitzung auf mybinder.org (über QuBins); der Start kann einige Minuten dauern.',
     preview: 'Vorschau',
   },
 

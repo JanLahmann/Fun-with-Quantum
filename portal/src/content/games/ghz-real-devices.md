@@ -1,6 +1,6 @@
 ---
 title: GHZ on Real Quantum Devices
-tagline: Take the GHZ Game from the simulator to real IBM Quantum hardware.
+tagline: Play the GHZ Game on noisy copies of IBM quantum computers — and win back the rounds the noise costs you.
 concept: Error mitigation, transpiler optimization
 icon: "📡"
 order: 6
@@ -10,10 +10,13 @@ binderUrl: https://qubins.org/launch/?image=2.1-xl&repo=https%3A%2F%2Fgithub.com
 notebook: GHZ-on-Real-Devices.ipynb
 ---
 
-Simulators are perfect; real quantum computers are not. This notebook re-runs the GHZ Game on
-actual IBM Quantum hardware and confronts the noise head-on: readout errors, decoherence, and
-what the **transpiler** does to your circuit before it ever reaches the chip.
+Simulators are perfect; real quantum computers are not. This notebook plays the GHZ Game on
+simulated copies of six IBM quantum computers — fake backends that add the noise measured in a
+calibration snapshot of each device — and confronts the noise head-on: gate errors, readout
+errors, and what the **transpiler** does to your circuit before it reaches the chip.
 
-You'll compare raw hardware results against the ideal distribution, then apply **error
-mitigation** to recover most of the quantum advantage. It's a realistic first encounter with the
-craft of making today's noisy devices useful.
+On bad qubits the quantum team barely beats a classical one — or falls to guessing. You'll pick better qubits by hand
+and with the transpiler, then correct the readout errors with **readout error mitigation** to win
+back most of the lost rounds. An appendix runs the same experiment on a real IBM quantum computer
+(free IBM Quantum Platform account). A realistic first encounter with the craft of making today's
+noisy devices useful.

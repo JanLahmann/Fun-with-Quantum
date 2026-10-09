@@ -38,7 +38,9 @@ const alternates = [
       <CoinGame locale={locale} />
       <p class="lead">
         {m.page.notebook}{' '}
-        <a href={notebook} target="_blank" rel="noopener">{m.page.notebookLink}</a>
+        <a href={notebook} target="_blank" rel="noopener" data-umami-event="Portal: notebook launch" data-umami-event-target="qubins"
+           data-umami-event-image="2.1-xl-rise" data-umami-event-notebook="Quantum-Coin-Game.ipynb">{m.page.notebookLink}</a>
+        <span class="wait">{m.page.notebookWait}</span>
       </p>
       {locale === 'en' && <BrowserGames current="coin" />}
     </div>
@@ -50,4 +52,5 @@ const alternates = [
   .langs { display: flex; flex-wrap: wrap; gap: 4px 12px; font: 0.8rem var(--sans); }
   .langs a { color: var(--muted); }
   .langs a[aria-current='page'] { color: var(--ink); font-weight: 600; }
+  .wait { display: block; margin-top: 4px; font-size: 0.8rem; color: var(--muted); }
 </style>

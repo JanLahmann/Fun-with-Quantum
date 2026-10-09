@@ -12,6 +12,7 @@ const ja: Messages = {
     lead: 'コイン投げで量子コンピューターに挑戦 — そして、なぜ最初から勝ち目がなかったのかを確かめましょう。',
     notebook: '同じゲームを Jupyter ノートブックでも遊べます（本物の Qiskit コードです）：',
     notebookLink: 'ノートブックを開く ↗',
+    notebookWait: 'mybinder.org 上で無料の Jupyter セッションを（QuBins 経由で）起動します。起動には数分かかることがあります。',
     preview: 'プレビュー',
   },
 

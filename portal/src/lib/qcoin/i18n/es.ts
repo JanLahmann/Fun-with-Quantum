@@ -12,6 +12,7 @@ const es: Messages = {
     lead: 'Intenta ganarle a un ordenador cuántico a cara o cruz… y descubre por qué nunca tuviste ninguna oportunidad.',
     notebook: 'El mismo juego como notebook de Jupyter, con código Qiskit de verdad:',
     notebookLink: 'abrir el notebook ↗',
+    notebookWait: 'Abre una sesión gratuita de Jupyter en mybinder.org (a través de QuBins); el arranque puede tardar unos minutos.',
     preview: 'Vista previa',
   },
 

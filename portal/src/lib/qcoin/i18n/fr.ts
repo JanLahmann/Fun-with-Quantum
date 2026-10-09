@@ -12,6 +12,7 @@ const fr: Messages = {
     lead: 'Bats un ordinateur quantique à pile ou face — et découvre pourquoi tu n’avais aucune chance.',
     notebook: 'Le même jeu sous forme de notebook Jupyter, avec du vrai code Qiskit :',
     notebookLink: 'ouvrir le notebook ↗',
+    notebookWait: 'Il lance une session Jupyter gratuite sur mybinder.org (via QuBins) ; le démarrage peut prendre quelques minutes.',
     preview: 'Aperçu',
   },
 
