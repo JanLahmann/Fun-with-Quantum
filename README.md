@@ -1,6 +1,6 @@
 # Fun with Quantum
 
-Quantum computing taught through games: Jupyter notebooks, written with [Qiskit](https://www.ibm.com/quantum/qiskit), in which superposition, interference and entanglement are the tricks that win the game. Play first, then open the curtain and see the circuit.
+Quantum computing taught through games: Jupyter notebooks, written with [Qiskit](https://www.ibm.com/quantum/qiskit), in which superposition, interference and entanglement are the tricks that win the game. Play first, then pull back the curtain and see the circuit.
 
 More games, and the family of projects around them: **[fun-with-quantum.org](https://fun-with-quantum.org)**.
 

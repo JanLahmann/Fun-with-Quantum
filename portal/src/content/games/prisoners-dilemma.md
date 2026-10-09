@@ -19,4 +19,4 @@ qubits, and a new quantum move Q turns (Q, Q) into an equilibrium worth 3 each: 
 disappears. The notebook builds the game in Qiskit, maps the payoffs and searches for equilibria —
 and then shows the catch found by Benjamin and Hayden (2001): with every one-qubit move allowed,
 each move has a counter, so equilibria exist only with random (mixed) strategies — for example
-both players choosing completely at random, worth 2.25 points each.
+both players picking a completely random one-qubit move, worth 2.25 points each.

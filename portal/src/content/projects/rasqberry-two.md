@@ -6,7 +6,7 @@ icon: "🍓"
 order: 1
 url: https://rasqberry.org
 repoUrl: https://github.com/JanLahmann/RasQberry-Two
-ecosystemUrl: https://qisk.it/e-dfa4cfd2
+ecosystemUrl: https://www.ibm.com/quantum/ecosystem
 image: ../../assets/RasQberry2exploded.png
 imageAlt: Exploded view of the 3D-printed RasQberry Two model, showing all printed parts
 facts:
@@ -17,4 +17,4 @@ facts:
 
 The flagship of the family: a 3D-printable model of IBM Quantum System Two with a Raspberry Pi
 inside, running real Qiskit demos on its display. Print the parts, assemble the cryostat, flash
-the prepared image — and you own a quantum computer model that actually computes.
+the prepared image — and you own a quantum computer model that runs Qiskit.

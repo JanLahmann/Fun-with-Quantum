@@ -6,7 +6,7 @@ icon: "📦"
 order: 2
 url: https://qubins.org
 repoUrl: https://github.com/QuBins/qiskit-images
-ecosystemUrl: https://qisk.it/e-6c640264
+ecosystemUrl: https://www.ibm.com/quantum/ecosystem
 image: ../../assets/qubins-site.png
 imageAlt: qubins.org — prebuilt Qiskit environments with a one-click browser launch
 facts:

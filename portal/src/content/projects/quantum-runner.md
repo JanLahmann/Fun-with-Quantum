@@ -5,7 +5,6 @@ tagline: Steer the runner with quantum gates — an H gate puts you in both lane
 icon: "🏃"
 order: 12
 url: https://qamposer.org/quantum-runner/
-ecosystemUrl: https://qisk.it/e-ebaeb5c2
 video: /quantum-runner.mp4
 imageAlt: "Quantum Runner gameplay: building a circuit steers the runner across lanes"
 facts:

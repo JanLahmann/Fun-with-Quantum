@@ -14,7 +14,7 @@ notebook: CHSH-Game.ipynb
 
 Alice and Bob each get a random bit and answer with a bit, without talking. They win if their
 answers are the same — unless both got a 1, then they must differ. No classical strategy wins
-more than **75%** of the rounds: a four-line parity argument shows that every table of answers
+more than **75%** of the rounds: a short parity argument shows that every table of answers
 loses at least one question.
 
 Sharing one pair of entangled qubits and measuring along well-chosen angles, they win

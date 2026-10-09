@@ -33,8 +33,9 @@ const projects = defineCollection({
       repoUrl: z.string().url().optional(),
       status: z.enum(['live', 'coming-soon', 'legacy']).default('live'),
       facts: z.array(z.string()).default([]),
-      // Link to the project's entry on qiskit.github.io/ecosystem — only for
-      // projects that are actually listed members; controls the ecosystem badge.
+      // The Qiskit ecosystem page (ibm.com/quantum/ecosystem) — only for projects
+      // that are (part of) a listed member; controls the ecosystem badge. Entangible is a member but
+      // not on that page yet (2026-10), so its badge links to its member file.
       ecosystemUrl: z.string().url().optional(),
       // Photo shown on the right of the project row.
       image: image().optional(),
