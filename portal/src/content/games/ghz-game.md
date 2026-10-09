@@ -4,6 +4,7 @@ tagline: A team game that no classical strategy wins every round — with entang
 concept: Entanglement (GHZ states)
 icon: "🔗"
 order: 2
+webGame: true
 duration: ~10 min
 audience: curious minds, workshop groups
 # QuBins classic-RISE launch (2.1-xl-rise = nbclassic + classic RISE): the

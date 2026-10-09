@@ -25,14 +25,9 @@ export const UI = {
   zBasis: 'Z · Z · Z (no question)',
 };
 
+// The page around the game is /play/ghz-game/ (src/content/games/ghz-game.md).
 export const PAGE = {
-  title: 'GHZ Game — preview | Fun with Quantum',
-  description: 'Play the GHZ game in your browser: no classical team wins more than 3 of 4 questions — a team sharing three entangled qubits wins every round.',
-  kicker: 'Play · Entanglement · preview',
   heading: 'GHZ Game',
-  lead: 'A team game that no classical strategy wins every round — with three entangled qubits, you always do.',
-  notebook: 'The same game as a Jupyter notebook, in real Qiskit code:',
-  notebookLink: 'open the notebook ↗',
 };
 
 const ASK = { C: 'Color', S: 'Shape' } as const;

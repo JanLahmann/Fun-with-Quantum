@@ -49,6 +49,9 @@ export default defineConfig({
     '/uk/preview/coin-game': '/uk/play/quantum-coin-game/',
     '/it/preview/coin-game': '/it/play/quantum-coin-game/',
     '/fr/preview/coin-game': '/fr/play/quantum-coin-game/',
+    // launched 2026-10
+    '/preview/ghz-game': '/play/ghz-game/',
+    '/preview/chsh-game': '/play/chsh-game/',
   },
   integrations: [sitemap()],
 });
