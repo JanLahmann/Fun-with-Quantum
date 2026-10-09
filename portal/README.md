@@ -29,12 +29,12 @@ npm run build    # static site in dist/
 
 ## The Quantum Coin Game in the browser
 
-**Unlisted for now:** `/preview/coin-game/` and its translations `/de/`, `/ja/`, `/es/`, `/uk/`,
-`/it/`, `/fr/preview/coin-game/` (`src/pages/preview/coin-game.astro`,
-`src/pages/[lang]/preview/coin-game.astro`, both via `src/components/CoinGamePage.astro`) — linked
-from nowhere, `noindex`, with a language switcher and hreflang between them. To launch: set `webGame: true` in `src/content/games/quantum-coin-game.md`
-(the game page then shows it above the notebook, and the homepage and Play page link to it) and
-delete the preview page.
+**Public since 2026-10:** `webGame: true` in `src/content/games/quantum-coin-game.md`, so
+`/play/quantum-coin-game/` shows the game above the notebook (`src/pages/play/[slug].astro`, with a
+language switcher and hreflang), and the homepage card and the Play page link to it. The other six
+languages live at `/de/`, `/ja/`, `/es/`, `/uk/`, `/it/`, `/fr/play/quantum-coin-game/`
+(`src/pages/[lang]/play/quantum-coin-game.astro` via `src/components/CoinGamePage.astro`). The old
+`/…/preview/coin-game/` URLs redirect (`astro.config.mjs`).
 
 The notebook's coin game, six chapters, no Binder:
 
@@ -78,8 +78,8 @@ Analytics events (`Portal: coin game …`) are listed in `../family/EVENTS.md`.
 ## The GHZ game, the CHSH game, Hardy's paradox, the magic square, the prisoner's dilemma and 3-SAT in the browser
 
 **Unlisted for now** (English only): `/preview/ghz-game/`, `/preview/chsh-game/`, `/preview/hardys-paradox/`, `/preview/magic-square/`, `/preview/prisoners-dilemma/` and
-`/preview/3sat-grover/` — `noindex`, linked only from each other and from the English coin game
-preview ("Quantum games, right in your browser", `src/components/BrowserGames.astro`). Same rules,
+`/preview/3sat-grover/` — `noindex`, linked only from each other ("Quantum games, right in your browser",
+`src/components/BrowserGames.astro`, which also links the public coin game). Same rules,
 same circuits as `GHZ-Game.ipynb`, `CHSH-Game.ipynb`, `Hardys-Paradox.ipynb`, `Mermin-Peres-Game.ipynb`, `Prisoners-Dilemma.ipynb` and `3sat.ipynb`.
 
 | Path | What |

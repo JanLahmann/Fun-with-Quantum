@@ -1,12 +1,11 @@
 ---
 /**
- * The (unlisted) Quantum Coin Game page in one language: header, language switcher, the game,
- * the notebook link. Used by /preview/coin-game/ (English) and /<lang>/preview/coin-game/.
- * To launch publicly see portal/README.md.
+ * The Quantum Coin Game page in one non-English language: header, language switcher, the game,
+ * the notebook link. Used by /<lang>/play/quantum-coin-game/; the English game sits on
+ * /play/quantum-coin-game/ (src/pages/play/[slug].astro).
  */
 import Base from '../layouts/Base.astro';
 import CoinGame from './CoinGame.astro';
-import BrowserGames from './BrowserGames.astro';
 import { LOCALES, MESSAGES, pagePath, type Locale } from '../lib/qcoin/i18n';
 
 interface Props {
@@ -22,7 +21,7 @@ const alternates = [
 ];
 ---
 
-<Base title={m.page.title} description={m.page.description} noindex lang={m.lang} alternates={alternates}>
+<Base title={m.page.title} description={m.page.description} lang={m.lang} alternates={alternates}>
   <section class="section">
     <div class="wrap">
       <div class="top">
@@ -42,7 +41,6 @@ const alternates = [
            data-umami-event-image="2.1-xl-rise" data-umami-event-notebook="Quantum-Coin-Game.ipynb">{m.page.notebookLink}</a>
         <span class="wait">{m.page.notebookWait}</span>
       </p>
-      {locale === 'en' && <BrowserGames current="coin" />}
     </div>
   </section>
 </Base>

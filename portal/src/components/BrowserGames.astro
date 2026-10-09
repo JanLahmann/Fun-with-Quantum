@@ -1,14 +1,14 @@
 ---
 /**
  * "Quantum games in your browser" strip linking the browser games to each other. Used only on the
- * unlisted preview pages for now (English); when the games launch, point the links at /play/….
+ * unlisted preview pages (English); launched games link to their public /play/… page.
  */
 interface Props {
   current: 'coin' | 'ghz' | 'magic' | 'sat' | 'chsh' | 'hardy' | 'pd';
 }
 const { current } = Astro.props;
 const GAMES = [
-  { id: 'coin', href: '/preview/coin-game/', icon: '🪙', title: 'Quantum Coin Game', concept: 'Superposition & interference' },
+  { id: 'coin', href: '/play/quantum-coin-game/', icon: '🪙', title: 'Quantum Coin Game', concept: 'Superposition & interference' },
   { id: 'ghz', href: '/preview/ghz-game/', icon: '🔗', title: 'GHZ Game', concept: 'Entanglement' },
   { id: 'chsh', href: '/preview/chsh-game/', icon: '🔔', title: 'CHSH Game', concept: 'Bell test' },
   { id: 'hardy', href: '/preview/hardys-paradox/', icon: '🌀', title: 'Hardy’s Paradox', concept: 'Nonlocality' },

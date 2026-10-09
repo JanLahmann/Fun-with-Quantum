@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import CoinGame from '../../components/CoinGame.astro';
+import { LOCALES, MESSAGES, pagePath } from '../../lib/qcoin/i18n';
 
 export async function getStaticPaths() {
   const games = await getCollection('games');
@@ -18,20 +19,35 @@ const others = (await getCollection('games'))
 const launchUrl = new URL(game.data.binderUrl);
 const launchTarget = launchUrl.hostname.includes('qubins') ? 'qubins' : launchUrl.hostname.includes('mybinder') ? 'binder' : launchUrl.hostname;
 const launchImage = launchUrl.searchParams.get('image') ?? 'binder';
+// the coin game also exists in six more languages (src/pages/[lang]/play/quantum-coin-game.astro)
+const coin = game.data.webGame && game.id === 'quantum-coin-game';
+const alternates = coin
+  ? [...LOCALES.map((l) => ({ lang: l, href: pagePath(l) })), { lang: 'x-default', href: pagePath('en') }]
+  : [];
 const launchVia = launchTarget === 'qubins' ? 'mybinder.org (via QuBins)' : launchTarget === 'binder' ? 'mybinder.org' : launchUrl.hostname;
 ---
 
 <Base
   title={`${game.data.title} | Fun with Quantum`}
   description={game.data.tagline}
+  alternates={alternates}
 >
   <section class="section">
     <div class="wrap">
-      <div class="kicker">Play · {game.data.concept}</div>
+      <div class="top">
+        <div class="kicker">Play · {game.data.concept}</div>
+        {coin && (
+          <nav class="langs" aria-label="Language">
+            {LOCALES.map((l) => (
+              <a href={pagePath(l)} hreflang={l} lang={l} aria-current={l === 'en' ? 'page' : undefined}>{MESSAGES[l].langName}</a>
+            ))}
+          </nav>
+        )}
+      </div>
       <h2>{game.data.icon} {game.data.title}</h2>
       <p class="lead">{game.data.tagline}</p>
 
-      {game.data.webGame && game.id === 'quantum-coin-game' && <CoinGame />}
+      {coin && <CoinGame />}
 
       {game.data.webGame && (
         <h3 class="notebook-title">The real Qiskit code</h3>
@@ -71,6 +87,10 @@ const launchVia = launchTarget === 'qubins' ? 'mybinder.org (via QuBins)' : laun
 </Base>
 
 <style>
+  .top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .langs { display: flex; flex-wrap: wrap; gap: 4px 12px; font: 0.8rem var(--sans); }
+  .langs a { color: var(--muted); }
+  .langs a[aria-current='page'] { color: var(--ink); font-weight: 600; }
   .launch {
     flex-direction: row; align-items: center; justify-content: space-between;
     gap: 24px; margin-bottom: 36px; flex-wrap: wrap;

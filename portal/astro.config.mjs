@@ -41,6 +41,14 @@ export default defineConfig({
   trailingSlash: 'ignore',
   redirects: {
     '/about': '/#about',
+    // the coin game left its unlisted preview (launched 2026-10)
+    '/preview/coin-game': '/play/quantum-coin-game/',
+    '/de/preview/coin-game': '/de/play/quantum-coin-game/',
+    '/ja/preview/coin-game': '/ja/play/quantum-coin-game/',
+    '/es/preview/coin-game': '/es/play/quantum-coin-game/',
+    '/uk/preview/coin-game': '/uk/play/quantum-coin-game/',
+    '/it/preview/coin-game': '/it/play/quantum-coin-game/',
+    '/fr/preview/coin-game': '/fr/play/quantum-coin-game/',
   },
   integrations: [sitemap()],
 });

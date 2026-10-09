@@ -5,9 +5,9 @@ const es: Messages = {
   langName: 'Español',
 
   page: {
-    title: 'El juego de la moneda cuántica — vista previa | Fun with Quantum',
+    title: 'El juego de la moneda cuántica | Fun with Quantum',
     description: 'Juega al juego de la moneda cuántica en tu navegador: intenta ganarle a un ordenador cuántico a cara o cruz… y descubre por qué nunca tuviste ninguna oportunidad.',
-    kicker: 'Jugar · Superposición e interferencia · vista previa',
+    kicker: 'Jugar · Superposición e interferencia',
     heading: 'El juego de la moneda cuántica',
     lead: 'Intenta ganarle a un ordenador cuántico a cara o cruz… y descubre por qué nunca tuviste ninguna oportunidad.',
     notebook: 'El mismo juego como notebook de Jupyter, con código Qiskit de verdad:',

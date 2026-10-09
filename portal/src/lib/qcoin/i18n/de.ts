@@ -5,9 +5,9 @@ const de: Messages = {
   langName: 'Deutsch',
 
   page: {
-    title: 'Quanten-Münzspiel — Vorschau | Fun with Quantum',
+    title: 'Quanten-Münzspiel | Fun with Quantum',
     description: 'Spiel das Quanten-Münzspiel im Browser: Besiege einen Quantencomputer beim Münzspiel — und finde heraus, warum du nie eine Chance hattest.',
-    kicker: 'Play · Superposition & Interferenz · Vorschau',
+    kicker: 'Play · Superposition & Interferenz',
     heading: 'Quanten-Münzspiel',
     lead: 'Besiege einen Quantencomputer beim Münzspiel — und finde heraus, warum du nie eine Chance hattest.',
     notebook: 'Dasselbe Spiel als Jupyter-Notebook, mit echtem Qiskit-Code:',

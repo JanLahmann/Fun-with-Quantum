@@ -3,7 +3,7 @@ title: GHZ on Real Quantum Devices
 tagline: Play the GHZ Game on noisy copies of IBM quantum computers — and win back the rounds the noise costs you.
 concept: Error mitigation, transpiler optimization
 icon: "📡"
-order: 6
+order: 8
 duration: ~20 min
 audience: developers
 binderUrl: https://qubins.org/launch/?image=2.1-xl&repo=https%3A%2F%2Fgithub.com%2FJanLahmann%2FFun-with-Quantum&branch=master&path=GHZ-on-Real-Devices.ipynb

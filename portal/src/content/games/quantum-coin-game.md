@@ -14,6 +14,7 @@ audience: everyone — no prerequisites
 binderUrl: https://qubins.org/launch/?image=2.1-xl-rise&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=Quantum-Coin-Game.ipynb&ui=rise-classic
 notebook: Quantum-Coin-Game.ipynb
 featured: true
+webGame: true
 ---
 
 You and a quantum computer take turns flipping a coin — without looking at it. If it shows heads

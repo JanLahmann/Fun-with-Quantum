@@ -5,9 +5,9 @@ const ja: Messages = {
   langName: '日本語',
 
   page: {
-    title: '量子コインゲーム — プレビュー | Fun with Quantum',
+    title: '量子コインゲーム | Fun with Quantum',
     description: 'ブラウザで量子コインゲームをプレイ。コイン投げで量子コンピューターに挑み、なぜ最初から勝ち目がなかったのかを確かめましょう。',
-    kicker: 'プレイ · 重ね合わせと干渉 · プレビュー',
+    kicker: 'プレイ · 重ね合わせと干渉',
     heading: '量子コインゲーム',
     lead: 'コイン投げで量子コンピューターに挑戦 — そして、なぜ最初から勝ち目がなかったのかを確かめましょう。',
     notebook: '同じゲームを Jupyter ノートブックでも遊べます（本物の Qiskit コードです）：',

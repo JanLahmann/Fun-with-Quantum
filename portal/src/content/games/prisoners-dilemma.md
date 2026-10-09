@@ -3,7 +3,7 @@ title: The Quantum Prisoner's Dilemma
 tagline: Entanglement makes cooperation pay — for a restricted set of moves. Then comes the catch.
 concept: Quantum game theory
 icon: "🤝"
-order: 9
+order: 6
 duration: ~15 min
 audience: students, game-theory fans
 # RISE slideshow with ipywidgets, like the Coin and GHZ games → the classic-RISE image.
