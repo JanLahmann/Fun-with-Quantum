@@ -77,9 +77,10 @@ Analytics events (`Portal: coin game …`) are listed in `../family/EVENTS.md`.
 
 ## The GHZ game, the CHSH game, Hardy's paradox, the magic square, the prisoner's dilemma and 3-SAT in the browser
 
-**Unlisted for now** (English only): `/preview/ghz-game/`, `/preview/chsh-game/`, `/preview/hardys-paradox/`, `/preview/magic-square/`, `/preview/prisoners-dilemma/` and
+**Public since 2026-10** (English only): the GHZ and CHSH games, on `/play/ghz-game/` and
+`/play/chsh-game/` above the notebook. **Unlisted for now:** `/preview/hardys-paradox/`, `/preview/magic-square/`, `/preview/prisoners-dilemma/` and
 `/preview/3sat-grover/` — `noindex`, linked only from each other ("Quantum games, right in your browser",
-`src/components/BrowserGames.astro`, which also links the public coin game). Same rules,
+`src/components/BrowserGames.astro`, which also links the public games). Same rules,
 same circuits as `GHZ-Game.ipynb`, `CHSH-Game.ipynb`, `Hardys-Paradox.ipynb`, `Mermin-Peres-Game.ipynb`, `Prisoners-Dilemma.ipynb` and `3sat.ipynb`.
 
 | Path | What |
@@ -120,7 +121,7 @@ same circuits as `GHZ-Game.ipynb`, `CHSH-Game.ipynb`, `Hardys-Paradox.ipynb`, `M
    works* (interference, sin²((2k+1)θ), scaling, limits).
 
 Explanations link to IBM Quantum Learning and doQumentation like the coin game's. To translate, add
-per-language copies of `messages.ts` and `GLOSSARY_EN` as for `src/lib/qcoin/i18n`. To launch: add the
-web game to its `/play/` page (as `play/[slug].astro` does for the coin game with `webGame: true`; the
-magic square's, CHSH's, Hardy's, the prisoner's dilemma's and 3-SAT's game entries are still in `content-drafts/`), point `BrowserGames.astro` at the `/play/` pages,
-and delete the preview pages.
+per-language copies of `messages.ts` and `GLOSSARY_EN` as for `src/lib/qcoin/i18n`. To launch one: set
+`webGame: true` in its `src/content/games/*.md`, register its component in `WEB_GAMES` in
+`src/pages/play/[slug].astro` (the build fails if one is missing), point `BrowserGames.astro` at the
+`/play/` page, delete the preview page and redirect its URL (`astro.config.mjs`).

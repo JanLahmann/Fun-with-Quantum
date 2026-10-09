@@ -27,14 +27,9 @@ export const UI = {
   circuitTitle: 'The game circuit',
 };
 
+// The page around the game is /play/chsh-game/ (src/content/games/chsh-game.md).
 export const PAGE = {
-  title: 'CHSH Game — preview | Fun with Quantum',
-  description: 'Play the CHSH game in your browser — the Bell test behind the 2022 Nobel Prize: no classical team wins more than 75% of the rounds, an entangled pair of qubits wins 85.4%.',
-  kicker: 'Play · Bell test · preview',
   heading: 'The CHSH Game',
-  lead: 'The Bell test behind the 2022 Nobel Prize, as a game: no classical team wins more than 75% of the rounds — with an entangled pair of qubits, Alice and Bob win 85.4%.',
-  notebook: 'The same game as a Jupyter notebook, in real Qiskit code:',
-  notebookLink: 'open the notebook ↗',
 };
 
 const pct = (p: number) => `${(100 * p).toFixed(1)}%`;

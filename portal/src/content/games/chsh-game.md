@@ -4,6 +4,7 @@ tagline: The Bell test behind the 2022 Nobel Prize — 75% for any classical tea
 concept: Bell test, entanglement
 icon: "🔔"
 order: 3
+webGame: true
 duration: ~15 min
 audience: students, curious minds
 # RISE slideshow with ipywidgets, like the Coin and GHZ games → the classic-RISE image.

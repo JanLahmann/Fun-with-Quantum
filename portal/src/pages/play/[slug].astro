@@ -2,6 +2,8 @@
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import CoinGame from '../../components/CoinGame.astro';
+import GhzGame from '../../components/GhzGame.astro';
+import ChshGame from '../../components/ChshGame.astro';
 import { LOCALES, MESSAGES, pagePath } from '../../lib/qcoin/i18n';
 
 export async function getStaticPaths() {
@@ -19,8 +21,16 @@ const others = (await getCollection('games'))
 const launchUrl = new URL(game.data.binderUrl);
 const launchTarget = launchUrl.hostname.includes('qubins') ? 'qubins' : launchUrl.hostname.includes('mybinder') ? 'binder' : launchUrl.hostname;
 const launchImage = launchUrl.searchParams.get('image') ?? 'binder';
+// the browser version of a launched game (`webGame: true`); unlisted ones live under /preview/
+const WEB_GAMES: Record<string, typeof CoinGame> = {
+  'quantum-coin-game': CoinGame,
+  'ghz-game': GhzGame,
+  'chsh-game': ChshGame,
+};
+const WebGame = game.data.webGame ? WEB_GAMES[game.id] : undefined;
+if (game.data.webGame && !WebGame) throw new Error(`${game.id}: webGame is set, but no browser game is registered in play/[slug].astro`);
 // the coin game also exists in six more languages (src/pages/[lang]/play/quantum-coin-game.astro)
-const coin = game.data.webGame && game.id === 'quantum-coin-game';
+const coin = game.id === 'quantum-coin-game';
 const alternates = coin
   ? [...LOCALES.map((l) => ({ lang: l, href: pagePath(l) })), { lang: 'x-default', href: pagePath('en') }]
   : [];
@@ -47,7 +57,7 @@ const launchVia = launchTarget === 'qubins' ? 'mybinder.org (via QuBins)' : laun
       <h2>{game.data.icon} {game.data.title}</h2>
       <p class="lead">{game.data.tagline}</p>
 
-      {coin && <CoinGame />}
+      {WebGame && <WebGame />}
 
       {game.data.webGame && (
         <h3 class="notebook-title">The real Qiskit code</h3>
