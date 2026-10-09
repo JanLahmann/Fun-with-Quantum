@@ -19,15 +19,23 @@ def code(src, slide='fragment'):
     cells.append(c)
 
 
-md("""# Solving logic puzzles with a quantum computer
+md("""# 3-SAT with Grover's Algorithm
 
-### Grover's search and Boolean satisfiability (3-SAT)
+### Solving logic puzzles with a quantum computer
 
 Some puzzles are easy to *check* but hard to *solve*: is there a way to fill in the variables so that every rule is satisfied? This notebook builds **Grover's search algorithm** step by step from [Qiskit](https://www.ibm.com/quantum/qiskit) building blocks and uses it to solve two such puzzles — a party guest list and a classic 3-SAT formula.
 
 Part of [Fun with Quantum](https://fun-with-quantum.org). First versions by Jan-R. Lahmann (2019–2022), rebuilt in 2026 for Qiskit 2. The party puzzle comes from James Weaver's Qiskit workshop notebook "Grover search party"; the 3-SAT problem from the Qiskit tutorial "Using Grover search for 3-SAT problems" by Jay Gambetta and Richard Chen ([today in qiskit-community-tutorials](https://github.com/qiskit-community/qiskit-community-tutorials/blob/master/optimization/grover.ipynb)) and a hands-on workshop by David Mesterhazy.
 
 (hit space or right arrow to move to the next slide)""")
+
+md("""## Usage instructions for the user interface
+
+* "Space" and "Shift Space" move through the slides; "Ctrl −" and "Ctrl +" (on a Mac "⌘ −" and "⌘ +") fit the text to the window
+* "Shift Enter" runs an interactive cell (you may need to click the cell first)
+* Run the code cells in order, from the top — the first ones load everything the game needs
+* Seeing a `NameError`? A cell was skipped or the kernel restarted: run the code cells from the top again, or use "Kernel → Restart & Run All"
+* "X" at the top left leaves the slideshow and shows the plain notebook""")
 
 md(r"""## Boolean satisfiability (SAT)
 

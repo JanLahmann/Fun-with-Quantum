@@ -26,9 +26,10 @@ Part of [Fun with Quantum](https://fun-with-quantum.org).
 
 md("""## Usage instructions for the user interface
 
-* "Space" and "Shift Space" move through the slides
+* "Space" and "Shift Space" move through the slides; "Ctrl −" and "Ctrl +" (on a Mac "⌘ −" and "⌘ +") fit the text to the window
 * "Shift Enter" runs an interactive cell (you may need to click the cell first)
-* Run the cells on each slide in order — the first code cell loads everything else
+* Run the code cells in order, from the top — the first ones load everything the game needs
+* Seeing a `NameError`? A cell was skipped or the kernel restarted: run the code cells from the top again, or use "Kernel → Restart & Run All"
 * "X" at the top left leaves the slideshow and shows the plain notebook""")
 
 md("""First we load a few tools. You don't need to understand them — just click into the cell and press "Shift Enter".""")

@@ -2,6 +2,7 @@
 title: Mermin–Peres Magic Square
 tagline: A 3×3 square game that no classical team wins every round — quantum teamwork always does.
 concept: Quantum contextuality
+shows: "entanglement beats every classical team"
 icon: "🎩"
 order: 4
 duration: ~25 min

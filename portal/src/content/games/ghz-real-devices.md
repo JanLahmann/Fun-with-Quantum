@@ -2,6 +2,7 @@
 title: GHZ on Real Quantum Devices
 tagline: Play the GHZ Game on noisy copies of IBM quantum computers — and win back most of the rounds the noise costs you.
 concept: Error mitigation, transpiler optimization
+shows: "noise, transpiler, readout error mitigation"
 icon: "📡"
 order: 8
 duration: ~25 min

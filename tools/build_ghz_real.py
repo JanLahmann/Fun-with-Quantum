@@ -10,7 +10,9 @@ def md(src):
 def code(src):
     cells.append(nbf.v4.new_code_cell(src, id=f'cell-{len(cells)}'))
 
-md("""# Winning the GHZ Game on a Noisy Quantum Computer<a name="top"></a>
+md("""# GHZ on Real Quantum Devices<a name="top"></a>
+
+### Winning the GHZ Game on a noisy quantum computer
 
 In the [GHZ Game](GHZ-Game.ipynb), a team that shares three entangled qubits wins every round — on a perfect simulator. Real quantum computers make errors. In this notebook you play the game on simulated copies of IBM quantum computers, watch noise cost you rounds, and win them back: by choosing good qubits, with the transpiler, and with readout error mitigation. At the end you can run the same code on a real IBM quantum computer.
 

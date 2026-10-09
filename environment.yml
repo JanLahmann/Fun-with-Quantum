@@ -13,7 +13,6 @@ dependencies:
   - numpy>=1.26
   - qiskit>=2.1
   - qiskit-aer>=0.15
-  - qiskit-algorithms>=0.3
   - qiskit-ibm-runtime>=0.30
   - qiskit-experiments>=0.7
   - pylatexenc>=2.10

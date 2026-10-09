@@ -2,7 +2,8 @@ name: Notebooks
 
 # Every notebook at the repository root must run from top to bottom without an error — on the
 # Qiskit 2.1 stack of the QuBins image the games launch on (versions/2.1-xl in JanLahmann/QuBins),
-# and on the newest Qiskit. Generated notebooks must match their builders in tools/.
+# and on the newest Qiskit. Generated notebooks must match their builders in tools/, and the games
+# list in README.md and Readme.ipynb must match portal/src/content/games (tools/build_games_list.py).
 # Weekly as well, so a new Qiskit release that breaks a notebook shows up before players see it.
 on:
   pull_request:
@@ -11,6 +12,9 @@ on:
       - 'tools/**'
       - 'GHZGame/**'
       - 'environment.yml'
+      - 'README.md'
+      - 'portal/src/content/games/**'
+      - 'portal/src/components/BrowserGames.astro'
       - '.github/workflows/notebooks.yml'
   push:
     branches: [master]
@@ -19,6 +23,9 @@ on:
       - 'tools/**'
       - 'GHZGame/**'
       - 'environment.yml'
+      - 'README.md'
+      - 'portal/src/content/games/**'
+      - 'portal/src/components/BrowserGames.astro'
       - '.github/workflows/notebooks.yml'
   schedule:
     - cron: '23 5 * * 1'   # Mondays 05:23 UTC
@@ -37,12 +44,12 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install nbformat
-      - name: Rebuild every generated notebook
+      - name: Rebuild every generated notebook and the games list
         run: for b in tools/build_*.py; do python "$b"; done
-      - name: No difference to the committed notebooks
+      - name: No difference to the committed files
         run: |
-          if ! git diff --exit-code -- '*.ipynb'; then
-            echo "::error::A generated notebook differs from its builder: edit tools/build_….py, run it, and commit both."
+          if ! git diff --exit-code -- '*.ipynb' README.md; then
+            echo "::error::A generated file differs from its builder: edit tools/build_….py (or portal/src/content/games), run it, and commit both."
             exit 1
           fi
 
