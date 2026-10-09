@@ -1,8 +1,8 @@
 # Fun with Quantum
 
-Quantum computing taught through games: Jupyter notebooks, written with [Qiskit](https://www.ibm.com/quantum/qiskit), in which superposition, interference and entanglement are the trick that wins the game. Play first, then open the curtain and see the circuit.
+Quantum computing taught through games: Jupyter notebooks, written with [Qiskit](https://www.ibm.com/quantum/qiskit), in which superposition, interference and entanglement are the tricks that win the game. Play first, then open the curtain and see the circuit.
 
-These games are the home of **[fun-with-quantum.org](https://fun-with-quantum.org)**.
+More games, and the family of projects around them: **[fun-with-quantum.org](https://fun-with-quantum.org)**.
 
 ## Play
 
@@ -21,7 +21,7 @@ These games are the home of **[fun-with-quantum.org](https://fun-with-quantum.or
 
 ---
 ### 1. Quantum Coin Game
-A quantum coin game that illustrates the power of quantum superposition and interference — two players take turns turning a hidden coin, and the player who may use a Hadamard gate wins every time. Implemented by Jan-R. Lahmann using Qiskit, binder and [RISE](https://rise.readthedocs.io/).
+A quantum coin game that illustrates the power of quantum superposition and interference — two players take turns turning a hidden coin or leaving it as it is, and the player who may also use a Hadamard gate can win every time. Implemented by Jan-R. Lahmann using Qiskit, binder and [RISE](https://rise.readthedocs.io/).
 
 Inspired by the TED talk of Shohini Ghose ["Quantum computing explained in 10 minutes"](https://www.ted.com/talks/shohini_ghose_quantum_computing_explained_in_10_minutes). The math behind the game: [these charts](QuantumTheory-for-QuantumCoinGame.pdf).
 
