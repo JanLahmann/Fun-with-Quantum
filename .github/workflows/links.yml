@@ -2,8 +2,8 @@ name: Links
 
 # Every link in the README, in the notebooks' text and on the built portal must work — external
 # ones included. Weekly as well, since sites move. Links to fun-with-quantum.org are checked
-# against this build. Not checked: LinkedIn (blocks every bot) and doi.org (the publishers behind
-# it answer bots with 403; DOIs don't move).
+# against this build. Not checked: LinkedIn (blocks every bot), Medium (blocks GitHub's runners)
+# and doi.org (the publishers behind it answer bots with 403; DOIs don't move).
 on:
   pull_request:
     paths:
@@ -51,7 +51,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}   # higher GitHub rate limit
         run: >-
           lychee --no-progress --max-retries 3 --retry-wait-time 5 --accept '200..=299,429'
-          --exclude '^https://www\.linkedin\.com/' --exclude '^https://doi\.org/'
+          --exclude '^https://www\.linkedin\.com/' --exclude '^https://medium\.com/' --exclude '^https://doi\.org/'
           --root-dir "$PWD/portal/dist" --index-files index.html
           --remap "^https://fun-with-quantum\.org/(.*)\$ file://$PWD/portal/dist/\$1"
           README.md '*.ipynb.md' 'portal/dist/**/*.html'
