@@ -2,6 +2,7 @@
 title: Quantum Coin Game
 tagline: Beat a quantum computer at coin flipping — and find out why you never had a chance.
 concept: Superposition & interference
+shows: "superposition, interference"
 icon: "🪙"
 order: 1
 duration: ~20 min

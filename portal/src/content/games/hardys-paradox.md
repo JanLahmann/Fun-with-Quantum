@@ -2,6 +2,7 @@
 title: Hardy's Paradox
 tagline: Three facts that hold every time rule out one outcome — which happens anyway.
 concept: Nonlocality without inequalities
+shows: "three certain facts, one impossible outcome — that happens anyway"
 icon: "🌀"
 order: 5
 duration: ~20 min

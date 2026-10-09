@@ -1,4 +1,3 @@
 #!/bin/bash
-# Trust notebooks to enable RISE autolaunch
-jupyter trust Quantum-Coin-Game.ipynb
-jupyter trust Hardys-Paradox.ipynb
+# Trust the notebooks so that the slideshows (RISE autolaunch) and their widgets start without a prompt
+jupyter trust *.ipynb

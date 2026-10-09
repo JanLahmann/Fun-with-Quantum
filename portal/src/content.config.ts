@@ -7,6 +7,8 @@ const games = defineCollection({
     title: z.string(),
     tagline: z.string(),
     concept: z.string(),
+    // "What it shows" in the README's games table (tools/build_games_list.py)
+    shows: z.string(),
     icon: z.string(),
     order: z.number(),
     duration: z.string(),

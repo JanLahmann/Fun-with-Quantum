@@ -2,6 +2,7 @@
 title: 3-SAT with Grover's Algorithm
 tagline: Watch Grover's search find the needle in the haystack — in about √N steps instead of N.
 concept: Grover's search algorithm
+shows: "Grover search, Boolean satisfiability (3-SAT)"
 icon: "🧩"
 order: 7
 duration: ~15 min

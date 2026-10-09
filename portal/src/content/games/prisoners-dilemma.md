@@ -2,6 +2,7 @@
 title: The Quantum Prisoner's Dilemma
 tagline: Entanglement makes cooperation pay — for a restricted set of moves. Then comes the catch.
 concept: Quantum game theory
+shows: "quantum game theory — and its catch"
 icon: "🤝"
 order: 6
 duration: ~20 min

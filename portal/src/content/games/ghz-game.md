@@ -2,6 +2,7 @@
 title: GHZ Game
 tagline: A team game that no classical strategy wins every round — with entanglement, you always do.
 concept: Entanglement (GHZ states)
+shows: "entanglement"
 icon: "🔗"
 order: 2
 webGame: true

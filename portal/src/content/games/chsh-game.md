@@ -2,6 +2,7 @@
 title: The CHSH Game
 tagline: The Bell test behind the 2022 Nobel Prize — 75% for any classical team, 85.4% with entanglement.
 concept: Bell test, entanglement
+shows: "the Bell test: 85% with entanglement, 75% without"
 icon: "🔔"
 order: 3
 webGame: true
