@@ -24,6 +24,8 @@ npm run build    # static site in dist/
 | `src/components/ProjectRow.astro` | the one row layout used on Play, Build and Learn |
 | `src/data/family-manifest.ts` | reads `../family/family.json` for the family footer |
 | `src/data/highlights.ts` | family news for the homepage highlight box (`src/components/Highlights.astro`); empty list = no box |
+| `astro.config.mjs` | site config + a small build hook that writes `dist/sitemap.xml`: every page except 404, redirects and `noindex` pages (the previews join once launched) |
+| `public/robots.txt` | allows everything, points to the sitemap (previews stay crawlable so search engines see their `noindex`) |
 
 ## The Quantum Coin Game in the browser
 
