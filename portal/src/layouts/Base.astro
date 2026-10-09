@@ -11,15 +11,17 @@ interface Props {
   lang?: string;
   /** Other language versions of this page, for hreflang. */
   alternates?: { lang: string; href: string }[];
+  /** Social share image (path under public/); defaults to the site card. */
+  ogImage?: string;
 }
 
-const { title, description, noindex = false, lang = 'en', alternates = [] } = Astro.props;
+const { title, description, noindex = false, lang = 'en', alternates = [], ogImage = '/og-card.png' } = Astro.props;
 const nav = [
   { href: '/play/', label: 'Play' },
   { href: '/build/', label: 'Build' },
   { href: '/learn/', label: 'Learn' },
   { href: '/workshops/', label: 'Workshops' },
-  { href: '/#about', label: 'About' },
+  { href: '/about/', label: 'About' },
 ];
 const path = Astro.url.pathname;
 ---
@@ -40,7 +42,7 @@ const path = Astro.url.pathname;
     {alternates.map((a) => <link rel="alternate" hreflang={a.lang} href={new URL(a.href, Astro.site)} />)}
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={new URL('/og-card.png', Astro.site)} />
+    <meta property="og:image" content={new URL(ogImage, Astro.site)} />
     <meta property="og:type" content="website" />
     {!noindex && <meta property="og:url" content={new URL(path, Astro.site)} />}
     <meta name="twitter:card" content="summary_large_image" />
@@ -48,6 +50,7 @@ const path = Astro.url.pathname;
     <script defer src="https://cloud.umami.is/script.js" data-website-id="97f347ac-e7ba-4be3-b26f-ab4b328bdbf2" data-domains="fun-with-quantum.org"></script>
   </head>
   <body>
+    <a class="skip-link" href="#main">Skip to content</a>
     <header>
       <div class="wrap nav">
         <a class="brand" href="/">
@@ -66,7 +69,7 @@ const path = Astro.url.pathname;
       </div>
     </header>
 
-    <main>
+    <main id="main" tabindex="-1">
       <slot />
     </main>
 
@@ -74,7 +77,7 @@ const path = Astro.url.pathname;
       <div class="wrap">
         <FamilyFooter />
         <div class="fineprint">
-          <a href="https://github.com/JanLahmann/Fun-with-Quantum" target="_blank" rel="noopener">Source on GitHub</a>{' '}·{' '}<a href="https://quantego.biz" target="_blank" rel="noopener" data-umami-event="Portal: shop click" data-umami-event-host="quantego.biz">Shop</a>
+          <a href="https://github.com/JanLahmann/Fun-with-Quantum" target="_blank" rel="noopener">Source on GitHub</a>{' '}·{' '}<a href="/about/#privacy">Privacy</a>{' '}·{' '}<a href="https://quantego.biz" target="_blank" rel="noopener" data-umami-event="Portal: shop click" data-umami-event-host="quantego.biz">Shop</a>
         </div>
         <div class="fineprint disclaimer">
           Fun with Quantum is an independent educational project and is not affiliated with,

@@ -40,7 +40,6 @@ export default defineConfig({
   site,
   trailingSlash: 'ignore',
   redirects: {
-    '/about': '/#about',
     // the coin game left its unlisted preview (launched 2026-10)
     '/preview/coin-game': '/play/quantum-coin-game/',
     '/de/preview/coin-game': '/de/play/quantum-coin-game/',

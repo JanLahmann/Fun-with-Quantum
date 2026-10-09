@@ -18,6 +18,7 @@ Most events need **no JavaScript**: Umami's tracker records a click on any eleme
 | `Portal: notebook launch` | `target`, `image`, `notebook` | portal game pages |
 | `Portal: shop click` | `host` | portal footer |
 | `Portal: workshop request` | — | /workshops/ — "Request support" (opens the issue form) |
+| `Portal: hero click` | `target` (coin-game \| play) | homepage hero buttons "▶ Play in your browser" and "All games" |
 | `Portal: highlight click` | `id` (highlight), `target` | homepage highlight box (`portal/src/data/highlights.ts`) |
 | `Portal: coin game chapter` | `chapter` (1–5) | /play/quantum-coin-game/ — the browser game, chapter opened |
 | `Portal: coin game round` | `chapter`, `result` (you win \| computer wins), `starts` (you \| computer, chapters 1–2), `strategy` (chapter 4: your two moves) | a finished round |

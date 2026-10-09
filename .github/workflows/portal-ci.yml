@@ -38,6 +38,11 @@ jobs:
         run: npm run check
       - name: Build
         run: npm run build
+      # axe-core in Chromium, light and dark mode, every built page: fails on any WCAG 2.1 A/AA violation
+      - name: Accessibility (axe)
+        run: |
+          npx playwright install --with-deps chromium
+          npm run a11y
       - name: Install lychee (link checker)
         run: |
           v=0.24.2 f=lychee-x86_64-unknown-linux-gnu.tar.gz

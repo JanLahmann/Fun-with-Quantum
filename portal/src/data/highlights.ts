@@ -1,7 +1,7 @@
 /**
  * Family news for the homepage highlight box — the one place to edit.
  *
- * The homepage shows every entry, in this order, below the hero text
+ * The homepage shows every entry, in this order, below the three doors
  * (src/components/Highlights.astro). Delete an entry to take it down; an empty list shows no box.
  * Keep each one short: a badge, a title, one or two sentences, one or two links.
  *

@@ -21,7 +21,7 @@ const alternates = [
 ];
 ---
 
-<Base title={m.page.title} description={m.page.description} lang={m.lang} alternates={alternates}>
+<Base title={m.page.title} description={m.page.description} lang={m.lang} alternates={alternates} ogImage="/og/quantum-coin-game.png">
   <section class="section">
     <div class="wrap">
       <div class="top">
@@ -32,7 +32,7 @@ const alternates = [
           ))}
         </nav>
       </div>
-      <h2>🪙 {m.page.heading}</h2>
+      <h1>🪙 {m.page.heading}</h1>
       <p class="lead">{m.page.lead}</p>
       <CoinGame locale={locale} />
       <p class="lead">
