@@ -15,6 +15,6 @@ facts:
 ---
 
 Getting ready for the IBM Qiskit developer exam? CertiQ walks you from the official syllabus
-through curated IBM resources, drills and a full mock exam, with remediation per section. The
-answers are **proven, not guessed**: every code question is run at build time. An independent
+through curated IBM resources, drills and a full mock exam, and shows what to review in each
+section. The answers are **proven, not guessed**: every code question is run at build time. An independent
 community project, not affiliated with IBM.

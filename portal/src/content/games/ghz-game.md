@@ -20,7 +20,7 @@ communicating. The rules are set up so that the best classical team strategy win
 of the rounds. Sharing three **entangled qubits** in a GHZ state, your team wins **every single
 round**.
 
-This is not a trick and not statistics: it's a game-shaped version of the experiments that ruled
-out "hidden variables" as an explanation of quantum mechanics. The notebook walks you through
+This is not a trick and not statistics: it's a game version of the experiments that ruled
+out "local hidden variables" as an explanation of quantum mechanics. The notebook walks you through
 playing the game, building the GHZ state with a few gates, and checking that the quantum
 strategy really is unbeatable.

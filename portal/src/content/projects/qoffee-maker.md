@@ -14,5 +14,5 @@ facts:
 ---
 
 Build a quantum circuit whose measurement outcome decides which coffee the machine brews. Put
-the qubits in superposition and let physics choose your drink — the most caffeinated way ever
-devised to learn what a measurement is.
+the qubits in superposition and let physics choose your drink — a caffeinated way to learn what
+a measurement is.

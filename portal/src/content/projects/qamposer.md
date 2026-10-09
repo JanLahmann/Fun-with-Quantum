@@ -6,7 +6,7 @@ icon: "🧩"
 order: 5
 url: https://qamposer.org
 repoUrl: https://github.com/QAMP-62/qamposer-react
-ecosystemUrl: https://qisk.it/e-ebaeb5c2
+ecosystemUrl: https://www.ibm.com/quantum/ecosystem
 image: ../../assets/qamposer-site.jpg
 imageAlt: "qamposer.org — a modular quantum composer you can embed in your own applications"
 facts:

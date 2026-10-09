@@ -1,6 +1,6 @@
 ---
 title: 3-SAT with Grover's Algorithm
-tagline: Watch a quantum computer find the needle in the haystack — quadratically faster.
+tagline: Watch Grover's search find the needle in the haystack — in about √N steps instead of N.
 concept: Grover's search algorithm
 icon: "🧩"
 order: 7
@@ -14,10 +14,11 @@ notebook: 3sat.ipynb
 ---
 
 Satisfiability — finding an assignment of true/false values that makes a logical formula true —
-is the archetypal hard search problem. This notebook takes a party guest list and a small **3-SAT** instance and solves
-them with **Grover's algorithm**, the quantum search routine that finds a marked item among N
+is the classic example of a problem that is easy to check but hard to solve. This notebook takes
+a party guest-list puzzle and a small **3-SAT** problem and solves them with **Grover's algorithm**, the quantum search routine that finds a marked item among N
 possibilities in roughly √N steps instead of N.
 
 You'll see the problem encoded as a phase oracle, watch amplitude amplification concentrate
 probability on the solutions, and read the answer off a histogram. A small, clear
-example of a quantum algorithm beating brute-force search — in the number of oracle calls it needs.
+example of a quantum algorithm that needs fewer oracle calls than trying every assignment — though
+real SAT solvers are much smarter than brute force.

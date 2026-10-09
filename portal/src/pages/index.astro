@@ -32,7 +32,7 @@ const doors = [
     imgAlt: 'The Qoffee-Maker mug with a quantum circuit printed on it',
     fit: 'contain',
     title: 'Play',
-    text: 'Build circuits with your hands, order coffee with a circuit, steer a runner with quantum gates — and beat a quantum computer at coin flipping.',
+    text: 'Build circuits with your hands, order coffee with a circuit, steer a runner with quantum gates — and try to beat a quantum computer at coin flipping.',
     links: [...doorLinks('play'), { label: `${games.length} notebook games`, href: '/play/' }],
   },
   {
@@ -67,7 +67,7 @@ const doors = [
       <div class="hero-copy">
         <h1>Quantum computing you can <span class="hl-play">play</span>, <span class="hl-build">build</span> &amp; <span class="hl-learn">learn</span> — nothing to install.</h1>
         <p>
-          Quantum games, LEGO and 3D-printed quantum computers, and hands-on ways to learn.
+          Quantum games, LEGO and 3D-printed quantum computer models, and hands-on ways to learn.
           Open source, workshop-tested, built by the RasQberry community.
         </p>
         <Highlights />
@@ -76,7 +76,7 @@ const doors = [
         <a href="https://rasqberry.org" target="_blank" rel="noopener">
           <Image src={heroPhoto} alt="RasQberry Two — a 3D-printed model of IBM Quantum System Two with glowing LEDs" widths={[480, 760]} sizes="(max-width: 820px) 90vw, 520px" />
         </a>
-        <figcaption><a href="https://rasqberry.org" target="_blank" rel="noopener">RasQberry Two ↗</a> — 3D-printed at home, quantum inside</figcaption>
+        <figcaption><a href="https://rasqberry.org" target="_blank" rel="noopener">RasQberry Two ↗</a> — 3D-printed at home, Qiskit inside</figcaption>
       </figure>
     </div>
   </section>
@@ -109,7 +109,7 @@ const doors = [
         <div class="card door feature">
           <span class="badge cat-play">play · right here</span>
           <h3><a href={featured.data.webGame ? `/play/${featured.id}/#coin-game` : featured.data.binderUrl} {...(featured.data.webGame ? {} : { target: '_blank', rel: 'noopener' })}>{featured.data.icon} {featured.data.title} <span class="arrow">→</span></a></h3>
-          <p>The friendliest introduction to superposition — play it right in your browser, no account needed.</p>
+          <p>A gentle first look at superposition and interference — play it right in your browser, no account needed.</p>
           <Image class="feature-photo contain" src={quantumCoin} alt="The quantum coin — a Qiskit-logo coin, rendered in 3D" widths={[300, 600]} sizes="(max-width: 820px) 60vw, 300px" />
           <span class="meta">
             {featured.data.webGame
@@ -131,7 +131,7 @@ const doors = [
         <div class="card door feature">
           <span class="badge cat-learn">learn</span>
           <h3><a href="https://certiq.dev" target="_blank" rel="noopener">🎓 CertiQ <span class="arrow">→</span></a></h3>
-          <p>Get ready for the IBM Qiskit developer certification — guided path, drills, and a 68-question mock exam whose answers are run, not guessed.</p>
+          <p>Get ready for the IBM Qiskit developer certification — guided path, drills, and a 68-question mock exam. Every question with code is checked by running it.</p>
           <Image class="feature-photo top" src={certiqSite} alt="certiq.dev — Pass the Qiskit v2.x Developer certification" widths={[480, 760]} sizes="(max-width: 820px) 90vw, 340px" />
           <span class="meta">
             free · no account · works offline ·{' '}<a href="https://certiq.dev" target="_blank" rel="noopener">certiq.dev ↗</a>
@@ -141,7 +141,7 @@ const doors = [
 
       <div class="grid cols-3 try-grid">
         <div class="card">
-          <span class="badge cat-play">play · right here</span>
+          <span class="badge cat-play">play</span>
           <h3>Play Quantum Runner</h3>
           <p>Steer the runner with quantum gates — an H gate puts you in both lanes at once.</p>
           <a class="runner-link" href="https://qamposer.org/quantum-runner/" target="_blank" rel="noopener" title="Play Quantum Runner">
@@ -162,8 +162,8 @@ const doors = [
 
         <div class="card">
           <span class="badge cat-build">build</span>
-          <h3>Spin the models</h3>
-          <p>Quantego, the LEGO model of IBM Quantum System Two — drag to spin, live in 3D.</p>
+          <h3>Spin the model</h3>
+          <p>Quantego Two, a LEGO model of IBM Quantum System Two — drag to spin it in 3D.</p>
           <div class="model-wrap">
             <model-viewer
               src="https://quantego.org/assets/models/quantego-two.glb"
@@ -185,8 +185,8 @@ const doors = [
 
         <div class="card">
           <span class="badge cat-learn">learn · right here</span>
-          <h3>Launch any notebook</h3>
-          <p>Paste any GitHub repo or notebook URL and run it in one click — <strong>Qiskit comes preinstalled</strong>.</p>
+          <h3>Launch a notebook from GitHub</h3>
+          <p>Paste a link to a GitHub repository or notebook and run it in one click — <strong>Qiskit comes preinstalled</strong>.</p>
           <Image class="feature-photo top" src={qubinsSite} alt="qubins.org — prebuilt Qiskit environments with a one-click browser launch" widths={[480, 760]} sizes="(max-width: 820px) 90vw, 340px" />
           <form class="launch-form" id="launch-form">
             <input
@@ -200,7 +200,7 @@ const doors = [
             />
             <button class="btn primary" type="submit">Launch ▸</button>
           </form>
-          <div class="launch-hint" id="launch-hint" hidden>Use a github.com repository or .ipynb link.</div>
+          <div class="launch-hint" id="launch-hint" hidden>Use a github.com link to a repository or a notebook.</div>
           <p class="launch-example">
             or one click:{' '}<a href="https://qubins.org/launch/?image=latest-xl&file=https://raw.githubusercontent.com/Qiskit/documentation/main/learning/courses/use-a-qc-today/build-and-run-your-first-quantum-program.ipynb" target="_blank" rel="noopener"
                data-umami-event="Portal: notebook launch" data-umami-event-target="qubins" data-umami-event-image="latest-xl"
@@ -208,7 +208,7 @@ const doors = [
             <span class="launch-src">— from IBM's <em>Use a Quantum Computer Today</em> course</span>
           </p>
           <span class="meta">
-            powered by the{' '}<a href="https://qubins.org" target="_blank" rel="noopener">live QuBins launch generator ↗</a>
+            powered by the{' '}<a href="https://qubins.org" target="_blank" rel="noopener">QuBins launch-link generator ↗</a>
           </span>
         </div>
       </div>
@@ -222,9 +222,8 @@ const doors = [
       <div class="prose">
         <p>
           <em>Fun with Quantum</em> is the front door to a family of open-source quantum outreach
-          projects that grew over years of talks, workshops, and conference booths: quantum{' '}<a href="/play/">games</a>{' '}you play in the browser, quantum computer models you{' '}<a href="/build/">3D-print or build from LEGO</a>, and hands-on ways to{' '}<a href="/learn/">learn and teach</a>. Everything is open source, runs without
-          accounts or installs, and is tested on real audiences — from school classes to IEEE
-          conferences.
+          projects that grew over years of talks, workshops, and conference booths: quantum{' '}<a href="/play/">games</a>{' '}you play in the browser, quantum computer models you{' '}<a href="/build/">3D-print or build from LEGO</a>, and hands-on ways to{' '}<a href="/learn/">learn and teach</a>. Everything is open source and tested on real audiences, from school classes to IEEE
+          conferences, and most of it runs without accounts or installs.
         </p>
         <p>
           The family is built by <a href="https://www.linkedin.com/in/JanLahmann" target="_blank" rel="noopener">Jan-R.

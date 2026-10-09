@@ -19,13 +19,14 @@ webGame: true
 
 You and a quantum computer take turns flipping a coin — without looking at it. If it shows heads
 at the end, the quantum computer wins. Play a few rounds and you'll notice something unsettling:
-you lose. Almost every time.
+you lose. Every time.
 
 The trick is that the quantum computer doesn't flip the coin, it puts it into **superposition** —
-a state that is neither heads nor tails. Whatever you do on your turn, its second move uses
-**interference** to steer the coin back to heads with certainty. The game is the friendliest
-possible introduction to the two effects that make quantum computers tick.
+heads and tails at once. Whatever you do on your turn, its second move uses
+**interference** to steer the coin back to heads with certainty. The game is a gentle
+introduction to superposition and interference, two effects that quantum algorithms rely on.
 
-The notebook lets you play interactively, then lifts the curtain: you see the quantum circuit
-behind each move, run it on a simulator, and can modify the strategy to convince yourself there
-is no way to win.
+In the notebook, two players make the moves: first with ordinary coin moves only, then player A
+gets the quantum H move. You see the circuit for the moves, run it on a simulator, try your own
+gate sequences, and follow the short calculation that shows why A wins every time
+with two H moves.

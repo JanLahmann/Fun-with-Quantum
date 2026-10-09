@@ -11,15 +11,15 @@ const projects = (await getCollection('projects'))
 
 <Base
   title="Play — quantum games | Fun with Quantum"
-  description="Quantum games you play in the browser: beat a quantum computer at coin flipping, win an impossible team game with entanglement, build circuits with your hands on Entangible, steer Quantum Runner with gates, and order your coffee with a quantum circuit."
+  description="Quantum games you play in the browser: try to beat a quantum computer at coin flipping, use entanglement to win every round of a team game no classical team can always win, build circuits with your hands on Entangible, steer Quantum Runner with gates, and order your coffee with a quantum circuit."
 >
   <section class="section">
     <div class="wrap">
       <div class="kicker">Play</div>
       <h2>Games where quantum mechanics is the trick</h2>
       <p class="lead">
-        Nothing to install, no account — every game here runs in your browser. One of them
-        brews your coffee.
+        Nothing to install — these games run in your browser. One of them brews real coffee,
+        wherever a Qoffee-Maker is set up.
       </p>
 
       {projects.map((p) => <ProjectRow project={p} />)}
@@ -27,8 +27,8 @@ const projects = (await getCollection('projects'))
       <h2 class="games-title">The notebook games</h2>
       <p class="lead">
         Each game is an interactive Jupyter notebook — one click, no account. It opens a free
-        session on mybinder.org, so starting it can take a few minutes. Play first, then open
-        the curtain and see the circuit.
+        session on mybinder.org (via QuBins), so starting it can take a few minutes. Games marked ▶
+        also play right on their page. Play first, then pull back the curtain and see the circuit.
       </p>
       <div class="grid cols-2">
         {games.map((g) => (

@@ -17,7 +17,7 @@ Two cars leave a factory; far apart, two inspectors each check a car's color or 
 facts hold every single time, and by simple logic they rule out two diesel cars. Any classical
 spec sheets — even random ones — obey that logic: two diesels **0%** of the time.
 
-Quantum cars, two entangled qubits, keep all three facts and still come out both diesel 1 time
-in 12 — and up to **(5√5 − 11)/2 ≈ 9%** with the best measurement angle, the most two qubits
-allow. The notebook lets you try every spec sheet, builds the quantum factory in Qiskit, shows the
+Quantum cars, two entangled qubits, keep all three facts. Yet when both inspectors check the
+engine, both cars are diesel 1 time in 12 — and up to **(5√5 − 11)/2 ≈ 9%** with the best
+measurement angle, the most quantum mechanics allows. The notebook lets you try every spec sheet, builds the quantum factory in Qiskit, shows the
 faulty step in the logic ("unperformed experiments have no results") and finds the 9% maximum.
