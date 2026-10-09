@@ -36,6 +36,8 @@ jobs:
         run: npm test
       - name: Type check
         run: npm run check
+      - name: Every number in the texts is computed or listed (tools/check_numbers.py)
+        run: python3 ../tools/check_numbers.py
       - name: Build
         run: npm run build
       # axe-core in Chromium, light and dark mode, every built page: fails on any WCAG 2.1 A/AA violation
