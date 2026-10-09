@@ -40,6 +40,8 @@ jobs:
         run: python3 ../tools/check_numbers.py
       - name: Build
         run: npm run build
+      - name: Build the offline variant for RasQberry Two (dist-offline/)
+        run: PUBLIC_FWQ_OFFLINE=1 npm run build
       # axe-core in Chromium, light and dark mode, every built page: fails on any WCAG 2.1 A/AA violation
       - name: Accessibility (axe)
         run: |

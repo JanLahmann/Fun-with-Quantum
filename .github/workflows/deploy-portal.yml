@@ -46,7 +46,8 @@ jobs:
 
   # The same build, packed per commit for offline use: RasQberry Two downloads
   # the bundle of the commit it pins. Assets are kept, so a pinned commit
-  # stays downloadable.
+  # stays downloadable. Also the offline variant (src/data/offline.ts):
+  # browser games first, "online" labels, no analytics.
   bundle:
     needs: build
     if: github.ref == 'refs/heads/master'
@@ -54,27 +55,46 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v4   # first: checkout cleans the workspace
       - name: Download the built site
         uses: actions/download-artifact@v4
         with:
           name: github-pages
+          path: bundle-online
       - name: Pack fwq-portal-<commit>.tar.gz
         run: |
           name="fwq-portal-${GITHUB_SHA}.tar.gz"
           mkdir site
-          tar -xf artifact.tar -C site
+          tar -xf bundle-online/artifact.tar -C site
           test -f site/index.html
           tar -C site --owner=0 --group=0 -czf "$name" .
           sha256sum "$name" > "$name.sha256"
           cat "$name.sha256"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: portal/package-lock.json
+      - name: Build and pack the offline variant, fwq-portal-offline-<commit>.tar.gz
+        working-directory: portal
+        env:
+          PUBLIC_FWQ_OFFLINE: '1'
+        run: |
+          npm ci
+          npm run build
+          name="fwq-portal-offline-${GITHUB_SHA}.tar.gz"
+          test -f dist-offline/index.html
+          tar -C dist-offline --owner=0 --group=0 -czf "../$name" .
+          (cd .. && sha256sum "$name" > "$name.sha256" && cat "$name.sha256")
       - name: Attach to the portal-bundles release
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: |
           name="fwq-portal-${GITHUB_SHA}.tar.gz"
+          offline="fwq-portal-offline-${GITHUB_SHA}.tar.gz"
           gh release view portal-bundles >/dev/null 2>&1 ||
             gh release create portal-bundles --target "$GITHUB_SHA" --latest=false \
               --title "Portal bundles" \
               --notes "The built fun-with-quantum.org portal, one bundle per commit: fwq-portal-<commit>.tar.gz and its .sha256. Serve the unpacked folder at the root path. Used by RasQberry Two for offline use."
-          gh release upload portal-bundles "$name" "$name.sha256" --clobber
+          gh release upload portal-bundles "$name" "$name.sha256" "$offline" "$offline.sha256" --clobber

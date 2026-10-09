@@ -227,3 +227,10 @@ footer .disclaimer { margin-top: 14px; font-size: 0.72rem; max-width: 760px; }
 .prose h2 { font-size: 1.3rem; margin: 1.6em 0 0.5em; }
 .prose h3 { font-size: 1.1rem; margin: 1.4em 0 0.4em; }
 .prose code { font-family: var(--mono); font-size: 0.88em; background: var(--card); border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px; }
+
+/* offline build (RasQberry Two): label on links that need the internet */
+.online-tag {
+  display: inline-block; font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.06em;
+  text-transform: uppercase; padding: 0 5px; border: 1px solid currentColor; border-radius: 6px;
+  opacity: 0.75; vertical-align: 0.1em; text-decoration: none;
+}
