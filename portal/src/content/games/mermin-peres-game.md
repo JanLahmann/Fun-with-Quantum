@@ -19,4 +19,6 @@ pairs of entangled qubits, the quantum team **always** wins.
 The magic square is a clean demonstration of **contextuality**: measurement outcomes in
 quantum mechanics cannot be explained by a table of values written down in advance, independent of
 which other measurements are made alongside — the measurement's context. The notebook lets you
-try classical strategies first, then hands you the quantum one.
+try classical strategies first, then hands you the quantum one. An appendix plays the game on
+simulated copies of six IBM quantum computers, where noise costs the quantum team some rounds, and,
+with a free IBM Quantum account, on a real one.
