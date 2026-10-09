@@ -3,7 +3,7 @@ title: Hardy's Paradox
 tagline: Three facts that hold every time rule out one outcome — which happens anyway.
 concept: Nonlocality without inequalities
 icon: "🌀"
-order: 3
+order: 5
 duration: ~10 min
 audience: puzzle lovers
 # QuBins classic-RISE launch (2.1-xl-rise = nbclassic + classic RISE);

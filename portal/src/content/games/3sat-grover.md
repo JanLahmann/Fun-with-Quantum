@@ -3,7 +3,7 @@ title: 3-SAT with Grover's Algorithm
 tagline: Watch a quantum computer find the needle in the haystack — quadratically faster.
 concept: Grover's search algorithm
 icon: "🧩"
-order: 4
+order: 7
 duration: ~15 min
 audience: developers, students
 # QuBins classic-RISE launch (2.1-xl-rise = nbclassic + classic RISE);
@@ -19,5 +19,5 @@ them with **Grover's algorithm**, the quantum search routine that finds a marked
 possibilities in roughly √N steps instead of N.
 
 You'll see the problem encoded as a phase oracle, watch amplitude amplification concentrate
-probability on the solutions, and read the answer off a histogram. It's the clearest small
+probability on the solutions, and read the answer off a histogram. A small, clear
 example of a quantum algorithm beating brute-force search — in the number of oracle calls it needs.

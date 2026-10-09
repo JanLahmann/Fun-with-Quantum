@@ -60,9 +60,9 @@ export function doqLink(term: TermKey, locale: Locale): string {
   return `https://${host}/learning/${TERM_PAGES[term]}`;
 }
 
-/** URL of the (unlisted) game page in a locale. */
+/** URL of the game page in a locale (English: the notebook game's page, which embeds the game). */
 export function pagePath(locale: Locale): string {
-  return locale === 'en' ? '/preview/coin-game/' : `/${locale}/preview/coin-game/`;
+  return locale === 'en' ? '/play/quantum-coin-game/' : `/${locale}/play/quantum-coin-game/`;
 }
 
 const TERM_LINK = /\[([^\]]+)\]\(#([a-z]+)\)/g;

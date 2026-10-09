@@ -23,6 +23,8 @@ More games, and the family of projects around them: **[fun-with-quantum.org](htt
 ### 1. Quantum Coin Game
 A quantum coin game that illustrates the power of quantum superposition and interference — two players take turns turning a hidden coin or leaving it as it is, and the player who may also use a Hadamard gate can win every time. Implemented by Jan-R. Lahmann using Qiskit, binder and [RISE](https://rise.readthedocs.io/).
 
+**Play it right in your browser** — no Jupyter, in seven languages: [fun-with-quantum.org/play/quantum-coin-game](https://fun-with-quantum.org/play/quantum-coin-game/).
+
 Inspired by the TED talk of Shohini Ghose ["Quantum computing explained in 10 minutes"](https://www.ted.com/talks/shohini_ghose_quantum_computing_explained_in_10_minutes). The math behind the game: [these charts](QuantumTheory-for-QuantumCoinGame.pdf).
 
 Play it: [▶ Open on QuBins](https://qubins.org/launch/?image=2.1-xl-rise&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=Quantum-Coin-Game.ipynb&ui=rise-classic) · fallback: [Binder](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=Quantum-Coin-Game.ipynb) · [view the notebook](https://github.com/JanLahmann/Fun-with-Quantum/blob/master/Quantum-Coin-Game.ipynb)

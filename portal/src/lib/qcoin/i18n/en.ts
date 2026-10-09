@@ -5,9 +5,9 @@ const en: Messages = {
   langName: 'English',
 
   page: {
-    title: 'Quantum Coin Game — preview | Fun with Quantum',
+    title: 'Quantum Coin Game | Fun with Quantum',
     description: 'Play the Quantum Coin Game in your browser: beat a quantum computer at coin flipping — and find out why you never had a chance.',
-    kicker: 'Play · Superposition & interference · preview',
+    kicker: 'Play · Superposition & interference',
     heading: 'Quantum Coin Game',
     lead: 'Beat a quantum computer at coin flipping — and find out why you never had a chance.',
     notebook: 'The same game as a Jupyter notebook, in real Qiskit code:',

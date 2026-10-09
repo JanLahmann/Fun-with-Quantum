@@ -5,9 +5,9 @@ const fr: Messages = {
   langName: 'Français',
 
   page: {
-    title: 'Le jeu de la pièce quantique — aperçu | Fun with Quantum',
+    title: 'Le jeu de la pièce quantique | Fun with Quantum',
     description: 'Joue au jeu de la pièce quantique dans ton navigateur : bats un ordinateur quantique à pile ou face — et découvre pourquoi tu n’avais aucune chance.',
-    kicker: 'Jouer · Superposition et interférence · aperçu',
+    kicker: 'Jouer · Superposition et interférence',
     heading: 'Le jeu de la pièce quantique',
     lead: 'Bats un ordinateur quantique à pile ou face — et découvre pourquoi tu n’avais aucune chance.',
     notebook: 'Le même jeu sous forme de notebook Jupyter, avec du vrai code Qiskit :',

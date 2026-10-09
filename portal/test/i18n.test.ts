@@ -84,8 +84,8 @@ describe('explanations', () => {
   });
 
   it('page paths', () => {
-    expect(pagePath('en')).toBe('/preview/coin-game/');
-    expect(pagePath('ja')).toBe('/ja/preview/coin-game/');
+    expect(pagePath('en')).toBe('/play/quantum-coin-game/');
+    expect(pagePath('ja')).toBe('/ja/play/quantum-coin-game/');
   });
 });
 

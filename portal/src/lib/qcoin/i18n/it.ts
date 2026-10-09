@@ -5,9 +5,9 @@ const it: Messages = {
   langName: 'Italiano',
 
   page: {
-    title: 'Il gioco della moneta quantistica — anteprima | Fun with Quantum',
+    title: 'Il gioco della moneta quantistica | Fun with Quantum',
     description: 'Gioca nel browser al gioco della moneta quantistica: batti un computer quantistico a testa o croce — e scopri perché non avevi nessuna possibilità.',
-    kicker: 'Gioca · Sovrapposizione e interferenza · anteprima',
+    kicker: 'Gioca · Sovrapposizione e interferenza',
     heading: 'Il gioco della moneta quantistica',
     lead: 'Batti un computer quantistico a testa o croce — e scopri perché non avevi nessuna possibilità.',
     notebook: 'Lo stesso gioco come notebook Jupyter, con vero codice Qiskit:',
