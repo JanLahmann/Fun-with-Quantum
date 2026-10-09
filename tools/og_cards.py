@@ -1,7 +1,8 @@
 # Generates one social share card per game, portal/public/og/<slug>.png (1200×630), in the style of
 # portal/public/og-card.png: the dice mark on the left, the game's title, its concept, how it plays
 # (browser or notebook) and the site address.
-#   python3 tools/build_og_cards.py   (needs Pillow; uses macOS system fonts, Avenir Next and Menlo)
+#   python3 tools/og_cards.py   (needs Pillow; uses macOS system fonts, Avenir Next and Menlo)
+# Not named build_…: the notebook CI runs every tools/build_*.py on Linux, without these fonts.
 # Run it again when a game's title or concept changes; commit the PNGs.
 
 import pathlib
