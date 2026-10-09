@@ -44,6 +44,8 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install nbformat
+      - name: Every number in the texts is computed or listed (tools/check_numbers.py)
+        run: python tools/check_numbers.py
       - name: Rebuild every generated notebook and the games list
         run: for b in tools/build_*.py; do python "$b"; done
       - name: No difference to the committed files
