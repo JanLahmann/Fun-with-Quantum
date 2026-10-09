@@ -41,6 +41,7 @@ const launchVia = launchTarget === 'qubins' ? 'mybinder.org (via QuBins)' : laun
   title={`${game.data.title} | Fun with Quantum`}
   description={game.data.tagline}
   alternates={alternates}
+  ogImage={`/og/${game.id}.png`}
 >
   <section class="section">
     <div class="wrap">
@@ -54,7 +55,7 @@ const launchVia = launchTarget === 'qubins' ? 'mybinder.org (via QuBins)' : laun
           </nav>
         )}
       </div>
-      <h2>{game.data.icon} {game.data.title}</h2>
+      <h1>{game.data.icon} {game.data.title}</h1>
       <p class="lead">{game.data.tagline}</p>
 
       {WebGame && <WebGame />}

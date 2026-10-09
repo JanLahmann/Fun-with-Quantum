@@ -32,6 +32,9 @@ can never be seen together; in superposition, they can). A motion arc marks the 
 | Ink / arc | `#1C1D27` | `#E9EAF1` |
 | Paper | `#F6F7FA` | `#14151D` |
 
+The portal sets cyan *text* one shade darker, `#0C7693` (4.9:1 on paper, WCAG AA); the mark and
+the gradients keep `#0E7C9C`.
+
 ## Rules
 
 - Use `favicon.svg` (the simplified cut) below ~24 px; the full mark's six ghost pips blur at

@@ -50,8 +50,8 @@ const RIM_SEGMENTS = 44;
           <div class="qc-state" aria-live="polite"></div>
           <p class="qc-gatefx" aria-live="polite"></p>
         </div>
-        <figure class="qc-bloch" aria-label={m.ui.blochCaption}>
-          <svg viewBox="0 0 150 150" role="img">
+        <figure class="qc-bloch">
+          <svg viewBox="0 0 150 150" role="img" aria-label={m.ui.blochCaption}>
             <g class="sphere"></g>
             <g class="axisline"></g>
             <line class="vec" x1="75" y1="75" x2="75" y2="75"></line>
@@ -71,7 +71,7 @@ const RIM_SEGMENTS = 44;
         <button type="button" data-order="computer" aria-pressed="true">{m.ui.theComputer}</button>
         <button type="button" data-order="you" aria-pressed="false">{m.ui.you}</button>
       </div>
-      <div class="qc-circuit" aria-label={m.ui.circuitLabel}></div>
+      <div class="qc-circuit" role="region" aria-label={m.ui.circuitLabel} tabindex="0"></div>
       <p class="qc-status" aria-live="polite"></p>
       <div class="qc-actions"></div>
       <div class="qc-score" aria-live="polite"></div>

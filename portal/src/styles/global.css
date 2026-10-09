@@ -1,7 +1,7 @@
 /* Fun with Quantum — portal styles. Palette per brand/README.md */
 
 :root {
-  --cyan: #0E7C9C;
+  --cyan: #0C7693;   /* 4.9:1 on --paper (WCAG AA) */
   --magenta: #C22F6E;
   --ink: #1C1D27;
   --paper: #F6F7FA;
@@ -52,10 +52,25 @@ p, li, figcaption { font-family: var(--serif); }
 
 a { color: var(--cyan); text-decoration: none; }
 a:hover { text-decoration: underline; }
+/* links inside running text are underlined, not told apart by color alone (WCAG 1.4.1) */
+p a, li a, figcaption a, .meta a, .prose a, .alt a, footer .fineprint a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+p a.btn, li a.btn { text-decoration: none; }
+
+.skip-link {
+  position: absolute; left: 12px; top: -60px; z-index: 10;
+  padding: 10px 16px; border-radius: 8px;
+  background: var(--card); color: var(--ink); border: 2px solid var(--cyan);
+}
+.skip-link:focus { top: 12px; }
 
 .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
 
 h1, h2, h3 { line-height: 1.15; letter-spacing: -0.01em; }
+main:focus { outline: none; }
 
 .kicker {
   font-family: var(--mono);
@@ -67,26 +82,28 @@ h1, h2, h3 { line-height: 1.15; letter-spacing: -0.01em; }
 }
 
 .section { padding: 56px 0; }
-.section h2 { font-size: 1.7rem; margin-bottom: 8px; }
+.section h1, .section h2 { font-size: 1.7rem; margin-bottom: 8px; }
 .section > .wrap > p.lead { color: var(--muted); max-width: 620px; margin-bottom: 32px; }
 
 /* ---------- nav ---------- */
 .nav {
-  display: flex; align-items: center; gap: 28px;
-  padding: 14px 0;
+  display: flex; align-items: center; gap: 0 28px;
+  padding-block: 6px;   /* side padding comes from .wrap */
   flex-wrap: wrap;
 }
 @media (max-width: 600px) {
-  .nav { gap: 16px; }
+  .nav { gap: 0 16px; }
   .nav .brand { width: 100%; }
 }
 .nav .brand {
-  display: flex; align-items: center; gap: 10px;
+  display: flex; align-items: center; gap: 10px; min-height: 48px;
   font-weight: 700; font-size: 1.05rem; color: var(--ink);
   margin-right: auto;
 }
 .nav .brand:hover { text-decoration: none; }
 .nav .brand img { width: 34px; height: 34px; }
+/* 44 px tall tap targets */
+.nav a.item, .nav .ext { display: inline-flex; align-items: center; min-height: 44px; }
 .nav a.item { color: var(--ink); font-weight: 500; font-size: 0.95rem; }
 .nav a.item:hover { color: var(--cyan); text-decoration: none; }
 .nav a.item[aria-current="page"] {
@@ -118,6 +135,11 @@ h1, h2, h3 { line-height: 1.15; letter-spacing: -0.01em; }
   color: var(--muted);
 }
 .card .meta a { color: var(--cyan); position: relative; z-index: 1; }
+/* on touch screens, give the small links in card footers a taller tap area */
+@media (pointer: coarse) {
+  .card .meta { line-height: 2.6; }
+  .card .meta a { display: inline-block; padding-block: 6px; line-height: 1.6; }
+}
 a.card { color: inherit; transition: transform 0.12s ease, border-color 0.12s ease; }
 a.card:hover { text-decoration: none; transform: translateY(-2px); border-color: var(--cyan); }
 
@@ -196,7 +218,7 @@ footer .family .member small { display: block; font-size: 0.76rem; color: var(--
 footer .tag { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.16em; }
 footer .fineprint { margin-top: 18px; font-size: 0.78rem; }
 footer .fineprint a { color: var(--muted); }
-footer .disclaimer { margin-top: 14px; font-size: 0.72rem; opacity: 0.8; max-width: 760px; }
+footer .disclaimer { margin-top: 14px; font-size: 0.72rem; max-width: 760px; }
 
 /* ---------- prose (markdown bodies) ---------- */
 .prose { max-width: 680px; }
