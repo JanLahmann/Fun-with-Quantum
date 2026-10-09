@@ -3,6 +3,8 @@
 
 import nbformat as nbf
 
+from games import glance   # the "At a glance" box, from portal/src/content/games
+
 nb = nbf.v4.new_notebook()
 cells = []
 def md(src, slide='slide'):
@@ -23,6 +25,8 @@ Original notebook by David Drexlin & Jan-R. Lahmann (2021), rebuilt in 2026 with
 Part of [Fun with Quantum](https://fun-with-quantum.org).
 
 (hit space or right arrow to move to the next slide)""")
+md(glance('Mermin-Peres-Game.ipynb'), slide='-')   # on the title slide
+
 
 md("""## Usage instructions for the user interface
 

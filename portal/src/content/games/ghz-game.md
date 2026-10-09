@@ -8,6 +8,12 @@ order: 2
 webGame: true
 duration: ~40 min
 audience: curious minds, workshop groups
+level: Beginner
+prerequisites: "None; the last part uses vectors and matrices"
+goals:
+  - "Show that no pre-agreed answers win all four questions of the GHZ game"
+  - "Use a three-qubit GHZ state and color (X) and shape (Y) measurements to win every round"
+  - "Build the measurement circuits in Qiskit"
 # QuBins classic-RISE launch (2.1-xl-rise = nbclassic + classic RISE): the
 # only env where the slideshow AND the ipywidgets dropdowns (the actual
 # gameplay) both work — jupyterlab-rise doesn't render ipywidgets>=8

@@ -1,6 +1,7 @@
 # One games list for the whole repository: portal/src/content/games/*.md (title, order, shows,
 # notebook, binderUrl) is the source. This script
 #   - writes the games table in README.md (between the games-table markers) and the list in Readme.ipynb,
+#   - writes the "At a glance" box into the two notebooks without a builder (the builders add it themselves),
 #   - and checks that every other place uses the same name: the README section headings
 #     ("### <order>. <title>"), each notebook's first heading, and the browser-game strip
 #     (portal/src/components/BrowserGames.astro).
@@ -13,22 +14,13 @@ import sys
 
 import nbformat
 
+from games import load_games, glance
+
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 REPO = 'https://github.com/JanLahmann/Fun-with-Quantum'
 
 
-def front_matter(path):
-    fm = path.read_text().split('---')[1]
-    out = {}
-    for line in fm.splitlines():
-        m = re.match(r'^(\w+):\s*(.*)$', line)
-        if m:
-            out[m.group(1)] = m.group(2).strip().strip('"')
-    return out
-
-
-games = sorted((dict(front_matter(p), slug=p.stem) for p in (ROOT / 'portal/src/content/games').glob('*.md')),
-               key=lambda g: int(g['order']))
+games = load_games()
 errors = []
 
 
@@ -64,6 +56,17 @@ first = nb.cells[0]
 intro = first.source.split('\n1. ')[0].rstrip()
 first.source = intro + '\n\n' + '\n'.join(f"{i}. [{g['title']}](./{g['notebook']})" for i, g in enumerate(games, 1))
 nbformat.write(nb, index)
+
+# --- the "At a glance" box in the notebooks without a builder ---------------------------------
+for name in ['Quantum-Coin-Game.ipynb', 'GHZ-Game.ipynb']:
+    nb = nbformat.read(ROOT / name, as_version=4)
+    box = next((c for c in nb.cells if c.get('id') == 'at-a-glance'), None)
+    if box is None:
+        box = nbformat.v4.new_markdown_cell('', id='at-a-glance')
+        box.metadata['slideshow'] = {'slide_type': '-'}   # on the title slide
+        nb.cells.insert(1, box)
+    box.source = glance(name)
+    nbformat.write(nb, ROOT / name)
 
 # --- each notebook's first heading ---------------------------------------------------------------
 for g in games:

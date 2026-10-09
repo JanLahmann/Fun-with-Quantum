@@ -7,6 +7,12 @@ icon: "🤝"
 order: 6
 duration: ~20 min
 audience: students, game-theory fans
+level: Intermediate
+prerequisites: "None; game theory basics help"
+goals:
+  - "Explain the classical prisoner's dilemma and why both players defect"
+  - "See how entanglement makes cooperation pay when the players may only use a restricted set of moves"
+  - "Find the catch: with every one-qubit move allowed, every move has a counter — only random strategies are stable, worth 2.25 points each (between 1 and 3)"
 # RISE slideshow with ipywidgets, like the Coin and GHZ games → the classic-RISE image.
 binderUrl: https://qubins.org/launch/?image=2.1-xl-rise&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=Prisoners-Dilemma.ipynb&ui=rise-classic
 notebook: Prisoners-Dilemma.ipynb

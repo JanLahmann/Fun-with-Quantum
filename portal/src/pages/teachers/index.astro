@@ -1,0 +1,114 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+const games = (await getCollection('games')).sort((a, b) => a.data.order - b.data.order);
+const browser = games.filter((g) => g.data.webGame);
+---
+
+<Base
+  title="For teachers | Fun with Quantum"
+  description="A 45-minute quantum lesson with browser games: a plan, learning goals and level for every game, a printable handout, and a checklist for the day before."
+>
+  <section class="section">
+    <div class="wrap">
+      <div class="kicker">For teachers</div>
+      <h1>A quantum lesson in 45 minutes</h1>
+      <div class="prose">
+        <p>
+          The quickest way into quantum computing with a class: the{' '}<strong>browser games</strong>. They run on
+          any phone, tablet or laptop with a web browser — nothing to install, no accounts, no cookies,
+          no personal data, only anonymous visit counts (see{' '}<a href="/about/#privacy">privacy</a>). Thirty students can play at once.
+          The{' '}<a href="#games">Jupyter notebooks</a>{' '}behind the games are for older students who want to see the Qiskit code.
+        </p>
+        <p class="actions">
+          <a class="btn primary" href="/teachers/handout/">Printable handout ▸</a>
+        </p>
+
+        <h2 id="plan">Lesson plan</h2>
+        <p>No prior knowledge needed. Students play in pairs (coin game, CHSH) or in teams of three (GHZ).</p>
+        <table class="plan">
+          <thead><tr><th>Time</th><th>What happens</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>0–5 min</td>
+              <td><strong>Hook.</strong> On the projector: "Can you beat a computer at flipping a coin?" Play one round of the{' '}<a href="/play/quantum-coin-game/#coin-game">Quantum Coin Game</a>, chapter 1, with the class.</td>
+            </tr>
+            <tr>
+              <td>5–15 min</td>
+              <td><strong>Superposition.</strong> In pairs: Quantum Coin Game, chapters 1–3. Against the quantum computer everyone loses, every time, as long as the computer starts — chapter 3, "Look inside the box", shows why: the H gate puts the coin into superposition, and a second H brings it back to heads.</td>
+            </tr>
+            <tr>
+              <td>15–35 min</td>
+              <td><strong>Entanglement.</strong> The{' '}<a href="/play/ghz-game/">GHZ Game</a>{' '}in teams of three, or{' '}<a href="/play/chsh-game/">The CHSH Game</a>{' '}in teams of two. First the classical team: no strategy wins every round. Then the quantum team, sharing entangled qubits, does better than any classical team.</td>
+            </tr>
+            <tr>
+              <td>35–45 min</td>
+              <td><strong>Debrief</strong> with the questions below.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Questions for the debrief</h3>
+        <ul>
+          <li>The quantum computer won every round of the coin game. Was it cheating? What move does it have that you don't?</li>
+          <li>Did the quantum team talk to each other after the questions were asked? How can they do better than any team that only agreed on answers beforehand?</li>
+          <li>Real quantum computers make errors. What do you think happens to the quantum team's score on one? (Older students:{' '}<a href="/play/ghz-real-devices/">GHZ on Real Quantum Devices</a>.)</li>
+        </ul>
+
+        <h2 id="games">The games at a glance</h2>
+        <p>
+          {browser.length} games play right in the browser; all of them come as a Jupyter notebook with the Qiskit
+          code, which opens in a free online session (first start can take a few minutes). Times and goals are for the notebooks.
+        </p>
+      </div>
+
+      <div class="glance">
+        {games.map((g) => (
+          <article class="card">
+            <h3><a href={`/play/${g.id}/`}>{g.data.icon} {g.data.title}</a></h3>
+            <p class="meta">
+              {g.data.concept} · {g.data.duration} · level: {g.data.level.toLowerCase()}{g.data.webGame && ' · ▶ plays in the browser'}
+            </p>
+            <p class="pre"><em>Prerequisites:</em> {g.data.prerequisites}</p>
+            <p class="pre"><em>In the notebook you:</em></p>
+            <ul>
+              {g.data.goals.map((goal) => <li>{goal}</li>)}
+            </ul>
+          </article>
+        ))}
+      </div>
+
+      <div class="prose">
+        <h2 id="checklist">The day before</h2>
+        <ul>
+          <li>Open the games on the devices and the school network your class will use.</li>
+          <li>On the projector, zoom the browser (Ctrl + or ⌘ +) until the back row can read it.</li>
+          <li>Notebooks: start each one you plan to use once beforehand. For a whole class, prefer the browser games — thirty notebooks starting at the same moment can be slow.</li>
+          <li>Print the{' '}<a href="/teachers/handout/">handout</a>, one per pair.</li>
+        </ul>
+
+        <h2>Need help?</h2>
+        <p>
+          Planning a workshop, a project day or a booth? We help you prepare it, free —{' '}<a href="/workshops/">workshops &amp; events</a>.
+          Found a mistake or have an idea for a game? Open an issue on{' '}<a href="https://github.com/JanLahmann/Fun-with-Quantum/issues" target="_blank" rel="noopener">GitHub</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .actions { margin: 1.2em 0 0; }
+  .plan { width: 100%; border-collapse: collapse; margin: 0 0 1em; font-family: var(--serif); }
+  .plan th, .plan td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+  .plan th { font-family: var(--sans); font-size: 0.85rem; color: var(--muted); }
+  .plan td:first-child { white-space: nowrap; font-family: var(--mono); font-size: 0.85rem; }
+  .glance { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; margin: 8px 0 24px; }
+  .glance .card { gap: 6px; }
+  .glance h3 a { color: inherit; }
+  .glance .meta { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); flex-grow: 0; }
+  .glance .pre { font-size: 0.9rem; flex-grow: 0; }
+  .glance ul { margin: 0 0 0 1.1em; font-size: 0.9rem; color: var(--ink); }
+  .glance li { margin-bottom: 4px; }
+</style>

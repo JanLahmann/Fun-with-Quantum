@@ -8,6 +8,12 @@ order: 3
 webGame: true
 duration: ~25 min
 audience: students, curious minds
+level: Intermediate
+prerequisites: "Superposition (the Quantum Coin Game)"
+goals:
+  - "Work out why no classical team wins more than 75% of the rounds"
+  - "See how an entangled pair, measured at the right angles, wins 85.4%"
+  - "Connect the game to the Bell tests behind the 2022 Nobel Prize in Physics"
 # RISE slideshow with ipywidgets, like the Coin and GHZ games → the classic-RISE image.
 binderUrl: https://qubins.org/launch/?image=2.1-xl-rise&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=CHSH-Game.ipynb&ui=rise-classic
 notebook: CHSH-Game.ipynb

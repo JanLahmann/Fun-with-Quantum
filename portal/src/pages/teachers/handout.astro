@@ -1,0 +1,63 @@
+---
+import Base from '../../layouts/Base.astro';
+---
+
+<Base
+  title="Handout: quantum games | Fun with Quantum"
+  description="A one-page handout for students: three quantum browser games, their rules, and what to find out."
+>
+  <section class="section handout">
+    <div class="wrap">
+      <p class="screen-only"><a href="/teachers/">← For teachers</a> · <button type="button" class="btn ghost" onclick="window.print()">Print</button></p>
+      <h1>Quantum games — play along</h1>
+      <p class="lead">All three games run in a web browser at <strong>fun-with-quantum.org/play</strong>. No app, no account.</p>
+
+      <div class="game">
+        <h2>1 · Quantum Coin Game <span class="url">fun-with-quantum.org/play/quantum-coin-game</span></h2>
+        <p>A coin is hidden in a box and starts on <strong>heads</strong>. The computer moves, then you, then the computer again. Each move is <em>flip it</em> or <em>leave it</em>, and nobody sees the other's moves. <strong>Tails: you win. Heads: the computer wins.</strong></p>
+        <p class="task">Play 5 rounds against the <em>quantum</em> computer (chapter 2). Rounds you won: ______ of 5.</p>
+        <p class="task">What move does the quantum computer have that you don't? (chapter 3)</p>
+        <div class="line"></div><div class="line"></div>
+      </div>
+
+      <div class="game">
+        <h2>2 · GHZ Game <span class="url">fun-with-quantum.org/play/ghz-game</span> <span class="team">teams of 3</span></h2>
+        <p>Each player is asked for a <b>color</b> (red or blue) or a <b>shape</b> (star or rectangle) — either all three for the color, or one for the color and two for the shape. No talking once the questions are asked. The team wins if an <b>even</b> number say <b>red</b> (all asked for the color), or an <b>odd</b> number say <b>red or star</b> (one color, two shapes).</p>
+        <p class="task">Best classical team: wins ______ of the 4 questions. &nbsp; Quantum team: wins ______ of the 4.</p>
+      </div>
+
+      <div class="game">
+        <h2>3 · The CHSH Game <span class="url">fun-with-quantum.org/play/chsh-game</span> <span class="team">teams of 2</span></h2>
+        <p>Alice gets a random bit x, Bob a random bit y, in separate rooms. Each answers with a bit. They win with the <b>same answer</b> — unless both got a 1; then they need <b>different answers</b>.</p>
+        <p class="task">Best classical team: wins ______ % of the rounds. &nbsp; Quantum team: ______ %.</p>
+      </div>
+
+      <div class="game">
+        <h2>Think about it</h2>
+        <p class="task">The quantum teams never talk after the questions. How can they still beat every classical team?</p>
+        <div class="line"></div><div class="line"></div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .handout h1 { font-size: 1.7rem; margin-bottom: 6px; }
+  .handout .lead { color: var(--muted); margin-bottom: 18px; }
+  .game { border-top: 1px solid var(--line); padding: 14px 0 6px; max-width: 760px; }
+  .game h2 { font-size: 1.1rem; margin-bottom: 6px; }
+  .game .url { font-family: var(--mono); font-size: 0.75rem; font-weight: 400; color: var(--cyan); margin-left: 8px; }
+  .game .team { font-family: var(--mono); font-size: 0.72rem; font-weight: 400; color: var(--muted); margin-left: 8px; }
+  .game p { margin-bottom: 8px; font-size: 0.95rem; }
+  .task { font-weight: 600; }
+  .line { height: 28px; border-bottom: 1px solid var(--muted); }
+  .line + .line { margin-bottom: 10px; }
+  .screen-only .btn { padding: 4px 12px; font: inherit; cursor: pointer; background: transparent; margin-left: 6px; }
+  @media print {
+    :global(header), :global(footer), :global(.skip-link), .screen-only { display: none !important; }
+    :global(body) { background: #fff; color: #000; }
+    .section { padding: 0; }
+    .game .url { color: #000; }
+    .line { border-color: #999; }
+  }
+</style>
