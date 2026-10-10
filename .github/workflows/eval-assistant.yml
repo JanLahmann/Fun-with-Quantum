@@ -1,0 +1,39 @@
+name: Eval assistant
+
+# Runs the eval set (assistant/evals/*.jsonl) against the deployed Worker and puts the full
+# report — every question and answer, with the checks — into the job summary. Run by hand,
+# after a deploy or a prompt change. Costs one Claude call per case.
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: Worker URL (https://fwq-assistant.<account>.workers.dev)
+        required: true
+      only:
+        description: Run just this case id (optional)
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: assistant
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Run the eval set
+        env:
+          URL: ${{ inputs.url }}
+          ONLY: ${{ inputs.only }}
+        run: |
+          args=(--url "$URL" --out "$RUNNER_TEMP/report.md")
+          [ -n "$ONLY" ] && args+=(--only "$ONLY")
+          status=0; node evals/run.mjs "${args[@]}" || status=$?
+          cat "$RUNNER_TEMP/report.md" >> "$GITHUB_STEP_SUMMARY"
+          exit $status

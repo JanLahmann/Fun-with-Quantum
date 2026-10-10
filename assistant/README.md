@@ -52,7 +52,27 @@ npm run check     # tsc
 npx wrangler deploy --dry-run --outdir /tmp/worker   # validates wrangler.toml, no account needed
 ```
 
+## Knowledge and evals
+
+The coin-game knowledge (`src/contexts/coin-game.knowledge.ts`) is built from the game itself:
+its English glossary, its learning-link table, and probabilities computed with its simulator in
+`portal/src/lib/qcoin` — so the assistant and the game can't drift apart. `test/knowledge.test.ts`
+pins the key numbers.
+
+`evals/coin-game.jsonl` holds the eval cases (spoiler rule in chapter 2, languages, off-topic,
+prompt injection, honest "don't know", links, history). `node evals/run.mjs --url <worker>` runs
+them with heuristic checks and prints every answer for a human read; the **Eval assistant**
+workflow does the same from the Actions tab. Eval questions are logged like any other.
+
 ## Set up (Jan, once)
+
+From a phone, no wrangler needed: create a Cloudflare account, an API token (template *Edit
+Cloudflare Workers* plus *Account · D1 · Edit*), and add the repository secrets
+`CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `ANTHROPIC_API_KEY`. Then run **Deploy
+assistant** in the Actions tab: it creates the D1 database on the first run, applies migrations,
+deploys and stores the API key as a Worker secret. The Worker URL is in the run's summary.
+
+Or from a Mac:
 
 ```sh
 npx wrangler login

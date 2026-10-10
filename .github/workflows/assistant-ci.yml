@@ -6,11 +6,13 @@ on:
   pull_request:
     paths:
       - 'assistant/**'
+      - 'portal/src/lib/qcoin/**' # the coin-game knowledge is built from the game's own code
       - '.github/workflows/assistant-ci.yml'
   push:
     branches: [master]
     paths:
       - 'assistant/**'
+      - 'portal/src/lib/qcoin/**'
       - '.github/workflows/assistant-ci.yml'
   workflow_dispatch:
 
