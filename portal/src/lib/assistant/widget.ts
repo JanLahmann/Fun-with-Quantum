@@ -52,6 +52,22 @@ export function mountAssistant(root: HTMLElement): void {
     return el.querySelector<HTMLElement>('.fa-body')!;
   }
 
+  /**
+   * Keep the growing answer in view while it streams: inside the chat log, follow the end of
+   * the answer until it no longer fits, then hold its first line at the top; on the page,
+   * scroll down as far as needed to show it, but never past its start.
+   */
+  function follow(msg: HTMLElement) {
+    const logBox = log.getBoundingClientRect();
+    const box = msg.getBoundingClientRect();
+    if (box.height <= log.clientHeight) log.scrollTop = log.scrollHeight;
+    else log.scrollTop += box.top - logBox.top;
+    const view = log.getBoundingClientRect();
+    const below = Math.min(view.bottom, msg.getBoundingClientRect().bottom) + 12 - window.innerHeight;
+    const roomAbove = msg.getBoundingClientRect().top - 12;
+    if (below > 0 && roomAbove > 0) window.scrollBy({ top: Math.min(below, roomAbove) });
+  }
+
   function feedback(after: HTMLElement, id: string) {
     const row = document.createElement('div');
     row.className = 'fa-vote';
@@ -97,10 +113,11 @@ export function mountAssistant(root: HTMLElement): void {
         return;
       }
       for await (const { event, data } of readEvents(res.body)) {
-        if (event === 'delta') { answer += data.t; body.innerHTML = renderAnswer(answer); }
+        if (event === 'delta') { answer += data.t; body.innerHTML = renderAnswer(answer); follow(body.parentElement!); }
         else if (event === 'done') {
           history.push({ role: 'user', content: question }, { role: 'assistant', content: answer });
           if (typeof data.id === 'string') feedback(body.parentElement!, data.id);
+          follow(body.parentElement!);
         } else if (event === 'error') fail(t.errNetwork);
       }
     } catch (err) {
