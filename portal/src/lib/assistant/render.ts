@@ -27,12 +27,13 @@ export function renderAnswer(text: string): string {
 
 /** Parses the Worker's SSE stream: `delta` {t}, then `done` {id} or `error` {error}. */
 export async function* readEvents(body: ReadableStream<Uint8Array>): AsyncGenerator<{ event: string; data: any }> {
-  const reader = body.pipeThrough(new TextDecoderStream()).getReader();
+  const reader = body.getReader();
+  const decoder = new TextDecoder();
   let buf = '';
   try {
     for (;;) {
       const { value, done } = await reader.read();
-      if (value) buf = (buf + value).replace(/\r\n/g, '\n');
+      if (value) buf = (buf + decoder.decode(value, { stream: true })).replace(/\r\n/g, '\n');
       let cut: number;
       while ((cut = buf.indexOf('\n\n')) >= 0) {
         const block = buf.slice(0, cut);
