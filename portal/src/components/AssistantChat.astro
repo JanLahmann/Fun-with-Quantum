@@ -1,0 +1,88 @@
+---
+/**
+ * "Ask the explainer": the chat widget under a game. Built only when PUBLIC_FWQ_ASSISTANT_URL
+ * is set and never in the offline build. Shown to everyone once PUBLIC_FWQ_ASSISTANT_PUBLIC=1;
+ * until then only with ?assistant=1 in the address (for testing on the live site).
+ * Logic: src/lib/assistant/; server: assistant/ (Cloudflare Worker).
+ */
+import { OFFLINE } from '../data/offline';
+import { ASSISTANT_TEXTS } from '../lib/assistant/i18n';
+import type { Locale } from '../lib/qcoin/i18n';
+
+interface Props {
+  context: string;
+  locale?: Locale;
+}
+const { context, locale = 'en' } = Astro.props;
+const url = import.meta.env.PUBLIC_FWQ_ASSISTANT_URL ?? '';
+const isPublic = import.meta.env.PUBLIC_FWQ_ASSISTANT_PUBLIC === '1';
+const t = ASSISTANT_TEXTS[locale];
+const id = `fa-${context}`;
+---
+{url && !OFFLINE && (
+  <section class="fwq-assist" aria-label={t.title} data-url={url} data-site="fwq" data-context={context} data-locale={locale} data-public={isPublic ? '1' : undefined} hidden>
+    <button type="button" class="fa-open" aria-expanded="false" aria-controls={`${id}-panel`}>💬 {t.open}</button>
+    <div class="fa-panel" id={`${id}-panel`} hidden>
+      <h3>{t.title}</h3>
+      <p class="fa-intro">{t.intro}</p>
+      <p class="fa-privacy">{t.privacy} <a href="/about/#privacy">{t.privacyLink}</a></p>
+      <div class="fa-log" aria-live="polite"></div>
+      <form>
+        <label class="fa-sr" for={`${id}-q`}>{t.placeholder}</label>
+        <textarea id={`${id}-q`} rows="2" maxlength="1000" placeholder={t.placeholder}></textarea>
+        <button type="submit">{t.send}</button>
+      </form>
+    </div>
+  </section>
+)}
+
+<script>
+  import { mountAssistant } from '../lib/assistant/widget';
+  for (const root of document.querySelectorAll<HTMLElement>('.fwq-assist')) {
+    if (root.dataset.public === '1' || new URLSearchParams(location.search).get('assistant') === '1') {
+      root.hidden = false;
+      mountAssistant(root);
+    }
+  }
+</script>
+
+<style>
+  .fwq-assist { margin: -20px 0 36px; }
+  .fa-open {
+    font: 600 0.9rem var(--sans); color: var(--cyan); background: var(--card); border: 1px solid var(--cyan);
+    border-radius: 20px; padding: 8px 16px; cursor: pointer;
+  }
+  .fa-open:hover { background: color-mix(in srgb, var(--cyan) 10%, var(--card)); }
+  .fa-panel {
+    margin-top: 12px; background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+    box-shadow: var(--shadow); padding: 16px 20px 18px; max-width: 760px;
+  }
+  .fa-panel h3 { font-size: 1.05rem; margin-bottom: 4px; }
+  .fa-intro { color: var(--ink); font-size: 0.92rem; margin-bottom: 6px; }
+  .fa-privacy { color: var(--muted); font-size: 0.78rem; margin-bottom: 12px; }
+  .fa-log { display: flex; flex-direction: column; gap: 10px; max-height: 420px; overflow-y: auto; margin-bottom: 12px; }
+  .fa-log:empty { display: none; }
+  .fa-log :global(.fa-msg) { font-size: 0.93rem; line-height: 1.5; }
+  .fa-log :global(.fa-who) { display: block; font: 600 0.7rem var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
+  .fa-log :global(.fa-you .fa-body) { color: var(--ink); }
+  .fa-log :global(.fa-bot .fa-body) { border-left: 3px solid var(--magenta); padding-left: 10px; }
+  .fa-log :global(.fa-body p + p) { margin-top: 6px; }
+  .fa-log :global(.fa-body a) { color: var(--cyan); word-break: break-all; }
+  .fa-log :global(.fa-thinking) { color: var(--muted); font-style: italic; }
+  .fa-log :global(.fa-error) { color: var(--magenta); }
+  .fa-log :global(.fa-vote) { display: flex; gap: 6px; align-items: center; font-size: 0.8rem; color: var(--muted); padding-left: 13px; }
+  .fa-log :global(.fa-vote button) { background: transparent; border: 1px solid var(--line); border-radius: 8px; padding: 2px 8px; cursor: pointer; font-size: 0.9rem; }
+  .fa-log :global(.fa-vote button:hover) { border-color: var(--cyan); }
+  form { display: flex; gap: 8px; align-items: flex-end; }
+  textarea {
+    flex: 1; font: 0.95rem var(--sans); color: var(--ink); background: var(--paper); border: 1px solid var(--line);
+    border-radius: 10px; padding: 8px 10px; resize: vertical; min-height: 44px;
+  }
+  textarea:focus { outline: 2px solid var(--cyan); outline-offset: 1px; }
+  button[type='submit'] {
+    font: 600 0.9rem var(--sans); color: var(--card); background: var(--cyan); border: 0; border-radius: 10px; padding: 10px 16px; cursor: pointer;
+  }
+  button[type='submit']:disabled { opacity: 0.6; cursor: wait; }
+  .fa-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  @media (max-width: 480px) { .fa-panel { padding: 14px; } form { flex-direction: column; align-items: stretch; } }
+</style>

@@ -1,0 +1,112 @@
+/**
+ * The assistant chat widget: question in, streamed answer out, thumbs under each answer.
+ * Markup comes from AssistantChat.astro; the live state from state.ts. Talks only to the
+ * Worker in data-url (assistant/ in this repo), which holds the API key.
+ */
+import { ASSISTANT_TEXTS, type AssistantTexts } from './i18n';
+import { isLocale } from '../qcoin/i18n';
+import { readEvents, renderAnswer } from './render';
+import { currentState } from './state';
+
+/** Question/answer pairs kept for follow-up questions (the Worker uses the last 5–10). */
+const KEEP_TURNS = 10;
+
+declare global {
+  interface Window { umami?: { track: (name: string, data?: Record<string, string | number>) => void } }
+}
+const track = (name: string, data?: Record<string, string | number>) => { try { window.umami?.track(name, data); } catch { /* best effort */ } };
+
+export function mountAssistant(root: HTMLElement): void {
+  const url = (root.dataset.url ?? '').replace(/\/$/, '');
+  const site = root.dataset.site ?? 'fwq';
+  const context = root.dataset.context ?? '';
+  const lang = root.dataset.locale ?? 'en';
+  const t: AssistantTexts = ASSISTANT_TEXTS[isLocale(lang) ? lang : 'en'];
+  const openBtn = root.querySelector<HTMLButtonElement>('.fa-open')!;
+  const panel = root.querySelector<HTMLElement>('.fa-panel')!;
+  const log = root.querySelector<HTMLElement>('.fa-log')!;
+  const form = root.querySelector<HTMLFormElement>('form')!;
+  const input = form.querySelector<HTMLTextAreaElement>('textarea')!;
+  const send = form.querySelector<HTMLButtonElement>('button[type=submit]')!;
+
+  const history: { role: 'user' | 'assistant'; content: string }[] = [];
+  let busy: AbortController | null = null;
+
+  openBtn.addEventListener('click', () => {
+    const open = panel.hidden;
+    panel.hidden = !open;
+    openBtn.setAttribute('aria-expanded', String(open));
+    if (open) { input.focus(); track('Portal: assistant open', { context }); }
+  });
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); form.requestSubmit(); }
+  });
+
+  function bubble(who: 'you' | 'bot', html: string): HTMLElement {
+    const el = document.createElement('div');
+    el.className = `fa-msg fa-${who}`;
+    el.innerHTML = `<span class="fa-who">${who === 'you' ? t.you : t.explainer}</span><div class="fa-body">${html}</div>`;
+    log.append(el);
+    el.scrollIntoView({ block: 'nearest' });
+    return el.querySelector<HTMLElement>('.fa-body')!;
+  }
+
+  function feedback(after: HTMLElement, id: string) {
+    const row = document.createElement('div');
+    row.className = 'fa-vote';
+    for (const [vote, label, icon] of [[1, t.helpful, '👍'], [-1, t.notHelpful, '👎']] as const) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = icon;
+      b.setAttribute('aria-label', label);
+      b.title = label;
+      b.addEventListener('click', () => {
+        row.textContent = t.thanks;
+        track('Portal: assistant vote', { context, vote: vote === 1 ? 'up' : 'down' });
+        fetch(`${url}/feedback`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, vote }) }).catch(() => {});
+      });
+      row.append(b);
+    }
+    after.after(row);
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const question = input.value.trim();
+    if (!question) return;
+    busy?.abort();
+    const ctrl = new AbortController();
+    busy = ctrl;
+    input.value = '';
+    send.disabled = true;
+    bubble('you', renderAnswer(question));
+    const body = bubble('bot', `<p class="fa-thinking">${t.thinking}</p>`);
+    track('Portal: assistant ask', { context });
+    let answer = '';
+    const fail = (msg: string) => { body.innerHTML = `<p class="fa-error">${msg}</p>`; };
+    try {
+      const res = await fetch(`${url}/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ site, context, locale: lang, question, state: currentState(context), history: history.slice(-2 * KEEP_TURNS) }),
+        signal: ctrl.signal,
+      });
+      if (!res.ok || !res.body) {
+        fail(res.status === 429 ? t.errRate : res.status === 503 ? t.errBusy : t.errNetwork);
+        return;
+      }
+      for await (const { event, data } of readEvents(res.body)) {
+        if (event === 'delta') { answer += data.t; body.innerHTML = renderAnswer(answer); }
+        else if (event === 'done') {
+          history.push({ role: 'user', content: question }, { role: 'assistant', content: answer });
+          if (typeof data.id === 'string') feedback(body.parentElement!, data.id);
+        } else if (event === 'error') fail(t.errNetwork);
+      }
+    } catch (err) {
+      if (!ctrl.signal.aborted) fail(t.errNetwork);
+    } finally {
+      if (busy === ctrl) { busy = null; send.disabled = false; }
+    }
+  });
+}

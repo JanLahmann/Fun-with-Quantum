@@ -191,6 +191,23 @@ class CoinView {
 
 interface Slot { gate: GateName | '?' | null; who: string; active?: boolean; secret?: boolean }
 
+/**
+ * What the player can see right now, for the assistant widget: never more. Moves the player
+ * hasn't seen (the quantum computer's in chapter 2) are '?', and while the coin is in the box
+ * there are no probabilities.
+ */
+export interface CoinSnapshot {
+  game: 'quantum-coin-game';
+  chapter: Chapter;
+  starter?: 'computer' | 'you';
+  you?: Player;
+  lastRound?: { moves: (GateName | '?')[]; outcome: 'heads' | 'tails'; winner: Player; youWin: boolean };
+  score?: Score;
+  sandbox?: GateName[];
+  lastAction: string;
+  facts?: { pHeads: number; stateLabel?: string };
+}
+
 export function mountCoinGame(root: HTMLElement) {
   const $ = <T extends HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
   const lang = root.dataset.locale ?? 'en';
@@ -205,6 +222,8 @@ export function mountCoinGame(root: HTMLElement) {
   let epoch = 0;
   const scores: Record<Chapter, Score> = { 1: emptyScore(), 2: emptyScore(), 3: emptyScore(), 4: emptyScore(), 5: emptyScore(), 6: emptyScore() };
   let lastQuantumRound: GateName = 'X'; // your move in the last chapter-2 round, replayed in chapter 3
+  /** Per-chapter facts for the assistant's snapshot; reset on every chapter change. */
+  let seen: { lastRound?: CoinSnapshot['lastRound']; sandbox?: GateName[]; you?: Player; lastAction: string } = { lastAction: 'chapter-open' };
 
   const guardFor = (e: number) => () => { if (e !== epoch) throw new Abort(); };
   const wait = (ms: number, e: number) => new Promise<void>((res, rej) =>
@@ -362,6 +381,7 @@ export function mountCoinGame(root: HTMLElement) {
     const winner: Player = outcome === 'heads' ? 'A' : 'B';
     const youWin = winner === you;
     scores[ch] = tally(scores[ch], you, winner);
+    seen = { you, lastRound: { moves: slots.map((s) => s.gate ?? '?'), outcome, winner, youWin }, lastAction: 'round-finished' };
     if (ch === 2 && you === 'B') lastQuantumRound = moves[1];
     track('Portal: coin game round', { chapter: ch, result: youWin ? 'you win' : 'computer wins', starts: you === 'A' ? 'you' : 'computer' });
     return { youWin, outcome };
@@ -451,6 +471,7 @@ export function mountCoinGame(root: HTMLElement) {
       await ask(e, [{ label: m.ch3.nextComputer, value: 1, kind: 'primary' }]);
 
       slots[0].active = true; circuit(slots);
+      seen = { lastAction: 'step' };
       await animateGate('H', e);
       say(m.ch3.afterH);
       math(m.ch3.mathH);
@@ -519,6 +540,7 @@ export function mountCoinGame(root: HTMLElement) {
       slots[1].gate = b; circuit(slots);
       const youWin = outcome === 'heads';
       scores[4] = tally(scores[4], 'A', youWin ? 'A' : 'B');
+      seen = { you: 'A', lastRound: { moves: [a1, b, a2], outcome, winner: youWin ? 'A' : 'B', youWin }, lastAction: 'round-finished' };
       track('Portal: coin game round', { chapter: 4, result: youWin ? 'you win' : 'computer wins', strategy: a1 + a2 });
       if (!youWin) losses++;
       const sure = a1 === 'H' && a2 === 'H';
@@ -555,6 +577,7 @@ export function mountCoinGame(root: HTMLElement) {
         { label: m.ch5.reset, value: 'reset' as const },
       ].filter((o) => !(full && typeof o.value === 'string' && o.value.length === 1)),
       `<a href="https://qubins.org/launch/?image=2.1-xl-rise&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=Quantum-Coin-Game.ipynb&ui=rise-classic" target="_blank" rel="noopener" data-umami-event="Portal: notebook launch" data-umami-event-target="qubins" data-umami-event-image="2.1-xl-rise" data-umami-event-notebook="Quantum-Coin-Game.ipynb">${m.ch5.notebook}</a>`);
+      seen = { sandbox: gates, lastAction: typeof choice === 'string' && choice.length > 1 ? choice : 'gate' };
       if (choice === 'reset') { gates.length = 0; resetCoin(); draw(); say(m.ch5.backToHeads); scoreEl.textContent = ''; continue; }
       if (choice === 'undo') {
         gates.pop(); resetCoin();
@@ -568,6 +591,7 @@ export function mountCoinGame(root: HTMLElement) {
         continue;
       }
       if (choice === 'measure') {
+        seen = { lastAction: 'measured' };
         const outcome = await reveal(e);
         say(m.ch5.measured(sideName(outcome)));
         gates.length = 0; draw();
@@ -596,6 +620,7 @@ export function mountCoinGame(root: HTMLElement) {
       ]);
       actions.innerHTML = '';
       last = choice;
+      seen = { lastAction: choice === 'I' ? 'math-leave' : 'math-flip' };
       resetCoin();
       setText(m.ch6.intro + (choice === 'I' ? m.ch6.caseLeave : m.ch6.caseFlip) + m.ch6.conclusion);
       say('');
@@ -675,6 +700,7 @@ export function mountCoinGame(root: HTMLElement) {
   function go(ch: Chapter, initial = false) {
     const e = ++epoch;
     current = ch;
+    seen = { lastAction: 'chapter-open' };
     paintTabs(ch);
     paintOrder(ch);
     actions.innerHTML = ''; scoreEl.textContent = ''; say('');
@@ -685,6 +711,21 @@ export function mountCoinGame(root: HTMLElement) {
   tabs.forEach((t) => t.addEventListener('click', () => go(Number(t.dataset.chapter) as Chapter)));
   window.addEventListener('resize', () => coin.render());
   go(1, true);
+
+  function snapshot(): CoinSnapshot {
+    const snap: CoinSnapshot = { game: 'quantum-coin-game', chapter: current, lastAction: seen.lastAction };
+    if (current === 1 || current === 2) { snap.starter = starter[current]; snap.you = youSeat(current); }
+    if (current === 4) snap.you = 'A';
+    if (seen.lastRound) snap.lastRound = { ...seen.lastRound, moves: [...seen.lastRound.moves] };
+    if (scores[current].rounds) snap.score = { ...scores[current] };
+    if (current === 5 && seen.sandbox) snap.sandbox = [...seen.sandbox];
+    if (!root.classList.contains('covered')) {
+      const lbl = stateLabel(state);
+      snap.facts = { pHeads: pHeads(state), ...(lbl ? { stateLabel: lbl } : {}) };
+    }
+    return snap;
+  }
+  return { snapshot };
 }
 
 function describe(s: State, lbl: string | null, m: Messages): string {

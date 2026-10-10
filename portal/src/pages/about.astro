@@ -28,7 +28,8 @@ import Base from '../layouts/Base.astro';
         <h2 id="privacy">Privacy</h2>
         <p>
           This site has no accounts, no sign-up and no cookies. The browser games run entirely in your
-          browser; nothing you do in them is sent anywhere, apart from the anonymous counts below.
+          browser; nothing you do in them is sent anywhere, apart from the anonymous counts below and
+          the questions you choose to ask the explainer.
         </p>
         <ul>
           <li>
@@ -37,6 +38,16 @@ import Base from '../layouts/Base.astro';
             cookieless analytics service. Umami sets no cookies and does not identify you; it records the
             page, the site you came from, and coarse facts such as browser, operating system, device type,
             language and country.
+          </li>
+          <li>
+            <strong>The explainer.</strong> Under some games you can ask questions in a chat (“Ask the
+            explainer”). Only when you send a question, it goes together with the visible game state
+            (chapter, moves, score) and the page language through our server at Cloudflare to Anthropic,
+            whose Claude model writes the answer (see Anthropic's{' '}<a href="https://www.anthropic.com/legal/privacy" target="_blank" rel="noopener">privacy policy</a>).
+            We store the question, the answer, the game state and your thumbs up or down for 30 days to
+            improve the explainer, then delete them. We store no IP address and no cookie with them; to
+            limit requests, the server counts questions per day under a pseudonym derived from your IP
+            address that changes every day. Please don't enter personal data.
           </li>
           <li>
             <strong>Hosting.</strong> The site is served by GitHub Pages; GitHub processes your IP address to
