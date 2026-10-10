@@ -29,6 +29,11 @@ jobs:
         uses: actions/checkout@v4
       - name: Build with Astro
         uses: withastro/action@v3
+        env:
+          # The explainer chat (assistant/): repository variables, not secrets. No URL = no widget;
+          # FWQ_ASSISTANT_PUBLIC=1 shows it to everyone, otherwise only with ?assistant=1.
+          PUBLIC_FWQ_ASSISTANT_URL: ${{ vars.FWQ_ASSISTANT_URL }}
+          PUBLIC_FWQ_ASSISTANT_PUBLIC: ${{ vars.FWQ_ASSISTANT_PUBLIC }}
         with:
           path: ./portal
           node-version: 24

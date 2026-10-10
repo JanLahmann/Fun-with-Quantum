@@ -5,6 +5,7 @@
  * The coin's 3D orientation is the qubit's Bloch vector: flat = heads/tails, on its edge = superposition.
  */
 import { MESSAGES, type Locale } from '../lib/qcoin/i18n';
+import AssistantChat from './AssistantChat.astro';
 
 interface Props {
   locale?: Locale;
@@ -83,11 +84,13 @@ const RIM_SEGMENTS = 44;
   </dialog>
   <noscript><p class="qc-noscript">{m.ui.noscript}</p></noscript>
 </section>
+<AssistantChat context="coin-game" locale={locale} />
 
 <script>
   import { mountCoinGame } from '../lib/qcoin/ui';
+  import { registerState } from '../lib/assistant/state';
   const root = document.getElementById('coin-game');
-  if (root) mountCoinGame(root);
+  if (root) registerState('coin-game', mountCoinGame(root).snapshot);
 </script>
 
 <style>
