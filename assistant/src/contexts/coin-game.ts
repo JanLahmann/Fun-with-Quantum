@@ -7,6 +7,25 @@ const oneOf = <T extends string>(v: unknown, values: readonly T[]): v is T => ty
 const gates = (v: unknown, max: number): string[] | null =>
   Array.isArray(v) && v.length <= max && v.every((g) => typeof g === 'string' && GATES.has(g)) ? (v as string[]) : null;
 
+/** Rounds of the current chapter the widget may send (oldest first). */
+export const ROUND_LOG = 10;
+
+function score(v: unknown): Record<string, number> | null {
+  const sc = v as Record<string, unknown> | null | undefined;
+  return sc && typeof sc === 'object' && isInt(sc.you, 0, 1e5) && isInt(sc.computer, 0, 1e5) && isInt(sc.rounds, 0, 1e5)
+    ? { you: sc.you, computer: sc.computer, rounds: sc.rounds }
+    : null;
+}
+
+function round(v: unknown): Record<string, unknown> | null {
+  const x = v as Record<string, unknown> | null | undefined;
+  if (!x || typeof x !== 'object') return null;
+  const moves = gates(x.moves, 3);
+  if (!moves || moves.length !== 3 || !oneOf(x.you, ['A', 'B'] as const) || !oneOf(x.outcome, ['heads', 'tails'] as const)
+    || !oneOf(x.winner, ['A', 'B'] as const) || typeof x.youWin !== 'boolean') return null;
+  return { you: x.you, moves, outcome: x.outcome, winner: x.winner, youWin: x.youWin };
+}
+
 /**
  * The Quantum Coin Game's live state, as the widget sends it. Only what the player can see:
  * in chapter 2 the quantum computer's moves arrive as '?' and stay hidden.
@@ -26,9 +45,20 @@ function state(raw: unknown): Record<string, unknown> | null {
       out.lastRound = { moves, outcome: lr.outcome, winner: lr.winner, youWin: lr.youWin };
     }
   }
-  const sc = r.score as Record<string, unknown> | undefined;
-  if (sc && typeof sc === 'object' && isInt(sc.you, 0, 1e5) && isInt(sc.computer, 0, 1e5) && isInt(sc.rounds, 0, 1e5)) {
-    out.score = { you: sc.you, computer: sc.computer, rounds: sc.rounds };
+  if (Array.isArray(r.rounds)) {
+    const rounds = r.rounds.slice(-ROUND_LOG).map(round).filter((x) => x !== null);
+    if (rounds.length) out.rounds = rounds;
+  }
+  const sc = score(r.score);
+  if (sc) out.score = sc;
+  const os = r.otherScores as Record<string, unknown> | undefined;
+  if (os && typeof os === 'object') {
+    const others: Record<string, unknown> = {};
+    for (const ch of ['1', '2', '3', '4', '5', '6']) {
+      const v = Object.hasOwn(os, ch) ? score(os[ch]) : null;
+      if (v && Number(ch) !== r.chapter) others[ch] = v;
+    }
+    if (Object.keys(others).length) out.otherScores = others;
   }
   const sandbox = gates(r.sandbox, 8);
   if (sandbox && !sandbox.includes('?')) out.sandbox = sandbox;
