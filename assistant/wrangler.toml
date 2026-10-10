@@ -1,0 +1,35 @@
+# The runtime assistant: one Worker in front of the Claude Messages API for every site that
+# embeds the chat widget. The API key is a Worker secret (wrangler secret put ANTHROPIC_API_KEY)
+# and never reaches a browser.
+name = "fwq-assistant"
+main = "src/index.ts"
+compatibility_date = "2026-10-01"
+
+[vars]
+ALLOWED_ORIGINS = "https://fun-with-quantum.org,http://localhost:4321"
+MODEL = "claude-sonnet-5-5"
+MAX_TOKENS = "600"
+# Question/answer pairs sent along as conversation history (code caps it at 10).
+MAX_HISTORY_TURNS = "5"
+# Requests per visitor per UTC day, and for everyone together (a cost backstop next to the
+# spend limit in the Anthropic console).
+DAILY_VISITOR_LIMIT = "50"
+DAILY_GLOBAL_LIMIT = "2000"
+# Logged questions and answers are deleted after this many days.
+RETENTION_DAYS = "30"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "fwq-assistant"
+database_id = "00000000-0000-0000-0000-000000000000" # replace with the id from `wrangler d1 create fwq-assistant`
+migrations_dir = "migrations"
+
+# Burst limit per visitor: 10 requests a minute.
+[[ratelimits]]
+name = "RL"
+namespace_id = "1001"
+simple = { limit = 10, period = 60 }
+
+# Daily clean-up: drops logs older than RETENTION_DAYS and old quota counters.
+[triggers]
+crons = ["17 3 * * *"]
