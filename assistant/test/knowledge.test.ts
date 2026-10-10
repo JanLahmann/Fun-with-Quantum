@@ -36,3 +36,14 @@ describe('coin-game knowledge', () => {
     expect(KNOWLEDGE.length).toBeGreaterThan(4 * 1024 * 2);
   });
 });
+
+describe('coin-game labels', () => {
+  it('lists the exact button words in every language', async () => {
+    const { MESSAGES, LOCALES } = await import('../../portal/src/lib/qcoin/i18n');
+    for (const l of LOCALES) {
+      expect(KNOWLEDGE).toContain(`- ${l}: chapters: 1 ${MESSAGES[l].ui.chapters[0]}`);
+      expect(KNOWLEDGE).toContain(MESSAGES[l].ch2.swapToYou);
+    }
+    expect(KNOWLEDGE).toContain('Lass mich anfangen');
+  });
+});

@@ -8,7 +8,7 @@
  */
 import { aWinProbability, CLASSICAL_MOVES } from '../../../portal/src/lib/qcoin/game';
 import en from '../../../portal/src/lib/qcoin/i18n/en';
-import { TERM_PAGES, type TermKey } from '../../../portal/src/lib/qcoin/i18n';
+import { LOCALES, MESSAGES, TERM_PAGES, type TermKey } from '../../../portal/src/lib/qcoin/i18n';
 import { HEADS, pHeads, run, type GateName } from '../../../portal/src/lib/qcoin/qubit';
 
 const pct = (p: number) => `${Math.round(p * 1000) / 10}%`;
@@ -51,6 +51,23 @@ const LINK_TOPICS: [TermKey, string][] = [
 ];
 const links = LINK_TOPICS.map(([k, what]) => `- ${what}: ${TERM_PAGES[k]}`).join('\n');
 
+/** The words on the game's buttons and tabs in every language, so the assistant quotes them exactly. */
+const strip = (x: string) => x.replace(/\s*[→▸]\s*$/, '').trim();
+const labels = LOCALES.map((l) => {
+  const m = MESSAGES[l];
+  const items: [string, string][] = [
+    ['chapters', m.ui.chapters.map((c, i) => `${i + 1} ${c}`).join(' / ')],
+    ['moves', `${m.round.flipIt} / ${m.round.leaveIt}`],
+    ['play again', m.round.playAgain],
+    ['who starts', `${m.ui.whoStarts} ${m.ui.theComputer} / ${m.ui.you}`],
+    ['chapter 2 buttons', [m.ch2.peekComputerFirst, m.ch2.peekYouFirst, m.ch2.swapToYou, m.ch2.swapToComputer].map(strip).join(' / ')],
+    ['chapter 4 moves', `${m.ch4.moveFlip} / ${m.ch4.moveLeave} / ${m.ch4.moveH}`],
+    ['chapter 5 buttons', [m.ch5.measure, m.ch5.measureMany, m.ch5.undo, m.ch5.reset].join(' / ')],
+    ['explanations', m.ui.explain],
+  ];
+  return `- ${l}: ${items.map(([k, v]) => `${k}: ${v}`).join('; ')}`;
+}).join('\n');
+
 export const KNOWLEDGE = `# Quantum Coin Game — what you know
 
 ## The game
@@ -81,6 +98,10 @@ Use only these. IBM Quantum Learning: https://quantum.cloud.ibm.com/learning/<la
 ${links}
 The notebook version: https://github.com/JanLahmann/Fun-with-Quantum (Quantum-Coin-Game.ipynb).
 
+## The game's own words
+When you mention a button, tab or chapter, quote its label exactly as below, in the player's language (page_language, or the language of the question). Never translate a label yourself.
+${labels}
+
 ## The game state you receive
 With each question you get <game_state> as JSON, exactly what the player can see:
 - chapter: 1–6 (see above). starter: "computer" or "you" (chapters 1–2). you: "A" or "B", the player's seat.
@@ -94,7 +115,7 @@ Fields may be missing. Use the numbers given; don't recompute them differently.
 ## Don't spoil chapter 2
 The game's story is that the player first loses again and again in chapter 2 and then discovers the trick in chapter 3. So, while the state says chapter 1 or 2:
 - Don't explain the trick: that the quantum computer plays H on both of its moves, before and after the player's move, and why that forces heads.
-- The player may already know the name H: the Explain panel (open in every chapter) calls H the quantum computer's secret move, and when the player starts, the game itself says the computer's H can't steer anything from the middle. So you may name H and say what it does to a single coin (stands it on its edge), and confirm what the player quotes from the game — just not how two H's around the player's move win.
+- Don't bring up H yourself. Only if the player asks about H or quotes the game (the Explain panel calls H the quantum computer's secret move; when the player starts, chapter 2 says the computer's H can't steer anything), confirm it and say what H does to a single coin (stands it on its edge) — just not how two H's around the player's move win.
 - Do confirm what the player can see (e.g. heads every time, the score), say that it is not luck, and give a nudge: what could a coin do that is neither heads nor tails? Why might it matter who moves first and last? Suggest trying "Let me start instead" and then "Look inside" (chapter 3), where the box comes off.
 - If the player clearly asks for the solution anyway ("just tell me"), say that chapter 3 shows it step by step, and then explain it briefly.
 From chapter 3 on, explain everything freely.
