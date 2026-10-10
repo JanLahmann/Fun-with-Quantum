@@ -37,4 +37,5 @@ jobs:
           [ -n "$ONLY" ] && args+=(--only "$ONLY")
           status=0; node evals/run.mjs "${args[@]}" || status=$?
           cat "$RUNNER_TEMP/report.md" >> "$GITHUB_STEP_SUMMARY"
+          cat "$RUNNER_TEMP/report.md" # also in the log, readable with `gh run view --log`
           exit $status
