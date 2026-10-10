@@ -202,7 +202,11 @@ export interface CoinSnapshot {
   starter?: 'computer' | 'you';
   you?: Player;
   lastRound?: { moves: (GateName | '?')[]; outcome: 'heads' | 'tails'; winner: Player; youWin: boolean };
+  /** This chapter's last rounds, oldest first (at most ROUND_LOG), each with the player's seat. */
+  rounds?: { you: Player; moves: (GateName | '?')[]; outcome: 'heads' | 'tails'; winner: Player; youWin: boolean }[];
   score?: Score;
+  /** Scores of the other chapters played so far. */
+  otherScores?: Partial<Record<Chapter, Score>>;
   sandbox?: GateName[];
   lastAction: string;
   facts?: { pHeads: number; stateLabel?: string };
@@ -224,6 +228,13 @@ export function mountCoinGame(root: HTMLElement) {
   let lastQuantumRound: GateName = 'X'; // your move in the last chapter-2 round, replayed in chapter 3
   /** Per-chapter facts for the assistant's snapshot; reset on every chapter change. */
   let seen: { lastRound?: CoinSnapshot['lastRound']; sandbox?: GateName[]; you?: Player; lastAction: string } = { lastAction: 'chapter-open' };
+  /** Rounds per chapter for the assistant (what the player saw), kept across chapter changes. */
+  const ROUND_LOG = 10;
+  const roundLog: Record<Chapter, NonNullable<CoinSnapshot['rounds']>> = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] };
+  const logRound = (ch: Chapter, you: Player, r: NonNullable<CoinSnapshot['lastRound']>) => {
+    roundLog[ch].push({ you, ...r, moves: [...r.moves] });
+    if (roundLog[ch].length > ROUND_LOG) roundLog[ch].shift();
+  };
 
   const guardFor = (e: number) => () => { if (e !== epoch) throw new Abort(); };
   const wait = (ms: number, e: number) => new Promise<void>((res, rej) =>
@@ -382,6 +393,7 @@ export function mountCoinGame(root: HTMLElement) {
     const youWin = winner === you;
     scores[ch] = tally(scores[ch], you, winner);
     seen = { you, lastRound: { moves: slots.map((s) => s.gate ?? '?'), outcome, winner, youWin }, lastAction: 'round-finished' };
+    logRound(ch, you, seen.lastRound!);
     if (ch === 2 && you === 'B') lastQuantumRound = moves[1];
     track('Portal: coin game round', { chapter: ch, result: youWin ? 'you win' : 'computer wins', starts: you === 'A' ? 'you' : 'computer' });
     return { youWin, outcome };
@@ -449,6 +461,7 @@ export function mountCoinGame(root: HTMLElement) {
     if (starter[ch] === who) return;
     starter[ch] = who;
     scores[ch] = emptyScore(); // a different game: start counting afresh
+    roundLog[ch] = [];
     track('Portal: coin game order', { chapter: ch, starts: who });
     go(ch);
   }
@@ -541,6 +554,7 @@ export function mountCoinGame(root: HTMLElement) {
       const youWin = outcome === 'heads';
       scores[4] = tally(scores[4], 'A', youWin ? 'A' : 'B');
       seen = { you: 'A', lastRound: { moves: [a1, b, a2], outcome, winner: youWin ? 'A' : 'B', youWin }, lastAction: 'round-finished' };
+      logRound(4, 'A', seen.lastRound!);
       track('Portal: coin game round', { chapter: 4, result: youWin ? 'you win' : 'computer wins', strategy: a1 + a2 });
       if (!youWin) losses++;
       const sure = a1 === 'H' && a2 === 'H';
@@ -717,7 +731,10 @@ export function mountCoinGame(root: HTMLElement) {
     if (current === 1 || current === 2) { snap.starter = starter[current]; snap.you = youSeat(current); }
     if (current === 4) snap.you = 'A';
     if (seen.lastRound) snap.lastRound = { ...seen.lastRound, moves: [...seen.lastRound.moves] };
+    if (roundLog[current].length) snap.rounds = roundLog[current].map((r) => ({ ...r, moves: [...r.moves] }));
     if (scores[current].rounds) snap.score = { ...scores[current] };
+    const others = ([1, 2, 3, 4, 5, 6] as Chapter[]).filter((c) => c !== current && scores[c].rounds);
+    if (others.length) snap.otherScores = Object.fromEntries(others.map((c) => [c, { ...scores[c] }]));
     if (current === 5 && seen.sandbox) snap.sandbox = [...seen.sandbox];
     if (!root.classList.contains('covered')) {
       const lbl = stateLabel(state);
