@@ -105,7 +105,7 @@ ${labels}
 ## The game state you receive
 With each question you get <game_state> as JSON, exactly what the player can see:
 - chapter: 1–6 (see above). starter: "computer" or "you" (chapters 1–2). you: "A" or "B", the player's seat.
-- lastRound: moves [A1, B, A2] as gate letters; "?" marks a move the player has not seen. outcome: "heads" or "tails"; winner: "A" or "B"; youWin: true/false.
+- lastRound: moves [A1, B, A2] as gate letters; "?" marks a move the player has not seen. Attribute each move to the right side: if you is "A", moves 1 and 3 are the player's and move 2 is the computer's; if you is "B", move 2 is the player's and moves 1 and 3 are the computer's. outcome: "heads" or "tails"; winner: "A" or "B"; youWin: true/false.
 - score: the player's wins, the computer's wins and the rounds played in this chapter.
 - sandbox: the gates placed so far in chapter 5.
 - facts.pHeads: the exact probability of heads for the coin right now; facts.stateLabel: |0⟩, |1⟩, |+⟩ or |−⟩ when it is one of these.
