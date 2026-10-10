@@ -5,7 +5,9 @@
  *   node evals/run.mjs --url https://fwq-assistant.<account>.workers.dev [--only <id>] [--file evals/coin-game.jsonl]
  *
  * Each case: question + state (+ history) and heuristic checks — `any`/`any2` (each list needs
- * one match), `none` (no match allowed), `lang` (the answer's language). The checks catch
+ * one match), `none` (no match allowed), `lang` (the answer's language). Patterns are
+ * case-insensitive Unicode regexes; a leading "=" makes one case-sensitive (e.g. the gate H:
+ * `=(?<!\p{L})H(?!\p{L})`, since \b doesn't know ä or ö). The checks catch
  * regressions; every answer is printed in full for a human read as well. Requests are paced
  * (7 s apart) to stay under the Worker's burst limit of 10 a minute.
  */
@@ -27,6 +29,14 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function ask(c) {
   const t0 = Date.now();
+  try {
+    return await askOnce(c, t0);
+  } catch (e) {
+    return { error: `request failed: ${e instanceof Error ? e.message : String(e)}`, ms: Date.now() - t0 };
+  }
+}
+
+async function askOnce(c, t0) {
   const res = await fetch(`${url.replace(/\/$/, '')}/chat`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Origin: origin },
@@ -47,7 +57,7 @@ async function ask(c) {
 
 function check(c, answer) {
   const fails = [];
-  const re = (s) => new RegExp(s, 'is');
+  const re = (s) => (s.startsWith('=') ? new RegExp(s.slice(1), 'su') : new RegExp(s, 'isu'));
   for (const key of ['any', 'any2']) if (c[key] && !c[key].some((p) => re(p).test(answer))) fails.push(`${key}: none of ${c[key].join(' | ')}`);
   for (const p of c.none ?? []) if (re(p).test(answer)) fails.push(`none: matched ${p}`);
   if (c.lang && !LANG[c.lang].test(answer)) fails.push(`lang: not ${c.lang}`);

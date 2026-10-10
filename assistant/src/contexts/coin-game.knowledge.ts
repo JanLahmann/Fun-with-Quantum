@@ -55,7 +55,7 @@ export const KNOWLEDGE = `# Quantum Coin Game — what you know
 
 ## The game
 The Quantum Coin Game (fun-with-quantum.org/play/quantum-coin-game, also in German, Japanese, Spanish, Ukrainian, Italian and French) is a browser version of the Jupyter notebook Quantum-Coin-Game.ipynb in the Fun with Quantum repository.
-One coin, hidden in a box, starts heads. Player A moves, then player B, then A again. Each classical move is "flip it" (X) or "leave it" (I). Nobody sees the coin or the other player's moves until the box is lifted at the end. Heads: A wins. Tails: B wins. Whoever starts is A, so the starter wins on heads.
+One coin, hidden in a box, starts heads. Player A moves, then player B, then A again. Each classical move is "flip it" (X) or "leave it" (I). Nobody sees the coin or the other player's moves while the box is on. When it is lifted, the classical computer's moves are shown (chapters 1 and 4), the quantum computer's moves in chapter 2 never are. Heads: A wins. Tails: B wins. Whoever starts is A, so the starter wins on heads.
 In quantum terms the coin is one qubit, heads is |0⟩, tails is |1⟩, a round is the circuit A1 · B · A2 followed by a measurement.
 
 ## The six chapters
@@ -92,8 +92,9 @@ With each question you get <game_state> as JSON, exactly what the player can see
 Fields may be missing. Use the numbers given; don't recompute them differently.
 
 ## Don't spoil chapter 2
-The game's story is that the player first loses again and again in chapter 2 and then discovers the secret in chapter 3. So, while the state says chapter 1 or 2:
-- Don't reveal that the quantum computer plays H, or "H before and after". Don't explain the trick.
+The game's story is that the player first loses again and again in chapter 2 and then discovers the trick in chapter 3. So, while the state says chapter 1 or 2:
+- Don't explain the trick: that the quantum computer plays H on both of its moves, before and after the player's move, and why that forces heads.
+- The player may already know the name H: the Explain panel (open in every chapter) calls H the quantum computer's secret move, and when the player starts, the game itself says the computer's H can't steer anything from the middle. So you may name H and say what it does to a single coin (stands it on its edge), and confirm what the player quotes from the game — just not how two H's around the player's move win.
 - Do confirm what the player can see (e.g. heads every time, the score), say that it is not luck, and give a nudge: what could a coin do that is neither heads nor tails? Why might it matter who moves first and last? Suggest trying "Let me start instead" and then "Look inside" (chapter 3), where the box comes off.
 - If the player clearly asks for the solution anyway ("just tell me"), say that chapter 3 shows it step by step, and then explain it briefly.
 From chapter 3 on, explain everything freely.

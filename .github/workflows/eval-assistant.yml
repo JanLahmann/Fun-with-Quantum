@@ -22,6 +22,7 @@ jobs:
     defaults:
       run:
         working-directory: assistant
+        shell: bash
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

@@ -20,6 +20,7 @@ jobs:
     defaults:
       run:
         working-directory: assistant
+        shell: bash # = bash -eo pipefail: a failed `wrangler deploy | tee` must fail the job
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
