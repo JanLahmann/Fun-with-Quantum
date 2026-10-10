@@ -1,0 +1,39 @@
+name: Assistant CI
+
+# Tests and type check for the runtime assistant Worker (assistant/), and a dry-run bundle
+# that validates wrangler.toml. Deploying stays manual (wrangler deploy) for now.
+on:
+  pull_request:
+    paths:
+      - 'assistant/**'
+      - '.github/workflows/assistant-ci.yml'
+  push:
+    branches: [master]
+    paths:
+      - 'assistant/**'
+      - '.github/workflows/assistant-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: assistant
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: assistant/package-lock.json
+      - run: npm ci
+      - name: Unit tests (guards, streaming, logging, retention)
+        run: npm test
+      - name: Type check
+        run: npm run check
+      - name: Bundle and validate wrangler.toml (dry run, no account needed)
+        run: npx wrangler deploy --dry-run --outdir "$RUNNER_TEMP/worker"
