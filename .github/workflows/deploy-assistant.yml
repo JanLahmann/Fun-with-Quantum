@@ -1,0 +1,70 @@
+name: Deploy assistant
+
+# Deploys the assistant Worker (assistant/) to Cloudflare — run by hand from the Actions tab.
+# Needs three repository secrets: CLOUDFLARE_API_TOKEN (template "Edit Cloudflare Workers" plus
+# Account · D1 · Edit), CLOUDFLARE_ACCOUNT_ID and ANTHROPIC_API_KEY. Creates the D1 database
+# on the first run, applies migrations, deploys, and stores the API key as a Worker secret.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-assistant
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: assistant
+        shell: bash # = bash -eo pipefail: a failed `wrangler deploy | tee` must fail the job
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Check the secrets are set
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          missing=0
+          for v in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID ANTHROPIC_API_KEY; do
+            [ -n "${!v}" ] || { echo "::error::Repository secret $v is missing"; missing=1; }
+          done
+          exit $missing
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            assistant/package-lock.json
+            portal/package-lock.json
+      - run: npm ci
+      # The coin-game knowledge imports the game's code from portal/, whose tsconfig extends astro's.
+      - run: npm ci --prefix ../portal
+      - name: Tests and type check
+        run: npm test && npm run check
+      - name: D1 database (create on the first run) → wrangler.toml
+        run: |
+          find_id() { npx wrangler d1 list --json | jq -r '.[] | select(.name == "fwq-assistant") | (.uuid // .id)'; }
+          id=$(find_id)
+          if [ -z "$id" ]; then npx wrangler d1 create fwq-assistant; id=$(find_id); fi
+          [ -n "$id" ] || { echo "::error::Could not find or create the D1 database"; exit 1; }
+          sed -i "s/00000000-0000-0000-0000-000000000000/$id/" wrangler.toml
+          echo "D1 database: $id"
+      - name: Apply migrations
+        run: npx wrangler d1 migrations apply fwq-assistant --remote
+      - name: Deploy
+        run: npx wrangler deploy | tee "$RUNNER_TEMP/deploy.txt"
+      - name: Store the Anthropic API key as a Worker secret
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: printf '%s' "$ANTHROPIC_API_KEY" | npx wrangler secret put ANTHROPIC_API_KEY
+      - name: Summary
+        run: |
+          url=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' "$RUNNER_TEMP/deploy.txt" | head -1)
+          echo "### Assistant deployed" >> "$GITHUB_STEP_SUMMARY"
+          echo "Worker URL: $url" >> "$GITHUB_STEP_SUMMARY"

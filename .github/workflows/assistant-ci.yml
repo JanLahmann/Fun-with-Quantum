@@ -6,11 +6,13 @@ on:
   pull_request:
     paths:
       - 'assistant/**'
+      - 'portal/src/lib/qcoin/**' # the coin-game knowledge is built from the game's own code
       - '.github/workflows/assistant-ci.yml'
   push:
     branches: [master]
     paths:
       - 'assistant/**'
+      - 'portal/src/lib/qcoin/**'
       - '.github/workflows/assistant-ci.yml'
   workflow_dispatch:
 
@@ -29,8 +31,12 @@ jobs:
         with:
           node-version: 24
           cache: npm
-          cache-dependency-path: assistant/package-lock.json
+          cache-dependency-path: |
+            assistant/package-lock.json
+            portal/package-lock.json
       - run: npm ci
+      # The coin-game knowledge imports the game's code from portal/, whose tsconfig extends astro's.
+      - run: npm ci --prefix ../portal
       - name: Unit tests (guards, streaming, logging, retention)
         run: npm test
       - name: Type check
