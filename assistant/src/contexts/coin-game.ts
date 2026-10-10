@@ -23,7 +23,7 @@ function round(v: unknown): Record<string, unknown> | null {
   const moves = gates(x.moves, 3);
   if (!moves || moves.length !== 3 || !oneOf(x.you, ['A', 'B'] as const) || !oneOf(x.outcome, ['heads', 'tails'] as const)
     || !oneOf(x.winner, ['A', 'B'] as const) || typeof x.youWin !== 'boolean') return null;
-  return { you: x.you, moves, outcome: x.outcome, winner: x.winner, youWin: x.youWin };
+  return { ...(isInt(x.n, 1, 1e5) ? { n: x.n } : {}), you: x.you, moves, outcome: x.outcome, winner: x.winner, youWin: x.youWin };
 }
 
 /**
