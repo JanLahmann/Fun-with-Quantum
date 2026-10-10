@@ -66,6 +66,27 @@ for the html block (name + `short` line per member, responsive grid) — copy an
 Sites that fetch the manifest at build time should cache-bust the raw URL (append `?t=<timestamp>`):
 raw.githubusercontent.com is CDN-cached for about five minutes.
 
+## Icons
+
+Every member has an icon in the family style in `icons/<id>/`: the tumbling die of the portal's
+favicon (rounded frame in the cyan→magenta gradient, tilted −12°, motion arc) with the member's
+own object inside: ghost cyan for what is still in superposition, one solid magenta part for
+what is measured. `icons/sheet.png` shows them all.
+
+| File | Use |
+|---|---|
+| `icon.svg` | `<link rel="icon" type="image/svg+xml">`; the arc switches color with `prefers-color-scheme` |
+| `favicon.ico` | 16/32/48 px, for `/favicon.ico` (browsers and crawlers request it even without a link) |
+| `favicon-32.png` | `<link rel="icon" type="image/png" sizes="32x32">` |
+| `apple-touch-icon.png` | 180×180 on solid paper, `<link rel="apple-touch-icon">` |
+| `icon-512.png` | 512×512 on solid paper: web app manifest, GitHub social preview, avatars |
+
+The glyphs live in `icons/glyphs.mjs`; `node family/icons/build.mjs` (from the repo root, uses
+Playwright from `portal/node_modules`) renders all files. Raw URL for a member site's build:
+`https://raw.githubusercontent.com/JanLahmann/Fun-with-Quantum/master/family/icons/<id>/<file>`;
+copying the files into the site is just as good. A member that already has its own icon decides
+whether to switch. Co-owned members (QAMPoser) get no icon from here.
+
 ## Editing rules
 
 * Add a member: one object in `members`. Order in the array = order in every footer.
