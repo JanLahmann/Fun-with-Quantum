@@ -47,3 +47,13 @@ describe('coin-game labels', () => {
     expect(KNOWLEDGE).toContain('Lass mich anfangen');
   });
 });
+
+describe('levels', () => {
+  it('names every level label of the chat box in the rules, in all languages', async () => {
+    const { RULES } = await import('../src/prompt');
+    const { ASSISTANT_TEXTS } = await import('../../portal/src/lib/assistant/i18n');
+    for (const t of Object.values(ASSISTANT_TEXTS)) {
+      for (const label of Object.values(t.levels)) expect(RULES).toContain(`"${label}"`);
+    }
+  });
+});

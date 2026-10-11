@@ -26,7 +26,9 @@ export class FakeD1 {
   db = new DatabaseSync(':memory:');
   constructor() {
     this.db.exec('PRAGMA foreign_keys = ON');
-    this.db.exec(readFileSync(fileURLToPath(new URL('../migrations/0001_init.sql', import.meta.url).href), 'utf8'));
+    for (const m of ['0001_init.sql', '0002_level.sql']) {
+      this.db.exec(readFileSync(fileURLToPath(new URL(`../migrations/${m}`, import.meta.url).href), 'utf8'));
+    }
   }
   prepare(sql: string) { return new Stmt(this.db, sql); }
   async batch(stmts: Stmt[]) {

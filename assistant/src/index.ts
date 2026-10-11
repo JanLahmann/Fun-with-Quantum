@@ -2,7 +2,7 @@
  * fwq-assistant — the runtime assistant behind the chat widget on fun-with-quantum.org
  * (and later doQumentation and RasQberry).
  *
- *   POST /chat      {site, context, locale, question, state, history} → SSE: delta… then done|error
+ *   POST /chat      {site, context, locale, level, question, state, history} → SSE: delta… then done|error
  *   POST /feedback  {id, vote: 1 | -1}                                 → 204
  *
  * Guards: Origin allow-list, burst + daily limits, size limits, per-context state validation.
@@ -12,7 +12,7 @@ import { callClaude, relay, type ChatMessage } from './anthropic';
 import { contextFor } from './contexts';
 import { intVar, type Env } from './env';
 import { checkDaily, checkOrigin, corsHeaders, visitorKey } from './guard';
-import { systemPrompt, userMessage } from './prompt';
+import { isLevel, systemPrompt, userMessage } from './prompt';
 
 export const MAX_BODY = 32_000;
 export const MAX_QUESTION = 1_000;
@@ -80,6 +80,7 @@ async function chat(req: Request, env: Env, ctx: ExecutionContext, deps: Deps, c
   const context = body && contextFor(body.site, body.context);
   const question = typeof body?.question === 'string' ? body.question.trim() : '';
   const locale = typeof body?.locale === 'string' && /^[a-z]{2}(-[A-Za-z]{2,4})?$/.test(body.locale) ? body.locale : 'en';
+  const level = typeof body?.level === 'string' && isLevel(body.level) ? body.level : 'normal';
   const state = context ? context.state(body!.state) : null;
   const history = cleanHistory(body?.history, intVar(env.MAX_HISTORY_TURNS, 5));
   if (!body || !context || !state || !history || !question || question.length > MAX_QUESTION) {
@@ -89,15 +90,15 @@ async function chat(req: Request, env: Env, ctx: ExecutionContext, deps: Deps, c
   if (daily !== 'ok') return daily === 'global' ? json(503, { error: 'busy' }, cors) : json(429, { error: 'rate' }, cors);
 
   const model = env.MODEL;
-  const messages: ChatMessage[] = [...history, { role: 'user', content: userMessage(locale, state, question) }];
+  const messages: ChatMessage[] = [...history, { role: 'user', content: userMessage(locale, level, state, question) }];
   const id = deps.uuid();
   const log = (answer: string, extra: Partial<Record<string, string | number | null>>) =>
     env.DB.prepare(
-      `INSERT INTO messages (id, ts, site, context, locale, question, state_json, history_turns, answer, model,
+      `INSERT INTO messages (id, ts, site, context, locale, level, question, state_json, history_turns, answer, model,
          stop_reason, error, in_tok, out_tok, cache_read_tok, cache_write_tok, latency_ms)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     ).bind(
-      id, now, body.site as string, body.context as string, locale, question, JSON.stringify(state), history.length / 2, answer, model,
+      id, now, body.site as string, body.context as string, locale, level, question, JSON.stringify(state), history.length / 2, answer, model,
       extra.stop_reason ?? null, extra.error ?? null, extra.in_tok ?? null, extra.out_tok ?? null,
       extra.cache_read_tok ?? null, extra.cache_write_tok ?? null, deps.now() - now,
     ).run();

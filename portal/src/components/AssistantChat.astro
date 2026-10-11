@@ -8,6 +8,7 @@
 import { OFFLINE } from '../data/offline';
 import { ASSISTANT_TEXTS } from '../lib/assistant/i18n';
 import type { Locale } from '../lib/qcoin/i18n';
+import { LEVELS } from '../lib/level';
 
 interface Props {
   context: string;
@@ -26,6 +27,12 @@ const id = `fa-${context}`;
       <h3>{t.title}</h3>
       <p class="fa-intro">{t.intro}</p>
       <p class="fa-privacy">{t.privacy} <a href="/about/#privacy">{t.privacyLink}</a></p>
+      <fieldset class="fa-level">
+        <legend>{t.level}</legend>
+        {LEVELS.map((l) => (
+          <label><input type="radio" name={`${id}-level`} value={l} checked={l === 'normal'} /><span>{t.levels[l]}</span></label>
+        ))}
+      </fieldset>
       <div class="fa-log" aria-live="polite"></div>
       <form>
         <label class="fa-sr" for={`${id}-q`}>{t.placeholder}</label>
@@ -60,6 +67,16 @@ const id = `fa-${context}`;
   .fa-panel h3 { font-size: 1.05rem; margin-bottom: 4px; }
   .fa-intro { color: var(--ink); font-size: 0.92rem; margin-bottom: 6px; }
   .fa-privacy { color: var(--muted); font-size: 0.78rem; margin-bottom: 12px; }
+  .fa-level { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; border: 0; padding: 0; margin: 0 0 12px; }
+  .fa-level legend { float: left; margin-right: 4px; font-size: 0.82rem; color: var(--muted); }
+  .fa-level label { position: relative; }
+  .fa-level input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+  .fa-level span {
+    display: inline-block; font: 600 0.82rem var(--sans); color: var(--ink); border: 1px solid var(--line);
+    border-radius: 14px; padding: 4px 12px;
+  }
+  .fa-level input:checked + span { color: var(--card); background: var(--cyan); border-color: var(--cyan); }
+  .fa-level input:focus-visible + span { outline: 2px solid var(--cyan); outline-offset: 2px; }
   .fa-log { display: flex; flex-direction: column; gap: 10px; max-height: 420px; overflow-y: auto; margin-bottom: 12px; }
   .fa-log:empty { display: none; }
   .fa-log :global(.fa-msg) { font-size: 0.93rem; line-height: 1.5; }

@@ -18,6 +18,9 @@ export interface AssistantTexts {
   errRate: string;
   errBusy: string;
   errNetwork: string;
+  /** The level switch: its label and the three levels (kids, normal, math). */
+  level: string;
+  levels: { kids: string; normal: string; math: string };
 }
 
 export const ASSISTANT_TEXTS: Record<Locale, AssistantTexts> = {
@@ -38,6 +41,8 @@ export const ASSISTANT_TEXTS: Record<Locale, AssistantTexts> = {
     errRate: 'That was a lot of questions — please wait a minute (or until tomorrow) and ask again.',
     errBusy: 'The explainer has answered all it can for today. Please try again tomorrow.',
     errNetwork: 'The explainer couldn’t be reached. Please try again.',
+    level: 'Level',
+    levels: { kids: 'Kids', normal: 'Normal', math: 'With math' },
   },
   de: {
     open: 'Frag den Erklärer',
@@ -56,6 +61,8 @@ export const ASSISTANT_TEXTS: Record<Locale, AssistantTexts> = {
     errRate: 'Das waren viele Fragen — bitte warte eine Minute (oder bis morgen) und frag dann noch einmal.',
     errBusy: 'Der Erklärer hat für heute alles beantwortet, was er kann. Bitte versuch es morgen wieder.',
     errNetwork: 'Der Erklärer ist gerade nicht erreichbar. Bitte versuch es noch einmal.',
+    level: 'Stufe',
+    levels: { kids: 'Kids', normal: 'Normal', math: 'Mit Mathe' },
   },
   ja: {
     open: '解説役に質問する',
@@ -74,6 +81,8 @@ export const ASSISTANT_TEXTS: Record<Locale, AssistantTexts> = {
     errRate: '質問が多すぎます。1 分ほど(または明日まで)待ってから、もう一度質問してください。',
     errBusy: '今日の回答数の上限に達しました。明日もう一度お試しください。',
     errNetwork: '解説役に接続できませんでした。もう一度お試しください。',
+    level: 'レベル',
+    levels: { kids: 'キッズ', normal: 'ふつう', math: '数式あり' },
   },
   es: {
     open: 'Pregunta al explicador',
@@ -92,6 +101,8 @@ export const ASSISTANT_TEXTS: Record<Locale, AssistantTexts> = {
     errRate: 'Han sido muchas preguntas: espera un minuto (o hasta mañana) y vuelve a preguntar.',
     errBusy: 'El explicador ya ha respondido todo lo que puede por hoy. Vuelve a intentarlo mañana.',
     errNetwork: 'No se ha podido contactar con el explicador. Inténtalo de nuevo.',
+    level: 'Nivel',
+    levels: { kids: 'Niños', normal: 'Normal', math: 'Con matemáticas' },
   },
   uk: {
     open: 'Запитати пояснювача',
@@ -110,6 +121,8 @@ export const ASSISTANT_TEXTS: Record<Locale, AssistantTexts> = {
     errRate: 'Забагато запитань — зачекайте хвилину (або до завтра) і запитайте знову.',
     errBusy: 'На сьогодні пояснювач уже відповів на все, що міг. Спробуйте завтра.',
     errNetwork: 'Не вдалося зв’язатися з пояснювачем. Спробуйте ще раз.',
+    level: 'Рівень',
+    levels: { kids: 'Для дітей', normal: 'Звичайний', math: 'З математикою' },
   },
   it: {
     open: 'Chiedi a chi spiega',
@@ -128,6 +141,8 @@ export const ASSISTANT_TEXTS: Record<Locale, AssistantTexts> = {
     errRate: 'Sono state tante domande: aspetta un minuto (o fino a domani) e chiedi di nuovo.',
     errBusy: 'Per oggi sono state date tutte le risposte possibili. Riprova domani.',
     errNetwork: 'Impossibile raggiungere il servizio. Riprova.',
+    level: 'Livello',
+    levels: { kids: 'Bambini', normal: 'Normale', math: 'Con la matematica' },
   },
   fr: {
     open: 'Demander à l’explicateur',
@@ -146,5 +161,7 @@ export const ASSISTANT_TEXTS: Record<Locale, AssistantTexts> = {
     errRate: 'Cela fait beaucoup de questions : attendez une minute (ou jusqu’à demain), puis réessayez.',
     errBusy: 'L’explicateur a répondu à tout ce qu’il pouvait pour aujourd’hui. Réessayez demain.',
     errNetwork: 'Impossible de joindre l’explicateur. Veuillez réessayer.',
+    level: 'Niveau',
+    levels: { kids: 'Enfants', normal: 'Normal', math: 'Avec les maths' },
   },
 };

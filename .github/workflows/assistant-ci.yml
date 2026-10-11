@@ -7,12 +7,14 @@ on:
     paths:
       - 'assistant/**'
       - 'portal/src/lib/qcoin/**' # the coin-game knowledge is built from the game's own code
+      - 'portal/src/lib/assistant/i18n.ts' # the level labels in the rules
       - '.github/workflows/assistant-ci.yml'
   push:
     branches: [master]
     paths:
       - 'assistant/**'
       - 'portal/src/lib/qcoin/**'
+      - 'portal/src/lib/assistant/i18n.ts'
       - '.github/workflows/assistant-ci.yml'
   workflow_dispatch:
 
