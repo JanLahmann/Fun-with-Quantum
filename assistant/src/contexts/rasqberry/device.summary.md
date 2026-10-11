@@ -10,6 +10,7 @@ You help someone sitting at a RasQberry Two: its browser opened rasqberry.org fr
 ### Starting a demo
 - Every demo has three ways in: the desktop folder of its group, the menu (`sudo raspi-config` → 0 RasQberry → Quantum Demos → the group), and the terminal (`rq_demo_run.sh <id>`, with a variant id where the demo has variants). The groups and demos are listed below. [development: RQB2-config/demo-manifests/demo-groups.json; RQB2-bin/rq_help]
 - Demos that are not on the image download on their first start, so that first start needs internet. Docker demos take 2–4 GB each. `rq_download_all.sh` downloads everything in advance (`--yes --docker` includes the Docker demos without asking), e.g. before an event without Wi-Fi; `rq_demo_remove.sh` (`--list` shows sizes) frees space again. [website: installation overview "Which image?"; development: RQB2-bin/rq_download_all.sh, rq_demo_remove.sh]
+- Whether a demo is on the image is stated per demo, per variant and per learning-path step below ("on the image" or "downloads on first start"). Variants of one demo can differ: Grokking the Bloch Sphere's `web` variant is on the image, the `local` variant used by the learning paths downloads at its first start. Never say a demo is on the image unless it says so below. [development: demo-manifests/rq_demo_grok-bloch.json, learning-paths.json]
 - Demos marked beta are new or less tested; their start invites feedback through a GitHub issue form. [development: demo-manifests/rq_demo_schema.json "maturity"]
 
 ### Choosing what to show

@@ -3,7 +3,7 @@ import { KNOWLEDGE, SOURCE_COMMIT } from '../src/contexts/rasqberry/knowledge.ge
 import { rasqberryBuild } from '../src/contexts/rasqberry/build';
 import { systemPrompt, userMessage } from '../src/prompt';
 // @ts-expect-error — plain .mjs script without types
-import { BUILD_PAGES, clean, pageUrl } from '../scripts/rasqberry-knowledge.mjs';
+import { BUILD_PAGES, clean, pageUrl, pathSection, preinstalled } from '../scripts/rasqberry-knowledge.mjs';
 
 describe('rasqberry build knowledge', () => {
   it('has the summary and every page, from a known commit', () => {
@@ -58,6 +58,18 @@ describe('rasqberry device context (the Pi)', async () => {
     for (const id of DEMO_IDS) expect(DEVICE_KNOWLEDGE).toContain(`id \`${id}\``);
     expect(DEVICE_KNOWLEDGE).toContain('## Learning paths');
     expect(DEVICE_KNOWLEDGE).toContain('## Setting up and fixing the Pi');
+  });
+
+  it('says per variant and per learning-path step whether it is on the image', () => {
+    const m = { id: 'grok-bloch', name: 'Grokking the Bloch Sphere', install: { preinstalled: false },
+      variants: [{ id: 'local', name: 'On this Pi' }, { id: 'web', name: 'Online', install: { preinstalled: true } }] };
+    expect(preinstalled(m)).toBe(false);
+    expect(preinstalled(m, 'local')).toBe(false);
+    expect(preinstalled(m, 'web')).toBe(true);
+    const path = { title: 'First 15 minutes', minutes: 15, audience: 'everyone', goal: 'g',
+      steps: [{ demo: 'grok-bloch', variant: 'local', try: 'Press H.', notice: 'Look.' }] };
+    expect(pathSection(path, [m])).toContain('variant `local`, downloads on first start, needs internet once');
+    expect(DEVICE_KNOWLEDGE).toContain('(`web`, on the image)');
   });
 
   it('keeps the Pi facts only when they look right', () => {

@@ -72,13 +72,13 @@ const CSS = `
 @media (prefers-color-scheme: dark) { .fwq-assist { --c: #4cc3e0; --m: #ff7aa8; --ink: #e8ebf1; --muted: #a3abba; --card: #1b2130; --paper: #121722; --line: #343c4e; } }
 .fa-open { font: 600 0.92rem inherit; font-family: inherit; color: #fff; background: var(--c); border: 0; border-radius: 22px; padding: 10px 18px; cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,.2); order: 2; }
 .fa-panel { order: 1; width: min(400px, calc(100vw - 32px)); max-height: min(640px, calc(100vh - 90px)); overflow: auto; background: var(--card); border: 1px solid var(--line);
-  border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,.25); padding: 14px 16px 16px; box-sizing: border-box; }
+  border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,.25); padding: 14px 16px 16px; box-sizing: border-box; display: flex; flex-direction: column; }
 .fa-panel[hidden] { display: none; }
 h3 { font-size: 1.02rem; margin: 0 0 4px; }
 .fa-intro { font-size: 0.9rem; margin: 0 0 6px; }
 .fa-privacy { color: var(--muted); font-size: 0.76rem; margin: 0 0 10px; }
 a { color: var(--c); }
-.fa-log { display: flex; flex-direction: column; gap: 10px; max-height: 340px; overflow-y: auto; margin-bottom: 10px; }
+.fa-log { display: flex; flex-direction: column; gap: 10px; flex: 1 1 auto; min-height: 120px; overflow-y: auto; margin-bottom: 10px; }
 .fa-log:empty { display: none; }
 .fa-msg { font-size: 0.92rem; }
 .fa-who { display: block; font: 600 0.68rem ui-monospace, monospace; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
@@ -95,6 +95,15 @@ textarea { flex: 1; font: 0.94rem inherit; font-family: inherit; color: var(--in
 textarea:focus, button:focus-visible { outline: 2px solid var(--c); outline-offset: 1px; }
 button[type=submit] { font: 600 0.9rem inherit; font-family: inherit; color: #fff; background: var(--c); border: 0; border-radius: 10px; padding: 10px 14px; cursor: pointer; }
 button[type=submit]:disabled { opacity: .6; cursor: wait; }
+/* Small windows (e.g. the Pi's unmaximized browser): a narrower panel, the answer gets the height. */
+@media (max-width: 760px), (max-height: 640px) {
+  .fwq-assist { right: 10px; bottom: 10px; font-size: 14px; gap: 6px; }
+  .fa-panel { width: min(340px, calc(100vw - 20px)); max-height: calc(100vh - 70px); padding: 10px 12px 12px; }
+  .fa-open { padding: 8px 14px; }
+  .fa-intro { font-size: 0.84rem; } .fa-privacy { font-size: 0.72rem; margin-bottom: 6px; }
+  .fa-panel:has(.fa-log:not(:empty)) .fa-intro { display: none; } /* once the chat runs, the answer needs the room */
+  textarea { min-height: 38px; }
+}
 .fa-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 `;
 
