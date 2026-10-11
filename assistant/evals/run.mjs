@@ -70,8 +70,9 @@ for (const [i, c] of cases.entries()) {
   if (i) await sleep(7000);
   const r = await ask(c);
   const fails = r.error ? [r.error] : r.end?.ev !== 'done' ? [`stream ended with ${JSON.stringify(r.end)}`, ...check(c, r.answer)] : check(c, r.answer);
+  if (r.end?.stop === 'max_tokens') fails.unshift('cut off: stop_reason max_tokens');
   if (!fails.length) passed++;
-  lines.push(`## ${fails.length ? '❌' : '✅'} ${c.id}`, '', `*${c.note}* · chapter ${c.state.chapter} · ${c.locale} · ${c.level ?? 'normal'} · ${r.ms} ms`, '', `> **Q:** ${c.question}`, '');
+  lines.push(`## ${fails.length ? '❌' : '✅'} ${c.id}`, '', `*${c.note}* · chapter ${c.state.chapter} · ${c.locale} · ${c.level ?? 'normal'} · ${r.ms} ms · ${r.end?.stop ?? '-'}`, '', `> **Q:** ${c.question}`, '');
   lines.push((r.answer || '(no answer)').split('\n').map((l) => `> ${l}`).join('\n'), '');
   if (fails.length) lines.push(...fails.map((f) => `- ${f}`), '');
   console.error(`${fails.length ? 'FAIL' : 'ok  '} ${c.id}${fails.length ? ' — ' + fails.join('; ') : ''}`);

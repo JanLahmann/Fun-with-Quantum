@@ -8,7 +8,10 @@ compatibility_date = "2026-10-01"
 [vars]
 ALLOWED_ORIGINS = "https://fun-with-quantum.org,http://localhost:4321"
 MODEL = "claude-sonnet-5-5"
-MAX_TOKENS = "600"
+# Output budget per answer. It also covers the model's own reasoning before it writes, so it is
+# well above the longest answer (about 220 words at the "With math" level); at 600, answers
+# were cut off mid-sentence (stop_reason max_tokens).
+MAX_TOKENS = "1500"
 # Question/answer pairs sent along as conversation history (code caps it at 10).
 MAX_HISTORY_TURNS = "5"
 # Requests per visitor per UTC day, and for everyone together (a cost backstop next to the
