@@ -281,11 +281,13 @@ describe('coin-game state', () => {
 });
 
 describe('coin-game round log', () => {
-  const r = (youWin: boolean) => ({ you: 'A', moves: ['I', 'X', 'I'], outcome: youWin ? 'heads' : 'tails', winner: youWin ? 'A' : 'B', youWin });
+  const r = (youWin: boolean) => ({ n: 1, you: 'A', moves: ['I', 'X', 'I'], outcome: youWin ? 'heads' : 'tails', winner: youWin ? 'A' : 'B', youWin });
   it('keeps the last 10 well-formed rounds and other chapters\' scores', () => {
     const rounds = [...Array.from({ length: 12 }, (_, i) => r(i % 2 === 0)), { you: 'A', moves: ['Q'] }];
     const out = coinGame.state({ game: 'quantum-coin-game', chapter: 4, rounds, otherScores: { 1: { you: 2, computer: 1, rounds: 3 }, 4: { you: 0, computer: 0, rounds: 1 }, x: 1 } })!;
     expect(out.rounds).toHaveLength(9); // last 10 sent, the malformed one dropped
     expect(out.otherScores).toEqual({ 1: { you: 2, computer: 1, rounds: 3 } });
+    expect((out.rounds as Record<string, unknown>[])[0].n).toBe(1);
+    expect(coinGame.state({ game: 'quantum-coin-game', chapter: 2, rounds: [{ ...r(true), n: 0 }] })!.rounds).toEqual([{ ...r(true), n: undefined }].map(({ n, ...x }) => x));
   });
 });

@@ -202,8 +202,11 @@ export interface CoinSnapshot {
   starter?: 'computer' | 'you';
   you?: Player;
   lastRound?: { moves: (GateName | '?')[]; outcome: 'heads' | 'tails'; winner: Player; youWin: boolean };
-  /** This chapter's last rounds, oldest first (at most ROUND_LOG), each with the player's seat. */
-  rounds?: { you: Player; moves: (GateName | '?')[]; outcome: 'heads' | 'tails'; winner: Player; youWin: boolean }[];
+  /**
+   * This chapter's last rounds, oldest first (at most ROUND_LOG), each with the player's seat and
+   * its number n as the score line showed it (it restarts when the player switches who starts).
+   */
+  rounds?: { n: number; you: Player; moves: (GateName | '?')[]; outcome: 'heads' | 'tails'; winner: Player; youWin: boolean }[];
   score?: Score;
   /** Scores of the other chapters played so far. */
   otherScores?: Partial<Record<Chapter, Score>>;
@@ -232,7 +235,7 @@ export function mountCoinGame(root: HTMLElement) {
   const ROUND_LOG = 10;
   const roundLog: Record<Chapter, NonNullable<CoinSnapshot['rounds']>> = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] };
   const logRound = (ch: Chapter, you: Player, r: NonNullable<CoinSnapshot['lastRound']>) => {
-    roundLog[ch].push({ you, ...r, moves: [...r.moves] });
+    roundLog[ch].push({ n: scores[ch].rounds, you, ...r, moves: [...r.moves] });
     if (roundLog[ch].length > ROUND_LOG) roundLog[ch].shift();
   };
 
@@ -460,8 +463,7 @@ export function mountCoinGame(root: HTMLElement) {
   function setStarter(ch: 1 | 2, who: 'computer' | 'you') {
     if (starter[ch] === who) return;
     starter[ch] = who;
-    scores[ch] = emptyScore(); // a different game: start counting afresh
-    roundLog[ch] = [];
+    scores[ch] = emptyScore(); // a different game: start counting afresh (the round log keeps going)
     track('Portal: coin game order', { chapter: ch, starts: who });
     go(ch);
   }
