@@ -6,7 +6,7 @@
  *           data-site="rasqberry" data-context="build" data-context-pi="device"></script>
  *
  * data-context-pi: the context to use when the page was opened on a RasQberry (?from=pi, kept for
- * the browser tab). data-public="1" shows it to everyone; until then only with ?assistant=1.
+ * the browser tab); its start URL may add v=<image build>, model=pi4|pi5 and led=<LED layout>. data-public="1" shows it to everyone; until then only with ?assistant=1.
  * The page may define window.fwqAssistantState() to add to the state sent along (page + title).
  * The box floats bottom right in a shadow root, so the site's CSS and ours stay apart.
  */
@@ -84,6 +84,7 @@ a { color: var(--c); }
 .fa-bot .fa-body { border-left: 3px solid var(--m); padding-left: 10px; }
 .fa-body p { margin: 0; } .fa-body p + p { margin-top: 6px; }
 .fa-body a { word-break: break-all; }
+.fa-body code { font: 0.85em ui-monospace, monospace; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; padding: 0 3px; }
 .fa-thinking { color: var(--muted); font-style: italic; }
 .fa-error { color: var(--m); }
 .fa-vote { display: flex; gap: 6px; align-items: center; font-size: 0.8rem; color: var(--muted); padding-left: 13px; }
@@ -103,6 +104,21 @@ function el<K extends keyof HTMLElementTagNameMap>(tag: K, attrs: Record<string,
   return e;
 }
 
+/**
+ * The Pi's facts from its start URL (?from=pi&v=<image build>&model=pi4|pi5&led=<layout>),
+ * kept for the tab like the flags above. The Worker validates them.
+ */
+function piDevice(): Record<string, string> | undefined {
+  const q = new URLSearchParams(location.search);
+  const fresh = Object.fromEntries((['v', 'model', 'led'] as const).flatMap((k) => (q.get(k) ? [[k === 'v' ? 'version' : k, q.get(k)!.slice(0, 60)]] : [])));
+  try {
+    if (Object.keys(fresh).length) sessionStorage.setItem('fwq-pi-device', JSON.stringify(fresh));
+    return JSON.parse(sessionStorage.getItem('fwq-pi-device') ?? 'null') ?? undefined;
+  } catch {
+    return Object.keys(fresh).length ? fresh : undefined;
+  }
+}
+
 export function embed(script: HTMLScriptElement): void {
   const d = script.dataset;
   const site = d.site ?? '';
@@ -113,7 +129,8 @@ export function embed(script: HTMLScriptElement): void {
 
   registerState(context, () => {
     const extra = (() => { try { return window.fwqAssistantState?.() ?? {}; } catch { return {}; } })();
-    return { page: location.pathname, title: document.title.slice(0, 200), ...extra };
+    const device = onPi ? piDevice() : undefined;
+    return { page: location.pathname, title: document.title.slice(0, 200), ...(device ? { device } : {}), ...extra };
   });
 
   const host = el('div', { id: 'fwq-assistant' });

@@ -12,7 +12,7 @@ on:
       set:
         description: Eval set (assistant/evals/<set>.jsonl)
         type: choice
-        options: [coin-game, rasqberry-build]
+        options: [coin-game, rasqberry-build, rasqberry-device]
         default: coin-game
       only:
         description: Run just this case id (optional)

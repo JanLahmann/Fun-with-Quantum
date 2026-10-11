@@ -16,6 +16,11 @@ describe('assistant answer rendering', () => {
   });
   it('cannot break out of the href attribute', () => {
     expect(renderAnswer('https://quantum.cloud.ibm.com/"onmouseover="x')).not.toMatch(/href="[^"]*"onmouseover/);
+    expect(renderAnswer('See the [Bill of Materials](https://rasqberry.org/01-3d-model/01-bill-of-materials/).')).toBe(
+      '<p>See the <a href="https://rasqberry.org/01-3d-model/01-bill-of-materials/" target="_blank" rel="noopener">Bill of Materials</a>.</p>',
+    );
+    expect(renderAnswer('[click](https://evil.example/x)')).toBe('<p>click (https://evil.example/x)</p>');
+    expect(renderAnswer('Run `sudo rq_clear_leds.sh --stop` <b>')).toBe('<p>Run <code>sudo rq_clear_leds.sh --stop</code> &lt;b&gt;</p>');
   });
   it('reads the Worker stream across chunk boundaries', async () => {
     const text = 'event: delta\ndata: {"t":"Hal"}\n\nevent: delta\r\ndata: {"t":"lo"}\r\n\r\nevent: done\ndata: {"id":"abc"}\n\n';

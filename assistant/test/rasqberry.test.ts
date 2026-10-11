@@ -24,6 +24,7 @@ describe('rasqberry build knowledge', () => {
   });
 
   it('cleans website Markdown', () => {
+    expect(clean('{/* note */}<ul><li>One</li></ul> &amp; <ModelViewer />')).toBe('- One &');
     expect(clean('A ![x](/a.png) <img src="/b.png"/> [Guide](/02-software/03-ab-boot#go-back) <p align="center">c</p>'))
       .toBe('A   [Guide](https://rasqberry.org/02-software/03-ab-boot/#go-back) c');
     expect(pageUrl('index.md')).toBe('https://rasqberry.org/');
@@ -45,5 +46,29 @@ describe('rasqberry build context', () => {
     expect(rasqberryBuild.state({ page: '/02-software/03-ab-boot/', title: 'A/B', extra: 1 })).toEqual({ page: '/02-software/03-ab-boot/', title: 'A/B' });
     expect(rasqberryBuild.state({ page: 'javascript:alert(1)' })).toEqual({});
     expect(rasqberryBuild.state([])).toBeNull();
+  });
+});
+
+describe('rasqberry device context (the Pi)', async () => {
+  const { rasqberryDevice } = await import('../src/contexts/rasqberry/device');
+  const { DEVICE_KNOWLEDGE, DEMO_IDS } = await import('../src/contexts/rasqberry/device.generated');
+
+  it('knows every demo from the manifests, and the learning paths', () => {
+    expect(DEMO_IDS.length).toBeGreaterThan(10);
+    for (const id of DEMO_IDS) expect(DEVICE_KNOWLEDGE).toContain(`id \`${id}\``);
+    expect(DEVICE_KNOWLEDGE).toContain('## Learning paths');
+    expect(DEVICE_KNOWLEDGE).toContain('## Setting up and fixing the Pi');
+  });
+
+  it('keeps the Pi facts only when they look right', () => {
+    expect(rasqberryDevice.state({ page: '/', device: { version: 'beta-2026-10-10-053754', model: 'pi5', led: 'quad-4x12', x: 1 } }))
+      .toEqual({ page: '/', device: { version: 'beta-2026-10-10-053754', model: 'pi5', led: 'quad-4x12' } });
+    expect(rasqberryDevice.state({ page: '/', device: { version: '<script>', model: 'pi3', led: 'A B' } })).toEqual({ page: '/' });
+  });
+
+  it('answers in English only, without levels', () => {
+    const [head] = systemPrompt(rasqberryDevice);
+    expect(head.text).toContain('Answer in English');
+    expect(head.text).not.toContain('<level>');
   });
 });

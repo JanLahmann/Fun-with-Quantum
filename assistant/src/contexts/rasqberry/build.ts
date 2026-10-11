@@ -5,7 +5,7 @@ const text = (v: unknown, max: number): string | null =>
   typeof v === 'string' && v.trim() ? v.trim().replace(/[\u0000-\u001f]/g, ' ').slice(0, max) : null;
 
 /** What the page sends: the path and title of the rasqberry.org page the visitor is reading. */
-function state(raw: unknown): Record<string, unknown> | null {
+export function pageState(raw: unknown): Record<string, unknown> | null {
   const s = (raw ?? {}) as Record<string, unknown>;
   if (typeof s !== 'object' || Array.isArray(s)) return null;
   const out: Record<string, unknown> = {};
@@ -30,5 +30,5 @@ export const rasqberryBuild: Context = {
   englishOnly: true,
   stateTag: 'page_state',
   knowledge: KNOWLEDGE,
-  state,
+  state: pageState,
 };
