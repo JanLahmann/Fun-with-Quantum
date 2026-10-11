@@ -22,6 +22,14 @@ function req(path: string, body?: unknown, headers: Record<string, string> = {},
   });
 }
 
+/** Env override: the fwq site with other daily limits. */
+const fwqLimits = (over: { daily_visitor?: number; daily_global?: number }) => ({
+  SITES: {
+    fwq: { origins: [ORIGIN], daily_visitor: 50, daily_global: 2000, ...over },
+    rasqberry: { origins: ['https://rasqberry.org'], daily_visitor: 100, daily_global: 1000 },
+  },
+});
+
 function setup(claude = fakeClaude(() => new Response(chunked(claudeStream(['Der Computer ', 'hat zweimal ', 'gezogen.'])), { status: 200 })), envOver = {}) {
   const { env, db, rl } = makeEnv(envOver);
   let n = 0;
@@ -77,12 +85,12 @@ describe('guards', () => {
   });
 
   it('per-visitor daily limit → 429, global daily limit → 503', async () => {
-    const v = setup(undefined, { DAILY_VISITOR_LIMIT: '2' });
+    const v = setup(undefined, fwqLimits({ daily_visitor: 2 }));
     for (let i = 0; i < 2; i++) expect((await v.run(req('/chat', ask()))).res.status).toBe(200);
     expect((await v.run(req('/chat', ask()))).res.status).toBe(429);
     expect((await v.run(req('/chat', ask(), { 'CF-Connecting-IP': '198.51.100.1' }))).res.status).toBe(200);
 
-    const g = setup(undefined, { DAILY_GLOBAL_LIMIT: '1' });
+    const g = setup(undefined, fwqLimits({ daily_global: 1 }));
     expect((await g.run(req('/chat', ask()))).res.status).toBe(200);
     const { res } = await g.run(req('/chat', ask(), { 'CF-Connecting-IP': '198.51.100.1' }));
     expect(res.status).toBe(503);
@@ -90,14 +98,29 @@ describe('guards', () => {
   });
 
   it('a visitor over their own limit, or sending bad requests, never eats the global budget', async () => {
-    const { run, db } = setup(undefined, { DAILY_VISITOR_LIMIT: '1' });
+    const { run, db } = setup(undefined, fwqLimits({ daily_visitor: 1 }));
     for (let i = 0; i < 5; i++) await run(req('/chat', ask()));
     for (let i = 0; i < 5; i++) await run(req('/chat', ask({ question: '' })));
-    expect(db.rows("SELECT n FROM quota WHERE key = '*'")).toEqual([{ n: 1 }]);
+    expect(db.rows("SELECT n FROM quota WHERE key = 'fwq:*'")).toEqual([{ n: 1 }]);
+  });
+
+  it('only lets the origins of a site use its contexts', async () => {
+    const { run, claude } = setup();
+    expect((await run(req('/chat', ask(), { Origin: 'https://rasqberry.org' }))).res.status).toBe(403);
+    expect((await run(req('/chat', ask({ site: 'nope' })))).res.status).toBe(400);
+    expect(claude.calls).toHaveLength(0);
+  });
+
+  it('keeps separate daily budgets per site', async () => {
+    const { run, db } = setup(undefined, fwqLimits({ daily_global: 1 }));
+    expect((await run(req('/chat', ask()))).res.status).toBe(200);
+    expect((await run(req('/chat', ask(), { 'CF-Connecting-IP': '198.51.100.1' }))).res.status).toBe(503);
+    const keys = db.rows('SELECT key FROM quota ORDER BY key').map((r) => String(r.key));
+    expect(keys.every((k) => k.startsWith('fwq:'))).toBe(true);
   });
 
   it('counts an IPv6 /64 as one visitor', async () => {
-    const { run } = setup(undefined, { DAILY_VISITOR_LIMIT: '1' });
+    const { run } = setup(undefined, fwqLimits({ daily_visitor: 1 }));
     expect((await run(req('/chat', ask(), { 'CF-Connecting-IP': '2001:db8:1:2::1' }))).res.status).toBe(200);
     expect((await run(req('/chat', ask(), { 'CF-Connecting-IP': '2001:db8:1:2:ffff::9' }))).res.status).toBe(429);
     expect((await run(req('/chat', ask(), { 'CF-Connecting-IP': '2001:db8:1:3::1' }))).res.status).toBe(200);

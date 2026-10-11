@@ -58,6 +58,8 @@ jobs:
           echo "D1 database: $id"
       - name: Apply migrations
         run: npx wrangler d1 migrations apply fwq-assistant --remote
+      - name: Build the embeddable widget (public/widget.js)
+        run: npm run widget
       - name: Deploy
         run: npx wrangler deploy | tee "$RUNNER_TEMP/deploy.txt"
       - name: Store the Anthropic API key as a Worker secret

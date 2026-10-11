@@ -27,6 +27,10 @@ Most events need **no JavaScript**: Umami's tracker records a click on any eleme
 | `Portal: coin game learn more` | `site` (ibm \| doqumentation), `term` | "Learn more" link in an explanation clicked |
 | `Portal: coin game peek` | — | "Look inside" pressed after losing to the quantum computer |
 | `Portal: coin game sandbox` | `action` (measure \| measure 100), `outcome` / `gates` | sandbox measurements |
+| `Portal: assistant open` | `context` | the explainer's chat box opened (under a game) |
+| `Portal: assistant ask` | `context`, `level` | a question sent |
+| `Portal: assistant level` | `context`, `level` (kids \| normal \| math) | the level switch changed |
+| `Portal: assistant vote` | `context`, `vote` (up \| down) | thumbs under an answer |
 | `QuBins: notebook launch` | `image`, `mode`, `ui`, `notebook` | qubins.org/launch (waits ≤1.5 s for the tracker, then redirects) |
 | `QuBins: hero launch click` · `example launch click` · `catalog launch click` | `tag` / `example` | qubins.org landing page |
 | `QuBins: hero docker copy` · `catalog docker copy` · `catalog filter minor` · `catalog filter flavor` · `catalog show all` | `tag` / `value` | qubins.org catalog |
@@ -43,6 +47,7 @@ Most events need **no JavaScript**: Umami's tracker records a click on any eleme
 | `RasQberry Two: image download` | `file`, `stream`, `tag` | rasqberry.org/latest redirect |
 | `RasQberry Two: beta box click` | `target` (imager \| release-notes \| feedback \| ab-image \| learning-paths) | rasqberry.org homepage "New beta" box |
 | `RasQberry Two: newsletter open` | — | rasqberry.org footer |
+| `RasQberry Two: assistant open` / `ask` / `vote` | `context` (build \| device), `vote` | the RasQberry helper (widget.js from the assistant Worker) |
 | `Entangible: runner start` · `runner finish` | `level` (+ `score` on finish) | entangible.org Runner |
 | `Entangible: golf hole finished` · `golf round finished` | `qubits`, `score`, `course` / `course`, `scope` | entangible.org Golf |
 | `racetraQ: mode change` · `track change` | `mode` (watch \| race \| evolution), `track` | racetraq.org (browser edition) — header tabs |

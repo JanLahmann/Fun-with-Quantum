@@ -44,12 +44,13 @@ export function makeEnv(over: Partial<Record<keyof Env, unknown>> = {}) {
   const rl = { allow: true, calls: 0, async limit() { this.calls++; return { success: this.allow }; } };
   const env = {
     ANTHROPIC_API_KEY: 'test-key',
-    ALLOWED_ORIGINS: 'https://fun-with-quantum.org,http://localhost:4321',
+    SITES: {
+      fwq: { origins: ['https://fun-with-quantum.org', 'http://localhost:4321'], daily_visitor: 50, daily_global: 2000 },
+      rasqberry: { origins: ['https://rasqberry.org'], daily_visitor: 100, daily_global: 1000 },
+    },
     MODEL: 'claude-sonnet-5-5',
     MAX_TOKENS: '600',
     MAX_HISTORY_TURNS: '5',
-    DAILY_VISITOR_LIMIT: '50',
-    DAILY_GLOBAL_LIMIT: '2000',
     RETENTION_DAYS: '30',
     DB: db,
     RL: rl,

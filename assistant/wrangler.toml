@@ -6,7 +6,6 @@ main = "src/index.ts"
 compatibility_date = "2026-10-01"
 
 [vars]
-ALLOWED_ORIGINS = "https://fun-with-quantum.org,http://localhost:4321"
 MODEL = "claude-sonnet-5-5"
 # Output budget per answer. It also covers the model's own reasoning before it writes, so it is
 # well above the longest answer (about 220 words at the "With math" level); at 600, answers
@@ -14,12 +13,22 @@ MODEL = "claude-sonnet-5-5"
 MAX_TOKENS = "1500"
 # Question/answer pairs sent along as conversation history (code caps it at 10).
 MAX_HISTORY_TURNS = "5"
-# Requests per visitor per UTC day, and for everyone together (a cost backstop next to the
-# spend limit in the Anthropic console).
-DAILY_VISITOR_LIMIT = "50"
-DAILY_GLOBAL_LIMIT = "2000"
 # Logged questions and answers are deleted after this many days.
 RETENTION_DAYS = "30"
+
+# One table per site that embeds the widget: the origins allowed to call, and the requests per
+# visitor per UTC day and for all of the site's visitors together (a cost backstop next to the
+# spend limit in the Anthropic console). Budgets are separate, so no site can use up another's.
+[vars.SITES.fwq]
+origins = ["https://fun-with-quantum.org", "http://localhost:4321"]
+daily_visitor = 50
+daily_global = 2000
+
+# RasQberry: at a booth, every visitor at one Pi shares its address, hence the higher per-visitor limit.
+[vars.SITES.rasqberry]
+origins = ["https://rasqberry.org", "http://localhost:3000"]
+daily_visitor = 100
+daily_global = 1000
 
 [[d1_databases]]
 binding = "DB"
@@ -36,3 +45,8 @@ simple = { limit = 10, period = 60 }
 # Daily clean-up: drops logs older than RETENTION_DAYS and old quota counters.
 [triggers]
 crons = ["17 3 * * *"]
+
+# The embeddable chat widget (portal/src/lib/assistant/embed.ts → public/widget.js, built by
+# `npm run widget` before every deploy), served at /widget.js for sites outside the portal.
+[assets]
+directory = "./public"

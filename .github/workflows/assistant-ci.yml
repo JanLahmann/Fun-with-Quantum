@@ -7,14 +7,16 @@ on:
     paths:
       - 'assistant/**'
       - 'portal/src/lib/qcoin/**' # the coin-game knowledge is built from the game's own code
-      - 'portal/src/lib/assistant/i18n.ts' # the level labels in the rules
+      - 'portal/src/lib/assistant/**' # level labels in the rules; widget.js is built from here
+      - 'portal/src/lib/level.ts'
       - '.github/workflows/assistant-ci.yml'
   push:
     branches: [master]
     paths:
       - 'assistant/**'
       - 'portal/src/lib/qcoin/**'
-      - 'portal/src/lib/assistant/i18n.ts'
+      - 'portal/src/lib/level.ts'
+      - 'portal/src/lib/assistant/**'
       - '.github/workflows/assistant-ci.yml'
   workflow_dispatch:
 
@@ -43,5 +45,7 @@ jobs:
         run: npm test
       - name: Type check
         run: npm run check
+      - name: Build the embeddable widget (public/widget.js)
+        run: npm run widget
       - name: Bundle and validate wrangler.toml (dry run, no account needed)
         run: npx wrangler deploy --dry-run --outdir "$RUNNER_TEMP/worker"
