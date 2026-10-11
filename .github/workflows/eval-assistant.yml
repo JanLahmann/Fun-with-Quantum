@@ -9,6 +9,11 @@ on:
       url:
         description: Worker URL (https://fwq-assistant.<account>.workers.dev)
         required: true
+      set:
+        description: Eval set (assistant/evals/<set>.jsonl)
+        type: choice
+        options: [coin-game, rasqberry-build]
+        default: coin-game
       only:
         description: Run just this case id (optional)
         required: false
@@ -32,8 +37,9 @@ jobs:
         env:
           URL: ${{ inputs.url }}
           ONLY: ${{ inputs.only }}
+          SET: ${{ inputs.set }}
         run: |
-          args=(--url "$URL" --out "$RUNNER_TEMP/report.md")
+          args=(--url "$URL" --file "evals/${SET:-coin-game}.jsonl" --out "$RUNNER_TEMP/report.md")
           [ -n "$ONLY" ] && args+=(--only "$ONLY")
           status=0; node evals/run.mjs "${args[@]}" || status=$?
           cat "$RUNNER_TEMP/report.md" >> "$GITHUB_STEP_SUMMARY"

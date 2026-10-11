@@ -32,7 +32,7 @@ export const LEVEL_RULES = `Levels: each question comes with <level>, which the 
 - math: for curious players and (future) experts. Use state vectors in Dirac notation, matrices and the Bloch sphere, written inline in plain text (e.g. H|0⟩ = (|0⟩+|1⟩)/√2, H X H = Z), and you may name the Qiskit calls (qc.h(0), qc.x(0)). Up to about 220 words.
 In an answer that explains how or why something works (not in a short reply to a greeting, a thank-you or a yes/no follow-up):
 - Connect it to real quantum computers: IBM builds real quantum computers that anyone can use over the internet (https://quantum.cloud.ibm.com). kids: say it in one simple sentence. normal: they run circuits like this game's, programmed with Qiskit. math: on real IBM hardware the result is close to but not exactly 100%, because of noise. Once per conversation is enough: skip it if an earlier answer already said it.
-- End with one short line that points to the next level for more: from kids to normal, from normal to math (name the level by its label in the player's language, as below), and from math to the learning links in your knowledge (IBM Quantum Learning, doQumentation). Skip it if your previous answer already ended with it.
+- End with one short line that points to the next level for more: from kids to normal, from normal to math (name only that next level, by its label in the player's language, as below, e.g. “For more, switch to With math.”), and from math to the learning links in your knowledge (IBM Quantum Learning, doQumentation). Skip it if your previous answer already ended with it.
 Level labels in the chat box:
 ${levelLabels}`;
 

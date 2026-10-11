@@ -324,3 +324,22 @@ describe('coin-game round log', () => {
     expect(coinGame.state({ game: 'quantum-coin-game', chapter: 2, rounds: [{ ...r(true), n: 0 }] })!.rounds).toEqual([{ ...r(true), n: undefined }].map(({ n, ...x }) => x));
   });
 });
+
+describe('rasqberry site', () => {
+  const rqb = (over: Record<string, unknown> = {}) => ({ site: 'rasqberry', context: 'build', locale: 'en', question: 'Which Pi do I need?', state: { page: '/' }, ...over });
+
+  it('answers rasqberry.org with the build context, logs no level', async () => {
+    const { run, claude, db } = setup();
+    const { res } = await run(req('/chat', rqb({ level: 'kids' }), { Origin: 'https://rasqberry.org' }));
+    expect(res.status).toBe(200);
+    expect(claude.calls[0].body.messages.at(-1).content).toContain('<page_state>{"page":"/"}</page_state>');
+    expect(claude.calls[0].body.messages.at(-1).content).not.toContain('<level>');
+    expect(db.rows('SELECT site, context, level FROM messages')).toEqual([{ site: 'rasqberry', context: 'build', level: null }]);
+  });
+
+  it('refuses the build context from the portal origin', async () => {
+    const { run, claude } = setup();
+    expect((await run(req('/chat', rqb()))).res.status).toBe(403);
+    expect(claude.calls).toHaveLength(0);
+  });
+});

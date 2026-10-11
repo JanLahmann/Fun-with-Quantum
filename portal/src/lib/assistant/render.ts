@@ -3,7 +3,7 @@
  * is escaped first; then bold, paragraphs, and links — but only to sites we trust, the rest stay
  * plain text.
  */
-const TRUSTED = /^https:\/\/((?:[a-z]{2}\.)?doqumentation\.org|quantum\.cloud\.ibm\.com|fun-with-quantum\.org|github\.com\/JanLahmann)(\/|$)/;
+const TRUSTED = /^https:\/\/((?:[a-z]{2}\.)?doqumentation\.org|quantum\.cloud\.ibm\.com|fun-with-quantum\.org|rasqberry\.org|github\.com\/JanLahmann)(\/|$)/;
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
