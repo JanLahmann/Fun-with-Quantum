@@ -6,7 +6,7 @@
  *           data-site="rasqberry" data-context="build" data-context-pi="device"></script>
  *
  * data-context-pi: the context to use when the page was opened on a RasQberry (?from=pi, kept for
- * the browser tab). data-public="1" shows it to everyone; until then only with ?assistant=1.
+ * the browser tab); its start URL may add v=<image build>, model=pi4|pi5 and led=<LED layout>. data-public="1" shows it to everyone; until then only with ?assistant=1.
  * The page may define window.fwqAssistantState() to add to the state sent along (page + title).
  * The box floats bottom right in a shadow root, so the site's CSS and ours stay apart.
  */
@@ -103,6 +103,21 @@ function el<K extends keyof HTMLElementTagNameMap>(tag: K, attrs: Record<string,
   return e;
 }
 
+/**
+ * The Pi's facts from its start URL (?from=pi&v=<image build>&model=pi4|pi5&led=<layout>),
+ * kept for the tab like the flags above. The Worker validates them.
+ */
+function piDevice(): Record<string, string> | undefined {
+  const q = new URLSearchParams(location.search);
+  const fresh = Object.fromEntries((['v', 'model', 'led'] as const).flatMap((k) => (q.get(k) ? [[k === 'v' ? 'version' : k, q.get(k)!.slice(0, 60)]] : [])));
+  try {
+    if (Object.keys(fresh).length) sessionStorage.setItem('fwq-pi-device', JSON.stringify(fresh));
+    return JSON.parse(sessionStorage.getItem('fwq-pi-device') ?? 'null') ?? undefined;
+  } catch {
+    return Object.keys(fresh).length ? fresh : undefined;
+  }
+}
+
 export function embed(script: HTMLScriptElement): void {
   const d = script.dataset;
   const site = d.site ?? '';
@@ -113,7 +128,8 @@ export function embed(script: HTMLScriptElement): void {
 
   registerState(context, () => {
     const extra = (() => { try { return window.fwqAssistantState?.() ?? {}; } catch { return {}; } })();
-    return { page: location.pathname, title: document.title.slice(0, 200), ...extra };
+    const device = onPi ? piDevice() : undefined;
+    return { page: location.pathname, title: document.title.slice(0, 200), ...(device ? { device } : {}), ...extra };
   });
 
   const host = el('div', { id: 'fwq-assistant' });

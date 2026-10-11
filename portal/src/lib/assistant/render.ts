@@ -1,5 +1,5 @@
 /**
- * Turns an assistant answer (plain text with **bold** and bare URLs) into safe HTML: everything
+ * Turns an assistant answer (plain text with **bold**, [links](url) and bare URLs) into safe HTML: everything
  * is escaped first; then bold, paragraphs, and links — but only to sites we trust, the rest stay
  * plain text.
  */
@@ -7,13 +7,18 @@ const TRUSTED = /^https:\/\/((?:[a-z]{2}\.)?doqumentation\.org|quantum\.cloud\.i
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
+const anchor = (url: string, text: string) => `<a href="${url}" target="_blank" rel="noopener">${text}</a>`;
+
+/** Markdown links [text](url) and bare URLs; untrusted ones stay plain text. */
 function linkify(escaped: string): string {
-  return escaped.replace(/https:\/\/[^\s<)\]]+/g, (raw) => {
+  return escaped.replace(/\[([^\]\n]+)\]\((https:\/\/[^\s)<]+)\)|https:\/\/[^\s<)\]]+/g, (raw, text?: string, target?: string) => {
+    if (text !== undefined && target !== undefined) {
+      return TRUSTED.test(target.replace(/&amp;/g, '&')) ? anchor(target, text) : `${text} (${target})`;
+    }
     const url = raw.replace(/[.,;:!?'"]+$/, '');
     const tail = raw.slice(url.length);
-    const real = url.replace(/&amp;/g, '&');
-    if (!TRUSTED.test(real)) return raw;
-    return `<a href="${url}" target="_blank" rel="noopener">${url}</a>${tail}`;
+    if (!TRUSTED.test(url.replace(/&amp;/g, '&'))) return raw;
+    return `${anchor(url, url)}${tail}`;
   });
 }
 
