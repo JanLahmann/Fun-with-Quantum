@@ -7,6 +7,7 @@ import { ASSISTANT_TEXTS, type AssistantTexts } from './i18n';
 import { isLocale } from '../qcoin/i18n';
 import { readEvents, renderAnswer } from './render';
 import { currentState } from './state';
+import { getLevel, isLevel, setLevel } from '../level';
 
 /** Question/answer pairs kept for follow-up questions (the Worker uses the last 5–10). */
 const KEEP_TURNS = 10;
@@ -28,6 +29,17 @@ export function mountAssistant(root: HTMLElement): void {
   const form = root.querySelector<HTMLFormElement>('form')!;
   const input = form.querySelector<HTMLTextAreaElement>('textarea')!;
   const send = form.querySelector<HTMLButtonElement>('button[type=submit]')!;
+
+  let level = getLevel();
+  for (const r of root.querySelectorAll<HTMLInputElement>('.fa-level input')) {
+    r.checked = r.value === level;
+    r.addEventListener('change', () => {
+      if (!r.checked || !isLevel(r.value)) return;
+      level = r.value;
+      setLevel(level);
+      track('Portal: assistant level', { context, level });
+    });
+  }
 
   const history: { role: 'user' | 'assistant'; content: string }[] = [];
   let busy: AbortController | null = null;
@@ -98,14 +110,14 @@ export function mountAssistant(root: HTMLElement): void {
     send.disabled = true;
     bubble('you', renderAnswer(question));
     const body = bubble('bot', `<p class="fa-thinking">${t.thinking}</p>`);
-    track('Portal: assistant ask', { context });
+    track('Portal: assistant ask', { context, level });
     let answer = '';
     const fail = (msg: string) => { body.innerHTML = `<p class="fa-error">${msg}</p>`; };
     try {
       const res = await fetch(`${url}/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ site, context, locale: lang, question, state: currentState(context), history: history.slice(-2 * KEEP_TURNS) }),
+        body: JSON.stringify({ site, context, locale: lang, level, question, state: currentState(context), history: history.slice(-2 * KEEP_TURNS) }),
         signal: ctrl.signal,
       });
       if (!res.ok || !res.body) {

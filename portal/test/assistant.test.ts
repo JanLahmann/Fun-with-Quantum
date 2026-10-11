@@ -30,7 +30,8 @@ describe('assistant answer rendering', () => {
     const keys = Object.keys(ASSISTANT_TEXTS.en).sort();
     for (const l of LOCALES) {
       expect(Object.keys(ASSISTANT_TEXTS[l]).sort()).toEqual(keys);
-      for (const v of Object.values(ASSISTANT_TEXTS[l])) expect(v.trim()).not.toBe('');
+      const { levels, ...plain } = ASSISTANT_TEXTS[l];
+      for (const v of [...Object.values(plain), ...Object.values(levels)]) expect(v.trim()).not.toBe('');
     }
   });
 });

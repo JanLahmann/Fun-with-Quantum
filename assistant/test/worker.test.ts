@@ -150,6 +150,16 @@ describe('chat', () => {
     expect(JSON.parse(row.state_json as string)).toEqual(STATE);
   });
 
+  it('passes the level in the user message and logs it; anything else counts as normal', async () => {
+    const { run, claude, db } = setup();
+    await run(req('/chat', ask({ level: 'kids' })));
+    await run(req('/chat', ask({ level: 'expert' })));
+    await run(req('/chat', ask()));
+    expect(claude.calls.map((c) => /<level>(\w+)<\/level>/.exec(c.body.messages.at(-1).content)?.[1])).toEqual(['kids', 'normal', 'normal']);
+    expect(db.rows('SELECT level FROM messages ORDER BY rowid').map((r) => r.level)).toEqual(['kids', 'normal', 'normal']);
+    expect(claude.calls[0].body.system).toEqual(claude.calls[1].body.system);
+  });
+
   it('keeps the system prompt identical across requests (cacheable prefix)', async () => {
     const { run, claude } = setup();
     await run(req('/chat', ask()));

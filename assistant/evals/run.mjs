@@ -4,7 +4,7 @@
  *
  *   node evals/run.mjs --url https://fwq-assistant.<account>.workers.dev [--only <id>] [--file evals/coin-game.jsonl]
  *
- * Each case: question + state (+ history) and heuristic checks — `any`/`any2` (each list needs
+ * Each case: question + state (+ history, level) and heuristic checks — `any`/`any2` (each list needs
  * one match), `none` (no match allowed), `lang` (the answer's language). Patterns are
  * case-insensitive Unicode regexes; a leading "=" makes one case-sensitive (e.g. the gate H:
  * `=(?<!\p{L})H(?!\p{L})`, since \b doesn't know ä or ö). The checks catch
@@ -40,7 +40,7 @@ async function askOnce(c, t0) {
   const res = await fetch(`${url.replace(/\/$/, '')}/chat`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Origin: origin },
-    body: JSON.stringify({ site: 'fwq', context: 'coin-game', locale: c.locale, question: c.question, state: c.state, history: c.history }),
+    body: JSON.stringify({ site: 'fwq', context: 'coin-game', locale: c.locale, level: c.level, question: c.question, state: c.state, history: c.history }),
   });
   if (!res.ok) return { error: `HTTP ${res.status} ${await res.text()}`, ms: Date.now() - t0 };
   const text = await res.text();
@@ -71,7 +71,7 @@ for (const [i, c] of cases.entries()) {
   const r = await ask(c);
   const fails = r.error ? [r.error] : r.end?.ev !== 'done' ? [`stream ended with ${JSON.stringify(r.end)}`, ...check(c, r.answer)] : check(c, r.answer);
   if (!fails.length) passed++;
-  lines.push(`## ${fails.length ? '❌' : '✅'} ${c.id}`, '', `*${c.note}* · chapter ${c.state.chapter} · ${c.locale} · ${r.ms} ms`, '', `> **Q:** ${c.question}`, '');
+  lines.push(`## ${fails.length ? '❌' : '✅'} ${c.id}`, '', `*${c.note}* · chapter ${c.state.chapter} · ${c.locale} · ${c.level ?? 'normal'} · ${r.ms} ms`, '', `> **Q:** ${c.question}`, '');
   lines.push((r.answer || '(no answer)').split('\n').map((l) => `> ${l}`).join('\n'), '');
   if (fails.length) lines.push(...fails.map((f) => `- ${f}`), '');
   console.error(`${fails.length ? 'FAIL' : 'ok  '} ${c.id}${fails.length ? ' — ' + fails.join('; ') : ''}`);

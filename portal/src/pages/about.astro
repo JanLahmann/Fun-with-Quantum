@@ -42,12 +42,13 @@ import Base from '../layouts/Base.astro';
           <li>
             <strong>The explainer.</strong> Under some games you can ask questions in a chat (“Ask the
             explainer”). Only when you send a question, it goes together with the visible game state
-            (chapter, moves, score) and the page language through our server at Cloudflare to Anthropic,
+            (chapter, moves, score), the explanation level you picked and the page language through our server at Cloudflare to Anthropic,
             whose Claude model writes the answer (see Anthropic's{' '}<a href="https://www.anthropic.com/legal/privacy" target="_blank" rel="noopener">privacy policy</a>).
             We store the question, the answer, the game state and your thumbs up or down for 30 days to
             improve the explainer, then delete them. We store no IP address and no cookie with them; to
             limit requests, the server counts questions per day under a pseudonym derived from your IP
-            address that changes every day. Please don't enter personal data.
+            address that changes every day. The level you pick (Kids, Normal, With math) is remembered only in
+            your own browser. Please don't enter personal data.
           </li>
           <li>
             <strong>Hosting.</strong> The site is served by GitHub Pages; GitHub processes your IP address to
