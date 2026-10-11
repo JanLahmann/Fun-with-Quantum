@@ -7,7 +7,7 @@ import { ASSISTANT_TEXTS, type AssistantTexts } from './i18n';
 import { isLocale } from '../qcoin/i18n';
 import { readEvents, renderAnswer } from './render';
 import { currentState } from './state';
-import { getLevel, isLevel, setLevel } from '../level';
+import { getLevel, isLevel, setLevel, type Level } from '../level';
 
 /** Question/answer pairs kept for follow-up questions (the Worker uses the last 5–10). */
 const KEEP_TURNS = 10;
@@ -17,12 +17,17 @@ declare global {
 }
 const track = (name: string, data?: Record<string, string | number>) => { try { window.umami?.track(name, data); } catch { /* best effort */ } };
 
-export function mountAssistant(root: HTMLElement): void {
+/**
+ * `texts` overrides the game texts (other sites); `events` is the analytics prefix, as in
+ * "<Site>: assistant ask" (family/EVENTS.md).
+ */
+export function mountAssistant(root: HTMLElement, opts: { texts?: Partial<AssistantTexts>; events?: string } = {}): void {
   const url = (root.dataset.url ?? '').replace(/\/$/, '');
   const site = root.dataset.site ?? 'fwq';
   const context = root.dataset.context ?? '';
   const lang = root.dataset.locale ?? 'en';
-  const t: AssistantTexts = ASSISTANT_TEXTS[isLocale(lang) ? lang : 'en'];
+  const t: AssistantTexts = { ...ASSISTANT_TEXTS[isLocale(lang) ? lang : 'en'], ...opts.texts };
+  const events = opts.events ?? 'Portal';
   const openBtn = root.querySelector<HTMLButtonElement>('.fa-open')!;
   const panel = root.querySelector<HTMLElement>('.fa-panel')!;
   const log = root.querySelector<HTMLElement>('.fa-log')!;
@@ -30,14 +35,16 @@ export function mountAssistant(root: HTMLElement): void {
   const input = form.querySelector<HTMLTextAreaElement>('textarea')!;
   const send = form.querySelector<HTMLButtonElement>('button[type=submit]')!;
 
-  let level = getLevel();
-  for (const r of root.querySelectorAll<HTMLInputElement>('.fa-level input')) {
+  // Only where the chat box has the level switch (the games); other sites send no level.
+  const radios = root.querySelectorAll<HTMLInputElement>('.fa-level input');
+  let level: Level | undefined = radios.length ? getLevel() : undefined;
+  for (const r of radios) {
     r.checked = r.value === level;
     r.addEventListener('change', () => {
       if (!r.checked || !isLevel(r.value)) return;
       level = r.value;
       setLevel(level);
-      track('Portal: assistant level', { context, level });
+      track(`${events}: assistant level`, { context, level });
     });
   }
 
@@ -48,7 +55,7 @@ export function mountAssistant(root: HTMLElement): void {
     const open = panel.hidden;
     panel.hidden = !open;
     openBtn.setAttribute('aria-expanded', String(open));
-    if (open) { input.focus(); track('Portal: assistant open', { context }); }
+    if (open) { input.focus(); track(`${events}: assistant open`, { context }); }
   });
 
   input.addEventListener('keydown', (e) => {
@@ -74,6 +81,7 @@ export function mountAssistant(root: HTMLElement): void {
     const box = msg.getBoundingClientRect();
     if (box.height <= log.clientHeight) log.scrollTop = log.scrollHeight;
     else log.scrollTop += box.top - logBox.top;
+    if (root.classList.contains('fa-float')) return; // a floating box never scrolls the page
     const view = log.getBoundingClientRect();
     const below = Math.min(view.bottom, msg.getBoundingClientRect().bottom) + 12 - window.innerHeight;
     const roomAbove = msg.getBoundingClientRect().top - 12;
@@ -91,7 +99,7 @@ export function mountAssistant(root: HTMLElement): void {
       b.title = label;
       b.addEventListener('click', () => {
         row.textContent = t.thanks;
-        track('Portal: assistant vote', { context, vote: vote === 1 ? 'up' : 'down' });
+        track(`${events}: assistant vote`, { context, vote: vote === 1 ? 'up' : 'down' });
         fetch(`${url}/feedback`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, vote }) }).catch(() => {});
       });
       row.append(b);
@@ -110,7 +118,7 @@ export function mountAssistant(root: HTMLElement): void {
     send.disabled = true;
     bubble('you', renderAnswer(question));
     const body = bubble('bot', `<p class="fa-thinking">${t.thinking}</p>`);
-    track('Portal: assistant ask', { context, level });
+    track(`${events}: assistant ask`, level ? { context, level } : { context });
     let answer = '';
     const fail = (msg: string) => { body.innerHTML = `<p class="fa-error">${msg}</p>`; };
     try {

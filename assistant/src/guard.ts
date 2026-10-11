@@ -1,11 +1,14 @@
-import { intVar, type Env } from './env';
+import { intVar, type Env, type SiteConfig } from './env';
 
-export const allowedOrigins = (env: Env) => env.ALLOWED_ORIGINS.split(',').map((s) => s.trim()).filter(Boolean);
+/** A site's settings, or null for an unknown site. */
+export function siteConfig(env: Env, site: unknown): SiteConfig | null {
+  return typeof site === 'string' && Object.hasOwn(env.SITES, site) ? env.SITES[site] : null;
+}
 
-/** The request's Origin when it is one of ours, else null (no Origin header counts as foreign). */
+/** The request's Origin when it belongs to one of our sites, else null (no Origin header counts as foreign). */
 export function checkOrigin(req: Request, env: Env): string | null {
   const origin = req.headers.get('Origin');
-  return origin && allowedOrigins(env).includes(origin) ? origin : null;
+  return origin && Object.values(env.SITES).some((s) => s.origins.includes(origin)) ? origin : null;
 }
 
 export function corsHeaders(origin: string): Record<string, string> {
@@ -55,13 +58,14 @@ async function bump(env: Env, day: string, key: string): Promise<number> {
 }
 
 /**
- * Daily counters, checked after the burst limiter and after the request proved valid: first the
- * visitor's own count; only requests within it count towards the global limit, so one visitor
- * can never use up everyone's budget.
+ * Daily counters per site, checked after the burst limiter and after the request proved valid:
+ * first the visitor's own count; only requests within it count towards the site's global limit,
+ * so one visitor can never use up everyone's budget, and one site never another site's.
  */
-export async function checkDaily(env: Env, key: string, now: number): Promise<'ok' | 'visitor' | 'global'> {
+export async function checkDaily(env: Env, site: string, key: string, now: number): Promise<'ok' | 'visitor' | 'global'> {
   const day = utcDay(now);
-  if ((await bump(env, day, key)) > intVar(env.DAILY_VISITOR_LIMIT, 50)) return 'visitor';
-  if ((await bump(env, day, '*')) > intVar(env.DAILY_GLOBAL_LIMIT, 2000)) return 'global';
+  const cfg = env.SITES[site];
+  if ((await bump(env, day, `${site}:${key}`)) > intVar(String(cfg.daily_visitor), 50)) return 'visitor';
+  if ((await bump(env, day, `${site}:*`)) > intVar(String(cfg.daily_global), 1000)) return 'global';
   return 'ok';
 }

@@ -1,23 +1,23 @@
 /**
- * fwq-assistant — the runtime assistant behind the chat widget on fun-with-quantum.org
- * (and later doQumentation and RasQberry).
+ * fwq-assistant — the runtime assistant behind the chat widget on fun-with-quantum.org and
+ * rasqberry.org (later doQumentation). Each site has its own origins, budgets and contexts.
  *
  *   POST /chat      {site, context, locale, level, question, state, history} → SSE: delta… then done|error
  *   POST /feedback  {id, vote: 1 | -1}                                 → 204
  *
- * Guards: Origin allow-list, burst + daily limits, size limits, per-context state validation.
+ * Guards: Origin allow-list per site, burst + daily limits, size limits, per-context state validation.
  * Every answer is logged to D1 (no IP, no cookie) and deleted after RETENTION_DAYS.
  */
 import { callClaude, relay, type ChatMessage } from './anthropic';
 import { contextFor } from './contexts';
 import { intVar, type Env } from './env';
-import { checkDaily, checkOrigin, corsHeaders, visitorKey } from './guard';
+import { checkDaily, checkOrigin, corsHeaders, siteConfig, visitorKey } from './guard';
 import { isLevel, systemPrompt, userMessage } from './prompt';
 
-export const MAX_BODY = 32_000;
-export const MAX_QUESTION = 1_000;
-export const MAX_HISTORY_MESSAGE = 4_000;
-export const HISTORY_CAP = 10;
+const MAX_BODY = 32_000;
+const MAX_QUESTION = 1_000;
+const MAX_HISTORY_MESSAGE = 4_000;
+const HISTORY_CAP = 10;
 
 export interface Deps {
   now: () => number;
@@ -77,20 +77,22 @@ async function chat(req: Request, env: Env, ctx: ExecutionContext, deps: Deps, c
   if (!(await env.RL.limit({ key: `chat:${visitor}` })).success) return json(429, { error: 'rate' }, cors);
 
   const body = await readJson(req);
-  const context = body && contextFor(body.site, body.context);
+  const site = siteConfig(env, body?.site);
+  if (body && site && !site.origins.includes(req.headers.get('Origin')!)) return json(403, { error: 'origin' }, cors);
+  const context = site && contextFor(body!.site, body!.context);
   const question = typeof body?.question === 'string' ? body.question.trim() : '';
   const locale = typeof body?.locale === 'string' && /^[a-z]{2}(-[A-Za-z]{2,4})?$/.test(body.locale) ? body.locale : 'en';
-  const level = typeof body?.level === 'string' && isLevel(body.level) ? body.level : 'normal';
+  const level = !context?.levels ? null : typeof body?.level === 'string' && isLevel(body.level) ? body.level : 'normal';
   const state = context ? context.state(body!.state) : null;
   const history = cleanHistory(body?.history, intVar(env.MAX_HISTORY_TURNS, 5));
   if (!body || !context || !state || !history || !question || question.length > MAX_QUESTION) {
     return json(400, { error: 'bad_request' }, cors);
   }
-  const daily = await checkDaily(env, visitor, now);
+  const daily = await checkDaily(env, body.site as string, visitor, now);
   if (daily !== 'ok') return daily === 'global' ? json(503, { error: 'busy' }, cors) : json(429, { error: 'rate' }, cors);
 
   const model = env.MODEL;
-  const messages: ChatMessage[] = [...history, { role: 'user', content: userMessage(locale, level, state, question) }];
+  const messages: ChatMessage[] = [...history, { role: 'user', content: userMessage(locale, level, state, question, context.stateTag) }];
   const id = deps.uuid();
   const log = (answer: string, extra: Partial<Record<string, string | number | null>>) =>
     env.DB.prepare(

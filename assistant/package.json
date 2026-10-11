@@ -7,11 +7,13 @@
     "deploy": "wrangler deploy",
     "test": "vitest run",
     "check": "tsc --noEmit -p . && tsc --noEmit -p test",
-    "types": "wrangler types"
+    "types": "wrangler types",
+    "widget": "esbuild ../portal/src/lib/assistant/embed.ts --bundle --minify --format=iife --target=es2020 --outfile=public/widget.js"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20261010.1",
     "@types/node": "^26.6.5",
+    "esbuild": "^0.25.10",
     "typescript": "^6.0.3",
     "vitest": "^3.2.7",
     "wrangler": "^4.149.0"

@@ -1,14 +1,20 @@
 export interface Env {
   ANTHROPIC_API_KEY: string;
-  ALLOWED_ORIGINS: string;
+  /** Per site: who may embed the widget, and its daily budgets ([vars.SITES.<site>] in wrangler.toml). */
+  SITES: Record<string, SiteConfig>;
   MODEL: string;
   MAX_TOKENS: string;
   MAX_HISTORY_TURNS: string;
-  DAILY_VISITOR_LIMIT: string;
-  DAILY_GLOBAL_LIMIT: string;
   RETENTION_DAYS: string;
   DB: D1Database;
   RL: RateLimit;
+}
+
+export interface SiteConfig {
+  origins: string[];
+  /** Requests per visitor per UTC day, and for all visitors of this site together. */
+  daily_visitor: number;
+  daily_global: number;
 }
 
 /** The rate-limiting binding ([[ratelimits]] in wrangler.toml). */
