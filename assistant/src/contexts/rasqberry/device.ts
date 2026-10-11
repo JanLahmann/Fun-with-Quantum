@@ -2,7 +2,7 @@ import type { Context } from '../types';
 import { DEVICE_KNOWLEDGE } from './device.generated';
 import { pageState } from './build';
 
-/** The Pi's own facts, from the start URL its browser opens (?from=pi&v=…&model=…&led=…). */
+/** The Pi's own facts, from the start URL its browser opens (?from=pi&v=…&model=…&led=…&ledcheck=…). */
 function device(raw: unknown): Record<string, string> | null {
   const d = raw as Record<string, unknown> | null | undefined;
   if (!d || typeof d !== 'object' || Array.isArray(d)) return null;
@@ -10,6 +10,8 @@ function device(raw: unknown): Record<string, string> | null {
   if (typeof d.version === 'string' && /^[\w.+-]{1,60}$/.test(d.version)) out.version = d.version;
   if (d.model === 'pi4' || d.model === 'pi5') out.model = d.model;
   if (typeof d.led === 'string' && /^[a-z0-9-]{1,30}$/.test(d.led)) out.led = d.led;
+  // LED_LAYOUT_VERIFIED: true = checked, false = not checked yet (led is then only the default), skipped = no panel.
+  if (d.ledcheck === 'true' || d.ledcheck === 'false' || d.ledcheck === 'skipped') out.ledcheck = d.ledcheck;
   return Object.keys(out).length ? out : null;
 }
 

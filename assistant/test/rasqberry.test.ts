@@ -64,6 +64,8 @@ describe('rasqberry device context (the Pi)', async () => {
     expect(rasqberryDevice.state({ page: '/', device: { version: 'beta-2026-10-10-053754', model: 'pi5', led: 'quad-4x12', x: 1 } }))
       .toEqual({ page: '/', device: { version: 'beta-2026-10-10-053754', model: 'pi5', led: 'quad-4x12' } });
     expect(rasqberryDevice.state({ page: '/', device: { version: '<script>', model: 'pi3', led: 'A B' } })).toEqual({ page: '/' });
+    expect(rasqberryDevice.state({ page: '/', device: { led: 'single-24x8', ledcheck: 'false' } })).toEqual({ page: '/', device: { led: 'single-24x8', ledcheck: 'false' } });
+    expect(rasqberryDevice.state({ page: '/', device: { ledcheck: 'maybe' } })).toEqual({ page: '/' });
   });
 
   it('answers in English only, without levels', () => {
