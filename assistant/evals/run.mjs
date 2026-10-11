@@ -2,7 +2,7 @@
 /**
  * Runs the eval set against a running assistant Worker and prints a Markdown report.
  *
- *   node evals/run.mjs --url https://fwq-assistant.<account>.workers.dev [--only <id>] [--file evals/coin-game.jsonl]
+ *   node evals/run.mjs --url https://fwq-assistant.<account>.workers.dev [--only <id>] [--file evals/rasqberry-build.jsonl]
  *
  * Each case: question + state (+ history, level) and heuristic checks — `any`/`any2` (each list needs
  * one match), `none` (no match allowed), `lang` (the answer's language). Patterns are
@@ -20,8 +20,9 @@ const arg = (name, fallback) => {
 const url = arg('url');
 if (!url) { console.error('usage: node evals/run.mjs --url <worker url> [--only id] [--out report.md]'); process.exit(2); }
 const file = arg('file', new URL('./coin-game.jsonl', import.meta.url));
+/** Each case may name its site and context (default: the coin game); the Origin follows the site. */
+const ORIGINS = { fwq: 'https://fun-with-quantum.org', rasqberry: 'https://rasqberry.org' };
 const only = arg('only');
-const origin = arg('origin', 'https://fun-with-quantum.org');
 const cases = readFileSync(file, 'utf8').trim().split('\n').map((l) => JSON.parse(l)).filter((c) => !only || c.id === only);
 
 const LANG = { de: /\b(der|die|das|und|ist|nicht|du)\b/i, en: /\b(the|and|is|you)\b/i, ja: /[぀-ヿ一-鿿]/ };
@@ -39,8 +40,8 @@ async function ask(c) {
 async function askOnce(c, t0) {
   const res = await fetch(`${url.replace(/\/$/, '')}/chat`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', Origin: origin },
-    body: JSON.stringify({ site: 'fwq', context: 'coin-game', locale: c.locale, level: c.level, question: c.question, state: c.state, history: c.history }),
+    headers: { 'Content-Type': 'application/json', Origin: arg('origin') ?? ORIGINS[c.site ?? 'fwq'] },
+    body: JSON.stringify({ site: c.site ?? 'fwq', context: c.context ?? 'coin-game', locale: c.locale, level: c.level, question: c.question, state: c.state, history: c.history }),
   });
   if (!res.ok) return { error: `HTTP ${res.status} ${await res.text()}`, ms: Date.now() - t0 };
   const text = await res.text();
@@ -72,7 +73,7 @@ for (const [i, c] of cases.entries()) {
   const fails = r.error ? [r.error] : r.end?.ev !== 'done' ? [`stream ended with ${JSON.stringify(r.end)}`, ...check(c, r.answer)] : check(c, r.answer);
   if (r.end?.stop === 'max_tokens') fails.unshift('cut off: stop_reason max_tokens');
   if (!fails.length) passed++;
-  lines.push(`## ${fails.length ? '❌' : '✅'} ${c.id}`, '', `*${c.note}* · chapter ${c.state.chapter} · ${c.locale} · ${c.level ?? 'normal'} · ${r.ms} ms · ${r.end?.stop ?? '-'}`, '', `> **Q:** ${c.question}`, '');
+  lines.push(`## ${fails.length ? '❌' : '✅'} ${c.id}`, '', `*${c.note}* · ${c.context ?? `chapter ${c.state.chapter}`} · ${c.locale} · ${c.level ?? 'normal'} · ${r.ms} ms · ${r.end?.stop ?? '-'}`, '', `> **Q:** ${c.question}`, '');
   lines.push((r.answer || '(no answer)').split('\n').map((l) => `> ${l}`).join('\n'), '');
   if (fails.length) lines.push(...fails.map((f) => `- ${f}`), '');
   console.error(`${fails.length ? 'FAIL' : 'ok  '} ${c.id}${fails.length ? ' — ' + fails.join('; ') : ''}`);
