@@ -1,5 +1,5 @@
 /**
- * Turns an assistant answer (plain text with **bold**, [links](url) and bare URLs) into safe HTML: everything
+ * Turns an assistant answer (plain text with **bold**, `code`, [links](url) and bare URLs) into safe HTML: everything
  * is escaped first; then bold, paragraphs, and links — but only to sites we trust, the rest stay
  * plain text.
  */
@@ -26,7 +26,10 @@ export function renderAnswer(text: string): string {
   return text
     .trim()
     .split(/\n{2,}/)
-    .map((para) => `<p>${linkify(esc(para)).replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>')}</p>`)
+    .map((para) => `<p>${linkify(esc(para))
+      .replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>')
+      .replace(/`([^`\n]+)`/g, '<code>$1</code>')
+      .replace(/\n/g, '<br>')}</p>`)
     .join('');
 }
 

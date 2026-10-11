@@ -84,6 +84,7 @@ a { color: var(--c); }
 .fa-bot .fa-body { border-left: 3px solid var(--m); padding-left: 10px; }
 .fa-body p { margin: 0; } .fa-body p + p { margin-top: 6px; }
 .fa-body a { word-break: break-all; }
+.fa-body code { font: 0.85em ui-monospace, monospace; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; padding: 0 3px; }
 .fa-thinking { color: var(--muted); font-style: italic; }
 .fa-error { color: var(--m); }
 .fa-vote { display: flex; gap: 6px; align-items: center; font-size: 0.8rem; color: var(--muted); padding-left: 13px; }
