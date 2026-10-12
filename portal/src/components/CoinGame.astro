@@ -210,6 +210,8 @@ const RIM_SEGMENTS = 44;
   .qc-box span { font: 700 4.4rem/1 var(--sans); opacity: 0.92; }
   .qc-box small { font: 0.7rem var(--mono); letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.85; }
   .qcoin.covered .qc-box { transform: none; opacity: 1; }
+  /* while covered the coin and its shadow are hidden: a coin on its edge would stick out above the box */
+  .qcoin.covered .qc-pos, .qcoin.covered .qc-shadow { visibility: hidden; }
   .qcoin.shake .qc-box { animation: qc-shake 0.5s ease; }
   @keyframes qc-shake {
     0%, 100% { transform: none; }
