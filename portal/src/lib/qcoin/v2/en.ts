@@ -1,0 +1,125 @@
+import type { MessagesV2 } from './types';
+
+const en: MessagesV2 = {
+  ui: {
+    chapters: ['Fair game', 'Quantum opponent', 'Look inside', 'You be quantum', 'Sandbox', 'The math'],
+    why: 'Why?',
+    goal: (side) => `${side} = you win`,
+    headsShort: 'H',
+    tailsShort: 'T',
+    tally: (you, computer) => `You ${you} : ${computer} computer`,
+    guess: 'Heads or tails? Guess first!',
+    guessRight: 'You guessed right.',
+    guessWrong: 'Your guess was wrong.',
+    guesses: (right, total) => `Guesses: ${right} of ${total} right`,
+    replay: '↺ Same round, other move',
+    replayMoves: '↺ Same round, other moves',
+    whatIf: 'What if?',
+    compareFirst: 'played',
+    compareOther: 'what if',
+    compareSame: 'Same result.',
+    compareDiff: 'Different result.',
+    back: '◀ Back',
+    next: 'Next ▶',
+    yourBox: (move) => `Your move: ${move}. Tap to change it.`,
+  },
+
+  round: {
+    startsHeads: 'This is a coin. It starts {h:heads} up.',
+    intoBox: 'Into the box. Now nobody can see it.',
+    computerMoves: 'The computer moves. You can’t see how.',
+    computerAgain: 'The computer moves again.',
+    yourMove: 'Your move: flip it, or leave it?',
+    youStart: 'You start: flip it, or leave it?',
+    yourLast: 'Your last move. Still blind!',
+    lifting: 'Lifting the box …',
+    flipIt: 'Flip it',
+    leaveIt: 'Leave it',
+    playAgain: 'Play again',
+    youWin: (side) => `${side}: you win!`,
+    computerWins: (side) => `${side}: the computer wins.`,
+  },
+
+  ch1: {
+    replayDiff: 'Only your move changed. In a classical game, every move counts.',
+    next: 'Now play a quantum computer →',
+  },
+
+  ch2: {
+    intro: 'Same coin, same rules. New opponent: a quantum computer.',
+    introYouFirst: 'This time you start. The quantum computer only gets the middle move.',
+    lossLines: [
+      '{h:Heads}. The quantum computer wins.',
+      '{h:Heads} again. Bad luck?',
+      '{h:Heads}. Three in a row — that’s not luck any more.',
+      '{h:Heads}. Every. Single. Time.',
+      '{h:Heads}. It doesn’t matter what you do, does it?',
+    ],
+    impossible: '{t:Tails}?! This should be impossible — tell us how you did it.',
+    youStartWin: '{h:Heads}: you win! From the middle, the quantum computer’s H can’t steer.',
+    youStartLoss: (side) => `${side}: the computer wins. Pure luck — from the middle, quantum power is worth nothing.`,
+    replaySame: '{h:Heads} again. The quantum computer wins, whatever you do.',
+    replayYouFirst: 'From the middle, the quantum computer can’t steer: it’s luck again.',
+    peek: 'How does it do that? Look inside →',
+    peekYouFirst: 'Why? Look inside →',
+    swapToYou: 'Let me start instead',
+    swapToComputer: 'Let the computer start',
+  },
+
+  ch3: {
+    steps: {
+      start: 'This is the coin: {h:heads} up. In quantum terms: [|0⟩](#ket).',
+      h1: 'The computer plays [H](#hadamard). The coin stands on its edge: {h:heads} and {t:tails} at once.',
+      flip: 'You flip it — and nothing changes. It is still {h:heads} and {t:tails}.',
+      leave: 'You leave it. It stays on its edge: {h:heads} and {t:tails}.',
+      h2: 'The second H lays it down: {h:heads}, every time. That is [interference](#interference).',
+    },
+    flipInstead: 'Flip instead',
+    leaveInstead: 'Leave instead',
+    tapHint: 'Tip: tap your box in the circuit to change your move.',
+    next: 'Now you be the quantum computer →',
+  },
+
+  ch4: {
+    intro: 'Swap seats: you move first and last. {h:Heads} wins for you.',
+    hint: 'Hint: which move stood the coin on its edge in chapter 3?',
+    first: 'Your first move. You can still watch.',
+    intoBox: 'Into the box. The computer moves in secret.',
+    last: 'Your last move. The coin stays hidden.',
+    moveFlip: 'Flip',
+    moveLeave: 'Leave',
+    moveH: 'Hadamard',
+    sureWin: '{h:Heads} — and it always will be. H, anything, H: you are the quantum computer now.',
+    luckyWin: (flipped) => `{h:Heads}: you win! Skill or luck? The computer ${flipped ? 'flipped the coin' : 'left the coin alone'}.`,
+    loss: (flipped) => `{t:Tails}: the computer wins. It ${flipped ? 'flipped the coin' : 'left the coin alone'}.`,
+    next: 'Open the sandbox →',
+  },
+
+  ch5: {
+    start: 'Add moves. Flat: {h:heads} or {t:tails}. On its edge: both at once.',
+    tapHint: 'Tap a box in the circuit to see the coin at that point.',
+    inspect: (k, g) => `The coin after move ${k} (${g}). Tap it again to go back.`,
+    look: 'Look',
+    lookMany: 'Look 100×',
+    undo: 'Undo',
+    reset: 'Reset',
+    notebook: 'The real Qiskit notebook ↗',
+    backToHeads: 'Back to {h:heads}.',
+    undone: 'Undone.',
+    many: (h, t, eh, et) => `100 looks: ${h}× heads, ${t}× tails (expected ${eh} : ${et})`,
+    measured: (side) => `${side}. Looking made the coin choose. Add moves, or reset.`,
+    played: (g, name) => `${g}: ${name}.`,
+  },
+
+  ch6: {
+    steps: {
+      start: 'Start: |0⟩. Heads with certainty.',
+      h1: 'H|0⟩ = (|0⟩ + |1⟩)/√2. Both amplitudes are 1/√2, so both chances are ½.',
+      flip: 'X swaps |0⟩ and |1⟩. (|1⟩ + |0⟩)/√2 is the same state.',
+      leave: 'I changes nothing. The state stays (|0⟩ + |1⟩)/√2.',
+      h2: 'The second H: ½(|0⟩ + |1⟩) + ½(|0⟩ − |1⟩) = |0⟩. The |1⟩ parts cancel.',
+    },
+  },
+};
+
+export default en;

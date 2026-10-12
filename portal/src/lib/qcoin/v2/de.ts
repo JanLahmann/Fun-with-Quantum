@@ -1,0 +1,125 @@
+import type { MessagesV2 } from './types';
+
+const de: MessagesV2 = {
+  ui: {
+    chapters: ['Faires Spiel', 'Quanten-Gegner', 'Blick in die Box', 'Du bist Quanten', 'Sandkasten', 'Die Mathematik'],
+    why: 'Warum?',
+    goal: (side) => `${side} = du gewinnst`,
+    headsShort: 'K',
+    tailsShort: 'Z',
+    tally: (you, computer) => `Du ${you} : ${computer} Computer`,
+    guess: 'Kopf oder Zahl? Erst raten!',
+    guessRight: 'Richtig geraten.',
+    guessWrong: 'Falsch geraten.',
+    guesses: (right, total) => `Geraten: ${right} von ${total} richtig`,
+    replay: '↺ Gleiche Runde, anderer Zug',
+    replayMoves: '↺ Gleiche Runde, andere Züge',
+    whatIf: 'Was wäre, wenn?',
+    compareFirst: 'gespielt',
+    compareOther: 'was wäre, wenn',
+    compareSame: 'Gleiches Ergebnis.',
+    compareDiff: 'Anderes Ergebnis.',
+    back: '◀ Zurück',
+    next: 'Weiter ▶',
+    yourBox: (move) => `Dein Zug: ${move}. Antippen zum Ändern.`,
+  },
+
+  round: {
+    startsHeads: 'Das ist eine Münze. Sie liegt auf {h:Kopf}.',
+    intoBox: 'Ab in die Box. Jetzt sieht sie keiner mehr.',
+    computerMoves: 'Der Computer zieht. Du siehst nicht, wie.',
+    computerAgain: 'Der Computer zieht noch einmal.',
+    yourMove: 'Dein Zug: umdrehen oder so lassen?',
+    youStart: 'Du fängst an: umdrehen oder so lassen?',
+    yourLast: 'Dein letzter Zug. Immer noch blind!',
+    lifting: 'Die Box geht hoch …',
+    flipIt: 'Umdrehen',
+    leaveIt: 'So lassen',
+    playAgain: 'Noch mal spielen',
+    youWin: (side) => `${side}: du gewinnst!`,
+    computerWins: (side) => `${side}: der Computer gewinnt.`,
+  },
+
+  ch1: {
+    replayDiff: 'Nur dein Zug war anders. Im klassischen Spiel zählt jeder Zug.',
+    next: 'Jetzt gegen einen Quantencomputer spielen →',
+  },
+
+  ch2: {
+    intro: 'Gleiche Münze, gleiche Regeln. Neuer Gegner: ein Quantencomputer.',
+    introYouFirst: 'Diesmal fängst du an. Der Quantencomputer bekommt nur den Zug in der Mitte.',
+    lossLines: [
+      '{h:Kopf}. Der Quantencomputer gewinnt.',
+      'Schon wieder {h:Kopf}. Pech gehabt?',
+      '{h:Kopf}. Dreimal hintereinander — das ist kein Zufall mehr.',
+      '{h:Kopf}. Jedes. Einzelne. Mal.',
+      '{h:Kopf}. Egal, was du machst, oder?',
+    ],
+    impossible: '{t:Zahl}?! Das dürfte gar nicht gehen — erzähl uns, wie du das geschafft hast.',
+    youStartWin: '{h:Kopf}: du gewinnst! Aus der Mitte kann das H des Quantencomputers nichts steuern.',
+    youStartLoss: (side) => `${side}: der Computer gewinnt. Reines Glück — aus der Mitte ist Quantenpower nichts wert.`,
+    replaySame: 'Wieder {h:Kopf}. Der Quantencomputer gewinnt, egal was du tust.',
+    replayYouFirst: 'Aus der Mitte kann der Quantencomputer nichts steuern: wieder nur Glück.',
+    peek: 'Wie macht er das? Ein Blick in die Box →',
+    peekYouFirst: 'Warum? Ein Blick in die Box →',
+    swapToYou: 'Lass mich anfangen',
+    swapToComputer: 'Lass den Computer anfangen',
+  },
+
+  ch3: {
+    steps: {
+      start: 'Das ist die Münze: {h:Kopf} oben. Quantenmechanisch: [|0⟩](#ket).',
+      h1: 'Der Computer spielt [H](#hadamard). Die Münze steht auf der Kante: {h:Kopf} und {t:Zahl} zugleich.',
+      flip: 'Du drehst sie um — und nichts ändert sich. Sie ist immer noch {h:Kopf} und {t:Zahl}.',
+      leave: 'Du lässt sie so. Sie bleibt auf der Kante: {h:Kopf} und {t:Zahl}.',
+      h2: 'Das zweite H legt sie hin: {h:Kopf}, jedes Mal. Das ist [Interferenz](#interference).',
+    },
+    flipInstead: 'Lieber umdrehen',
+    leaveInstead: 'Lieber so lassen',
+    tapHint: 'Tipp: Tippe im Schaltkreis auf dein Kästchen, um deinen Zug zu ändern.',
+    next: 'Jetzt bist du der Quantencomputer →',
+  },
+
+  ch4: {
+    intro: 'Plätze tauschen: Du hast den ersten und den letzten Zug. Bei {h:Kopf} gewinnst du.',
+    hint: 'Tipp: Welcher Zug hat die Münze in Kapitel 3 auf die Kante gestellt?',
+    first: 'Dein erster Zug. Noch darfst du zusehen.',
+    intoBox: 'Ab in die Box. Der Computer zieht heimlich.',
+    last: 'Dein letzter Zug. Die Münze bleibt versteckt.',
+    moveFlip: 'Umdrehen',
+    moveLeave: 'So lassen',
+    moveH: 'Hadamard',
+    sureWin: '{h:Kopf} — und so wird es immer sein. H, irgendwas, H: Jetzt bist du der Quantencomputer.',
+    luckyWin: (flipped) => `{h:Kopf}: du gewinnst! Können oder Glück? Der Computer hat die Münze ${flipped ? 'umgedreht' : 'so gelassen'}.`,
+    loss: (flipped) => `{t:Zahl}: der Computer gewinnt. Er hat die Münze ${flipped ? 'umgedreht' : 'so gelassen'}.`,
+    next: 'Ab in den Sandkasten →',
+  },
+
+  ch5: {
+    start: 'Füge Züge hinzu. Flach: {h:Kopf} oder {t:Zahl}. Auf der Kante: beides zugleich.',
+    tapHint: 'Tippe im Schaltkreis auf ein Kästchen, um die Münze an dieser Stelle zu sehen.',
+    inspect: (k, g) => `Die Münze nach Zug ${k} (${g}). Noch mal tippen, um zurückzugehen.`,
+    look: 'Hinschauen',
+    lookMany: '100× hinschauen',
+    undo: 'Rückgängig',
+    reset: 'Zurücksetzen',
+    notebook: 'Das echte Qiskit-Notebook ↗',
+    backToHeads: 'Zurück auf {h:Kopf}.',
+    undone: 'Rückgängig gemacht.',
+    many: (h, t, eh, et) => `100-mal hingeschaut: ${h}× Kopf, ${t}× Zahl (erwartet ${eh} : ${et})`,
+    measured: (side) => `${side}. Durch das Hinschauen hat sich die Münze entschieden. Füge Züge hinzu oder setz sie zurück.`,
+    played: (g, name) => `${g}: ${name}.`,
+  },
+
+  ch6: {
+    steps: {
+      start: 'Start: |0⟩. Kopf mit Sicherheit.',
+      h1: 'H|0⟩ = (|0⟩ + |1⟩)/√2. Beide Amplituden sind 1/√2, also beide Chancen ½.',
+      flip: 'X vertauscht |0⟩ und |1⟩. (|1⟩ + |0⟩)/√2 ist derselbe Zustand.',
+      leave: 'I ändert nichts. Der Zustand bleibt (|0⟩ + |1⟩)/√2.',
+      h2: 'Das zweite H: ½(|0⟩ + |1⟩) + ½(|0⟩ − |1⟩) = |0⟩. Die |1⟩-Teile heben sich auf.',
+    },
+  },
+};
+
+export default de;
