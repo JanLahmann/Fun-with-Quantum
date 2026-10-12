@@ -263,9 +263,9 @@ export function mountCoinGame(root: HTMLElement) {
     const lbl = stateLabel(state);
     stateEl.textContent = covered ? m.ui.hiddenInBox : describe(state, lbl, m);
   };
-  const circuit = (slots: Slot[] | null) => {
+  const circuit = (slots: Slot[] | null, start = '|0⟩') => {
     if (!slots) { circuitEl.innerHTML = ''; return; }
-    const parts = [`<span class="qc-wire-label">${m.ui.coin} |0⟩</span>`];
+    const parts = [`<span class="qc-wire-label">${m.ui.coin} ${start}</span>`];
     for (const s of slots) {
       const g = s.gate;
       const cls = g === null ? 'empty' : g === '?' ? 'secret' : QUANTUM.has(g) ? 'quantum' : 'classical';
@@ -574,11 +574,13 @@ export function mountCoinGame(root: HTMLElement) {
     title.textContent = m.ch5.title;
     setText(m.ch5.intro);
     const gates: GateName[] = [];
+    /** Where the circuit starts: heads, or what the last "Look" showed (the coin stays where it fell). */
+    let start: { state: State; R: Mat3 } = { state: HEADS, R: IDENTITY };
     resetCoin();
     const draw = () => {
       const slots: Slot[] = gates.map((g) => ({ gate: g, who: '' }));
       if (gates.length < 8) slots.push({ gate: null, who: '' });
-      circuit(slots);
+      circuit(slots, pHeads(start.state) === 1 ? '|0⟩' : '|1⟩');
     };
     draw();
     say(m.ch5.addGate);
@@ -594,9 +596,9 @@ export function mountCoinGame(root: HTMLElement) {
       ].filter((o) => !(full && typeof o.value === 'string' && o.value.length === 1)),
       `<a href="https://qubins.org/launch/?image=2.1-xl-rise&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=Quantum-Coin-Game.ipynb&ui=rise-classic" target="_blank" rel="noopener" data-umami-event="Portal: notebook launch" data-umami-event-target="qubins" data-umami-event-image="2.1-xl-rise" data-umami-event-notebook="Quantum-Coin-Game.ipynb">${m.ch5.notebook}</a>`);
       seen = { sandbox: gates, lastAction: typeof choice === 'string' && choice.length > 1 ? choice : 'gate' };
-      if (choice === 'reset') { gates.length = 0; resetCoin(); draw(); say(m.ch5.backToHeads); scoreEl.textContent = ''; continue; }
+      if (choice === 'reset') { gates.length = 0; start = { state: HEADS, R: IDENTITY }; resetCoin(); draw(); say(m.ch5.backToHeads); scoreEl.textContent = ''; continue; }
       if (choice === 'undo') {
-        gates.pop(); resetCoin();
+        gates.pop(); resetCoin(); state = start.state; coin.set(start.R);
         for (const g of gates) { state = apply(g, state); coin.set(mul(axisAngle(GATE_ROTATIONS[g].axis, GATE_ROTATIONS[g].angle), coin.R)); }
         showProbs(); draw(); say(m.ch5.undone); continue;
       }
@@ -610,7 +612,7 @@ export function mountCoinGame(root: HTMLElement) {
         seen = { lastAction: 'measured' };
         const outcome = await reveal(e);
         say(m.ch5.measured(sideName(outcome)));
-        gates.length = 0; draw();
+        gates.length = 0; start = { state, R: coin.R }; draw();
         track('Portal: coin game sandbox', { action: 'measure', outcome });
         continue;
       }
