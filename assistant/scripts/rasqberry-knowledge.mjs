@@ -59,6 +59,10 @@ const TOKEN = {
 const DISPLAY = { none: 'runs without a screen', optional: 'a screen is optional', required: 'needs a screen' };
 const RUNS = { jupyter: 'opens as a Jupyter notebook in the browser', docker: 'runs in a Docker container', browser: 'opens in the browser', python: 'opens its own window', 'web-static': 'opens in the browser' };
 
+/** Is the demo (or one of its variants, which may override `install`) on the image? */
+export const preinstalled = (m, variant) =>
+  Boolean((m.variants?.find((v) => v.id === variant)?.install ?? m.install)?.preinstalled);
+
 /** One demo manifest → a short Markdown section. Only facts the manifest states. */
 export function demoSection(m, groups) {
   const group = groups.find((g) => g.id === m.group)?.title ?? m.group;
@@ -79,7 +83,7 @@ export function demoSection(m, groups) {
   const install = m.install?.preinstalled
     ? 'Installed on the image.'
     : `Downloaded on first start${dl ? ` (${[dl.what, dl.download_mb && `about ${dl.download_mb} MB`, dl.time].filter(Boolean).join(', ')})` : ''}; that needs internet once.`;
-  const variants = (m.variants ?? []).map((v) => `${v.name} (\`${v.id}\`${v.maturity === 'beta' ? ', beta' : ''})`);
+  const variants = (m.variants ?? []).map((v) => `${v.name} (\`${v.id}\`${v.maturity === 'beta' ? ', beta' : ''}, ${preinstalled(m, v.id) ? 'on the image' : 'downloads on first start'})`);
   return [
     `### ${m.name}${m.maturity === 'beta' ? ' (beta)' : ''} — id \`${m.id}\`, group "${group}"`,
     `${m.description.replace(/\.?$/, '.')} ${install}`,
@@ -93,7 +97,9 @@ export function demoSection(m, groups) {
 export function pathSection(p, manifests) {
   const steps = p.steps.map((st, i) => {
     const name = st.name ?? manifests.find((m) => m.id === st.demo)?.name ?? st.demo ?? st.command ?? st.url;
-    const how = st.demo ? `demo \`${st.demo}\`${st.variant ? ` variant \`${st.variant}\`` : ''}` : st.command ? `\`${st.command}\`` : st.url;
+    const m = st.demo && manifests.find((x) => x.id === st.demo);
+    const install = m ? `, ${preinstalled(m, st.variant) ? 'on the image' : 'downloads on first start, needs internet once'}` : '';
+    const how = st.demo ? `demo \`${st.demo}\`${st.variant ? ` variant \`${st.variant}\`` : ''}${install}` : st.command ? `\`${st.command}\`` : st.url;
     return `${i + 1}. ${name} (${how}): ${st.try} ${st.notice}`;
   });
   const next = (p.next ?? []).map((n) => `${n.path ? `path "${n.path}"` : `${n.name} ${n.url}`}: ${n.why.replace(/\.$/, '')}`);
