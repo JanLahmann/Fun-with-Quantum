@@ -27,6 +27,11 @@ Most events need **no JavaScript**: Umami's tracker records a click on any eleme
 | `Portal: coin game learn more` | `site` (ibm \| doqumentation), `term` | "Learn more" link in an explanation clicked |
 | `Portal: coin game peek` | — | "Look inside" pressed after losing to the quantum computer |
 | `Portal: coin game sandbox` | `action` (measure \| measure 100), `outcome` / `gates` | sandbox measurements |
+| `Portal: coin game why` | `chapter`, `v` (2) | redesign preview (/preview/quantum-coin-game/): "Why?" opened |
+| `Portal: coin game step` | `action` (toggle), `move`, `step`, `v` (2) | redesign preview, chapter 3: your move changed in the step-by-step view |
+| `Portal: coin game math` | `action` (toggle), `move`, `step`, `v` (2) | redesign preview, chapter 6: your move changed |
+
+The redesign preview sends the coin-game events above with an extra `v: 2`, and `Portal: coin game round` also with `replay` (yes \| no: "Same round, other move").
 | `Portal: assistant open` | `context` | the explainer's chat box opened (under a game) |
 | `Portal: assistant ask` | `context`, `level` | a question sent |
 | `Portal: assistant level` | `context`, `level` (kids \| normal \| math) | the level switch changed |

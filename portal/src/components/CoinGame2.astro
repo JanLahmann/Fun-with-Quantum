@@ -1,0 +1,357 @@
+---
+/**
+ * The redesigned Quantum Coin Game (v2) — unlisted preview in English and German until Jan
+ * approves it and the other languages have their v2 texts. Logic in src/lib/qcoin/v2/ui.ts;
+ * the coin and the Bloch sphere are shared with v1 (src/lib/qcoin/view.ts).
+ */
+import { MESSAGES } from '../lib/qcoin/i18n';
+import { MESSAGES_V2, type LocaleV2 } from '../lib/qcoin/v2';
+
+interface Props {
+  locale?: LocaleV2;
+}
+const { locale = 'en' } = Astro.props;
+const m = MESSAGES[locale];
+const t = MESSAGES_V2[locale];
+const RIM_SEGMENTS = 44;
+---
+
+<section class="qcoin2" id="coin-game" aria-label={m.page.heading} data-locale={locale}>
+  <div class="qc-top">
+    <div class="qc-chapters" role="tablist" aria-label={m.ui.chaptersLabel}>
+      {t.ui.chapters.map((label, i) => (
+        <button type="button" role="tab" data-chapter={i + 1}><span class="n">{i + 1}</span> {label}</button>
+      ))}
+    </div>
+    <button type="button" class="qc-explain-btn" aria-haspopup="dialog" aria-label={m.ui.explain}>ⓘ<span class="word"> {m.ui.explain}</span></button>
+  </div>
+
+  <div class="qc-arena">
+    <div class="qc-stage">
+      <div class="qc-views">
+        <div class="qc-scene">
+          <div class="qc-shadow"></div>
+          <div class="qc-pos">
+            <div class="qc-coin">
+              <div class="qc-face qc-front"></div>
+              <div class="qc-face qc-back"></div>
+              {Array.from({ length: RIM_SEGMENTS }, (_, i) => (
+                <div class="qc-rim" style={`--i:${i};--n:${RIM_SEGMENTS}`}></div>
+              ))}
+            </div>
+          </div>
+          <div class="qc-box" aria-hidden="true"><span>?</span><small>{m.ui.coinInBox}</small></div>
+        </div>
+        <figure class="qc-bloch">
+          <svg viewBox="0 0 150 150" role="img" aria-label={m.ui.blochCaption}>
+            <g class="sphere"></g>
+            <g class="axisline"></g>
+            <line class="vec" x1="75" y1="75" x2="75" y2="75"></line>
+            <circle class="tip" cx="75" cy="75" r="4.5"></circle>
+            <text class="hidden-q" x="75" y="82" text-anchor="middle">?</text>
+          </svg>
+          <figcaption><button type="button" class="qc-term qc-caption" data-term="bloch">{m.ui.blochCaption} ⓘ</button></figcaption>
+        </figure>
+      </div>
+      <div class="qc-probs" aria-label={m.ui.probsLabel}>
+        <div class="qc-prob"><span class="lbl hd">{m.ui.heads}</span><span class="bar"><i class="fill heads"></i></span><span class="pct" data-p="heads">100%</span></div>
+        <div class="qc-prob"><span class="lbl tl">{m.ui.tails}</span><span class="bar"><i class="fill tails"></i></span><span class="pct" data-p="tails">0%</span></div>
+      </div>
+      <div class="qc-state"></div>
+      <p class="qc-gatefx"></p>
+    </div>
+
+    <div class="qc-panel">
+      <div class="qc-rules">
+        <div class="qc-circuit" role="region" aria-label={m.ui.circuitLabel}></div>
+        <div class="qc-goal"></div>
+      </div>
+      <div class="qc-order" role="group" aria-label={m.ui.whoStarts} hidden>
+        <span>{m.ui.whoStarts}</span>
+        <button type="button" data-order="computer" aria-pressed="true">{m.ui.theComputer}</button>
+        <button type="button" data-order="you" aria-pressed="false">{m.ui.you}</button>
+      </div>
+      <p class="qc-status" aria-live="polite"></p>
+      <div class="qc-math"></div>
+      <div class="qc-actions"></div>
+      <div class="qc-compare" aria-live="polite"></div>
+      <div class="qc-tally"></div>
+      <details class="qc-why" hidden><summary>{t.ui.why}</summary><div class="qc-text"></div></details>
+    </div>
+  </div>
+  <dialog class="qc-explain" aria-label={m.ui.explainTitle}>
+    <button type="button" class="qc-close" aria-label={m.ui.close}>×</button>
+    <div class="qc-explain-body"></div>
+  </dialog>
+  <noscript><p class="qc-noscript">{m.ui.noscript}</p></noscript>
+</section>
+
+<script>
+  import { mountCoinGameV2 } from '../lib/qcoin/v2/ui';
+  const root = document.getElementById('coin-game');
+  if (root) mountCoinGameV2(root);
+</script>
+
+<style>
+  .qcoin2 {
+    --coin: 170px;
+    --thick: 11px;
+    background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+    box-shadow: var(--shadow); padding: 16px 20px 20px; margin-bottom: 36px;
+  }
+  .qcoin2 :global(.hd) { color: var(--cyan); font-weight: 600; }
+  .qcoin2 :global(.tl) { color: var(--magenta); font-weight: 600; }
+
+  /* ---------- chapters: one row; on phones it scrolls sideways ---------- */
+  .qc-top { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .qc-chapters { display: flex; gap: 6px; flex: 1 1 auto; min-width: 0; overflow-x: auto; scrollbar-width: thin; padding: 2px 2px 6px; }
+  .qc-chapters button {
+    flex: 0 0 auto; white-space: nowrap; font: 600 0.82rem var(--sans); color: var(--muted); background: transparent;
+    border: 1px solid var(--line); border-radius: 20px; padding: 6px 12px 6px 7px; cursor: pointer;
+  }
+  .qc-chapters button .n {
+    display: inline-grid; place-items: center; width: 20px; height: 20px; margin-right: 4px;
+    border-radius: 50%; font: 600 0.7rem var(--mono); background: var(--line); color: var(--ink);
+  }
+  .qc-chapters button:hover { border-color: var(--cyan); color: var(--cyan); }
+  .qc-chapters button[aria-selected='true'] { color: var(--ink); border-color: var(--magenta); }
+  .qc-chapters button[aria-selected='true'] .n { background: var(--grad); color: #fff; }
+  .qc-chapters button.done .n { background: color-mix(in srgb, var(--cyan) 22%, transparent); color: var(--cyan); }
+  .qc-explain-btn {
+    flex: 0 0 auto; font: 600 0.82rem var(--sans); color: var(--cyan); background: transparent;
+    border: 1px solid var(--cyan); border-radius: 20px; padding: 6px 12px; cursor: pointer; align-self: flex-start;
+  }
+  .qc-explain-btn:hover { background: color-mix(in srgb, var(--cyan) 10%, transparent); }
+
+  .qc-arena { display: grid; grid-template-columns: minmax(300px, 1fr) 1.05fr; gap: 26px; align-items: start; }
+
+  /* ---------- stage: coin and Bloch sphere side by side ---------- */
+  .qc-views { display: grid; grid-template-columns: 1fr 190px; gap: 8px; align-items: center; }
+  .qc-scene {
+    position: relative; height: 260px; perspective: 900px; perspective-origin: 50% 35%;
+    border-radius: 12px; overflow: hidden;
+    background:
+      radial-gradient(120% 70% at 50% 100%, color-mix(in srgb, var(--cyan) 10%, transparent), transparent 70%),
+      linear-gradient(to bottom, transparent 62%, color-mix(in srgb, var(--ink) 5%, transparent) 62%);
+  }
+  .qc-shadow {
+    position: absolute; left: 50%; top: 64%; width: calc(var(--coin) * 1.05); height: calc(var(--coin) * 0.32);
+    transform: translate(-50%, -38%) scaleX(var(--shadow-x, 1)); border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(0, 0, 0, 0.32), transparent);
+    opacity: var(--shadow-o, 1);
+  }
+  .qc-pos { position: absolute; left: 50%; top: 64%; width: 0; height: 0; transform-style: preserve-3d; }
+  .qc-coin {
+    position: absolute; width: var(--coin); height: var(--coin);
+    left: calc(var(--coin) / -2); top: calc(var(--coin) / -2);
+    transform-style: preserve-3d; will-change: transform;
+  }
+  .qc-face {
+    position: absolute; inset: 0; border-radius: 50%; background-size: cover;
+    backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    filter: brightness(var(--light, 1));
+  }
+  .qc-front { background-image: url('/coin/face-heads.webp'); transform: translateZ(calc(var(--thick) / 2)); }
+  .qc-back { background-image: url('/coin/face-tails.webp'); transform: rotateY(180deg) translateZ(calc(var(--thick) / 2)); }
+  .qc-rim {
+    position: absolute; left: 50%; top: 50%;
+    width: calc(3.1416 * var(--coin) / var(--n) + 1.2px); height: var(--thick);
+    margin-left: calc((3.1416 * var(--coin) / var(--n) + 1.2px) / -2); margin-top: calc(var(--thick) / -2);
+    transform: rotateZ(calc(360deg / var(--n) * var(--i))) translateY(calc(var(--coin) / -2)) rotateX(90deg);
+    background: linear-gradient(to right, #8d9097, #d9dbe0 45%, #a4a7ae);
+    filter: brightness(calc(0.7 + 0.35 * var(--light, 1)));
+  }
+  .qc-box {
+    position: absolute; left: 50%; top: 8%; width: calc(var(--coin) * 1.3); height: calc(var(--coin) * 1.2); margin-left: calc(var(--coin) * -0.65);
+    border-radius: 22px 22px 10px 10px; background: var(--grad);
+    box-shadow: 0 18px 30px rgba(0, 0, 0, 0.28), inset 0 -10px 0 rgba(0, 0, 0, 0.12);
+    display: grid; place-items: center; align-content: center; gap: 2px; color: #fff;
+    transform: translateY(-125%) scale(0.96); opacity: 0; pointer-events: none;
+    transition: transform 0.55s cubic-bezier(.2,.8,.2,1), opacity 0.35s ease;
+  }
+  .qc-box span { font: 700 3.8rem/1 var(--sans); opacity: 0.92; }
+  .qc-box small { font: 0.66rem var(--mono); letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.9; }
+  .qcoin2.covered .qc-box { transform: none; opacity: 1; }
+  /* while covered the coin and its shadow are hidden: a coin on its edge would stick out above the box */
+  .qcoin2.covered .qc-pos, .qcoin2.covered .qc-shadow { visibility: hidden; }
+  .qcoin2.shake .qc-box { animation: qc-shake 0.5s ease; }
+  @keyframes qc-shake {
+    0%, 100% { transform: none; }
+    20% { transform: translateX(-7px) rotate(-2deg); }
+    40% { transform: translateX(6px) rotate(2deg); }
+    60% { transform: translateX(-4px) rotate(-1deg); }
+    80% { transform: translateX(3px); }
+  }
+
+  .qc-bloch { margin: 0; text-align: center; }
+  .qc-bloch svg { width: 100%; height: auto; display: block; overflow: visible; }
+  .qc-caption { font: 0.66rem var(--mono) !important; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted) !important; }
+  .qc-bloch :global(.outline) { fill: color-mix(in srgb, var(--cyan) 6%, transparent); stroke: var(--muted); stroke-width: 1; opacity: 0.7; }
+  .qc-bloch :global(.ring) { fill: none; stroke: var(--muted); stroke-width: 0.8; opacity: 0.55; }
+  .qc-bloch :global(.ring.back) { stroke-dasharray: 2 3; opacity: 0.35; }
+  .qc-bloch :global(.axis) { stroke: var(--muted); stroke-width: 0.6; opacity: 0.35; }
+  .qc-bloch :global(.lbl) { font: 8.5px var(--mono); fill: var(--muted); }
+  .qc-bloch :global(.lbl.heads) { fill: var(--cyan); font-weight: 600; }
+  .qc-bloch :global(.lbl.tails) { fill: var(--magenta); font-weight: 600; }
+  .qc-bloch :global(.rotaxis) { stroke: var(--cyan); stroke-width: 1.4; stroke-dasharray: 4 3; }
+  .qc-bloch :global(.trail) { stroke: var(--magenta); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; opacity: 0.35; }
+  .qc-bloch .vec { stroke: var(--magenta); stroke-width: 3; stroke-linecap: round; }
+  .qc-bloch .tip { fill: var(--magenta); }
+  .qc-bloch .hidden-q { font: 700 22px var(--sans); fill: var(--muted); opacity: 0; }
+  .qc-bloch :global(.behind) { opacity: 0.45; }
+  .qcoin2.covered .qc-bloch .vec, .qcoin2.covered .qc-bloch .tip, .qcoin2.covered .qc-bloch :global(.trail) { opacity: 0; }
+  .qcoin2.covered .qc-bloch .hidden-q { opacity: 0.8; }
+
+  .qc-probs { display: grid; gap: 5px; margin-top: 10px; }
+  .qc-prob { display: grid; grid-template-columns: 56px 1fr 44px; align-items: center; gap: 8px; font: 0.8rem var(--mono); color: var(--muted); }
+  .qc-prob .bar { height: 10px; border-radius: 6px; background: var(--line); overflow: hidden; }
+  .qc-prob .fill { display: block; height: 100%; width: 0; transition: width 0.45s ease; }
+  .qc-prob .fill.heads { background: var(--cyan); }
+  .qc-prob .fill.tails { background: var(--magenta); }
+  .qc-prob .pct { text-align: right; color: var(--ink); }
+  .qcoin2.covered .qc-prob .fill { width: 0 !important; }
+  .qc-state { margin-top: 6px; min-height: 1.4em; font: 0.8rem var(--mono); color: var(--muted); text-align: center; }
+  .qc-gatefx { margin-top: 4px; font-size: 0.8rem; line-height: 1.4; color: var(--muted); }
+  .qc-gatefx :global(b) { color: var(--ink); }
+  .qcoin2.covered .qc-gatefx { visibility: hidden; }
+
+  /* ---------- panel ---------- */
+  .qc-rules { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .qc-goal { font: 600 0.85rem var(--sans); color: var(--ink); border: 1px solid var(--line); border-radius: 20px; padding: 4px 12px; white-space: nowrap; }
+  .qc-goal:empty { display: none; }
+  .qc-order { display: flex; align-items: center; gap: 6px; margin: 2px 0; font: 0.78rem var(--mono); color: var(--muted); flex-wrap: wrap; }
+  .qc-order[hidden] { display: none; }
+  .qc-order span { margin-right: 4px; }
+  .qc-order button {
+    font: 600 0.78rem var(--sans); padding: 4px 10px; border-radius: 20px; cursor: pointer;
+    border: 1px solid var(--line); background: transparent; color: var(--muted);
+  }
+  .qc-order button[aria-pressed='true'] { border-color: var(--cyan); color: var(--cyan); background: color-mix(in srgb, var(--cyan) 10%, transparent); }
+  .qc-status { font-size: 1.12rem; line-height: 1.45; min-height: 3em; margin: 10px 0 8px; color: var(--ink); }
+  .qc-status :global(span + span) { color: var(--muted); font-size: 0.92rem; }
+  .qc-math { font: 0.85rem var(--mono); color: var(--ink); margin-bottom: 8px; }
+  .qc-math:empty { display: none; }
+  .qc-math :global(p) { font-family: var(--sans); font-size: 0.95rem; color: var(--muted); margin-bottom: 6px; }
+  .qc-math :global(.math) { font-family: var(--mono); font-size: 0.85rem; color: var(--ink); }
+
+  .qc-actions { display: flex; flex-wrap: wrap; gap: 8px; min-height: 48px; align-items: center; }
+  .qc-actions :global(button) {
+    font: 600 0.9rem var(--sans); padding: 9px 14px; border-radius: 10px; cursor: pointer;
+    border: 1.5px solid var(--line); background: var(--card); color: var(--ink);
+  }
+  .qc-actions :global(button:hover:not(:disabled)) { border-color: var(--cyan); color: var(--cyan); }
+  .qc-actions :global(button.primary) { background: var(--grad); color: #fff; border-color: transparent; font-size: 1.02rem; padding: 12px 20px; }
+  .qc-actions :global(button.primary .hd), .qc-actions :global(button.primary .tl) { color: #fff; }
+  .qc-actions :global(button.primary:hover:not(:disabled)) { color: #fff; filter: brightness(1.08); }
+  .qc-actions :global(button.quantum) { border-color: var(--magenta); }
+  .qc-actions :global(button:disabled) { opacity: 0.45; cursor: default; }
+  .qc-actions :global(button .g) { font-family: var(--mono); font-weight: 700; margin-right: 6px; }
+  .qc-actions :global(a) { font-size: 0.85rem; }
+  .qc-actions :global(button.nudge) { animation: qc-nudge 1.4s ease-in-out 2; }
+  @keyframes qc-nudge {
+    0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--magenta) 0%, transparent); }
+    50% { box-shadow: 0 0 0 7px color-mix(in srgb, var(--magenta) 28%, transparent); }
+  }
+
+  .qc-compare { margin-top: 12px; }
+  .qc-compare:empty { display: none; }
+  .qc-compare :global(.qc-compare-title) { font: 600 0.7rem var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+  .qc-compare :global(.row) { display: flex; align-items: center; gap: 8px; padding: 4px 0; }
+  .qc-compare :global(.row .lbl) { font: 0.75rem var(--mono); color: var(--muted); width: 6.5em; }
+  .qc-compare :global(.mv) { display: flex; gap: 4px; }
+  .qc-compare :global(.mv b) { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 5px; border: 1.5px solid var(--muted); font: 700 0.8rem var(--mono); }
+  .qc-compare :global(.mv b.quantum) { border-color: var(--magenta); color: var(--magenta); }
+  .qc-compare :global(.mv b.classical) { border-color: var(--cyan); color: var(--cyan); }
+  .qc-compare :global(.mv b.secret) { border-style: dashed; color: var(--muted); }
+  .qc-compare :global(.arrow) { color: var(--muted); }
+  .qc-compare :global(.verdict) { font-size: 0.95rem; margin-top: 4px; }
+
+  .qc-tally { margin-top: 12px; font: 0.78rem var(--mono); color: var(--muted); display: grid; gap: 6px; }
+  .qc-tally:empty { display: none; }
+  .qc-tally :global(.coins) { display: flex; flex-wrap: wrap; gap: 4px; }
+  .qcoin2 :global(.mini) {
+    display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%;
+    border: 2px solid currentColor; font: 700 0.68rem var(--mono); background: var(--card);
+  }
+  .qcoin2 :global(.mini.won) { box-shadow: 0 0 0 2px color-mix(in srgb, currentColor 25%, transparent); }
+  .qc-tally :global(.hist) { display: flex; height: 12px; border-radius: 6px; overflow: hidden; background: var(--line); max-width: 320px; }
+  .qc-tally :global(.hist .hd) { background: var(--cyan); }
+  .qc-tally :global(.hist .tl) { background: var(--magenta); }
+
+  .qc-why { margin-top: 14px; border-top: 1px solid var(--line); padding-top: 8px; }
+  .qc-why[hidden] { display: none; }
+  .qc-why summary { cursor: pointer; font: 600 0.88rem var(--sans); color: var(--cyan); width: fit-content; }
+  .qc-text :global(p) { color: var(--muted); font-size: 0.95rem; margin: 8px 0; }
+  .qc-text :global(.math) { font-family: var(--mono); font-size: 0.85rem; color: var(--ink); }
+
+  /* circuit: one wire, gate boxes (tappable where they answer a question), a meter */
+  .qc-circuit { display: flex; align-items: center; min-height: 62px; overflow-x: auto; padding: 4px 2px 10px; }
+  .qc-circuit:empty { display: none; }
+  .qcoin2 :global(.qc-wire-label) { font: 0.75rem var(--mono); color: var(--muted); margin-right: 6px; white-space: nowrap; }
+  .qcoin2 :global(.qc-seg) { flex: 0 0 14px; height: 2px; background: var(--muted); opacity: 0.6; }
+  .qcoin2 :global(.qc-gate) { position: relative; display: grid; place-items: center; flex: 0 0 auto; padding: 0; border: 0; background: none; font: inherit; color: inherit; }
+  .qcoin2 :global(.qc-gate b) {
+    display: grid; place-items: center; width: 38px; height: 38px; border-radius: 7px;
+    font: 700 1rem var(--mono); border: 2px solid var(--muted); background: var(--card); color: var(--ink);
+  }
+  .qcoin2 :global(.qc-gate.quantum b) { border-color: var(--magenta); color: var(--magenta); }
+  .qcoin2 :global(.qc-gate.classical b) { border-color: var(--cyan); color: var(--cyan); }
+  .qcoin2 :global(.qc-gate.secret b) { border-style: dashed; color: var(--muted); }
+  .qcoin2 :global(.qc-gate.empty b) { border-style: dotted; opacity: 0.45; }
+  .qcoin2 :global(.qc-gate.active b) { box-shadow: 0 0 0 4px color-mix(in srgb, var(--magenta) 25%, transparent); }
+  .qcoin2 :global(.qc-gate.tap) { cursor: pointer; }
+  .qcoin2 :global(.qc-gate.tap b) { border-width: 2.5px; }
+  .qcoin2 :global(.qc-gate.tap:hover b), .qcoin2 :global(.qc-gate.tap:focus-visible b) { background: color-mix(in srgb, var(--cyan) 12%, var(--card)); }
+  .qcoin2 :global(.qc-gate i) { position: absolute; top: 42px; font: normal 0.6rem var(--mono); color: var(--muted); white-space: nowrap; }
+  .qcoin2 :global(.qc-meter b) { border-color: var(--ink); font-size: 0.85rem; }
+
+  .qcoin2 :global(.qc-term) {
+    font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: help;
+    text-decoration: underline dotted color-mix(in srgb, var(--cyan) 70%, transparent); text-underline-offset: 3px;
+  }
+  .qcoin2 :global(.qc-term:hover) { color: var(--cyan); }
+  .qc-explain {
+    margin: auto; max-width: min(520px, calc(100vw - 32px)); width: 100%; max-height: calc(100vh - 48px); overflow-y: auto;
+    border: 1px solid var(--line); border-radius: 16px; background: var(--card); color: var(--ink); padding: 24px 26px 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  }
+  .qc-explain::backdrop { background: rgba(20, 21, 29, 0.45); }
+  .qc-close {
+    position: absolute; top: 10px; right: 12px; width: 32px; height: 32px; border-radius: 50%;
+    border: 1px solid var(--line); background: var(--card); color: var(--muted); font-size: 1.2rem; cursor: pointer;
+  }
+  .qc-close:hover { color: var(--ink); border-color: var(--cyan); }
+  .qc-explain :global(h3) { font-size: 1.15rem; margin: 6px 36px 10px 0; }
+  .qc-explain :global(p) { color: var(--ink); font-size: 0.97rem; margin-bottom: 12px; }
+  .qc-explain :global(.qc-more) { font: 0.85rem var(--sans); line-height: 1.9; margin-bottom: 0; }
+  .qc-explain :global(.qc-back) { font: 0.8rem var(--mono); color: var(--cyan); background: none; border: 0; cursor: pointer; padding: 0; }
+  .qc-explain :global(.qc-terms) { list-style: none; columns: 2 200px; gap: 18px; padding: 0; }
+  .qc-explain :global(.qc-terms li) { margin: 0 0 8px; break-inside: avoid; }
+  .qc-explain :global(.qc-terms .qc-term) { text-align: left; }
+  .qc-noscript { color: var(--muted); }
+
+  /* ---------- phones and narrow windows: one column, compact stage, action right below ---------- */
+  @media (max-width: 860px) {
+    .qc-arena { grid-template-columns: 1fr; gap: 6px; }
+    .qc-gatefx { display: none; }
+  }
+  @media (max-width: 560px) {
+    .qcoin2 { --coin: 112px; --thick: 9px; padding: 12px 12px 16px; border-radius: 12px; }
+    .qc-explain-btn .word { display: none; }
+    .qc-explain-btn { padding: 6px 10px; }
+    .qc-views { grid-template-columns: 1fr 44%; }
+    .qc-scene { height: 168px; }
+    .qc-box span { font-size: 2.6rem; }
+    .qc-box small { display: none; }
+    .qc-probs { margin-top: 4px; }
+    .qc-state { font-size: 0.72rem; margin-top: 2px; }
+    .qc-status { font-size: 1.04rem; min-height: 2.8em; margin: 6px 0; }
+    .qc-actions :global(button.primary) { flex: 1 1 auto; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .qc-box, .qc-prob .fill { transition: none; }
+    .qcoin2.shake .qc-box { animation: none; }
+    .qc-actions :global(button.nudge) { animation: none; }
+  }
+</style>

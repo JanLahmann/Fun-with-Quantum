@@ -1,0 +1,52 @@
+---
+/**
+ * UNLISTED preview of the redesigned Quantum Coin Game (v2), English and German — noindex,
+ * reachable only by URL. The public game (/play/quantum-coin-game/, 7 languages) stays v1 until
+ * Jan approves v2 and the other languages have their v2 texts.
+ */
+import Base from '../layouts/Base.astro';
+import CoinGame2 from './CoinGame2.astro';
+import { MESSAGES } from '../lib/qcoin/i18n';
+import { LOCALES_V2, type LocaleV2 } from '../lib/qcoin/v2';
+
+interface Props {
+  locale: LocaleV2;
+}
+const { locale } = Astro.props;
+const m = MESSAGES[locale];
+const path = (l: LocaleV2) => (l === 'en' ? '/preview/quantum-coin-game/' : `/preview/quantum-coin-game/${l}/`);
+const notebook =
+  'https://qubins.org/launch/?image=2.1-xl-rise&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=Quantum-Coin-Game.ipynb&ui=rise-classic';
+---
+
+<Base title={`${m.page.title} (${m.page.preview})`} description={m.page.description} lang={m.lang} noindex>
+  <section class="section">
+    <div class="wrap">
+      <div class="top">
+        <div class="kicker">{m.page.kicker} · {m.page.preview}</div>
+        <nav class="langs" aria-label="Language">
+          {LOCALES_V2.map((l) => (
+            <a href={path(l)} hreflang={l} lang={l} aria-current={l === locale ? 'page' : undefined}>{MESSAGES[l].langName}</a>
+          ))}
+        </nav>
+      </div>
+      <h1>🪙 {m.page.heading}</h1>
+      <p class="lead">{m.page.lead}</p>
+      <CoinGame2 locale={locale} />
+      <p class="lead">
+        {m.page.notebook}{' '}
+        <a href={notebook} target="_blank" rel="noopener" data-umami-event="Portal: notebook launch" data-umami-event-target="qubins"
+           data-umami-event-image="2.1-xl-rise" data-umami-event-notebook="Quantum-Coin-Game.ipynb">{m.page.notebookLink}</a>
+        <span class="wait">{m.page.notebookWait}</span>
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .langs { display: flex; flex-wrap: wrap; gap: 4px 12px; font: 0.8rem var(--sans); }
+  .langs a { color: var(--muted); }
+  .langs a[aria-current='page'] { color: var(--ink); font-weight: 600; }
+  .wait { display: block; margin-top: 4px; font-size: 0.8rem; color: var(--muted); }
+</style>

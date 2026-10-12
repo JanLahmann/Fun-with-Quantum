@@ -4,7 +4,7 @@
 # gets an entry here, so no figure reaches the site or a notebook unchecked.
 #   python3 tools/check_numbers.py      exits 1 on an unlisted number or a failing computation
 # Scanned: the markdown of every notebook, README.md, the game pages (portal/src/content/games), the
-# browser games' English texts (portal/src/lib/*/messages.ts, qcoin/i18n/en.ts; the other languages
+# browser games' English texts (portal/src/lib/*/messages.ts, qcoin/i18n/en.ts, qcoin/v2/en.ts; the other languages
 # are kept equal by the parity tests) and the portal's pages (outside <style>).
 
 import glob
@@ -101,7 +101,7 @@ def sources():
             if c['cell_type'] == 'markdown':
                 yield p.name, ''.join(c['source'])
     files = (['README.md'] + glob.glob('portal/src/content/games/*.md', root_dir=ROOT)
-             + glob.glob('portal/src/lib/*/messages.ts', root_dir=ROOT) + ['portal/src/lib/qcoin/i18n/en.ts']
+             + glob.glob('portal/src/lib/*/messages.ts', root_dir=ROOT) + ['portal/src/lib/qcoin/i18n/en.ts', 'portal/src/lib/qcoin/v2/en.ts']
              + glob.glob('portal/src/pages/**/*.astro', root_dir=ROOT, recursive=True))
     for f in sorted(files):
         yield f, (ROOT / f).read_text()
