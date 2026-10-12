@@ -20,7 +20,7 @@ const RIM_SEGMENTS = 44;
   <div class="qc-top">
     <div class="qc-chapters" role="tablist" aria-label={m.ui.chaptersLabel}>
       {t.ui.chapters.map((label, i) => (
-        <button role="tab" data-chapter={i + 1}><span class="n">{i + 1}</span> {label}</button>
+        <button type="button" role="tab" data-chapter={i + 1}><span class="n">{i + 1}</span> {label}</button>
       ))}
     </div>
     <button type="button" class="qc-explain-btn" aria-haspopup="dialog" aria-label={m.ui.explain}>ⓘ<span class="word"> {m.ui.explain}</span></button>
@@ -57,8 +57,8 @@ const RIM_SEGMENTS = 44;
         <div class="qc-prob"><span class="lbl hd">{m.ui.heads}</span><span class="bar"><i class="fill heads"></i></span><span class="pct" data-p="heads">100%</span></div>
         <div class="qc-prob"><span class="lbl tl">{m.ui.tails}</span><span class="bar"><i class="fill tails"></i></span><span class="pct" data-p="tails">0%</span></div>
       </div>
-      <div class="qc-state" aria-live="polite"></div>
-      <p class="qc-gatefx" aria-live="polite"></p>
+      <div class="qc-state"></div>
+      <p class="qc-gatefx"></p>
     </div>
 
     <div class="qc-panel">
@@ -75,7 +75,7 @@ const RIM_SEGMENTS = 44;
       <div class="qc-math"></div>
       <div class="qc-actions"></div>
       <div class="qc-compare" aria-live="polite"></div>
-      <div class="qc-tally" aria-live="polite"></div>
+      <div class="qc-tally"></div>
       <details class="qc-why" hidden><summary>{t.ui.why}</summary><div class="qc-text"></div></details>
     </div>
   </div>
@@ -172,6 +172,8 @@ const RIM_SEGMENTS = 44;
   .qc-box span { font: 700 3.8rem/1 var(--sans); opacity: 0.92; }
   .qc-box small { font: 0.66rem var(--mono); letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.9; }
   .qcoin2.covered .qc-box { transform: none; opacity: 1; }
+  /* while covered the coin and its shadow are hidden: a coin on its edge would stick out above the box */
+  .qcoin2.covered .qc-pos, .qcoin2.covered .qc-shadow { visibility: hidden; }
   .qcoin2.shake .qc-box { animation: qc-shake 0.5s ease; }
   @keyframes qc-shake {
     0%, 100% { transform: none; }

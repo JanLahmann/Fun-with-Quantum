@@ -42,6 +42,7 @@ const en: MessagesV2 = {
 
   ch1: {
     replayDiff: 'Only your move changed. In a classical game, every move counts.',
+    replayDiffMoves: 'Only your moves changed. In a classical game, every move counts.',
     next: 'Now play a quantum computer →',
   },
 
@@ -99,6 +100,7 @@ const en: MessagesV2 = {
     start: 'Add moves. Flat: {h:heads} or {t:tails}. On its edge: both at once.',
     tapHint: 'Tap a box in the circuit to see the coin at that point.',
     inspect: (k, g) => `The coin after move ${k} (${g}). Tap it again to go back.`,
+    inspectTap: (k, g) => `Show the coin after move ${k} (${g})`,
     look: 'Look',
     lookMany: 'Look 100×',
     undo: 'Undo',

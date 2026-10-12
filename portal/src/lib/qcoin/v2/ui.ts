@@ -55,7 +55,7 @@ export function mountCoinGameV2(root: HTMLElement) {
   let epoch = 0;
   let current: Chapter = 1;
   let lastQuantumRound: GateName = 'X'; // your move in the last chapter-2 round, shown again in chapter 3
-  /** Rounds per chapter (what the tally shows) and guesses. Replays don't count. */
+  /** Rounds per chapter (what the tally shows) and guesses. What-if replays count in neither. */
   const rounds: Record<Chapter, { outcome: Side; youWin: boolean }[]> = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] };
   const guesses: Record<Chapter, { right: number; total: number }> = { 1: { right: 0, total: 0 }, 2: { right: 0, total: 0 }, 3: { right: 0, total: 0 }, 4: { right: 0, total: 0 }, 5: { right: 0, total: 0 }, 6: { right: 0, total: 0 } };
 
@@ -81,9 +81,9 @@ export function mountCoinGameV2(root: HTMLElement) {
     stateEl.textContent = covered ? m.ui.hiddenInBox : describe(state, m);
   };
 
-  const circuit = (s: Slot[] | null) => {
+  const circuit = (s: Slot[] | null, start = '|0⟩') => {
     if (!s) { circuitEl.innerHTML = ''; return; }
-    const parts = [`<span class="qc-wire-label">${m.ui.coin} |0⟩</span>`];
+    const parts = [`<span class="qc-wire-label">${m.ui.coin} ${start}</span>`];
     s.forEach((x, i) => {
       const g = x.gate;
       const cls = `qc-gate ${g === null ? 'empty' : g === '?' ? 'secret' : QUANTUM.has(g) ? 'quantum' : 'classical'}${x.active ? ' active' : ''}${x.tap ? ' tap' : ''}`;
@@ -97,6 +97,9 @@ export function mountCoinGameV2(root: HTMLElement) {
     circuitEl.innerHTML = parts.join('');
   };
 
+  /** Set once the player has answered something here; only then do new questions take the focus. */
+  let playing = false;
+  root.addEventListener('click', (ev) => { if ((ev.target as HTMLElement).closest('.qc-actions, .qc-circuit')) playing = true; });
   /** The pending question: buttons, and (optionally) circuit boxes that answer it too. */
   let pending: { e: number; resolve: (v: unknown) => void; taps: Record<number, unknown> } | null = null;
   function ask<T>(e: number, options: Option<T>[], opts: { taps?: Record<number, T>; extra?: string; nudge?: boolean } = {}): Promise<T> {
@@ -119,6 +122,8 @@ export function mountCoinGameV2(root: HTMLElement) {
         actions.appendChild(b);
       }
       if (opts.extra) actions.insertAdjacentHTML('beforeend', opts.extra);
+      // keyboard and screen-reader users keep their place: the answered button is gone, focus the next question
+      if (playing) (actions.querySelector<HTMLElement>('button.primary') ?? actions.querySelector<HTMLElement>('button'))?.focus({ preventScroll: true });
     });
   }
   circuitEl.addEventListener('click', (ev) => {
@@ -240,7 +245,7 @@ export function mountCoinGameV2(root: HTMLElement) {
     if (ch === 1) { moves.forEach((mv, i) => { s[i].gate = mv; }); circuit(s); }
     const shown = s.map((x) => x.gate ?? '?');
     const winner: Player = outcome === 'heads' ? 'A' : 'B';
-    const g = guesses[ch]; g.total++; if (guessed === outcome) g.right++;
+    if (!fixed) { const g = guesses[ch]; g.total++; if (guessed === outcome) g.right++; }
     if (ch === 2 && you === 'B') lastQuantumRound = yours[0];
     track('Portal: coin game round', { chapter: ch, result: winner === you ? 'you win' : 'computer wins', starts: you === 'A' ? 'you' : 'computer', replay: fixed ? 'yes' : 'no' });
     return { moves, shown, computer, outcome, youWin: winner === you, guessed };
@@ -300,7 +305,7 @@ export function mountCoinGameV2(root: HTMLElement) {
       const same = other.outcome === base.outcome;
       const lesson = quantum
         ? (you === 'A' ? t.ch2.replayYouFirst : same ? t.ch2.replaySame : '')
-        : (same ? '' : t.ch1.replayDiff);
+        : (same ? '' : you === 'A' ? t.ch1.replayDiffMoves : t.ch1.replayDiff);
       showCompare([{ label: t.ui.compareFirst, p: base }, { label: t.ui.compareOther, p: other }],
         `${quantum && you === 'B' && same ? '' : same ? t.ui.compareSame : t.ui.compareDiff} ${lesson}`.trim());
       say(other.youWin ? t.round.youWin(side(other.outcome)) : t.round.computerWins(side(other.outcome)), guessLine(other));
@@ -365,9 +370,10 @@ export function mountCoinGameV2(root: HTMLElement) {
       else {
         move = move === 'X' ? 'I' : 'X';
         track(ch === 3 ? 'Portal: coin game step' : 'Portal: coin game math', { action: 'toggle', move, step: k });
-        if (k >= 2) { // your move was played already: play the round again with the other move
-          resetCoin(); draw();
-          for (let i = 0; i < k; i++) await animateGate(gates()[i], e, { ms: 600 });
+        if (k >= 2) { // your move was played already: play the round again with the other move, step by step
+          const target = k;
+          k = 0; resetCoin(); draw();
+          while (k < target) { await animateGate(gates()[k], e, { ms: 600 }); k++; draw(); }
         }
       }
       if (k === 0) explainGate(null);
@@ -420,7 +426,7 @@ export function mountCoinGameV2(root: HTMLElement) {
       const outcome = await reveal(e);
       s[1].gate = b; circuit(s);
       const youWin = outcome === 'heads';
-      const g = guesses[4]; g.total++; if (guessed === outcome) g.right++;
+      if (!fixedB) { const g = guesses[4]; g.total++; if (guessed === outcome) g.right++; }
       track('Portal: coin game round', { chapter: 4, result: youWin ? 'you win' : 'computer wins', strategy: a1 + a2, replay: fixedB ? 'yes' : 'no' });
       const moves = roundMoves('A', [a1, a2], [b]);
       return { moves, shown: moves, computer: [b], outcome, youWin, guessed };
@@ -465,15 +471,17 @@ export function mountCoinGameV2(root: HTMLElement) {
     setWhy(m.ch5.intro);
     const gates: GateName[] = [];
     let inspecting: number | null = null;
+    /** Where the circuit starts: heads, or what the last "Look" showed (the coin stays where it fell). */
+    let start: { state: State; R: typeof IDENTITY } = { state: HEADS, R: IDENTITY };
     resetCoin();
     const draw = () => {
-      const s: Slot[] = gates.map((g, i) => ({ gate: g, who: '', active: inspecting === i, tap: plain(t.ch5.inspect(i + 1, g)) }));
+      const s: Slot[] = gates.map((g, i) => ({ gate: g, who: '', active: inspecting === i, tap: plain(inspecting === i ? t.ch5.inspect(i + 1, g) : t.ch5.inspectTap(i + 1, g)) }));
       if (gates.length < 8) s.push({ gate: null, who: '' });
-      circuit(s);
+      circuit(s, pHeads(start.state) === 1 ? '|0⟩' : '|1⟩');
     };
     /** Put the coin where it is after the first `n` gates — instantly, without a trail. */
     const jumpTo = (n: number) => {
-      state = HEADS; let R = IDENTITY;
+      state = start.state; let R = start.R;
       for (const g of gates.slice(0, n)) { state = apply(g, state); R = mul(axisAngle(GATE_ROTATIONS[g].axis, GATE_ROTATIONS[g].angle), R); }
       coin.recordTrail = false; coin.set(R); coin.recordTrail = true;
       showProbs();
@@ -501,8 +509,8 @@ export function mountCoinGameV2(root: HTMLElement) {
         say(inspecting === null ? t.ch5.start : t.ch5.inspect(i + 1, gates[i]));
         continue;
       }
-      if (inspecting !== null) { inspecting = null; jumpTo(gates.length); draw(); }
-      if (choice === 'reset') { gates.length = 0; resetCoin(); draw(); say(t.ch5.backToHeads); tallyEl.innerHTML = ''; continue; }
+      if (inspecting !== null) { inspecting = null; jumpTo(gates.length); explainGate(null); draw(); say(t.ch5.start); }
+      if (choice === 'reset') { gates.length = 0; start = { state: HEADS, R: IDENTITY }; resetCoin(); draw(); say(t.ch5.backToHeads); tallyEl.innerHTML = ''; continue; }
       if (choice === 'undo') { gates.pop(); coin.clearTrail(); jumpTo(gates.length); explainGate(null); draw(); say(t.ch5.undone); continue; }
       if (choice === 'many') {
         let h = 0; for (let i = 0; i < 100; i++) if (measure(state) === 'heads') h++;
@@ -515,7 +523,7 @@ export function mountCoinGameV2(root: HTMLElement) {
       if (choice === 'measure') {
         const outcome = await reveal(e);
         say(t.ch5.measured(side(outcome)));
-        gates.length = 0; draw();
+        gates.length = 0; start = { state, R: coin.R }; draw();
         track('Portal: coin game sandbox', { action: 'measure', outcome });
         continue;
       }

@@ -26,7 +26,7 @@ const de: MessagesV2 = {
 
   round: {
     startsHeads: 'Das ist eine Münze. Sie liegt auf {h:Kopf}.',
-    intoBox: 'Ab in die Box. Jetzt sieht sie keiner mehr.',
+    intoBox: 'Ab in die Box. Jetzt sieht sie niemand mehr.',
     computerMoves: 'Der Computer zieht. Du siehst nicht, wie.',
     computerAgain: 'Der Computer zieht noch einmal.',
     yourMove: 'Dein Zug: umdrehen oder so lassen?',
@@ -42,6 +42,7 @@ const de: MessagesV2 = {
 
   ch1: {
     replayDiff: 'Nur dein Zug war anders. Im klassischen Spiel zählt jeder Zug.',
+    replayDiffMoves: 'Nur deine Züge waren anders. Im klassischen Spiel zählt jeder Zug.',
     next: 'Jetzt gegen einen Quantencomputer spielen →',
   },
 
@@ -99,6 +100,7 @@ const de: MessagesV2 = {
     start: 'Füge Züge hinzu. Flach: {h:Kopf} oder {t:Zahl}. Auf der Kante: beides zugleich.',
     tapHint: 'Tippe im Schaltkreis auf ein Kästchen, um die Münze an dieser Stelle zu sehen.',
     inspect: (k, g) => `Die Münze nach Zug ${k} (${g}). Noch mal tippen, um zurückzugehen.`,
+    inspectTap: (k, g) => `Die Münze nach Zug ${k} (${g}) zeigen`,
     look: 'Hinschauen',
     lookMany: '100× hinschauen',
     undo: 'Rückgängig',
@@ -113,7 +115,7 @@ const de: MessagesV2 = {
 
   ch6: {
     steps: {
-      start: 'Start: |0⟩. Kopf mit Sicherheit.',
+      start: 'Start: |0⟩. Sicher Kopf.',
       h1: 'H|0⟩ = (|0⟩ + |1⟩)/√2. Beide Amplituden sind 1/√2, also beide Chancen ½.',
       flip: 'X vertauscht |0⟩ und |1⟩. (|1⟩ + |0⟩)/√2 ist derselbe Zustand.',
       leave: 'I ändert nichts. Der Zustand bleibt (|0⟩ + |1⟩)/√2.',

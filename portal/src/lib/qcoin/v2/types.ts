@@ -48,7 +48,7 @@ export interface MessagesV2 {
     youWin: (side: string) => string;
     computerWins: (side: string) => string;
   };
-  ch1: { replayDiff: string; next: string };
+  ch1: { replayDiff: string; replayDiffMoves: string; next: string };
   ch2: {
     intro: string;
     introYouFirst: string;
@@ -89,6 +89,8 @@ export interface MessagesV2 {
     start: string;
     tapHint: string;
     inspect: (k: number, gate: GateName) => string;
+    /** Label of a sandbox box: what tapping it shows. */
+    inspectTap: (k: number, gate: GateName) => string;
     look: string;
     lookMany: string;
     undo: string;
