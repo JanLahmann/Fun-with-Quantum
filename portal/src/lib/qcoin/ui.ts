@@ -14,7 +14,7 @@
  */
 import { GATE_ROTATIONS, HEADS, apply, bloch, measure, pHeads, stateLabel, type GateName, type State } from './qubit';
 import { emptyScore, quantumA, quantumB, randomClassical, tally, type Player, type Score, type Strategy } from './game';
-import { IDENTITY, axisAngle, mul } from './rotation';
+import { IDENTITY, axisAngle, mul, type Mat3 } from './rotation';
 import { CoinView, reducedMotion } from './view';
 import { MESSAGES, doqLink, ibmLink, isLocale, rich, type Locale, type Messages, type TermKey } from './i18n';
 
