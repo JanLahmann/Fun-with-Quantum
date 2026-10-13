@@ -302,12 +302,12 @@ const doors = [
       owner = short[1];
       repo = short[2];
     }
-    // The FwQ slideshow games need the classic-RISE flavor to auto-start as a
-    // presentation (jupyterlab-rise can't render ipywidgets>=8); everything
-    // else gets the plain Lab image.
+    // One image for everything (2.5-xl, warmed on mybinder). The FwQ slideshow games
+    // open in classic RISE so they auto-start as a presentation with working
+    // ipywidgets (jupyterlab-rise can't render ipywidgets>=8); everything else opens in Lab.
     const RISE_GAMES = /^(Quantum-Coin-Game|GHZ-Game|Hardys-Paradox|3sat|Mermin-Peres-Game|CHSH-Game|Prisoners-Dilemma)\.ipynb$/;
     const isRiseGame = owner === 'JanLahmann' && repo === 'Fun-with-Quantum' && RISE_GAMES.test(path);
-    const q = new URLSearchParams({ image: isRiseGame ? '2.1-xl-rise' : '2.1-xl', repo: `https://github.com/${owner}/${repo}` });
+    const q = new URLSearchParams({ image: '2.5-xl', repo: `https://github.com/${owner}/${repo}` });
     if (branch) q.set('branch', branch);
     if (path) q.set('path', path);
     if (isRiseGame) q.set('ui', 'rise-classic');

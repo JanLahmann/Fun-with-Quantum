@@ -77,7 +77,6 @@ NUMBERS = {
     '96%': (None, 'GHZ-on-Real-Devices: lowest mitigated win rate in its own results table (fake backends, fixed seeds)'),
     # not physics
     '97.7%': (None, 'Quantum Volume protocol: confidence level two standard deviations (from the protocol)'),
-    '2.1': (None, 'Qiskit version 2.1 / QuBins image 2.1-xl'),
     '3.1': (None, 'tutorial part 3.1'),
     '3.2': (None, 'tutorial part 3.2'),
     '1904.01502': (None, 'arXiv number'),

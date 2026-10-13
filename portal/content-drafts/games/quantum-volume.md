@@ -7,7 +7,7 @@ order: 7
 duration: ~20 min
 audience: developers
 # Plain notebook (no RISE) — QuBins prebuilt image is fine.
-binderUrl: https://qubins.org/launch/?image=2.1-xl&repo=https%3A%2F%2Fgithub.com%2FJanLahmann%2FFun-with-Quantum&branch=master&path=QuantumVolume.ipynb
+binderUrl: https://qubins.org/launch/?image=2.5-xl&repo=https%3A%2F%2Fgithub.com%2FJanLahmann%2FFun-with-Quantum&branch=master&path=QuantumVolume.ipynb
 notebook: QuantumVolume.ipynb
 ---
 

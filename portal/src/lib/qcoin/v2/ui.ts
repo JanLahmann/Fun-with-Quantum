@@ -489,7 +489,7 @@ export function mountCoinGameV2(root: HTMLElement) {
     draw();
     say(t.ch5.start, t.ch5.tapHint);
     tallyEl.innerHTML = '';
-    const nb = `<a href="https://qubins.org/launch/?image=2.1-xl-rise&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=Quantum-Coin-Game.ipynb&ui=rise-classic" target="_blank" rel="noopener" data-umami-event="Portal: notebook launch" data-umami-event-target="qubins" data-umami-event-image="2.1-xl-rise" data-umami-event-notebook="Quantum-Coin-Game.ipynb">${t.ch5.notebook}</a>`;
+    const nb = `<a href="https://qubins.org/launch/?image=2.5-xl&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=Quantum-Coin-Game.ipynb&ui=rise-classic" target="_blank" rel="noopener" data-umami-event="Portal: notebook launch" data-umami-event-target="qubins" data-umami-event-image="2.5-xl" data-umami-event-notebook="Quantum-Coin-Game.ipynb">${t.ch5.notebook}</a>`;
     for (;;) {
       const full = gates.length >= 8;
       const taps: Record<number, string> = {};

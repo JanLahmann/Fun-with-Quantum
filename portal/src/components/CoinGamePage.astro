@@ -14,7 +14,7 @@ interface Props {
 const { locale } = Astro.props;
 const m = MESSAGES[locale];
 const notebook =
-  'https://qubins.org/launch/?image=2.1-xl-rise&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=Quantum-Coin-Game.ipynb&ui=rise-classic';
+  'https://qubins.org/launch/?image=2.5-xl&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=Quantum-Coin-Game.ipynb&ui=rise-classic';
 const alternates = [
   ...LOCALES.map((l) => ({ lang: l, href: pagePath(l) })),
   { lang: 'x-default', href: pagePath('en') },
@@ -38,7 +38,7 @@ const alternates = [
       <p class="lead">
         {m.page.notebook}{' '}
         <a href={notebook} target="_blank" rel="noopener" data-umami-event="Portal: notebook launch" data-umami-event-target="qubins"
-           data-umami-event-image="2.1-xl-rise" data-umami-event-notebook="Quantum-Coin-Game.ipynb">{m.page.notebookLink}</a>
+           data-umami-event-image="2.5-xl" data-umami-event-notebook="Quantum-Coin-Game.ipynb">{m.page.notebookLink}</a>
         <span class="wait">{m.page.notebookWait}</span>
       </p>
     </div>
