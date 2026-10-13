@@ -60,13 +60,26 @@ nbformat.write(nb, index)
 # --- the "At a glance" box in the notebooks without a builder ---------------------------------
 for name in ['Quantum-Coin-Game.ipynb', 'GHZ-Game.ipynb']:
     nb = nbformat.read(ROOT / name, as_version=4)
-    box = next((c for c in nb.cells if c.get('id') == 'at-a-glance'), None)
+    # Cell ids exist from nbformat 4.5 on; these two are older, and an id there makes classic
+    # Jupyter (RISE on QuBins) show "Notebook validation failed". So find the box by its text.
+    box = next((c for c in nb.cells if c.get('id') == 'at-a-glance' or c.source.startswith('> **At a glance**')), None)
     if box is None:
-        box = nbformat.v4.new_markdown_cell('', id='at-a-glance')
+        box = nbformat.v4.new_markdown_cell('')
         box.metadata['slideshow'] = {'slide_type': '-'}   # on the title slide
         nb.cells.insert(1, box)
+    if nb.nbformat_minor >= 5:
+        box['id'] = 'at-a-glance'
+    else:
+        box.pop('id', None)
     box.source = glance(name)
     nbformat.write(nb, ROOT / name)
+
+# --- every notebook must be valid nbformat (classic Jupyter warns otherwise) -------------------
+for path in sorted(ROOT.glob('*.ipynb')):
+    try:
+        nbformat.validate(nbformat.read(path, as_version=4))
+    except nbformat.ValidationError as e:
+        errors.append(f"{path.name}: invalid notebook: {str(e).splitlines()[0]}")
 
 # --- each notebook's first heading ---------------------------------------------------------------
 for g in games:
