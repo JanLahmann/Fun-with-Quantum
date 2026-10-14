@@ -13,10 +13,10 @@ goals:
   - "Follow how three facts that always hold rule out one outcome for any classical explanation"
   - "See both cars come out diesel anyway in 1 of 12 mornings when both inspectors check the engine — up to 9.02% with the best measurement angle"
   - "Recognize nonlocality without an inequality"
-# QuBins classic-RISE launch (2.1-xl-rise = nbclassic + classic RISE);
+# QuBins classic-RISE launch (2.5-xl with ui=rise-classic = nbclassic + classic RISE);
 # jupyterlab-rise doesn't render ipywidgets>=8 (jupyterlab-contrib/rise#119).
-# Once fixed upstream, switch to image=2.1-xl&...&ui=rise (Lab presenter).
-binderUrl: https://qubins.org/launch/?image=2.1-xl-rise&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=Hardys-Paradox.ipynb&ui=rise-classic
+# Once fixed upstream, switch to ui=rise (Lab presenter).
+binderUrl: https://qubins.org/launch/?image=2.5-xl&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=Hardys-Paradox.ipynb&ui=rise-classic
 notebook: Hardys-Paradox.ipynb
 ---
 

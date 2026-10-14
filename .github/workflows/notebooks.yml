@@ -1,7 +1,7 @@
 name: Notebooks
 
 # Every notebook at the repository root must run from top to bottom without an error — on the
-# Qiskit 2.1 stack of the QuBins image the games launch on (versions/2.1-xl in JanLahmann/QuBins),
+# Qiskit 2.5 stack of the QuBins image every FwQ link launches (versions/2.5-xl in QuBins/qiskit-images),
 # and on the newest Qiskit. Generated notebooks must match their builders in tools/, and the games
 # list in README.md and Readme.ipynb must match portal/src/content/games (tools/build_games_list.py).
 # Weekly as well, so a new Qiskit release that breaks a notebook shows up before players see it.
@@ -62,11 +62,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: Qiskit 2.1, as on QuBins
-            python: '3.11'
+          - name: Qiskit 2.5, as on QuBins
+            python: '3.13'
             packages: >-
-              qiskit[visualization]~=2.1.0 qiskit-ibm-runtime~=0.43.1 qiskit-aer~=0.17
-              qiskit-experiments~=0.13.0
+              qiskit[visualization]~=2.5.2 qiskit-ibm-runtime~=0.49.0 qiskit-aer~=0.17
+              qiskit-experiments~=0.14.2
           - name: newest Qiskit
             python: '3.12'
             packages: qiskit[visualization] qiskit-ibm-runtime qiskit-aer qiskit-experiments

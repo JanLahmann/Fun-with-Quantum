@@ -14,7 +14,7 @@ goals:
   - "See how two shared Bell pairs and a square of Pauli measurements win every round"
   - "Explain why the proof fails for quantum measurements: they don't commute, so the nine results never exist all at once (the Kochen–Specker theorem)"
 # RISE slideshow with ipywidgets, like the Coin and GHZ games → the classic-RISE image.
-binderUrl: https://qubins.org/launch/?image=2.1-xl-rise&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=Mermin-Peres-Game.ipynb&ui=rise-classic
+binderUrl: https://qubins.org/launch/?image=2.5-xl&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=Mermin-Peres-Game.ipynb&ui=rise-classic
 notebook: Mermin-Peres-Game.ipynb
 ---
 

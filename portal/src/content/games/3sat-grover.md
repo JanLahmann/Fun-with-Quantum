@@ -13,10 +13,10 @@ goals:
   - "Write a logic puzzle as a Boolean formula and let Qiskit turn it into a quantum oracle"
   - "Run Grover's search: an oracle marks the answers, a diffuser amplifies them by interference"
   - "See it find the answers in about √(N/M) rounds instead of about N/M checks (N candidates, M answers)"
-# QuBins classic-RISE launch (2.1-xl-rise = nbclassic + classic RISE);
+# QuBins classic-RISE launch (2.5-xl with ui=rise-classic = nbclassic + classic RISE);
 # jupyterlab-rise doesn't render ipywidgets>=8 (jupyterlab-contrib/rise#119).
-# Once fixed upstream, switch to image=2.1-xl&...&ui=rise (Lab presenter).
-binderUrl: https://qubins.org/launch/?image=2.1-xl-rise&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=3sat.ipynb&ui=rise-classic
+# Once fixed upstream, switch to ui=rise (Lab presenter).
+binderUrl: https://qubins.org/launch/?image=2.5-xl&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=3sat.ipynb&ui=rise-classic
 notebook: 3sat.ipynb
 ---
 

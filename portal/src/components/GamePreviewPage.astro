@@ -13,7 +13,7 @@ interface Props {
   current: 'magic' | 'sat' | 'hardy' | 'pd';
 }
 const { page, icon, notebook, current } = Astro.props;
-const launch = `https://qubins.org/launch/?image=2.1-xl-rise&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=${notebook}&ui=rise-classic`;
+const launch = `https://qubins.org/launch/?image=2.5-xl&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=${notebook}&ui=rise-classic`;
 ---
 
 <Base title={page.title} description={page.description} noindex>
@@ -26,7 +26,7 @@ const launch = `https://qubins.org/launch/?image=2.1-xl-rise&repo=https://github
       <p class="lead">
         {page.notebook}{' '}
         <a href={launch} target="_blank" rel="noopener" data-umami-event="Portal: notebook launch" data-umami-event-target="qubins"
-           data-umami-event-image="2.1-xl-rise" data-umami-event-notebook={notebook}>{page.notebookLink}</a>
+           data-umami-event-image="2.5-xl" data-umami-event-notebook={notebook}>{page.notebookLink}</a>
         <span class="wait">It starts a free Jupyter session on mybinder.org (via QuBins); starting it can take a few minutes.</span>
       </p>
       <BrowserGames current={current} />

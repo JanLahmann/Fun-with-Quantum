@@ -13,7 +13,7 @@ goals:
   - "See how noise on simulated IBM quantum computers costs the quantum team rounds"
   - "Choose good qubits, by hand and with the transpiler"
   - "Correct readout errors with readout error mitigation, and know its limits"
-binderUrl: https://qubins.org/launch/?image=2.1-xl&repo=https%3A%2F%2Fgithub.com%2FJanLahmann%2FFun-with-Quantum&branch=master&path=GHZ-on-Real-Devices.ipynb
+binderUrl: https://qubins.org/launch/?image=2.5-xl&repo=https%3A%2F%2Fgithub.com%2FJanLahmann%2FFun-with-Quantum&branch=master&path=GHZ-on-Real-Devices.ipynb
 notebook: GHZ-on-Real-Devices.ipynb
 ---
 

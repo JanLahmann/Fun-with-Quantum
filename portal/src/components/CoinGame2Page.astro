@@ -16,7 +16,7 @@ const { locale } = Astro.props;
 const m = MESSAGES[locale];
 const path = (l: LocaleV2) => (l === 'en' ? '/preview/quantum-coin-game/' : `/preview/quantum-coin-game/${l}/`);
 const notebook =
-  'https://qubins.org/launch/?image=2.1-xl-rise&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=Quantum-Coin-Game.ipynb&ui=rise-classic';
+  'https://qubins.org/launch/?image=2.5-xl&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=Quantum-Coin-Game.ipynb&ui=rise-classic';
 ---
 
 <Base title={`${m.page.title} (${m.page.preview})`} description={m.page.description} lang={m.lang} noindex>
@@ -36,7 +36,7 @@ const notebook =
       <p class="lead">
         {m.page.notebook}{' '}
         <a href={notebook} target="_blank" rel="noopener" data-umami-event="Portal: notebook launch" data-umami-event-target="qubins"
-           data-umami-event-image="2.1-xl-rise" data-umami-event-notebook="Quantum-Coin-Game.ipynb">{m.page.notebookLink}</a>
+           data-umami-event-image="2.5-xl" data-umami-event-notebook="Quantum-Coin-Game.ipynb">{m.page.notebookLink}</a>
         <span class="wait">{m.page.notebookWait}</span>
       </p>
     </div>

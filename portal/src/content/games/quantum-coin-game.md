@@ -13,12 +13,12 @@ goals:
   - "Describe superposition: a coin that is heads and tails at once until you look"
   - "Explain why two Hadamard moves bring the coin back to heads (interference), so the quantum player wins every round"
   - "Read a one-qubit circuit with H and X gates"
-# QuBins classic-RISE launch (2.1-xl-rise = nbclassic + classic RISE): the
-# only env where the slideshow AND the ipywidgets dropdowns (the actual
+# QuBins classic-RISE launch (2.5-xl with ui=rise-classic = nbclassic + classic RISE):
+# the only setup where the slideshow AND the ipywidgets dropdowns (the actual
 # gameplay) both work — jupyterlab-rise doesn't render ipywidgets>=8
 # (jupyterlab-contrib/rise#119). Once that's fixed upstream, switch to the
-# Lab presenter (image=2.1-xl&...&ui=rise) and retire the rise-classic flavor.
-binderUrl: https://qubins.org/launch/?image=2.1-xl-rise&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=Quantum-Coin-Game.ipynb&ui=rise-classic
+# Lab presenter (ui=rise) and drop ui=rise-classic.
+binderUrl: https://qubins.org/launch/?image=2.5-xl&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=Quantum-Coin-Game.ipynb&ui=rise-classic
 notebook: Quantum-Coin-Game.ipynb
 featured: true
 webGame: true

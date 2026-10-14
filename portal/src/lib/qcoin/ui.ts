@@ -437,7 +437,7 @@ export function mountCoinGame(root: HTMLElement) {
         { label: m.ch5.undo, value: 'undo' as const },
         { label: m.ch5.reset, value: 'reset' as const },
       ].filter((o) => !(full && typeof o.value === 'string' && o.value.length === 1)),
-      `<a href="https://qubins.org/launch/?image=2.1-xl-rise&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=Quantum-Coin-Game.ipynb&ui=rise-classic" target="_blank" rel="noopener" data-umami-event="Portal: notebook launch" data-umami-event-target="qubins" data-umami-event-image="2.1-xl-rise" data-umami-event-notebook="Quantum-Coin-Game.ipynb">${m.ch5.notebook}</a>`);
+      `<a href="https://qubins.org/launch/?image=2.5-xl&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=Quantum-Coin-Game.ipynb&ui=rise-classic" target="_blank" rel="noopener" data-umami-event="Portal: notebook launch" data-umami-event-target="qubins" data-umami-event-image="2.5-xl" data-umami-event-notebook="Quantum-Coin-Game.ipynb">${m.ch5.notebook}</a>`);
       seen = { sandbox: gates, lastAction: typeof choice === 'string' && choice.length > 1 ? choice : 'gate' };
       if (choice === 'reset') { gates.length = 0; start = { state: HEADS, R: IDENTITY }; resetCoin(); draw(); say(m.ch5.backToHeads); scoreEl.textContent = ''; continue; }
       if (choice === 'undo') {
