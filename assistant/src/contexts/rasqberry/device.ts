@@ -18,7 +18,7 @@ function device(raw: unknown): Record<string, string> | null {
 function state(raw: unknown): Record<string, unknown> | null {
   const out = pageState(raw);
   if (!out) return null;
-  const dev = device((raw as Record<string, unknown>).device);
+  const dev = device((raw as Record<string, unknown> | null | undefined)?.device);
   return dev ? { ...out, device: dev } : out;
 }
 

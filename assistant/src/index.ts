@@ -4,15 +4,17 @@
  *
  *   POST /chat      {site, context, locale, level, question, state, history} → SSE: delta… then done|error
  *   POST /feedback  {id, vote: 1 | -1}                                 → 204
+ *   /tester/*       the RasQberry tester programme (see tester.ts)
  *
  * Guards: Origin allow-list per site, burst + daily limits, size limits, per-context state validation.
  * Every answer is logged to D1 (no IP, no cookie) and deleted after RETENTION_DAYS.
  */
 import { callClaude, relay, type ChatMessage } from './anthropic';
-import { contextFor } from './contexts';
+import { CONTEXTS, contextFor } from './contexts';
 import { intVar, type Env } from './env';
 import { checkDaily, checkOrigin, corsHeaders, siteConfig, visitorKey } from './guard';
 import { isLevel, systemPrompt, userMessage } from './prompt';
+import { checkTesterDaily, profile, purgeTester, signedIn, testerRoute, triageRoute } from './tester';
 
 const MAX_BODY = 32_000;
 const MAX_QUESTION = 1_000;
@@ -61,6 +63,8 @@ export function cleanHistory(raw: unknown, turns: number): ChatMessage[] | null 
 
 export async function handle(req: Request, env: Env, ctx: ExecutionContext, deps: Deps = defaultDeps): Promise<Response> {
   const url = new URL(req.url);
+  // Triage is server to server (no Origin): its own Bearer token instead.
+  if (url.pathname === '/tester/export' || url.pathname === '/tester/triage') return triageRoute(url.pathname, req, env);
   const origin = checkOrigin(req, env);
   if (!origin) return json(403, { error: 'origin' });
   const cors = corsHeaders(origin);
@@ -68,6 +72,11 @@ export async function handle(req: Request, env: Env, ctx: ExecutionContext, deps
   if (req.method !== 'POST') return json(405, { error: 'method' }, cors);
   if (url.pathname === '/chat') return chat(req, env, ctx, deps, cors);
   if (url.pathname === '/feedback') return feedback(req, env, deps, cors);
+  if (url.pathname.startsWith('/tester/')) {
+    const now = deps.now();
+    if (!(await env.RL.limit({ key: `tester:${await visitorKey(req, env, now)}` })).success) return json(429, { error: 'rate' }, cors);
+    return testerRoute(url.pathname, req, await readJson(req), env, now, deps.uuid, cors);
+  }
   return json(404, { error: 'not_found' }, cors);
 }
 
@@ -88,21 +97,32 @@ async function chat(req: Request, env: Env, ctx: ExecutionContext, deps: Deps, c
   if (!body || !context || !state || !history || !question || question.length > MAX_QUESTION) {
     return json(400, { error: 'bad_request' }, cors);
   }
-  const daily = await checkDaily(env, body.site as string, visitor, now);
-  if (daily !== 'ok') return daily === 'global' ? json(503, { error: 'busy' }, cors) : json(429, { error: 'rate' }, cors);
+  // Tester context: signed-in testers only, budgets per tester; the helper sees their preferences and missions.
+  let tester: string | null = null;
+  let pageState = state;
+  if (context.tester) {
+    tester = await signedIn(req, env, body.tester);
+    if (!tester) return json(401, { error: 'tester_auth' }, cors);
+    const daily = await checkTesterDaily(env, tester, context.tester, now);
+    if (daily !== 'ok') return daily === 'global' ? json(503, { error: 'busy' }, cors) : json(429, { error: 'rate' }, cors);
+    pageState = { ...state, tester: await profile(env, tester, now) };
+  } else {
+    const daily = await checkDaily(env, body.site as string, visitor, now);
+    if (daily !== 'ok') return daily === 'global' ? json(503, { error: 'busy' }, cors) : json(429, { error: 'rate' }, cors);
+  }
 
-  const model = env.MODEL;
-  const messages: ChatMessage[] = [...history, { role: 'user', content: userMessage(locale, level, state, question, context.stateTag) }];
+  const model = context.model ?? env.MODEL;
+  const messages: ChatMessage[] = [...history, { role: 'user', content: userMessage(locale, level, pageState, question, context.stateTag) }];
   const id = deps.uuid();
   const log = (answer: string, extra: Partial<Record<string, string | number | null>>) =>
     env.DB.prepare(
       `INSERT INTO messages (id, ts, site, context, locale, level, question, state_json, history_turns, answer, model,
-         stop_reason, error, in_tok, out_tok, cache_read_tok, cache_write_tok, latency_ms)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+         stop_reason, error, in_tok, out_tok, cache_read_tok, cache_write_tok, latency_ms, tester)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     ).bind(
-      id, now, body.site as string, body.context as string, locale, level, question, JSON.stringify(state), history.length / 2, answer, model,
+      id, now, body.site as string, body.context as string, locale, level, question, JSON.stringify(pageState), history.length / 2, answer, model,
       extra.stop_reason ?? null, extra.error ?? null, extra.in_tok ?? null, extra.out_tok ?? null,
-      extra.cache_read_tok ?? null, extra.cache_write_tok ?? null, deps.now() - now,
+      extra.cache_read_tok ?? null, extra.cache_write_tok ?? null, deps.now() - now, tester,
     ).run();
 
   let upstream: Response;
@@ -153,13 +173,24 @@ async function feedback(req: Request, env: Env, deps: Deps, cors: Record<string,
   return res.meta.changes ? new Response(null, { status: 204, headers: cors }) : json(404, { error: 'unknown_id' }, cors);
 }
 
-/** Daily clean-up: logs older than RETENTION_DAYS, quota counters older than yesterday. */
+/**
+ * Daily clean-up: logs older than their context's retention (RETENTION_DAYS unless the context
+ * sets its own), the tester tables, quota counters older than yesterday.
+ */
 export async function purge(env: Env, now: number): Promise<void> {
-  const cutoff = now - intVar(env.RETENTION_DAYS, 30) * 86_400_000;
+  const days = intVar(env.RETENTION_DAYS, 30);
   const yesterday = new Date(now - 86_400_000).toISOString().slice(0, 10);
+  const own = Object.entries(CONTEXTS).filter(([, c]) => c.retentionDays);
+  const where = (cutoff: number, key?: string) => key
+    ? { sql: "ts < ? AND site || '/' || context = ?", args: [cutoff, key] }
+    : { sql: `ts < ?${own.map(() => " AND site || '/' || context != ?").join('')}`, args: [cutoff, ...own.map(([k]) => k)] };
+  const scopes = [where(now - days * 86_400_000), ...own.map(([k, c]) => where(now - c.retentionDays! * 86_400_000, k))];
   await env.DB.batch([
-    env.DB.prepare('DELETE FROM feedback WHERE message_id IN (SELECT id FROM messages WHERE ts < ?)').bind(cutoff),
-    env.DB.prepare('DELETE FROM messages WHERE ts < ?').bind(cutoff),
+    ...scopes.flatMap((w) => [
+      env.DB.prepare(`DELETE FROM feedback WHERE message_id IN (SELECT id FROM messages WHERE ${w.sql})`).bind(...w.args),
+      env.DB.prepare(`DELETE FROM messages WHERE ${w.sql}`).bind(...w.args),
+    ]),
+    ...purgeTester(env, now),
     env.DB.prepare('DELETE FROM quota WHERE day < ?').bind(yesterday),
   ]);
 }

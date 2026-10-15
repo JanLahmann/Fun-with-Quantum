@@ -16,6 +16,12 @@ export interface Context {
   englishOnly?: boolean;
   /** Tag the page state is wrapped in (default game_state). */
   stateTag?: string;
+  /** Model for this context instead of the Worker's MODEL. */
+  model?: string;
+  /** Days its messages are kept instead of RETENTION_DAYS. */
+  retentionDays?: number;
+  /** Only for signed-in testers (passphrase + tester ID), with budgets per tester instead of per visitor. */
+  tester?: { daily_tester: number; daily_global: number };
   /** Checks and trims the page state; returns null when it is unusable. */
   state(raw: unknown): Record<string, unknown> | null;
 }

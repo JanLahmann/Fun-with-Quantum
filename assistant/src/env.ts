@@ -6,6 +6,9 @@ export interface Env {
   MAX_TOKENS: string;
   MAX_HISTORY_TURNS: string;
   RETENTION_DAYS: string;
+  /** RasQberry tester programme: the shared passphrase (Jan sets it; never logged) and the triage export token. */
+  TESTER_PASSPHRASE?: string;
+  TESTER_EXPORT_TOKEN?: string;
   DB: D1Database;
   RL: RateLimit;
 }
