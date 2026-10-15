@@ -47,6 +47,7 @@ export function makeEnv(over: Partial<Record<keyof Env, unknown>> = {}) {
     SITES: {
       fwq: { origins: ['https://fun-with-quantum.org', 'http://localhost:4321'], daily_visitor: 50, daily_global: 2000 },
       rasqberry: { origins: ['https://rasqberry.org'], daily_visitor: 100, daily_global: 1000 },
+      cleanjibe: { origins: ['https://cleanjibe.org', 'http://localhost:8000'], daily_visitor: 20, daily_global: 500 },
     },
     MODEL: 'claude-sonnet-5-5',
     MAX_TOKENS: '600',

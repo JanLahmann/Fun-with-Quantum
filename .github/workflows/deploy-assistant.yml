@@ -66,6 +66,16 @@ jobs:
         run: gh issue list -R JanLahmann/RasQberry-Two --state open --limit 300 --json number,title,labels,milestone,author > "$RUNNER_TEMP/rqb-issues.json"
       - name: RasQberry helper knowledge from today's pages, manifests, missions and issues
         run: node scripts/rasqberry-knowledge.mjs ../_rqb ../_rqb-dev "$RUNNER_TEMP/rqb-issues.json"
+      - name: CleanJibe help desk knowledge (JanLahmann/WingFoil main; kept as committed if not there)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if curl -fsSL https://raw.githubusercontent.com/JanLahmann/WingFoil/main/docs/copy/assistant-knowledge.md -o "$RUNNER_TEMP/cleanjibe.md"; then
+            sha=$(gh api repos/JanLahmann/WingFoil/commits/main --jq .sha 2>/dev/null || echo main)
+            node scripts/cleanjibe-knowledge.mjs "$RUNNER_TEMP/cleanjibe.md" "JanLahmann/WingFoil ${sha:0:12}"
+          else
+            echo "docs/copy/assistant-knowledge.md not on WingFoil main yet: keeping the committed knowledge"
+          fi
       # The coin-game knowledge imports the game's code from portal/, whose tsconfig extends astro's.
       - run: npm ci --prefix ../portal
       - name: Tests and type check

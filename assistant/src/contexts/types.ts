@@ -14,6 +14,8 @@ export interface Context {
   levels?: boolean;
   /** Answers in English whatever the question's language (sites that are English only). */
   englishOnly?: boolean;
+  /** Who the assistant is, when asked (default: Ket, the Fun with Quantum family's helper). */
+  identity?: string;
   /** Its own language rule instead of the default (the tester helper). */
   language?: string;
   /** Tag the page state is wrapped in (default game_state). */

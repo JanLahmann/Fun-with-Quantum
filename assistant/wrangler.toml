@@ -30,6 +30,13 @@ origins = ["https://rasqberry.org", "http://localhost:3000"]
 daily_visitor = 100
 daily_global = 1000
 
+# CleanJibe (wingfoil app, JanLahmann/WingFoil): the web help desk on cleanjibe.org; the iOS app
+# comes with App Attest (Jan, 2026-10-15: 20 per device and 500 for everyone per day).
+[vars.SITES.cleanjibe]
+origins = ["https://cleanjibe.org", "http://localhost:8000"]
+daily_visitor = 20
+daily_global = 500
+
 [[d1_databases]]
 binding = "DB"
 database_name = "fwq-assistant"

@@ -69,9 +69,22 @@ export const EMBED_TEXTS: Record<string, EmbedTexts> = {
     errRate: 'That’s all the questions for today (60 per tester). Thank you — please continue tomorrow.',
     privacyUrl: 'https://rasqberry.org/testing/',
   },
+  'cleanjibe/help': {
+    open: 'Ask CleanJibe',
+    title: 'CleanJibe help',
+    intro: 'Questions about the app, the watch and your numbers — for example “What does CPH mean?”',
+    privacy:
+      'When you ask, your question and the answer go through Cloudflare to Anthropic (Claude) and are kept for 30 days to improve the answers. ' +
+      'No account, no IP address, no location. Please don’t enter personal data.',
+    explainer: 'CleanJibe (AI)',
+    ...HELPER_ERRORS,
+    errBusy: 'The help desk has answered all it can for today. Please try again tomorrow.',
+    errNetwork: 'The help desk couldn’t be reached. Please check the internet connection and try again.',
+    privacyUrl: 'https://cleanjibe.org/privacy',
+  },
 };
 
-const EVENTS: Record<string, string> = { rasqberry: 'RasQberry Two' };
+const EVENTS: Record<string, string> = { rasqberry: 'RasQberry Two', cleanjibe: 'CleanJibe' };
 
 /** A query flag that is remembered for the browser tab (client-side navigation drops the query). */
 function flag(param: string, value: string, key: string): boolean {
