@@ -4,7 +4,7 @@
  * and it is testable now; missions fewest testers have tried come first, then the tester's
  * interests, then the group order of tester-missions.json.
  */
-import { MISSION_GROUPS, MISSIONS, NEEDS_KEYS } from './tester.generated';
+import { LATEST_IMAGES, MISSION_GROUPS, MISSIONS, NEEDS_KEYS } from './tester.generated';
 
 export interface Mission { id: string; group: string; title: string; goal: string; needs: string[]; maturity?: string; status?: string }
 type Prefs = Record<string, unknown>;
@@ -68,3 +68,26 @@ export const started = (states: Record<string, string>) =>
 
 /** What the widget needs to draw mission cards (not the ones that are coming). */
 export const catalogue = () => (MISSIONS as Mission[]).filter((m) => m.status !== 'coming').map(({ id, title, goal, group, maturity }) => ({ id, title, goal, group: groupTitle(group), beta: maturity === 'beta' }));
+
+/** The image stream and build time of a release tag: beta-2026-10-10-053754, development-2026-10-15-094105. */
+export function imageTag(tag: unknown): { stream: 'beta' | 'dev'; stamp: string } | null {
+  const m = typeof tag === 'string' ? /^(beta|development)-(\d{4}-\d{2}-\d{2}-\d{6})$/.exec(tag) : null;
+  return m ? { stream: m[1] === 'beta' ? 'beta' : 'dev', stamp: m[2] } : null;
+}
+
+/**
+ * Testers must run the newest beta or development image. Uses the tester's choice in "My setup"
+ * and, on a Pi, the image the Pi reports; an image older than the newest of its stream (or
+ * "older or not sure") means: update first.
+ */
+export function versionCheck(prefs: Prefs, deviceVersion: unknown, latest: { beta: string | null; dev: string | null } = LATEST_IMAGES) {
+  const dev = imageTag(deviceVersion);
+  const chosen = prefs.version === 'beta' || prefs.version === 'dev' || prefs.version === 'older' ? prefs.version : null;
+  const stream = dev?.stream ?? (chosen === 'beta' || chosen === 'dev' ? chosen : null);
+  const newest = stream ? latest[stream] : null;
+  let update: string | null = null;
+  if (dev && newest && dev.stamp < (imageTag(newest)?.stamp ?? '')) update = `this Pi runs ${deviceVersion as string}, the newest ${stream} image is ${newest}`;
+  else if (!dev && chosen === 'older') update = 'the tester chose "older or not sure" in My setup';
+  else if (!dev && !chosen) update = 'the tester has not said which version they run (My setup)';
+  return { chosen, device: typeof deviceVersion === 'string' ? deviceVersion : null, newest_beta: latest.beta, newest_dev: latest.dev, update_needed: update !== null, reason: update };
+}

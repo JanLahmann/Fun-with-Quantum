@@ -168,6 +168,7 @@ export function mountTester(panel: HTMLElement, chat: HTMLElement[], url: string
   kit.append('kit:', radio('led-kit', 'single', 'single'), radio('led-kit', 'quad', 'quad'), radio('led-kit', 'other', 'other'));
   setup.append(
     el('p', { class: 'fa-setup-intro' }, 'Your setup decides which missions fit. You can change it any time.'),
+    group('RasQberry version (required)', radio('version', 'beta', 'latest beta'), radio('version', 'dev', 'latest development image'), radio('version', 'older', 'older or not sure')),
     group('Raspberry Pi', radio('pi', 'pi4', 'Pi 4'), radio('pi', 'pi5', 'Pi 5')),
     group('Image', radio('image', 'ab', 'A/B image'), radio('image', 'single', 'single-system image'), radio('image', 'unsure', 'not sure')),
     group('Hardware', box('led-panel', 'LED panel'), kit, box('display', 'screen'), box('touchscreen', 'touchscreen'),
@@ -180,8 +181,12 @@ export function mountTester(panel: HTMLElement, chat: HTMLElement[], url: string
   setup.append(setupMsg);
 
   function fillSetup() {
-    const p = me?.preferences ?? {};
-    cancelSetup.hidden = !Object.keys(p).length;
+    const p = { ...(me?.preferences ?? {}) };
+    // On a Pi, its image tells the stream (beta-… or development-…) when the tester hasn't chosen yet.
+    const v = device()?.version ?? '';
+    if (!p.version && /^beta-/.test(v)) p.version = 'beta';
+    if (!p.version && /^development-/.test(v)) p.version = 'dev';
+    cancelSetup.hidden = !Object.keys(me?.preferences ?? {}).length;
     for (const i of setup.querySelectorAll<HTMLInputElement>('input')) {
       if (i.type === 'radio') i.checked = p[i.name] === i.value;
       else if (i.type === 'checkbox') i.checked = i.name.startsWith('i-') ? Array.isArray(p.interests) && p.interests.includes(i.name.slice(2)) : p[i.name] === true;
@@ -196,6 +201,7 @@ export function mountTester(panel: HTMLElement, chat: HTMLElement[], url: string
       else if (i.type === 'checkbox' && i.name.startsWith('i-')) { if (i.checked) (prefs.interests as string[]).push(i.name.slice(2)); }
       else if (i.type === 'checkbox') prefs[i.name] = i.checked;
     }
+    if (!prefs.version) { setupMsg.textContent = 'Please choose your RasQberry version.'; return; }
     const res = await post('/tester/prefs', { preferences: prefs }).catch(() => null);
     if (!res?.ok) { setupMsg.textContent = 'Couldn’t save your setup. Please try again.'; return; }
     const first = !Object.keys(me?.preferences ?? {}).length;

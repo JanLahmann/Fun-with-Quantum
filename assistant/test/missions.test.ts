@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { fits, hasNeed, progress, started, suggest, type Mission } from '../src/contexts/rasqberry/missions';
+import { fits, hasNeed, imageTag, progress, started, suggest, versionCheck, type Mission } from '../src/contexts/rasqberry/missions';
 import { MISSIONS, TESTER_KNOWLEDGE, TESTER_SOURCE } from '../src/contexts/rasqberry/tester.generated';
 import { rasqberryTester } from '../src/contexts/rasqberry/tester';
 import { systemPrompt } from '../src/prompt';
@@ -44,6 +44,26 @@ describe('mission picker', () => {
     const p = progress({}, Object.fromEntries(core.map((m) => [m.id, 'done'])));
     expect(p['Core RasQberry']).toBe(`all ${core.length} done`);
     expect(p['LED demos']).toBeUndefined(); // no LED panel, no LED missions
+  });
+});
+
+describe('version check', () => {
+  const latest = { beta: 'beta-2026-10-10-053754', dev: 'development-2026-10-15-094105' };
+  it('reads release tags', () => {
+    expect(imageTag('beta-2026-10-10-053754')).toEqual({ stream: 'beta', stamp: '2026-10-10-053754' });
+    expect(imageTag('development-2026-10-15-094105')).toEqual({ stream: 'dev', stamp: '2026-10-15-094105' });
+    expect(imageTag('dev-ledfix-2026-10-01')).toBeNull();
+  });
+  it('a Pi on an older image of its stream must update; the newest (or newer) is fine', () => {
+    expect(versionCheck({ version: 'beta' }, 'beta-2026-10-01-000000', latest)).toMatchObject({ update_needed: true });
+    expect(versionCheck({ version: 'beta' }, latest.beta, latest)).toMatchObject({ update_needed: false });
+    expect(versionCheck({}, 'development-2026-10-16-000000', latest)).toMatchObject({ update_needed: false });
+    expect(versionCheck({ version: 'beta' }, 'development-2026-10-14-000000', latest).reason).toContain('newest dev image');
+  });
+  it("without a Pi: the tester's choice decides; older-or-not-sure or no choice means update first", () => {
+    expect(versionCheck({ version: 'dev' }, undefined, latest).update_needed).toBe(false);
+    expect(versionCheck({ version: 'older' }, undefined, latest).update_needed).toBe(true);
+    expect(versionCheck({}, undefined, latest).update_needed).toBe(true);
   });
 });
 
