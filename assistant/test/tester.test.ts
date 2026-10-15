@@ -214,6 +214,36 @@ describe('triage export', () => {
   });
 });
 
+describe('findings: version, mission state, noted triage', () => {
+  const me = { site: 'rasqberry', tester: 'Ada L' };
+  it('takes the version from the Pi, else from My setup (newest tag of the stream); marks a mission started', async () => {
+    const { run, db } = setup();
+    await run(req('/tester/prefs', { ...me, preferences: { version: 'beta' } }));
+    await run(req('/tester/finding', { ...me, finding: { kind: 'praise', title: 'Nice', mission_id: 'first-start' } }));
+    await run(req('/tester/finding', { ...me, finding: { kind: 'bug', title: 'On a Pi', image_version: 'beta-2026-10-01-000000' } }));
+    const rows = db.rows('SELECT title, image_version, version_source FROM findings ORDER BY ts, title');
+    expect(rows.find((r) => r.title === 'Nice')).toMatchObject({ version_source: 'setup' });
+    expect(String(rows.find((r) => r.title === 'Nice')!.image_version)).toMatch(/^beta-\d{4}-\d{2}-\d{2}-\d{6}$/);
+    expect(rows.find((r) => r.title === 'On a Pi')).toMatchObject({ image_version: 'beta-2026-10-01-000000', version_source: 'pi' });
+    expect(db.rows('SELECT mission_id, state FROM mission_status')).toEqual([{ mission_id: 'first-start', state: 'started' }]);
+    // a mission already marked stays as it is
+    await run(req('/tester/status', { ...me, mission_id: 'first-start', state: 'done' }));
+    await run(req('/tester/finding', { ...me, finding: { kind: 'idea', title: 'More', mission_id: 'first-start' } }));
+    expect(db.rows('SELECT state FROM mission_status')).toEqual([{ state: 'done' }]);
+  });
+
+  it('triage can note a finding without an issue (praise, duplicate, wontfix)', async () => {
+    const { run } = setup();
+    const f = await (await run(req('/tester/finding', { ...me, finding: { kind: 'praise', title: 'Lovely' } }))).res.json() as any;
+    const auth = { Authorization: `Bearer ${TOKEN}` };
+    expect((await run(bare('/tester/triage', auth, 'POST', { finding_id: f.id, status: 'noted', note: '<script>' }))).res.status).toBe(400);
+    expect((await run(bare('/tester/triage', auth, 'POST', { finding_id: f.id, status: 'noted', note: 'praise' }))).res.status).toBe(204);
+    const out = await (await run(bare('/tester/export?status=noted', auth))).res.json() as any;
+    expect(out.findings).toMatchObject([{ title: 'Lovely', status: 'noted', note: 'praise', issue_url: null }]);
+    expect((await (await run(bare('/tester/export?status=new', auth))).res.json() as any).findings).toEqual([]);
+  });
+});
+
 describe('retention', () => {
   it('keeps tester messages and tables 90 days, other logs 30', async () => {
     const { env, db, run, at } = setup();
