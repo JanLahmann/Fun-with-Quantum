@@ -152,6 +152,8 @@ button[type=submit]:disabled { opacity: .6; cursor: wait; }
 .fa-card { border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; margin-top: 8px; background: var(--paper); }
 .fa-card p { margin: 4px 0 0; } .fa-meta { color: var(--muted); font-size: 0.78rem; }
 .fa-actions { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 8px; }
+.fa-actions .fa-secondary { color: var(--ink); background: transparent; border: 1px solid var(--line); }
+.fa-actions button[hidden] { display: none; }
 .fa-actions button[aria-pressed=true] { outline: 2px solid var(--m); outline-offset: 1px; }
 .fa-actions button:disabled { opacity: .6; cursor: default; }
 form[hidden], .fa-log[hidden] { display: none; }

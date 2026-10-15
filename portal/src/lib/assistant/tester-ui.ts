@@ -159,6 +159,11 @@ export function mountTester(panel: HTMLElement, chat: HTMLElement[], url: string
     f.append(el('legend', {}, legend), ...items);
     return f;
   };
+  // Cancel only when editing a saved setup ("My setup"); the first-time form has Save only.
+  const setupButtons = el('div', { class: 'fa-actions' });
+  const cancelSetup = el('button', { type: 'button', class: 'fa-secondary' }, 'Cancel');
+  cancelSetup.addEventListener('click', () => { setupMsg.textContent = ''; show('chat'); });
+  setupButtons.append(el('button', { type: 'submit' }, 'Save my setup'), cancelSetup);
   const kit = el('span', { class: 'fa-kit' });
   kit.append('kit:', radio('led-kit', 'single', 'single'), radio('led-kit', 'quad', 'quad'), radio('led-kit', 'other', 'other'));
   setup.append(
@@ -169,13 +174,14 @@ export function mountTester(panel: HTMLElement, chat: HTMLElement[], url: string
       box('bluetooth-speaker', 'Bluetooth speaker'), box('camera', 'camera')),
     group('Accounts and network', box('ibm-account', 'IBM Quantum account'), box('offline', 'offline system (no internet)')),
     group('Interests', box('i-core', 'core RasQberry'), box('i-games', 'games'), box('i-leds', 'LEDs'), box('i-coding', 'coding'), box('i-big', 'big demos')),
-    el('button', { type: 'submit' }, 'Save my setup'),
+    setupButtons,
   );
   const setupMsg = el('p', { class: 'fa-error', 'aria-live': 'polite' });
   setup.append(setupMsg);
 
   function fillSetup() {
     const p = me?.preferences ?? {};
+    cancelSetup.hidden = !Object.keys(p).length;
     for (const i of setup.querySelectorAll<HTMLInputElement>('input')) {
       if (i.type === 'radio') i.checked = p[i.name] === i.value;
       else if (i.type === 'checkbox') i.checked = i.name.startsWith('i-') ? Array.isArray(p.interests) && p.interests.includes(i.name.slice(2)) : p[i.name] === true;

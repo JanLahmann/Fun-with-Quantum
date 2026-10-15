@@ -12,7 +12,7 @@ const levelLabels = Object.entries(ASSISTANT_TEXTS)
 
 /** Rules for every context: how to answer, what to trust. Kept stable: part of the cached prefix. */
 export function rules(ctx: Context): string {
-  const language = ctx.englishOnly
+  const language = ctx.language ? `- ${ctx.language}` : ctx.englishOnly
     ? "- Answer in English, even when the question is in another language (this site is English only)."
     : "- Answer in the language of the user's question. If the language is unclear, use the page language given with the question.";
   return `How you answer:
