@@ -128,7 +128,9 @@ button[type=submit]:disabled { opacity: .6; cursor: wait; }
 .fa-tester-bar { font-size: 0.8rem; color: var(--muted); margin: 0 0 8px; }
 .fa-link { background: none; border: 0; padding: 0; color: var(--m); text-decoration: underline; cursor: pointer; font: inherit; }
 .fa-signin, .fa-setup { display: flex; flex-direction: column; gap: 6px; font-size: 0.88rem; margin-bottom: 10px; }
-.fa-signin[hidden], .fa-setup[hidden], .fa-tester-bar[hidden] { display: none; }
+.fa-signin[hidden], .fa-setup[hidden], .fa-tester-bar[hidden], .fa-mine[hidden] { display: none; }
+.fa-mine { font-size: 0.88rem; margin-bottom: 10px; } .fa-mine-list { margin: 6px 0; padding-left: 18px; } .fa-mine-list li { margin: 2px 0; }
+.fa-kit { display: inline-flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; color: var(--muted); }
 .fa-signin input, .fa-setup input:not([type]) { font: inherit; padding: 6px 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); color: inherit; }
 .fa-signin button, .fa-setup button[type=submit], .fa-actions button { font: 600 0.85rem inherit; font-family: inherit; color: #fff; background: var(--c); border: 0; border-radius: 8px; padding: 6px 12px; cursor: pointer; align-self: flex-start; }
 .fa-setup-intro { margin: 0; }

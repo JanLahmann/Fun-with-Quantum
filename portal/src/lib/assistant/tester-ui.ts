@@ -80,7 +80,9 @@ export function mountTester(panel: HTMLElement, chat: HTMLElement[], url: string
   const status = el('p', { class: 'fa-tester-bar' });
   const signin = el('form', { class: 'fa-signin' });
   const setup = el('form', { class: 'fa-setup' });
+  const mine = el('div', { class: 'fa-mine' });
   panel.insertBefore(status, chat[0]);
+  panel.insertBefore(mine, chat[0]);
   panel.insertBefore(signin, chat[0]);
   panel.insertBefore(setup, chat[0]);
 
@@ -90,9 +92,10 @@ export function mountTester(panel: HTMLElement, chat: HTMLElement[], url: string
     body: JSON.stringify({ site: 'rasqberry', tester: creds?.tester, ...body }),
   });
 
-  function show(view: 'signin' | 'setup' | 'chat') {
+  function show(view: 'signin' | 'setup' | 'mine' | 'chat') {
     signin.hidden = view !== 'signin';
     setup.hidden = view !== 'setup';
+    mine.hidden = view !== 'mine';
     for (const c of chat) c.hidden = view !== 'chat';
     status.hidden = view === 'signin';
     // Signed in: the long intro and privacy note give way to the chat (the bar links the privacy note).
@@ -104,7 +107,7 @@ export function mountTester(panel: HTMLElement, chat: HTMLElement[], url: string
   const passIn = el('input', { id: 'fa-tpass', type: 'password', autocomplete: 'off', required: '' });
   const signMsg = el('p', { class: 'fa-error', 'aria-live': 'polite' });
   signin.append(
-    el('label', { for: 'fa-tname' }, 'Your tester name or ID (3–30 letters or digits, no e-mail address)'), nameIn,
+    el('label', { for: 'fa-tname' }, 'Tester name: any name or ID you like, not your real name, no e-mail address (3–30 letters or digits)'), nameIn,
     el('label', { for: 'fa-tpass' }, 'Tester passphrase'), passIn,
     el('button', { type: 'submit' }, 'Start testing'), signMsg,
   );
@@ -134,7 +137,9 @@ export function mountTester(panel: HTMLElement, chat: HTMLElement[], url: string
     setupBtn.addEventListener('click', () => { fillSetup(); show('setup'); });
     const out = el('button', { type: 'button', class: 'fa-link' }, 'Sign out');
     out.addEventListener('click', () => signOut());
-    status.append(setupBtn, ' · ', out, ' · ', el('a', { href: 'https://rasqberry.org/testing/#privacy', target: '_blank', rel: 'noopener' }, 'Privacy'));
+    const mineBtn = el('button', { type: 'button', class: 'fa-link' }, 'My missions');
+    mineBtn.addEventListener('click', () => { fillMine(); show('mine'); });
+    status.append(setupBtn, ' · ', mineBtn, ' · ', out, ' · ', el('a', { href: 'https://rasqberry.org/testing/#privacy', target: '_blank', rel: 'noopener' }, 'Privacy'));
     if (!Object.keys(me.preferences).length) { fillSetup(); show('setup'); } else show('chat');
   }
 
@@ -154,15 +159,16 @@ export function mountTester(panel: HTMLElement, chat: HTMLElement[], url: string
     f.append(el('legend', {}, legend), ...items);
     return f;
   };
-  const kit = el('input', { name: 'led-kit', maxlength: '60', placeholder: 'which LED kit (optional)', 'aria-label': 'Which LED kit' });
+  const kit = el('span', { class: 'fa-kit' });
+  kit.append('kit:', radio('led-kit', 'single', 'single'), radio('led-kit', 'quad', 'quad'), radio('led-kit', 'other', 'other'));
   setup.append(
     el('p', { class: 'fa-setup-intro' }, 'Your setup decides which missions fit. You can change it any time.'),
     group('Raspberry Pi', radio('pi', 'pi4', 'Pi 4'), radio('pi', 'pi5', 'Pi 5')),
     group('Image', radio('image', 'ab', 'A/B image'), radio('image', 'single', 'single-system image'), radio('image', 'unsure', 'not sure')),
     group('Hardware', box('led-panel', 'LED panel'), kit, box('display', 'screen'), box('touchscreen', 'touchscreen'),
       box('bluetooth-speaker', 'Bluetooth speaker'), box('camera', 'camera')),
-    group('Accounts and network', box('ibm-account', 'IBM Quantum account'), box('internet', 'internet at hand')),
-    group('Interests', box('i-games', 'games'), box('i-leds', 'LEDs'), box('i-coding', 'coding'), box('i-big', 'big demos')),
+    group('Accounts and network', box('ibm-account', 'IBM Quantum account'), box('offline', 'offline system (no internet)')),
+    group('Interests', box('i-core', 'core RasQberry'), box('i-games', 'games'), box('i-leds', 'LEDs'), box('i-coding', 'coding'), box('i-big', 'big demos')),
     el('button', { type: 'submit' }, 'Save my setup'),
   );
   const setupMsg = el('p', { class: 'fa-error', 'aria-live': 'polite' });
@@ -173,7 +179,6 @@ export function mountTester(panel: HTMLElement, chat: HTMLElement[], url: string
     for (const i of setup.querySelectorAll<HTMLInputElement>('input')) {
       if (i.type === 'radio') i.checked = p[i.name] === i.value;
       else if (i.type === 'checkbox') i.checked = i.name.startsWith('i-') ? Array.isArray(p.interests) && p.interests.includes(i.name.slice(2)) : p[i.name] === true;
-      else if (i.name === 'led-kit') i.value = typeof p['led-kit'] === 'string' ? p['led-kit'] : '';
     }
   }
 
@@ -184,7 +189,6 @@ export function mountTester(panel: HTMLElement, chat: HTMLElement[], url: string
       if (i.type === 'radio' && i.checked) prefs[i.name] = i.value;
       else if (i.type === 'checkbox' && i.name.startsWith('i-')) { if (i.checked) (prefs.interests as string[]).push(i.name.slice(2)); }
       else if (i.type === 'checkbox') prefs[i.name] = i.checked;
-      else if (i.name === 'led-kit' && i.value.trim()) prefs['led-kit'] = i.value.trim();
     }
     const res = await post('/tester/prefs', { preferences: prefs }).catch(() => null);
     if (!res?.ok) { setupMsg.textContent = 'Couldn’t save your setup. Please try again.'; return; }
@@ -195,12 +199,55 @@ export function mountTester(panel: HTMLElement, chat: HTMLElement[], url: string
     if (first) ask('Hi! What should I test first?');
   });
 
+  // --- "My missions": each state can be undone, or all reset (findings stay) ---
+  const STATE_LABEL: Record<string, string> = { started: 'working on it', done: 'done', skipped: 'skipped' };
+  function fillMine() {
+    mine.replaceChildren(el('p', { class: 'fa-setup-intro' }, 'Your missions. Undo makes a mission new again; your findings stay.'));
+    const ids = Object.keys(missionState).filter((id) => missionState[id] in STATE_LABEL);
+    const list = el('ul', { class: 'fa-mine-list' });
+    for (const id of ids) {
+      const li = el('li');
+      li.append(el('span', {}, `${me?.catalogue.find((m) => m.id === id)?.title ?? id} — ${STATE_LABEL[missionState[id]]} `));
+      const undo = el('button', { type: 'button', class: 'fa-link' }, 'Undo');
+      undo.addEventListener('click', async () => {
+        const res = await post('/tester/status', { mission_id: id, state: 'open' }).catch(() => null);
+        if (!res?.ok) { undo.textContent = 'Undo (failed, try again)'; return; }
+        delete missionState[id];
+        for (const x of panel.querySelectorAll<HTMLButtonElement>(`button[data-mission="${id}"]`)) x.setAttribute('aria-pressed', 'false');
+        li.remove();
+      });
+      li.append(undo);
+      list.append(li);
+    }
+    if (!ids.length) mine.append(el('p', {}, 'No missions yet.'));
+    else mine.append(list);
+    const row = el('div', { class: 'fa-actions' });
+    const back = el('button', { type: 'button' }, 'Back to the chat');
+    back.addEventListener('click', () => show('chat'));
+    row.append(back);
+    if (ids.length) {
+      const reset = el('button', { type: 'button' }, 'Reset all missions');
+      let armed = false;
+      reset.addEventListener('click', async () => {
+        if (!armed) { armed = true; reset.textContent = 'Really reset all? Click again'; return; }
+        const res = await post('/tester/reset', {}).catch(() => null);
+        if (!res?.ok) { reset.textContent = 'Reset failed — try again'; armed = false; return; }
+        for (const k of Object.keys(missionState)) delete missionState[k];
+        for (const x of panel.querySelectorAll<HTMLButtonElement>('button[data-mission]')) x.setAttribute('aria-pressed', 'false');
+        fillMine();
+      });
+      row.append(reset);
+    }
+    mine.append(row);
+  }
+
   // --- cards ---
-  function missionCard(id: string): HTMLElement | null {
+  function missionCard(id: string, help: boolean): HTMLElement | null {
     const m = me?.catalogue.find((x) => x.id === id);
     if (!m) return null;
     const card = el('div', { class: 'fa-card' });
     card.append(el('strong', {}, m.title), el('p', {}, m.goal), el('p', { class: 'fa-meta' }, `${m.group}${m.beta ? ' · early beta, not yet tested by people' : ''}`));
+    if (help) card.append(el('p', { class: 'fa-meta' }, 'Start: you’re working on it now · Done: you finished it, then tell me how it went · Skip: not for you, it won’t be suggested again'));
     const row = el('div', { class: 'fa-actions' });
     const note = el('span', { class: 'fa-meta', 'aria-live': 'polite' });
     for (const [state, label] of [['started', 'Start'], ['done', 'Done'], ['skipped', 'Skip']] as const) {
@@ -213,7 +260,10 @@ export function mountTester(panel: HTMLElement, chat: HTMLElement[], url: string
         missionState[id] = state;
         // Every card of this mission (it may be suggested again later) shows the new state.
         for (const x of panel.querySelectorAll<HTMLButtonElement>(`button[data-mission="${id}"]`)) x.setAttribute('aria-pressed', String(x.dataset.state === state));
-        note.textContent = state === 'started' ? 'Started — good luck! Tell me how it went.' : state === 'done' ? 'Marked as done. How did it go?' : 'Skipped.';
+        note.textContent = state === 'started' ? 'Started — good luck! Tell me how it went.' : state === 'done' ? 'Marked as done.' : 'Skipped.';
+        // Done and Skip continue the conversation, as the helper promised; Start leaves the tester to it.
+        if (state === 'done') ask(`I'm done with “${m.title}”.`);
+        if (state === 'skipped') ask(`I skipped “${m.title}”.`);
       });
       row.append(b);
     }
@@ -241,6 +291,7 @@ export function mountTester(panel: HTMLElement, chat: HTMLElement[], url: string
       change.remove();
       save.textContent = 'Saved ✓';
       note.textContent = 'Thank you!';
+      ask(`I saved the finding “${String(f.title)}”.`);
     });
     change.addEventListener('click', () => ask(''));
     row.append(save, change, note);
@@ -256,8 +307,10 @@ export function mountTester(panel: HTMLElement, chat: HTMLElement[], url: string
     body: () => ({ tester: creds?.tester }),
     visible: visibleText,
     decorate: (msg, answer, id) => {
+      let first = true;
       for (const c of cardLines(answer)) {
-        const card = c.kind === 'mission' ? missionCard(c.id) : findingCard(c.finding, id);
+        const card = c.kind === 'mission' ? missionCard(c.id, first) : findingCard(c.finding, id);
+        if (c.kind === 'mission' && card) first = false;
         if (card) msg.append(card);
       }
     },

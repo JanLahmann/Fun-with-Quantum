@@ -157,6 +157,18 @@ describe('tester writes (only by the tester\'s clicks)', () => {
     }]);
   });
 
+  it('undoes one mission state, or resets all of them (findings stay)', async () => {
+    const { run, db } = setup();
+    for (const m of ['first-start', 'wifi', 'help']) await run(req('/tester/status', { ...me, mission_id: m, state: 'done' }));
+    await run(req('/tester/finding', { ...me, finding: { kind: 'idea', title: 'Keep me' } }));
+    expect((await run(req('/tester/status', { ...me, mission_id: 'wifi', state: 'open' }))).res.status).toBe(204);
+    expect(db.rows('SELECT mission_id FROM mission_status ORDER BY mission_id')).toEqual([{ mission_id: 'first-start' }, { mission_id: 'help' }]);
+    expect((await run(req('/tester/reset', me))).res.status).toBe(204);
+    expect(db.rows('SELECT * FROM mission_status')).toEqual([]);
+    expect(db.rows('SELECT title FROM findings')).toEqual([{ title: 'Keep me' }]);
+    expect((await run(req('/tester/reset', me, { 'X-Tester-Pass': 'nope' }))).res.status).toBe(401);
+  });
+
   it('cleans preferences and findings', () => {
     expect(cleanPreferences({ ok: true, 'Bad Key': 1, n: 3, s: ' x ', l: ['a', 2, ''] })).toEqual({ ok: true, s: 'x', l: ['a'] });
     expect(cleanPreferences([1])).toBeNull();

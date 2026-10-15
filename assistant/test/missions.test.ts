@@ -7,7 +7,7 @@ import { systemPrompt } from '../src/prompt';
 import { knownIssues, missionLine, releaseSection } from '../scripts/rasqberry-knowledge.mjs';
 
 const all = MISSIONS as Mission[];
-const full = { 'led-panel': true, touchscreen: true, 'bluetooth-speaker': true, internet: true, 'ibm-account': true, display: true, image: 'ab' };
+const full = { 'led-panel': true, touchscreen: true, 'bluetooth-speaker': true, camera: true, 'ibm-account': true, display: true, image: 'ab' };
 
 describe('mission picker', () => {
   it('matches needs: image is one choice, a touchscreen counts as a screen', () => {
@@ -15,10 +15,14 @@ describe('mission picker', () => {
     expect(hasNeed({ image: 'ab' }, 'single-image')).toBe(false);
     expect(hasNeed({ touchscreen: true }, 'display')).toBe(true);
     expect(hasNeed({ 'led-panel': 'yes' }, 'led-panel')).toBe(false);
+    expect(hasNeed({}, 'internet')).toBe(true); // internet is the default
+    expect(hasNeed({ offline: true }, 'internet')).toBe(false);
+    expect(hasNeed({ offline: true, 'ibm-account': true }, 'ibm-account')).toBe(false);
+    expect(hasNeed({ 'ibm-account': true }, 'ibm-account')).toBe(true);
   });
 
   it('never suggests a mission whose needs the tester lacks, or one that is coming', () => {
-    for (const m of suggest({}, {}, {}, 99)) expect(all.find((x) => x.id === m.id)!.needs).toEqual([]);
+    for (const m of suggest({ offline: true }, {}, {}, 99)) expect(all.find((x) => x.id === m.id)!.needs).toEqual([]);
     const ids = suggest(full, {}, {}, 99).map((m) => m.id);
     for (const m of all.filter((m) => m.status === 'coming')) expect(ids).not.toContain(m.id);
     expect(ids.length).toBe(all.filter((m) => fits(m, full)).length);
@@ -29,6 +33,7 @@ describe('mission picker', () => {
     expect(first).toBe(all[0].id);
     expect(suggest({}, {}, { [first]: 2 })[0].id).not.toBe(first);
     expect(suggest({ interests: ['games'] }, {}, {})[0].id).toMatch(/^demo-fun-with-quantum-/);
+    expect(suggest({ interests: ['core'] }, {}, {})[0].id).toBe(all.find((m) => m.group === 'core')!.id);
     const states = { [all[0].id]: 'done', [all[1].id]: 'skipped', [all[2].id]: 'started' };
     expect(suggest({}, states, {}, 99).map((m) => m.id)).not.toEqual(expect.arrayContaining([all[0].id, all[1].id, all[2].id]));
     expect(started(states)).toEqual([{ id: all[2].id, title: all[2].title }]);
