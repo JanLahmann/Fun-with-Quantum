@@ -1,5 +1,6 @@
 import { coinGame } from './coin-game';
 import { cleanjibeHelp } from './cleanjibe/help';
+import { cleanjibeSession } from './cleanjibe/session';
 import { rasqberryBuild } from './rasqberry/build';
 import { rasqberryDevice } from './rasqberry/device';
 import { rasqberryTester } from './rasqberry/tester';
@@ -12,6 +13,7 @@ export const CONTEXTS: Record<string, Context> = {
   'rasqberry/device': rasqberryDevice,
   'rasqberry/tester': rasqberryTester,
   'cleanjibe/help': cleanjibeHelp,
+  'cleanjibe/session': cleanjibeSession,
 };
 
 export function contextFor(site: unknown, context: unknown): Context | null {

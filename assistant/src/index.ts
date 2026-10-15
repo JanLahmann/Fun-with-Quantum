@@ -5,6 +5,8 @@
  *   POST /chat      {site, context, locale, level, question, state, history} → SSE: delta… then done|error
  *   POST /feedback  {id, vote: 1 | -1}                                 → 204
  *   /tester/*       the RasQberry tester programme (see tester.ts)
+ *   /attest/challenge, /attest, /token   native apps (App Attest, see app-auth.ts); their /chat
+ *                   comes without Origin, with the app's token header
  *
  * Guards: Origin allow-list per site, burst + daily limits, size limits, per-context state validation.
  * Every answer is logged to D1 (no IP, no cookie) and deleted after RETENTION_DAYS.
@@ -14,6 +16,7 @@ import { CONTEXTS, contextFor } from './contexts';
 import { intVar, type Env } from './env';
 import { checkDaily, checkOrigin, corsHeaders, siteConfig, visitorKey } from './guard';
 import { isLevel, systemPrompt, userMessage } from './prompt';
+import { APPS, appRoute, purgeApps, tokenKey } from './app-auth';
 import { checkTesterDaily, purgeTester, signedIn, testerRoute, testerState, triageRoute } from './tester';
 
 const MAX_BODY = 32_000;
@@ -25,6 +28,8 @@ export interface Deps {
   now: () => number;
   fetch: typeof fetch;
   uuid: () => string;
+  /** Tests only: a test root instead of Apple's App Attestation Root CA. */
+  attestRoot?: string;
 }
 
 const defaultDeps: Deps = { now: () => Date.now(), fetch: (...a) => fetch(...a), uuid: () => crypto.randomUUID() };
@@ -65,6 +70,19 @@ export async function handle(req: Request, env: Env, ctx: ExecutionContext, deps
   const url = new URL(req.url);
   // Triage is server to server (no Origin): its own Bearer token instead.
   if (url.pathname === '/tester/export' || url.pathname === '/tester/triage') return triageRoute(url.pathname, req, env);
+  // Native apps: no Origin; App Attest, then a token header per app.
+  if (['/attest/challenge', '/attest', '/token'].includes(url.pathname)) {
+    if (req.method !== 'POST') return json(405, { error: 'method' });
+    const now = deps.now();
+    if (!(await env.RL.limit({ key: `attest:${await visitorKey(req, env, now)}` })).success) return json(429, { error: 'rate' });
+    return appRoute(url.pathname, await readJson(req), env, now, deps.attestRoot);
+  }
+  const appSite = !req.headers.get('Origin') ? Object.keys(APPS).find((s) => req.headers.get(APPS[s].header)) : undefined;
+  if (appSite && req.method === 'POST' && (url.pathname === '/chat' || url.pathname === '/feedback')) {
+    const keyId = await tokenKey(env, appSite, req.headers.get(APPS[appSite].header), deps.now());
+    if (!keyId) return json(401, { error: 'token' });
+    return url.pathname === '/chat' ? chat(req, env, ctx, deps, {}, { site: appSite, keyId }) : feedback(req, env, deps, {});
+  }
   const origin = checkOrigin(req, env);
   if (!origin) return json(403, { error: 'origin' });
   const cors = corsHeaders(origin);
@@ -80,15 +98,19 @@ export async function handle(req: Request, env: Env, ctx: ExecutionContext, deps
   return json(404, { error: 'not_found' }, cors);
 }
 
-async function chat(req: Request, env: Env, ctx: ExecutionContext, deps: Deps, cors: Record<string, string>): Promise<Response> {
+async function chat(req: Request, env: Env, ctx: ExecutionContext, deps: Deps, cors: Record<string, string>,
+  app?: { site: string; keyId: string }): Promise<Response> {
   const now = deps.now();
-  const visitor = await visitorKey(req, env, now);
+  // An attested app counts per app key (the device); a web visitor per daily IP pseudonym.
+  const visitor = app ? `key:${app.keyId}` : await visitorKey(req, env, now);
   if (!(await env.RL.limit({ key: `chat:${visitor}` })).success) return json(429, { error: 'rate' }, cors);
 
   const body = await readJson(req);
   const site = siteConfig(env, body?.site);
-  if (body && site && !site.origins.includes(req.headers.get('Origin')!)) return json(403, { error: 'origin' }, cors);
+  if (body && site && !app && !site.origins.includes(req.headers.get('Origin')!)) return json(403, { error: 'origin' }, cors);
+  if (body && app && (body.site !== app.site || !APPS[app.site].contexts.includes(body.context as string))) return json(403, { error: 'origin' });
   const context = site && contextFor(body!.site, body!.context);
+  if (context?.appOnly && !app) return json(403, { error: 'origin' }, cors);
   const question = typeof body?.question === 'string' ? body.question.trim() : '';
   const locale = typeof body?.locale === 'string' && /^[a-z]{2}(-[A-Za-z]{2,4})?$/.test(body.locale) ? body.locale : 'en';
   const level = !context?.levels ? null : typeof body?.level === 'string' && isLevel(body.level) ? body.level : 'normal';
@@ -191,6 +213,7 @@ export async function purge(env: Env, now: number): Promise<void> {
       env.DB.prepare(`DELETE FROM messages WHERE ${w.sql}`).bind(...w.args),
     ]),
     ...purgeTester(env, now),
+    ...purgeApps(env, now),
     env.DB.prepare('DELETE FROM quota WHERE day < ?').bind(yesterday),
   ]);
 }

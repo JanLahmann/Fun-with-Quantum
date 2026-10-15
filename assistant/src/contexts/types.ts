@@ -16,6 +16,8 @@ export interface Context {
   englishOnly?: boolean;
   /** Who the assistant is, when asked (default: Ket, the Fun with Quantum family's helper). */
   identity?: string;
+  /** Only for attested native apps (App Attest), never for a web page. */
+  appOnly?: boolean;
   /** Its own language rule instead of the default (the tester helper). */
   language?: string;
   /** Tag the page state is wrapped in (default game_state). */
