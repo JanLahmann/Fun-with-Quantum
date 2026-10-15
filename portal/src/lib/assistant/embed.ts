@@ -93,7 +93,18 @@ const CSS = `
 .fa-panel { order: 1; width: min(400px, calc(100vw - 32px)); max-height: min(640px, calc(100vh - 90px)); overflow: auto; background: var(--card); border: 1px solid var(--line);
   border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,.25); padding: 14px 16px 16px; box-sizing: border-box; display: flex; flex-direction: column; }
 .fa-panel[hidden] { display: none; }
-h3 { font-size: 1.02rem; margin: 0 0 4px; }
+.fa-head { display: flex; align-items: flex-start; gap: 8px; }
+h3 { font-size: 1.02rem; margin: 0 0 4px; flex: 1; }
+.fa-size { background: transparent; border: 1px solid var(--line); border-radius: 8px; color: var(--muted); cursor: pointer; font: 1rem/1 inherit; padding: 3px 7px; }
+.fa-size:hover { color: var(--ink); }
+/* Larger: most of the window; or the size the reader dragged (inline width/height). */
+.fa-panel.fa-large { width: min(760px, calc(100vw - 32px)); height: calc(100vh - 90px); max-height: none; }
+.fa-panel.fa-sized { max-height: none; }
+.fa-grip { position: absolute; left: 0; top: 0; width: 22px; height: 22px; cursor: nwse-resize; touch-action: none; }
+.fa-grip::before { content: ""; position: absolute; left: 6px; top: 6px; width: 9px; height: 9px; border-top: 2px solid var(--muted); border-left: 2px solid var(--muted); border-top-left-radius: 5px; opacity: .7; }
+.fa-grip:hover::before { opacity: 1; border-color: var(--c); }
+.fa-large form, .fa-sized form { margin-top: auto; } /* the question box stays at the bottom of a big window */
+.fa-panel { position: relative; }
 .fa-intro { font-size: 0.9rem; margin: 0 0 6px; }
 .fa-privacy { color: var(--muted); font-size: 0.76rem; margin: 0 0 10px; }
 a { color: var(--c); }
@@ -115,6 +126,7 @@ textarea:focus, button:focus-visible { outline: 2px solid var(--c); outline-offs
 button[type=submit] { font: 600 0.9rem inherit; font-family: inherit; color: #fff; background: var(--c); border: 0; border-radius: 10px; padding: 10px 14px; cursor: pointer; }
 button[type=submit]:disabled { opacity: .6; cursor: wait; }
 /* Small windows (e.g. the Pi's unmaximized browser): a narrower panel, the answer gets the height. */
+@media (max-width: 600px) { .fa-size, .fa-grip { display: none; } .fa-panel.fa-large, .fa-panel.fa-sized { width: min(340px, calc(100vw - 20px)) !important; height: auto !important; max-height: calc(100vh - 70px); } }
 @media (max-width: 760px), (max-height: 640px) {
   .fwq-assist { right: 10px; bottom: 10px; font-size: 14px; gap: 6px; }
   .fa-panel { width: min(340px, calc(100vw - 20px)); max-height: calc(100vh - 70px); padding: 10px 12px 12px; }
@@ -168,6 +180,54 @@ export function piDevice(): Record<string, string> | undefined {
   }
 }
 
+/** The reader's window size, remembered per browser: 'normal', 'large', or a dragged {w, h}. */
+const SIZE_KEY = 'fwq-assistant-size';
+type Size = 'normal' | 'large' | { w: number; h: number };
+const loadSize = (): Size => {
+  try {
+    const v = JSON.parse(localStorage.getItem(SIZE_KEY) ?? '"normal"');
+    return v === 'large' || (v && typeof v.w === 'number' && typeof v.h === 'number') ? v : 'normal';
+  } catch { return 'normal'; }
+};
+const saveSize = (v: Size) => { try { localStorage.setItem(SIZE_KEY, JSON.stringify(v)); } catch { /* not remembered */ } };
+
+function applySize(panel: HTMLElement, v: Size) {
+  panel.classList.toggle('fa-large', v === 'large');
+  panel.classList.toggle('fa-sized', typeof v === 'object');
+  panel.style.width = typeof v === 'object' ? `min(${v.w}px, calc(100vw - 24px))` : '';
+  panel.style.height = typeof v === 'object' ? `min(${v.h}px, calc(100vh - 80px))` : '';
+  const b = panel.querySelector<HTMLButtonElement>('.fa-size');
+  if (b) { const big = v !== 'normal'; b.textContent = big ? '⤡' : '⤢'; b.setAttribute('aria-label', big ? 'Normal size' : 'Larger'); b.title = b.getAttribute('aria-label')!; b.setAttribute('aria-pressed', String(big)); }
+}
+
+/** Normal ⇄ larger (a dragged size counts as larger: the button goes back to normal). */
+function sizeButton(panel: HTMLElement): HTMLButtonElement {
+  const b = el('button', { type: 'button', class: 'fa-size' });
+  b.addEventListener('click', () => { const v: Size = loadSize() === 'normal' ? 'large' : 'normal'; saveSize(v); applySize(panel, v); });
+  queueMicrotask(() => applySize(panel, loadSize()));
+  return b;
+}
+
+/** Drag the top-left corner (the box sits bottom right): wider to the left, taller upwards. */
+function resizable(panel: HTMLElement, grip: HTMLElement) {
+  grip.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    grip.setPointerCapture(e.pointerId);
+    const r = panel.getBoundingClientRect();
+    const start = { x: e.clientX, y: e.clientY, w: r.width, h: r.height };
+    const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
+    let size = { w: start.w, h: start.h };
+    const move = (ev: PointerEvent) => {
+      size = { w: Math.round(clamp(start.w + start.x - ev.clientX, 300, window.innerWidth - 24)), h: Math.round(clamp(start.h + start.y - ev.clientY, 320, window.innerHeight - 80)) };
+      applySize(panel, size);
+    };
+    const up = () => { grip.removeEventListener('pointermove', move); grip.removeEventListener('pointerup', up); grip.removeEventListener('pointercancel', up); saveSize(size); };
+    grip.addEventListener('pointermove', move);
+    grip.addEventListener('pointerup', up);
+    grip.addEventListener('pointercancel', up);
+  });
+}
+
 export function embed(script: HTMLScriptElement): void {
   const d = script.dataset;
   const site = d.site ?? '';
@@ -203,7 +263,11 @@ export function embed(script: HTMLScriptElement): void {
     el('textarea', { id: 'fa-q', rows: '2', maxlength: '1000', placeholder: 'Your question…' }),
     el('button', { type: 'submit' }, 'Ask'),
   );
-  panel.append(el('h3', {}, texts.title), el('p', { class: 'fa-intro' }, texts.intro), privacy, el('div', { class: 'fa-log', 'aria-live': 'polite' }), form);
+  const head = el('div', { class: 'fa-head' });
+  head.append(el('h3', {}, texts.title), sizeButton(panel));
+  panel.append(el('span', { class: 'fa-grip', 'aria-hidden': 'true', title: 'Drag to resize' }), head,
+    el('p', { class: 'fa-intro' }, texts.intro), privacy, el('div', { class: 'fa-log', 'aria-live': 'polite' }), form);
+  resizable(panel, panel.querySelector<HTMLElement>('.fa-grip')!);
   root.append(open, panel);
   shadow.append(root);
   document.body.append(host);
