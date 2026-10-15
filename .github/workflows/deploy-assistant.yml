@@ -85,14 +85,15 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: printf '%s' "$ANTHROPIC_API_KEY" | npx wrangler secret put ANTHROPIC_API_KEY
       # RasQberry tester programme: optional repository secrets. Without them the tester helper
-      # refuses everyone and the triage export answers 401 (fails closed).
-      - name: Store the tester passphrase and export token as Worker secrets (if set)
+      # refuses everyone and the triage export answers 401 (fails closed); deleting a repository
+      # secret also deletes the Worker secret on the next deploy, so access ends.
+      - name: Store (or remove) the tester passphrase and export token as Worker secrets
         env:
           TESTER_PASSPHRASE: ${{ secrets.TESTER_PASSPHRASE }}
           TESTER_EXPORT_TOKEN: ${{ secrets.TESTER_EXPORT_TOKEN }}
         run: |
           for v in TESTER_PASSPHRASE TESTER_EXPORT_TOKEN; do
-            if [ -n "${!v}" ]; then printf '%s' "${!v}" | npx wrangler secret put "$v"; else echo "$v not set: skipped"; fi
+            if [ -n "${!v}" ]; then printf '%s' "${!v}" | npx wrangler secret put "$v"; else npx wrangler secret delete "$v" --force >/dev/null 2>&1 || true; echo "$v not set: removed"; fi
           done
       - name: Summary
         run: |

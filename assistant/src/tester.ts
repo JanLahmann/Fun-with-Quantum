@@ -9,6 +9,9 @@
  *   POST /tester/finding  {tester, finding}                 → {id}
  *   (all with the header X-Tester-Pass, from a rasqberry site origin)
  *
+ * The passphrase is shared, so anyone who has it could use another tester's ID: fine for a small
+ * group of friendly testers; the per-tester budget and the global one still cap the cost.
+ *
  * Triage, for the RasQberry-Two session (Authorization: Bearer TESTER_EXPORT_TOKEN, no Origin needed):
  *   GET  /tester/export?since=<ISO date>&status=new|triaged → {testers, mission_status, findings}
  *   POST /tester/triage   {finding_id, issue_url}           → 204
@@ -37,8 +40,9 @@ export function testerId(raw: unknown): string | null {
 export const missionId = (raw: unknown): string | null =>
   typeof raw === 'string' && /^[a-z0-9][a-z0-9-]{0,79}$/.test(raw) ? raw : null;
 
+// No control characters, and no < > (they end up inside <tester_state> in the prompt).
 const clip = (v: unknown, max: number): string | null =>
-  typeof v === 'string' && v.trim() ? v.trim().replace(/[\u0000-\u0008\u000b-\u001f]/g, ' ').slice(0, max) : null;
+  typeof v === 'string' && v.trim() ? v.replace(/[\u0000-\u0008\u000b-\u001f<>]/g, ' ').trim().slice(0, max) : null;
 
 /** Preferences from the widget's form: up to 20 keys; booleans, short strings or short lists of strings. */
 export function cleanPreferences(raw: unknown): Json | null {
@@ -144,12 +148,18 @@ export async function testerRoute(path: string, req: Request, body: Json | null,
     const f = cleanFinding(body.finding);
     if (!f) return reply(400, { error: 'bad_request' }, cors);
     const prefs = await env.DB.prepare('SELECT preferences FROM testers WHERE id = ?').bind(id).first<{ preferences: string }>();
+    // Only the tester's own answers can be cited.
+    const cited = f.message_ids as string[];
+    const own = cited.length
+      ? (await env.DB.prepare(`SELECT id FROM messages WHERE tester = ? AND id IN (${cited.map(() => '?').join(', ')})`)
+          .bind(id, ...cited).all<{ id: string }>()).results.map((r) => r.id)
+      : [];
     const fid = uuid();
     await env.DB.prepare(
       `INSERT INTO findings (id, ts, tester, mission_id, image_version, pi_model, hardware, kind, severity, title, expected, actual, steps, message_ids)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     ).bind(fid, now, id, f.mission_id, f.image_version, f.pi_model, prefs?.preferences ?? '{}', f.kind, f.severity, f.title,
-      f.expected, f.actual, f.steps, JSON.stringify(f.message_ids)).run();
+      f.expected, f.actual, f.steps, JSON.stringify(cited.filter((m) => own.includes(m)))).run();
     return reply(200, { id: fid }, cors);
   }
   return reply(404, { error: 'not_found' }, cors);
