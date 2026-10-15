@@ -87,7 +87,13 @@ describe('tester chat', () => {
     expect(events.at(-1)!.event).toBe('done');
     const call = claude.calls[0].body;
     expect(call.model).toBe('claude-opus-5-5');
-    expect(call.messages.at(-1).content).toContain('<tester_state>{"page":"/testing/","tester":{"preferences":{"pi":"pi5","led-panel":true},"missions":{"first-start":"done"}}}</tester_state>');
+    const st = JSON.parse(/<tester_state>(.*)<\/tester_state>/.exec(call.messages.at(-1).content)![1]);
+    expect(st.page).toBe('/testing/');
+    expect(st.tester.preferences).toEqual({ pi: 'pi5', 'led-panel': true });
+    expect(st.tester.finished).toEqual(['first-start']);
+    expect(st.tester.suggestions).toHaveLength(3);
+    expect(st.tester.suggestions.map((m: any) => m.id)).not.toContain('first-start');
+    expect(st.tester.progress['Core RasQberry']).toMatch(/^1 of \d+ done$/);
     const row = db.rows('SELECT tester, model, state_json FROM messages')[0];
     expect(row).toMatchObject({ tester: 'ada l', model: 'claude-opus-5-5' });
     expect(JSON.stringify(db.rows('SELECT * FROM messages'))).not.toContain(PASS);
@@ -116,7 +122,11 @@ describe('tester writes (only by the tester\'s clicks)', () => {
   it('/tester/me returns preferences and missions, and registers the tester', async () => {
     const { run, db } = setup();
     const { res } = await run(req('/tester/me', me));
-    expect(await res.json()).toEqual({ preferences: {}, missions: {} });
+    const body = await res.json() as any;
+    expect(body).toMatchObject({ preferences: {}, missions: {}, findings: [] });
+    expect(body.catalogue.length).toBeGreaterThan(40);
+    expect(body.catalogue[0]).toMatchObject({ id: 'first-start', group: 'Core RasQberry' });
+    expect(body.needs['led-panel']).toBe('LED panel');
     expect(db.rows('SELECT id, first_seen, last_seen FROM testers')).toEqual([{ id: 'ada l', first_seen: T0, last_seen: T0 }]);
   });
 
@@ -129,6 +139,7 @@ describe('tester writes (only by the tester\'s clicks)', () => {
     expect((await run(req('/tester/status', { ...me, mission_id: 'demo-entangible', state: 'done' }))).res.status).toBe(204);
     expect((await run(req('/tester/status', { ...me, mission_id: 'Bad Id', state: 'done' }))).res.status).toBe(400);
     expect((await run(req('/tester/status', { ...me, mission_id: 'x', state: 'won' }))).res.status).toBe(400);
+    expect((await run(req('/tester/status', { ...me, mission_id: 'no-such-mission', state: 'done' }))).res.status).toBe(400);
     const saved = await run(req('/tester/finding', { ...me, finding: {
       kind: 'docs', severity: 'minor', title: 'LED test not in the docs', mission_id: 'demo-entangible',
       expected: 'A page on the LED test', actual: 'Nothing found', image_version: '2026-10-01-beta', pi_model: 'pi5',

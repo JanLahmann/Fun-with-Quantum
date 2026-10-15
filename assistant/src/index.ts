@@ -14,7 +14,7 @@ import { CONTEXTS, contextFor } from './contexts';
 import { intVar, type Env } from './env';
 import { checkDaily, checkOrigin, corsHeaders, siteConfig, visitorKey } from './guard';
 import { isLevel, systemPrompt, userMessage } from './prompt';
-import { checkTesterDaily, profile, purgeTester, signedIn, testerRoute, triageRoute } from './tester';
+import { checkTesterDaily, purgeTester, signedIn, testerRoute, testerState, triageRoute } from './tester';
 
 const MAX_BODY = 32_000;
 const MAX_QUESTION = 1_000;
@@ -105,7 +105,7 @@ async function chat(req: Request, env: Env, ctx: ExecutionContext, deps: Deps, c
     if (!tester) return json(401, { error: 'tester_auth' }, cors);
     const daily = await checkTesterDaily(env, tester, context.tester, now);
     if (daily !== 'ok') return daily === 'global' ? json(503, { error: 'busy' }, cors) : json(429, { error: 'rate' }, cors);
-    pageState = { ...state, tester: await profile(env, tester, now) };
+    pageState = { ...state, tester: await testerState(env, tester, now) };
   } else {
     const daily = await checkDaily(env, body.site as string, visitor, now);
     if (daily !== 'ok') return daily === 'global' ? json(503, { error: 'busy' }, cors) : json(429, { error: 'rate' }, cors);

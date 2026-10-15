@@ -3,7 +3,7 @@
  * a self-chosen tester ID, and the only ways anything is written — by the tester's own clicks in
  * the widget, never by the model:
  *
- *   POST /tester/me       {tester}                          → {preferences, missions}
+ *   POST /tester/me       {tester}                          → {preferences, missions, findings, catalogue, groups, needs}
  *   POST /tester/prefs    {tester, preferences}             → 204
  *   POST /tester/status   {tester, mission_id, state}       → 204
  *   POST /tester/finding  {tester, finding}                 → {id}
@@ -18,6 +18,8 @@
  */
 import type { Env } from './env';
 import { utcDay } from './guard';
+import { catalogue, isMission, progress, started, suggest } from './contexts/rasqberry/missions';
+import { MISSION_GROUPS, NEEDS_KEYS } from './contexts/rasqberry/tester.generated';
 
 export const TESTER_CONTEXT = 'rasqberry/tester';
 export const TESTER_RETENTION_DAYS = 90;
@@ -68,7 +70,7 @@ export function cleanFinding(raw: unknown): Json | null {
   const ids = Array.isArray(f.message_ids) ? f.message_ids.filter((x) => typeof x === 'string' && /^[0-9a-f-]{36}$/.test(x)).slice(0, 20) : [];
   return {
     kind, title, severity: kind === 'praise' || kind === 'idea' ? null : severity,
-    mission_id: missionId(f.mission_id),
+    mission_id: missionId(f.mission_id) && isMission(f.mission_id as string) ? f.mission_id : null,
     expected: clip(f.expected, 2000), actual: clip(f.actual, 2000), steps: clip(f.steps, 2000),
     image_version: typeof f.image_version === 'string' && /^[\w.+-]{1,60}$/.test(f.image_version) ? f.image_version : null,
     pi_model: f.pi_model === 'pi4' || f.pi_model === 'pi5' ? f.pi_model : null,
@@ -107,14 +109,37 @@ export async function checkTesterDaily(env: Env, id: string, limits: { daily_tes
   return 'ok';
 }
 
-/** Records that the tester was here, and returns what the helper may know about them. */
-export async function profile(env: Env, id: string, now: number): Promise<{ preferences: Json; missions: Record<string, string> }> {
+/** Records that the tester was here, and returns their preferences, mission states and latest findings. */
+export async function profile(env: Env, id: string, now: number): Promise<{ preferences: Json; missions: Record<string, string>; findings: Json[] }> {
   await env.DB.prepare(
     `INSERT INTO testers (id, first_seen, last_seen) VALUES (?, ?, ?) ON CONFLICT (id) DO UPDATE SET last_seen = excluded.last_seen`,
   ).bind(id, now, now).run();
   const t = await env.DB.prepare('SELECT preferences FROM testers WHERE id = ?').bind(id).first<{ preferences: string }>();
   const rows = (await env.DB.prepare('SELECT mission_id, state FROM mission_status WHERE tester = ? ORDER BY ts').bind(id).all<{ mission_id: string; state: string }>()).results;
-  return { preferences: JSON.parse(t?.preferences ?? '{}'), missions: Object.fromEntries(rows.map((r) => [r.mission_id, r.state])) };
+  const findings = (await env.DB.prepare('SELECT title, mission_id, kind FROM findings WHERE tester = ? ORDER BY ts DESC LIMIT 10').bind(id).all<Json>()).results;
+  return { preferences: JSON.parse(t?.preferences ?? '{}'), missions: Object.fromEntries(rows.map((r) => [r.mission_id, r.state])), findings };
+}
+
+/** How many testers started or finished each mission (coverage: the least tried come first). */
+export async function triedBy(env: Env): Promise<Record<string, number>> {
+  const rows = (await env.DB.prepare(
+    "SELECT mission_id, COUNT(DISTINCT tester) AS n FROM mission_status WHERE state IN ('started', 'done') GROUP BY mission_id",
+  ).all<{ mission_id: string; n: number }>()).results;
+  return Object.fromEntries(rows.map((r) => [r.mission_id, r.n]));
+}
+
+/** What the tester helper sees about the tester with every question. */
+export async function testerState(env: Env, id: string, now: number): Promise<Json> {
+  const p = await profile(env, id, now);
+  return {
+    preferences: p.preferences,
+    suggestions: suggest(p.preferences, p.missions, await triedBy(env)),
+    started: started(p.missions),
+    progress: progress(p.preferences, p.missions),
+    finished: Object.entries(p.missions).filter(([, s]) => s === 'done').map(([m]) => m),
+    skipped: Object.entries(p.missions).filter(([, s]) => s === 'skipped').map(([m]) => m),
+    findings: p.findings,
+  };
 }
 
 /** POST /tester/* from the widget. `body` is already parsed; the origin is already checked. */
@@ -125,7 +150,9 @@ export async function testerRoute(path: string, req: Request, body: Json | null,
   if (!id) return reply(401, { error: 'tester_auth' }, cors);
   const done = new Response(null, { status: 204, headers: cors });
 
-  if (path === '/tester/me') return reply(200, await profile(env, id, now), cors);
+  if (path === '/tester/me') {
+    return reply(200, { ...(await profile(env, id, now)), catalogue: catalogue(), groups: MISSION_GROUPS, needs: NEEDS_KEYS }, cors);
+  }
 
   await profile(env, id, now);
   if (path === '/tester/prefs') {
@@ -135,7 +162,7 @@ export async function testerRoute(path: string, req: Request, body: Json | null,
     return done;
   }
   if (path === '/tester/status') {
-    const mission = missionId(body.mission_id);
+    const mission = missionId(body.mission_id) && isMission(body.mission_id as string) ? (body.mission_id as string) : null;
     const state = (MISSION_STATES as readonly unknown[]).includes(body.state) ? (body.state as string) : null;
     if (!mission || !state) return reply(400, { error: 'bad_request' }, cors);
     await env.DB.prepare(

@@ -13,6 +13,7 @@
  */
 import type { AssistantTexts } from './i18n';
 import { registerState } from './state';
+import { mountTester } from './tester-ui';
 import { mountAssistant } from './widget';
 
 declare global {
@@ -49,6 +50,20 @@ export const EMBED_TEXTS: Record<string, EmbedTexts> = {
     explainer: 'Helper',
     ...HELPER_ERRORS,
     privacyUrl: 'https://fun-with-quantum.org/about/#privacy',
+  },
+  'rasqberry/tester': {
+    open: 'Tester helper',
+    title: 'RasQberry Two tester helper',
+    intro: 'Missions that fit your setup, and a place for everything you notice. I don’t help with the missions themselves — the documentation and the RasQberry helper do.',
+    privacy:
+      'Your messages are answered by Claude (Anthropic). What we keep, and for how long: your tester name or ID (chosen by you, please no e-mail address), ' +
+      'your hardware and preferences, your conversations with the tester helper, the findings you save, and which missions you started or finished. ' +
+      'We keep them for 90 days, then delete them. The tester passphrase is checked but never stored. We use this only to find and fix problems in ' +
+      'RasQberry; findings may become public GitHub issues, without your name or ID.',
+    explainer: 'Tester helper',
+    ...HELPER_ERRORS,
+    errRate: 'That’s all the questions for today (60 per tester). Thank you — please continue tomorrow.',
+    privacyUrl: 'https://rasqberry.org/testing/',
   },
 };
 
@@ -104,6 +119,24 @@ button[type=submit]:disabled { opacity: .6; cursor: wait; }
   .fa-panel:has(.fa-log:not(:empty)) .fa-intro { display: none; } /* once the chat runs, the answer needs the room */
   textarea { min-height: 38px; }
 }
+.fa-signed-in .fa-intro, .fa-signed-in .fa-privacy { display: none; }
+.fa-tester-bar a { color: var(--m); }
+.fa-tester-bar { font-size: 0.8rem; color: var(--muted); margin: 0 0 8px; }
+.fa-link { background: none; border: 0; padding: 0; color: var(--m); text-decoration: underline; cursor: pointer; font: inherit; }
+.fa-signin, .fa-setup { display: flex; flex-direction: column; gap: 6px; font-size: 0.88rem; margin-bottom: 10px; }
+.fa-signin[hidden], .fa-setup[hidden], .fa-tester-bar[hidden] { display: none; }
+.fa-signin input, .fa-setup input:not([type]) { font: inherit; padding: 6px 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); color: inherit; }
+.fa-signin button, .fa-setup button[type=submit], .fa-actions button { font: 600 0.85rem inherit; font-family: inherit; color: #fff; background: var(--c); border: 0; border-radius: 8px; padding: 6px 12px; cursor: pointer; align-self: flex-start; }
+.fa-setup-intro { margin: 0; }
+.fa-setup fieldset { align-self: stretch; min-width: 0; border: 1px solid var(--line); border-radius: 8px; padding: 4px 8px 6px; margin: 0; display: flex; flex-wrap: wrap; gap: 4px 12px; }
+.fa-setup legend { font-size: 0.78rem; color: var(--muted); padding: 0 4px; }
+.fa-choice { display: inline-flex; gap: 4px; align-items: center; }
+.fa-card { border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; margin-top: 8px; background: var(--paper); }
+.fa-card p { margin: 4px 0 0; } .fa-meta { color: var(--muted); font-size: 0.78rem; }
+.fa-actions { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 8px; }
+.fa-actions button[aria-pressed=true] { outline: 2px solid var(--m); outline-offset: 1px; }
+.fa-actions button:disabled { opacity: .6; cursor: default; }
+form[hidden], .fa-log[hidden] { display: none; }
 .fa-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 `;
 
@@ -118,7 +151,7 @@ function el<K extends keyof HTMLElementTagNameMap>(tag: K, attrs: Record<string,
  * The Pi's facts from its start URL (?from=pi&v=<image build>&model=pi4|pi5&led=<layout>&ledcheck=true|false|skipped),
  * kept for the tab like the flags above. The Worker validates them.
  */
-function piDevice(): Record<string, string> | undefined {
+export function piDevice(): Record<string, string> | undefined {
   const q = new URLSearchParams(location.search);
   const fresh = Object.fromEntries((['v', 'model', 'led', 'ledcheck'] as const).flatMap((k) => (q.get(k) ? [[k === 'v' ? 'version' : k, q.get(k)!.slice(0, 60)]] : [])));
   try {
@@ -155,7 +188,7 @@ export function embed(script: HTMLScriptElement): void {
   panel.hidden = true;
   const privacy = el('p', { class: 'fa-privacy' }, `${texts.privacy} `);
   privacy.append(el('a', { href: texts.privacyUrl, target: '_blank', rel: 'noopener' }, 'Privacy'));
-  const form = el('form');
+  const form = el('form', { class: 'fa-ask' });
   form.append(
     el('label', { class: 'fa-sr', for: 'fa-q' }, 'Your question…'),
     el('textarea', { id: 'fa-q', rows: '2', maxlength: '1000', placeholder: 'Your question…' }),
@@ -166,7 +199,13 @@ export function embed(script: HTMLScriptElement): void {
   shadow.append(root);
   document.body.append(host);
   const { privacyUrl: _, ...t } = texts;
-  mountAssistant(root, { texts: t, events: EVENTS[site] ?? site });
+  const log = panel.querySelector<HTMLElement>('.fa-log')!;
+  const input = form.querySelector('textarea')!;
+  const ask = (q: string) => { input.value = q || 'Please change the draft: '; if (q) form.requestSubmit(); else input.focus(); };
+  const hooks = context === 'tester'
+    ? mountTester(panel, [log, form], new URL(script.src).origin, () => (onPi ? piDevice() : undefined), ask)
+    : undefined;
+  mountAssistant(root, { texts: t, events: EVENTS[site] ?? site, hooks });
 }
 
 const me = document.currentScript as HTMLScriptElement | null;

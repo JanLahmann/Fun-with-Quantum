@@ -17,11 +17,26 @@ declare global {
 }
 const track = (name: string, data?: Record<string, string | number>) => { try { window.umami?.track(name, data); } catch { /* best effort */ } };
 
+/** Hooks for a context with its own UI around the chat (the RasQberry tester helper). */
+export interface ChatHooks {
+  /** Extra request headers and body fields for /chat. */
+  headers?: () => Record<string, string>;
+  body?: () => Record<string, unknown>;
+  /** The part of the (growing) answer to show as text; the rest becomes cards in `decorate`. */
+  visible?: (answer: string) => string;
+  /** After the answer is complete: add cards below its text. */
+  decorate?: (msg: HTMLElement, answer: string, id: string | undefined) => void;
+  /** 401 from /chat (the tester's sign-in no longer works). */
+  unauthorized?: () => void;
+}
+
 /**
  * `texts` overrides the game texts (other sites); `events` is the analytics prefix, as in
  * "<Site>: assistant ask" (family/EVENTS.md).
  */
-export function mountAssistant(root: HTMLElement, opts: { texts?: Partial<AssistantTexts>; events?: string } = {}): void {
+export function mountAssistant(root: HTMLElement, opts: { texts?: Partial<AssistantTexts>; events?: string; hooks?: ChatHooks } = {}): void {
+  const hooks = opts.hooks ?? {};
+  const shown = (a: string) => (hooks.visible ? hooks.visible(a) : a);
   const url = (root.dataset.url ?? '').replace(/\/$/, '');
   const site = root.dataset.site ?? 'fwq';
   const context = root.dataset.context ?? '';
@@ -31,7 +46,8 @@ export function mountAssistant(root: HTMLElement, opts: { texts?: Partial<Assist
   const openBtn = root.querySelector<HTMLButtonElement>('.fa-open')!;
   const panel = root.querySelector<HTMLElement>('.fa-panel')!;
   const log = root.querySelector<HTMLElement>('.fa-log')!;
-  const form = root.querySelector<HTMLFormElement>('form')!;
+  // The question form (the tester helper adds its own sign-in and setup forms before it).
+  const form = root.querySelector<HTMLFormElement>('form.fa-ask') ?? root.querySelector<HTMLFormElement>('form')!;
   const input = form.querySelector<HTMLTextAreaElement>('textarea')!;
   const send = form.querySelector<HTMLButtonElement>('button[type=submit]')!;
 
@@ -124,18 +140,20 @@ export function mountAssistant(root: HTMLElement, opts: { texts?: Partial<Assist
     try {
       const res = await fetch(`${url}/chat`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ site, context, locale: lang, level, question, state: currentState(context), history: history.slice(-2 * KEEP_TURNS) }),
+        headers: { 'Content-Type': 'application/json', ...hooks.headers?.() },
+        body: JSON.stringify({ site, context, locale: lang, level, question, state: currentState(context), history: history.slice(-2 * KEEP_TURNS), ...hooks.body?.() }),
         signal: ctrl.signal,
       });
       if (!res.ok || !res.body) {
+        if (res.status === 401 && hooks.unauthorized) { body.parentElement!.remove(); hooks.unauthorized(); return; }
         fail(res.status === 429 ? t.errRate : res.status === 503 ? t.errBusy : t.errNetwork);
         return;
       }
       for await (const { event, data } of readEvents(res.body)) {
-        if (event === 'delta') { answer += data.t; body.innerHTML = renderAnswer(answer); follow(body.parentElement!); }
+        if (event === 'delta') { answer += data.t; body.innerHTML = renderAnswer(shown(answer)); follow(body.parentElement!); }
         else if (event === 'done') {
           history.push({ role: 'user', content: question }, { role: 'assistant', content: answer });
+          hooks.decorate?.(body, answer, typeof data.id === 'string' ? data.id : undefined);
           if (typeof data.id === 'string') feedback(body.parentElement!, data.id);
           follow(body.parentElement!);
         } else if (event === 'error') fail(t.errNetwork);
