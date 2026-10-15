@@ -14,13 +14,14 @@
  * group of friendly testers; the per-tester budget and the global one still cap the cost.
  *
  * Triage, for the RasQberry-Two session (Authorization: Bearer TESTER_EXPORT_TOKEN, no Origin needed):
- *   GET  /tester/export?since=<ISO date>&status=new|triaged[&include_eval=1] → {testers, mission_status, findings}
- *   POST /tester/triage   {finding_id, issue_url}           → 204
+ *   GET  /tester/export?since=<ISO date>&status=new|triaged|noted[&include_eval=1] → {testers, mission_status, findings}
+ *   POST /tester/triage   {finding_id, issue_url}           → 204 (status triaged)
+ *                         {finding_id, status: "noted", note} → 204 (no issue: praise, duplicate, wontfix …)
  */
 import type { Env } from './env';
 import { utcDay } from './guard';
 import { catalogue, isMission, progress, started, suggest, versionCheck } from './contexts/rasqberry/missions';
-import { MISSION_GROUPS, NEEDS_KEYS } from './contexts/rasqberry/tester.generated';
+import { LATEST_IMAGES, MISSION_GROUPS, NEEDS_KEYS } from './contexts/rasqberry/tester.generated';
 
 export const TESTER_CONTEXT = 'rasqberry/tester';
 export const TESTER_RETENTION_DAYS = 90;
@@ -192,12 +193,21 @@ export async function testerRoute(path: string, req: Request, body: Json | null,
       ? (await env.DB.prepare(`SELECT id FROM messages WHERE tester = ? AND id IN (${cited.map(() => '?').join(', ')})`)
           .bind(id, ...cited).all<{ id: string }>()).results.map((r) => r.id)
       : [];
+    // The image version: what the Pi reports, else the tester's choice in My setup (the newest tag of
+    // that stream when saved; "older-or-unsure" for "older or not sure").
+    const chosen = (JSON.parse(prefs?.preferences ?? '{}') as Json).version;
+    const fromSetup = chosen === 'beta' || chosen === 'dev' ? LATEST_IMAGES[chosen] : chosen === 'older' ? 'older-or-unsure' : null;
+    const [version, source] = f.image_version ? [f.image_version, 'pi'] : fromSetup ? [fromSetup, 'setup'] : [null, null];
     const fid = uuid();
-    await env.DB.prepare(
-      `INSERT INTO findings (id, ts, tester, mission_id, image_version, pi_model, hardware, kind, severity, title, expected, actual, steps, message_ids)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    ).bind(fid, now, id, f.mission_id, f.image_version, f.pi_model, prefs?.preferences ?? '{}', f.kind, f.severity, f.title,
-      f.expected, f.actual, f.steps, JSON.stringify(cited.filter((m) => own.includes(m)))).run();
+    await env.DB.batch([
+      env.DB.prepare(
+        `INSERT INTO findings (id, ts, tester, mission_id, image_version, version_source, pi_model, hardware, kind, severity, title, expected, actual, steps, message_ids)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      ).bind(fid, now, id, f.mission_id, version, source, f.pi_model, prefs?.preferences ?? '{}', f.kind, f.severity, f.title,
+        f.expected, f.actual, f.steps, JSON.stringify(cited.filter((m) => own.includes(m)))),
+      // A finding for a mission the tester hasn't marked yet means they are on it: started.
+      ...(f.mission_id ? [env.DB.prepare('INSERT OR IGNORE INTO mission_status (tester, mission_id, state, ts) VALUES (?, ?, ?, ?)').bind(id, f.mission_id, 'started', now)] : []),
+    ]);
     return reply(200, { id: fid }, cors);
   }
   return reply(404, { error: 'not_found' }, cors);
@@ -212,7 +222,7 @@ export async function triageRoute(path: string, req: Request, env: Env): Promise
     const sinceRaw = url.searchParams.get('since');
     const since = sinceRaw ? Date.parse(sinceRaw) : 0;
     const status = url.searchParams.get('status');
-    if (Number.isNaN(since) || (status && status !== 'new' && status !== 'triaged')) return reply(400, { error: 'bad_request' });
+    if (Number.isNaN(since) || (status && !['new', 'triaged', 'noted'].includes(status))) return reply(400, { error: 'bad_request' });
     const all = async <T>(sql: string, ...args: unknown[]) => (await env.DB.prepare(sql).bind(...args).all<T>()).results;
     // The eval runs' testers (eval-…) stay out unless asked for.
     const real = url.searchParams.get('include_eval') === '1' ? '' : "AND tester NOT LIKE 'eval-%'";
@@ -231,8 +241,12 @@ export async function triageRoute(path: string, req: Request, env: Env): Promise
     try { body = await req.json(); } catch { /* bad JSON */ }
     const fid = typeof body?.finding_id === 'string' && /^[0-9a-f-]{36}$/.test(body.finding_id) ? body.finding_id : null;
     const issue = typeof body?.issue_url === 'string' && /^https:\/\/github\.com\/JanLahmann\/RasQberry-Two\/issues\/\d+$/.test(body.issue_url) ? body.issue_url : null;
-    if (!fid || !issue) return reply(400, { error: 'bad_request' });
-    const r = await env.DB.prepare("UPDATE findings SET status = 'triaged', issue_url = ? WHERE id = ?").bind(issue, fid).run();
+    // Without an issue: noted, with a short reason (praise, duplicate, wontfix …).
+    const note = body?.status === 'noted' && typeof body.note === 'string' && /^[\w .,:#/()-]{1,200}$/.test(body.note) ? body.note : null;
+    if (!fid || (!issue && !note)) return reply(400, { error: 'bad_request' });
+    const r = issue
+      ? await env.DB.prepare("UPDATE findings SET status = 'triaged', issue_url = ? WHERE id = ?").bind(issue, fid).run()
+      : await env.DB.prepare("UPDATE findings SET status = 'noted', note = ? WHERE id = ?").bind(note, fid).run();
     return r.meta.changes ? new Response(null, { status: 204 }) : reply(404, { error: 'unknown_id' });
   }
   return reply(404, { error: 'not_found' });
