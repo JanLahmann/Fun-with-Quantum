@@ -5,7 +5,8 @@
  *
  *   POST /tester/me       {tester}                          → {preferences, missions, findings, catalogue, groups, needs}
  *   POST /tester/prefs    {tester, preferences}             → 204
- *   POST /tester/status   {tester, mission_id, state}       → 204
+ *   POST /tester/status   {tester, mission_id, state}       → 204 (state "open" undoes: the mission is new again)
+ *   POST /tester/reset    {tester}                          → 204 (all the tester's mission states; findings stay)
  *   POST /tester/finding  {tester, finding}                 → {id}
  *   (all with the header X-Tester-Pass, from a rasqberry site origin)
  *
@@ -164,12 +165,20 @@ export async function testerRoute(path: string, req: Request, body: Json | null,
   }
   if (path === '/tester/status') {
     const mission = missionId(body.mission_id) && isMission(body.mission_id as string) ? (body.mission_id as string) : null;
+    if (mission && body.state === 'open') {
+      await env.DB.prepare('DELETE FROM mission_status WHERE tester = ? AND mission_id = ?').bind(id, mission).run();
+      return done;
+    }
     const state = (MISSION_STATES as readonly unknown[]).includes(body.state) ? (body.state as string) : null;
     if (!mission || !state) return reply(400, { error: 'bad_request' }, cors);
     await env.DB.prepare(
       `INSERT INTO mission_status (tester, mission_id, state, ts) VALUES (?, ?, ?, ?)
        ON CONFLICT (tester, mission_id) DO UPDATE SET state = excluded.state, ts = excluded.ts`,
     ).bind(id, mission, state, now).run();
+    return done;
+  }
+  if (path === '/tester/reset') {
+    await env.DB.prepare('DELETE FROM mission_status WHERE tester = ?').bind(id).run();
     return done;
   }
   if (path === '/tester/finding') {

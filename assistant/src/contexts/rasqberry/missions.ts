@@ -15,10 +15,17 @@ const groupTitle = (id: string) => MISSION_GROUPS.find((g) => g.id === id)?.titl
 const groupOrder = (id: string) => MISSION_GROUPS.findIndex((g) => g.id === id);
 
 /** Interests in the setup form → mission groups. */
-const INTEREST_GROUPS: Record<string, string[]> = { games: ['fwq'], leds: ['led'], coding: ['learn', 'advanced'], big: ['big'] };
+const INTEREST_GROUPS: Record<string, string[]> = { core: ['core', 'user', 'advanced'], games: ['fwq'], leds: ['led'], coding: ['learn', 'advanced'], big: ['big'] };
 
-/** Does the tester's setup cover this need? The image is one choice (ab | single); a touchscreen is a screen. */
+/**
+ * Does the tester's setup cover this need? The image is one choice (ab | single); a touchscreen is
+ * a screen; internet is the default unless the tester ticked "offline system", and an IBM Quantum
+ * account needs the internet too.
+ */
 export function hasNeed(prefs: Prefs, need: string): boolean {
+  const online = prefs.offline !== true;
+  if (need === 'internet') return online;
+  if (need === 'ibm-account') return online && prefs['ibm-account'] === true;
   if (need === 'ab-image') return prefs.image === 'ab';
   if (need === 'single-image') return prefs.image === 'single';
   if (need === 'display') return prefs.display === true || prefs.touchscreen === true;
