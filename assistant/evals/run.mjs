@@ -10,6 +10,10 @@
  * `=(?<!\p{L})H(?!\p{L})`, since \b doesn't know ä or ö). The checks catch
  * regressions; every answer is printed in full for a human read as well. Requests are paced
  * (7 s apart) to stay under the Worker's burst limit of 10 a minute.
+ *
+ * Tester cases (context "tester") sign in with TESTER_PASSPHRASE from the environment, as a fresh
+ * tester per case (eval-<run>-<n>: the Worker leaves eval- testers out of coverage and the export),
+ * after saving the case's `setup` ({preferences, missions}) through the tester endpoints.
  */
 import { readFileSync, writeFileSync } from 'node:fs';
 
@@ -37,11 +41,31 @@ async function ask(c) {
   }
 }
 
+const RUN = Date.now().toString(36).slice(-6);
+let testerN = 0;
+
+/** A fresh tester for this case, with the case's setup saved the way the widget saves it. */
+async function testerFor(c, headers) {
+  const tester = `eval-${RUN}-${testerN++}`;
+  const post = (path, body) => fetch(`${url.replace(/\/$/, '')}${path}`, { method: 'POST', headers, body: JSON.stringify({ site: c.site, tester, ...body }) });
+  const prefs = await post('/tester/prefs', { preferences: c.setup?.preferences ?? {} });
+  if (!prefs.ok) throw new Error(`tester setup: HTTP ${prefs.status}`);
+  for (const [mission_id, state] of Object.entries(c.setup?.missions ?? {})) await post('/tester/status', { mission_id, state });
+  return tester;
+}
+
 async function askOnce(c, t0) {
+  const headers = { 'Content-Type': 'application/json', Origin: arg('origin') ?? ORIGINS[c.site ?? 'fwq'] };
+  let tester;
+  if (c.context === 'tester') {
+    if (!process.env.TESTER_PASSPHRASE) return { error: 'TESTER_PASSPHRASE is not set', ms: 0 };
+    headers['X-Tester-Pass'] = process.env.TESTER_PASSPHRASE;
+    tester = await testerFor(c, headers);
+  }
   const res = await fetch(`${url.replace(/\/$/, '')}/chat`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', Origin: arg('origin') ?? ORIGINS[c.site ?? 'fwq'] },
-    body: JSON.stringify({ site: c.site ?? 'fwq', context: c.context ?? 'coin-game', locale: c.locale, level: c.level, question: c.question, state: c.state, history: c.history }),
+    headers,
+    body: JSON.stringify({ site: c.site ?? 'fwq', context: c.context ?? 'coin-game', locale: c.locale, level: c.level, question: c.question, state: c.state, history: c.history, tester }),
   });
   if (!res.ok) return { error: `HTTP ${res.status} ${await res.text()}`, ms: Date.now() - t0 };
   const text = await res.text();

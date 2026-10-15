@@ -184,6 +184,14 @@ describe('triage export', () => {
     expect(out.findings[0]).toMatchObject({ tester: 'ada l', ts: '2026-10-15T12:00:00.000Z', hardware: {}, message_ids: [] });
     expect(out.testers.map((t: any) => t.id)).toEqual(['ada l']);
     expect((await run(bare('/tester/export?since=nonsense', auth))).res.status).toBe(400);
+    await run(req('/tester/finding', { site: 'rasqberry', tester: 'eval-abc-1', finding: { kind: 'idea', title: 'From an eval' } }));
+    await run(req('/tester/status', { site: 'rasqberry', tester: 'eval-abc-1', mission_id: 'first-start', state: 'done' }));
+    const real = await (await run(bare('/tester/export', auth))).res.json() as any;
+    expect(real.findings.map((x: any) => x.title)).not.toContain('From an eval');
+    expect(real.testers.map((t: any) => t.id)).toEqual(['ada l']);
+    expect(real.mission_status).toEqual([]);
+    const withEval = await (await run(bare('/tester/export?include_eval=1', auth))).res.json() as any;
+    expect(withEval.findings.map((x: any) => x.title)).toContain('From an eval');
 
     const url = 'https://github.com/JanLahmann/RasQberry-Two/issues/412';
     expect((await run(bare('/tester/triage', { ...auth, 'Content-Type': 'application/json' }, 'POST', { finding_id: f.id, issue_url: 'https://evil.example/1' }))).res.status).toBe(400);
