@@ -13,7 +13,7 @@
  * group of friendly testers; the per-tester budget and the global one still cap the cost.
  *
  * Triage, for the RasQberry-Two session (Authorization: Bearer TESTER_EXPORT_TOKEN, no Origin needed):
- *   GET  /tester/export?since=<ISO date>&status=new|triaged → {testers, mission_status, findings}
+ *   GET  /tester/export?since=<ISO date>&status=new|triaged[&include_eval=1] → {testers, mission_status, findings}
  *   POST /tester/triage   {finding_id, issue_url}           → 204
  */
 import type { Env } from './env';
@@ -123,7 +123,8 @@ export async function profile(env: Env, id: string, now: number): Promise<{ pref
 /** How many testers started or finished each mission (coverage: the least tried come first). */
 export async function triedBy(env: Env): Promise<Record<string, number>> {
   const rows = (await env.DB.prepare(
-    "SELECT mission_id, COUNT(DISTINCT tester) AS n FROM mission_status WHERE state IN ('started', 'done') GROUP BY mission_id",
+    `SELECT mission_id, COUNT(DISTINCT tester) AS n FROM mission_status
+     WHERE state IN ('started', 'done') AND tester NOT LIKE 'eval-%' GROUP BY mission_id`,
   ).all<{ mission_id: string; n: number }>()).results;
   return Object.fromEntries(rows.map((r) => [r.mission_id, r.n]));
 }
@@ -203,14 +204,16 @@ export async function triageRoute(path: string, req: Request, env: Env): Promise
     const status = url.searchParams.get('status');
     if (Number.isNaN(since) || (status && status !== 'new' && status !== 'triaged')) return reply(400, { error: 'bad_request' });
     const all = async <T>(sql: string, ...args: unknown[]) => (await env.DB.prepare(sql).bind(...args).all<T>()).results;
+    // The eval runs' testers (eval-…) stay out unless asked for.
+    const real = url.searchParams.get('include_eval') === '1' ? '' : "AND tester NOT LIKE 'eval-%'";
     const findings = (await all<Json>(
-      `SELECT * FROM findings WHERE ts >= ? ${status ? 'AND status = ?' : ''} ORDER BY ts`, ...(status ? [since, status] : [since]),
+      `SELECT * FROM findings WHERE ts >= ? ${status ? 'AND status = ?' : ''} ${real} ORDER BY ts`, ...(status ? [since, status] : [since]),
     )).map((f) => ({ ...f, ts: new Date(f.ts as number).toISOString(), hardware: JSON.parse(f.hardware as string), message_ids: JSON.parse(f.message_ids as string) }));
-    const testers = (await all<Json>('SELECT * FROM testers ORDER BY id')).map((t) => ({
+    const testers = (await all<Json>(`SELECT * FROM testers WHERE 1 ${real.replace('tester', 'id')} ORDER BY id`)).map((t) => ({
       ...t, preferences: JSON.parse(t.preferences as string),
       first_seen: new Date(t.first_seen as number).toISOString(), last_seen: new Date(t.last_seen as number).toISOString(),
     }));
-    const missionStatus = (await all<Json>('SELECT * FROM mission_status ORDER BY ts')).map((m) => ({ ...m, ts: new Date(m.ts as number).toISOString() }));
+    const missionStatus = (await all<Json>(`SELECT * FROM mission_status WHERE 1 ${real} ORDER BY ts`)).map((m) => ({ ...m, ts: new Date(m.ts as number).toISOString() }));
     return reply(200, { exported: new Date().toISOString(), since: new Date(since).toISOString(), testers, mission_status: missionStatus, findings });
   }
   if (path === '/tester/triage' && req.method === 'POST') {

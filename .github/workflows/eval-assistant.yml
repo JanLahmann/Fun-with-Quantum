@@ -12,7 +12,7 @@ on:
       set:
         description: Eval set (assistant/evals/<set>.jsonl)
         type: choice
-        options: [coin-game, rasqberry-build, rasqberry-device]
+        options: [coin-game, rasqberry-build, rasqberry-device, rasqberry-tester]
         default: coin-game
       only:
         description: Run just this case id (optional)
@@ -38,6 +38,7 @@ jobs:
           URL: ${{ inputs.url }}
           ONLY: ${{ inputs.only }}
           SET: ${{ inputs.set }}
+          TESTER_PASSPHRASE: ${{ secrets.TESTER_PASSPHRASE }}
         run: |
           args=(--url "$URL" --file "evals/${SET:-coin-game}.jsonl" --out "$RUNNER_TEMP/report.md")
           [ -n "$ONLY" ] && args+=(--only "$ONLY")
