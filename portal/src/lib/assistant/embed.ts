@@ -202,10 +202,11 @@ export function embed(script: HTMLScriptElement): void {
   const log = panel.querySelector<HTMLElement>('.fa-log')!;
   const input = form.querySelector('textarea')!;
   const ask = (q: string) => { input.value = q || 'Please change the draft: '; if (q) form.requestSubmit(); else input.focus(); };
+  let resetChat = () => {};
   const hooks = context === 'tester'
-    ? mountTester(panel, [log, form], new URL(script.src).origin, () => (onPi ? piDevice() : undefined), ask)
+    ? mountTester(panel, [log, form], new URL(script.src).origin, () => (onPi ? piDevice() : undefined), ask, () => resetChat())
     : undefined;
-  mountAssistant(root, { texts: t, events: EVENTS[site] ?? site, hooks });
+  resetChat = mountAssistant(root, { texts: t, events: EVENTS[site] ?? site, hooks }).reset;
 }
 
 const me = document.currentScript as HTMLScriptElement | null;

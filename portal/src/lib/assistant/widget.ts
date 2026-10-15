@@ -34,7 +34,7 @@ export interface ChatHooks {
  * `texts` overrides the game texts (other sites); `events` is the analytics prefix, as in
  * "<Site>: assistant ask" (family/EVENTS.md).
  */
-export function mountAssistant(root: HTMLElement, opts: { texts?: Partial<AssistantTexts>; events?: string; hooks?: ChatHooks } = {}): void {
+export function mountAssistant(root: HTMLElement, opts: { texts?: Partial<AssistantTexts>; events?: string; hooks?: ChatHooks } = {}): { reset: () => void } {
   const hooks = opts.hooks ?? {};
   const shown = (a: string) => (hooks.visible ? hooks.visible(a) : a);
   const url = (root.dataset.url ?? '').replace(/\/$/, '');
@@ -123,6 +123,9 @@ export function mountAssistant(root: HTMLElement, opts: { texts?: Partial<Assist
     after.after(row);
   }
 
+  /** Forget the conversation (another tester signs in on the same browser). */
+  const reset = () => { busy?.abort(); history.length = 0; log.replaceChildren(); };
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const question = input.value.trim();
@@ -164,4 +167,5 @@ export function mountAssistant(root: HTMLElement, opts: { texts?: Partial<Assist
       if (busy === ctrl) { busy = null; send.disabled = false; }
     }
   });
+  return { reset };
 }

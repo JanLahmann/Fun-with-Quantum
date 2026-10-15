@@ -13,7 +13,8 @@ interface CatalogueEntry { id: string; title: string; goal: string; group: strin
 interface Me { preferences: Record<string, unknown>; missions: Record<string, string>; catalogue: CatalogueEntry[]; needs: Record<string, string> }
 
 const KEY = 'rqb-tester';
-const LINE = /^(MISSION|FINDING):\s*(.*)$/;
+/** A card line; tolerates a bullet, quote, bold or backticks around it. */
+const LINE = /^[-*>\s`]*(?:\*\*)?(MISSION|FINDING):(?:\*\*)?\s*(.*?)[\s`]*$/;
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, attrs: Record<string, string> = {}, text?: string): HTMLElementTagNameMap[K] {
   const e = document.createElement(tag);
@@ -26,7 +27,7 @@ function el<K extends keyof HTMLElementTagNameMap>(tag: K, attrs: Record<string,
 export function visibleText(answer: string): string {
   const lines = answer.split('\n');
   const last = lines.at(-1) ?? '';
-  if (/^(M|MI|MIS|MISS|MISSI|MISSIO|MISSION|F|FI|FIN|FIND|FINDI|FINDIN|FINDING)$/.test(last.trim())) lines.pop();
+  if (/^[-*>\s`]*(?:\*\*?)?(M|MI|MIS|MISS|MISSI|MISSIO|MISSION|F|FI|FIN|FIND|FINDI|FINDIN|FINDING)$/.test(last.trim())) lines.pop();
   return lines.filter((l) => !LINE.test(l.trim())).join('\n').replace(/\n{3,}/g, '\n\n');
 }
 
@@ -62,10 +63,19 @@ const KIND_LABEL: Record<string, string> = { bug: 'Bug', docs: 'Documentation', 
  * Builds the sign-in and setup views into `panel` (before the chat log) and returns the hooks
  * for mountAssistant. `chat` is the log + question form, shown only once signed in.
  */
-export function mountTester(panel: HTMLElement, chat: HTMLElement[], url: string, device: () => Record<string, string> | undefined, ask: (q: string) => void): ChatHooks {
+export function mountTester(panel: HTMLElement, chat: HTMLElement[], url: string, device: () => Record<string, string> | undefined,
+  ask: (q: string) => void, resetChat: () => void): ChatHooks {
   let creds = store.get();
   let me: Me | null = null;
   const missionState: Record<string, string> = {};
+  /** Another tester may sign in on this browser: drop everything of the previous one. */
+  const signOut = (message = '') => {
+    store.set(null); creds = null; me = null;
+    for (const k of Object.keys(missionState)) delete missionState[k];
+    resetChat();
+    nameIn.value = ''; passIn.value = ''; signMsg.textContent = message;
+    show('signin');
+  };
 
   const status = el('p', { class: 'fa-tester-bar' });
   const signin = el('form', { class: 'fa-signin' });
@@ -108,14 +118,13 @@ export function mountTester(panel: HTMLElement, chat: HTMLElement[], url: string
   async function load(fresh: boolean) {
     let res: Response;
     try { res = await post('/tester/me', {}); } catch { signMsg.textContent = 'The helper couldn’t be reached. Please check the internet connection.'; show('signin'); return; }
-    if (res.status === 401 || !res.ok) {
-      signMsg.textContent = res.status === 401
-        ? 'That didn’t work: please check the passphrase, and use 3–30 letters, digits, spaces, _ . or - for your name.'
-        : 'Something went wrong. Please try again in a minute.';
-      if (!fresh) store.set(null);
+    if (res.status === 401) {
+      if (!fresh) store.set(null); // only a refused sign-in forgets the saved one
+      signMsg.textContent = 'That didn’t work: please check the passphrase, and use 3–30 letters, digits, spaces, _ . or - for your name.';
       show('signin');
       return;
     }
+    if (!res.ok) { signMsg.textContent = 'Something went wrong. Please try again in a minute.'; show('signin'); return; }
     me = (await res.json()) as Me;
     Object.assign(missionState, me.missions);
     store.set(creds);
@@ -124,7 +133,7 @@ export function mountTester(panel: HTMLElement, chat: HTMLElement[], url: string
     const setupBtn = el('button', { type: 'button', class: 'fa-link' }, 'My setup');
     setupBtn.addEventListener('click', () => { fillSetup(); show('setup'); });
     const out = el('button', { type: 'button', class: 'fa-link' }, 'Sign out');
-    out.addEventListener('click', () => { store.set(null); creds = null; nameIn.value = ''; passIn.value = ''; show('signin'); });
+    out.addEventListener('click', () => signOut());
     status.append(setupBtn, ' · ', out, ' · ', el('a', { href: 'https://rasqberry.org/testing/#privacy', target: '_blank', rel: 'noopener' }, 'Privacy'));
     if (!Object.keys(me.preferences).length) { fillSetup(); show('setup'); } else show('chat');
   }
@@ -195,12 +204,15 @@ export function mountTester(panel: HTMLElement, chat: HTMLElement[], url: string
     const row = el('div', { class: 'fa-actions' });
     const note = el('span', { class: 'fa-meta', 'aria-live': 'polite' });
     for (const [state, label] of [['started', 'Start'], ['done', 'Done'], ['skipped', 'Skip']] as const) {
-      const b = el('button', { type: 'button', 'aria-pressed': String(missionState[id] === state) }, label);
+      const b = el('button', { type: 'button', 'aria-pressed': String(missionState[id] === state), 'data-mission': id, 'data-state': state }, label);
       b.addEventListener('click', async () => {
+        for (const x of row.querySelectorAll('button')) x.disabled = true;
         const res = await post('/tester/status', { mission_id: id, state }).catch(() => null);
+        for (const x of row.querySelectorAll('button')) x.disabled = false;
         if (!res?.ok) { note.textContent = 'Not saved — please try again.'; return; }
         missionState[id] = state;
-        for (const x of row.querySelectorAll('button')) x.setAttribute('aria-pressed', String(x === b));
+        // Every card of this mission (it may be suggested again later) shows the new state.
+        for (const x of panel.querySelectorAll<HTMLButtonElement>(`button[data-mission="${id}"]`)) x.setAttribute('aria-pressed', String(x.dataset.state === state));
         note.textContent = state === 'started' ? 'Started — good luck! Tell me how it went.' : state === 'done' ? 'Marked as done. How did it go?' : 'Skipped.';
       });
       row.append(b);
@@ -213,7 +225,7 @@ export function mountTester(panel: HTMLElement, chat: HTMLElement[], url: string
   function findingCard(f: Record<string, unknown>, messageId: string | undefined): HTMLElement {
     const card = el('div', { class: 'fa-card fa-finding' });
     const kind = KIND_LABEL[String(f.kind)] ?? String(f.kind);
-    card.append(el('p', { class: 'fa-meta' }, `Draft finding · ${kind}${f.severity ? ` · ${String(f.severity)}` : ''}${f.mission_id ? ` · ${String(f.mission_id)}` : ''}`), el('strong', {}, String(f.title)));
+    card.append(el('p', { class: 'fa-meta' }, `Draft finding · ${kind}${['blocker', 'major', 'minor'].includes(String(f.severity)) ? ` · ${String(f.severity)}` : ''}${f.mission_id ? ` · ${String(f.mission_id)}` : ''}`), el('strong', {}, String(f.title)));
     for (const [k, label] of [['expected', 'Expected'], ['actual', 'What happened'], ['steps', 'Steps']] as const) {
       if (typeof f[k] === 'string' && f[k]) { const p = el('p'); p.append(el('em', {}, `${label}: `), String(f[k])); card.append(p); }
     }
@@ -236,7 +248,8 @@ export function mountTester(panel: HTMLElement, chat: HTMLElement[], url: string
     return card;
   }
 
-  if (creds) load(false); else show('signin');
+  show('signin');
+  if (creds) { signin.hidden = true; load(false); }
 
   return {
     headers: () => ({ 'X-Tester-Pass': creds?.pass ?? '' }),
@@ -248,6 +261,6 @@ export function mountTester(panel: HTMLElement, chat: HTMLElement[], url: string
         if (card) msg.append(card);
       }
     },
-    unauthorized: () => { store.set(null); signMsg.textContent = 'Please sign in again.'; show('signin'); },
+    unauthorized: () => signOut('Please sign in again.'),
   };
 }

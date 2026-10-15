@@ -59,5 +59,5 @@ export function progress(prefs: Prefs, states: Record<string, string>) {
 export const started = (states: Record<string, string>) =>
   Object.entries(states).filter(([id, s]) => s === 'started' && BY_ID.has(id)).map(([id]) => ({ id, title: BY_ID.get(id)!.title }));
 
-/** What the widget needs to draw mission cards. */
-export const catalogue = () => (MISSIONS as Mission[]).map(({ id, title, goal, group, maturity }) => ({ id, title, goal, group: groupTitle(group), beta: maturity === 'beta' }));
+/** What the widget needs to draw mission cards (not the ones that are coming). */
+export const catalogue = () => (MISSIONS as Mission[]).filter((m) => m.status !== 'coming').map(({ id, title, goal, group, maturity }) => ({ id, title, goal, group: groupTitle(group), beta: maturity === 'beta' }));

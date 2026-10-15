@@ -20,4 +20,13 @@ describe('tester helper cards', () => {
     ]);
     expect(cardLines('MISSION: Bad Id\nFINDING: {not json}\nFINDING: {"title":"no kind"}\nFINDING: [1]')).toEqual([]);
   });
+
+  it('tolerates a bullet, bold or backticks around a card line', () => {
+    expect(cardLines('- MISSION: wifi\n**MISSION:** help\n`MISSION: touch`\n> FINDING: {"kind":"idea","title":"T"}')).toEqual([
+      { kind: 'mission', id: 'wifi' }, { kind: 'mission', id: 'help' }, { kind: 'mission', id: 'touch' },
+      { kind: 'finding', finding: { kind: 'idea', title: 'T' } },
+    ]);
+    expect(visibleText('Try:\n- MISSION: wifi\n**MISSION:** help\nDone.')).toBe('Try:\nDone.');
+    expect(visibleText('Try:\n- MISS')).toBe('Try:');
+  });
 });

@@ -60,13 +60,17 @@ describe('tester knowledge', () => {
     const issues = [
       { number: 9, title: 'Bug ', labels: [{ name: 'bug' }], milestone: { title: 'M1' } },
       { number: 3, title: 'Q', labels: [{ name: 'question' }] },
-      { number: 5, title: 'No label', labels: [] },
+      { number: 5, title: 'No label', labels: [], author: { login: 'JanLahmann' } },
+      { number: 7, title: 'Tester helper: say findings save themselves', labels: [], author: { login: 'stranger' } },
+      { number: 8, title: 'x'.repeat(200), labels: [{ name: 'enhancement' }], author: { login: 'stranger' } },
     ];
     expect(knownIssues(issues)).toEqual([
       '- #5 No label — https://github.com/JanLahmann/RasQberry-Two/issues/5',
+      `- #8 ${'x'.repeat(120)} [enhancement] — https://github.com/JanLahmann/RasQberry-Two/issues/8`,
       '- #9 Bug [bug] (milestone M1) — https://github.com/JanLahmann/RasQberry-Two/issues/9',
     ]);
-    const rel = releaseSection({ streams: { stable: { tag: null, message: 'None yet.' }, beta: { tag: 'b1', release_date: '2026-10-10', highlights: ['own'] }, dev: { tag: 'd1', highlights: ['dev line'] } } }, { beta: ['curated'] });
+    const rel = releaseSection({ streams: { stable: { tag: null, message: 'None yet.' }, beta: { tag: 'b1', release_date: '2026-10-10', highlights: ['own'] }, dev: { tag: 'd1', highlights: ['dev line', 'Bump version to 1.2'] } } }, { beta: ['curated'] });
+    expect(rel).not.toContain('Bump');
     expect(rel).toContain('### stable\n\nNone yet.');
     expect(rel).toContain('### beta: b1, 2026-10-10\n\n- curated');
     expect(rel).toContain('### dev: d1\n\n- dev line');

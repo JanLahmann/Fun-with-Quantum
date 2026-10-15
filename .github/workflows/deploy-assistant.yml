@@ -63,7 +63,7 @@ jobs:
       - name: Open RasQberry-Two issues (the tester helper's known issues)
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh issue list -R JanLahmann/RasQberry-Two --state open --limit 300 --json number,title,labels,milestone > "$RUNNER_TEMP/rqb-issues.json"
+        run: gh issue list -R JanLahmann/RasQberry-Two --state open --limit 300 --json number,title,labels,milestone,author > "$RUNNER_TEMP/rqb-issues.json"
       - name: RasQberry helper knowledge from today's pages, manifests, missions and issues
         run: node scripts/rasqberry-knowledge.mjs ../_rqb ../_rqb-dev "$RUNNER_TEMP/rqb-issues.json"
       # The coin-game knowledge imports the game's code from portal/, whose tsconfig extends astro's.
