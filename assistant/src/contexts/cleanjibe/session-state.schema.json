@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cleanjibe.org/assistant/session-state.schema.json",
+  "title": "Ask CleanJibe — the state sent with a question",
+  "description": "Built by the iPhone app (and later the browser app) from numbers already on screen. Numbers only: no coordinates, no spot name, no rider name. `session` is present only in the session context. Under 12 KB.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["surface", "channel", "appVersion", "engineVersion", "units"],
+  "properties": {
+    "surface": {"enum": ["ios", "web"]},
+    "channel": {"enum": ["release", "beta", "dev"]},
+    "appVersion": {"type": "string", "maxLength": 16},
+    "build": {"type": "integer", "minimum": 0},
+    "engineVersion": {"type": "string", "maxLength": 16},
+    "units": {
+      "type": "object", "additionalProperties": false, "required": ["speed", "distance"],
+      "properties": {
+        "speed": {"enum": ["kn", "kmh", "mph", "ms"]},
+        "distance": {"enum": ["km", "mi", "nm"]}
+      }
+    },
+    "session": {
+      "type": "object", "additionalProperties": false,
+      "required": ["date", "durationMin", "flights", "turns", "source"],
+      "properties": {
+        "date": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$", "description": "local day only"},
+        "startClock": {"type": "string", "pattern": "^\\d{2}:\\d{2}$"},
+        "durationMin": {"type": "number", "minimum": 0},
+        "distanceKm": {"type": "number", "minimum": 0},
+        "foilPct": {"type": "number", "minimum": 0, "maximum": 100},
+        "flights": {"type": "integer", "minimum": 0},
+        "longestFlightS": {"type": "number", "minimum": 0},
+        "source": {
+          "type": "object", "additionalProperties": false,
+          "properties": {
+            "kind": {"enum": ["cleanjibeWatch", "garminNative", "appleWatch", "otherApp", "positionsOnly"], "description": "where the recording came from"},
+            "device": {"type": "string", "maxLength": 40},
+            "hasAccel": {"type": "boolean", "description": "wrist accelerometer: pump strokes, takeoff attempts and jumps need it"},
+            "hasDoppler": {"type": "boolean", "description": "Doppler speed: without it records are estimated"}
+          }
+        },
+        "wind": {
+          "type": ["object", "null"], "additionalProperties": false,
+          "properties": {
+            "fromDeg": {"type": "number"},
+            "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+            "setByRider": {"type": "boolean"}
+          }
+        },
+        "turns": {
+          "type": "object", "additionalProperties": false,
+          "properties": {
+            "jibes": {"type": "integer"}, "tacks": {"type": "integer"},
+            "unclassified": {"type": "integer", "description": "turns with no wind to name them"},
+            "flewThrough": {"type": "integer"}, "touchdown": {"type": "integer"},
+            "fellIn": {"type": "integer"}, "clean": {"type": "integer"},
+            "longestDryStreak": {"type": "integer"}
+          }
+        },
+        "rates": {
+          "type": "object", "additionalProperties": false,
+          "properties": {
+            "cph": {"type": ["number", "null"], "description": "clean jibes per hour"},
+            "jph": {"type": ["number", "null"], "description": "dry jibes per hour, on a jibes-only session"},
+            "tph": {"type": ["number", "null"], "description": "dry turns per hour, once tacks exist"},
+            "wph": {"type": ["number", "null"], "description": "falls per hour"},
+            "tooShort": {"type": "boolean", "description": "under 20 minutes: no rate"}
+          }
+        },
+        "records": {
+          "type": "object", "additionalProperties": false,
+          "properties": {
+            "best2sKn": {"type": "number"}, "best10sKn": {"type": "number"},
+            "best500mKn": {"type": "number"}, "alpha500Kn": {"type": "number"},
+            "estimated": {"type": "boolean", "description": "no Doppler speed: every record is estimated"}
+          }
+        },
+        "takeoff": {
+          "type": "object", "additionalProperties": false,
+          "properties": {
+            "successes": {"type": "integer"},
+            "attempts": {"type": ["integer", "null"], "description": "null without an accelerometer"},
+            "pumpStrokes": {"type": ["integer", "null"]}
+          }
+        },
+        "jumps": {
+          "type": ["object", "null"], "additionalProperties": false,
+          "properties": {
+            "count": {"type": "integer"},
+            "highestM": {"type": ["number", "null"]},
+            "estimated": {"const": true}
+          }
+        },
+        "turnList": {
+          "type": "array", "maxItems": 80,
+          "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["clock", "kind", "outcome"],
+            "properties": {
+              "clock": {"type": "string", "pattern": "^\\d{2}:\\d{2}:\\d{2}$"},
+              "kind": {"enum": ["jibe", "tack", "turn"]},
+              "side": {"enum": ["port", "starboard", "unknown"]},
+              "outcome": {"enum": ["flewThrough", "touchdown", "fellIn", "unknown"]},
+              "clean": {"type": "boolean"},
+              "entryKn": {"type": "number"}, "minKn": {"type": "number"},
+              "heldPct": {"type": "number", "description": "lowest speed as a share of the entry speed"},
+              "reason": {"enum": ["offFoil", "stop", "submerged", "recordingEnded", null], "description": "why it was not flown through: offFoil = dropped below foiling speed, stop = nearly stopped, submerged = the barometer saw the wrist under water"},
+              "tip": {"type": ["string", "null"], "maxLength": 160, "description": "the turn coach's tip, as the app shows it"}
+            }
+          }
+        },
+        "watchVsPhone": {
+          "type": "array", "maxItems": 12,
+          "items": {
+            "type": "object", "additionalProperties": false,
+            "properties": {
+              "metric": {"type": "string", "maxLength": 40},
+              "watch": {"type": ["number", "null"]}, "phone": {"type": ["number", "null"]},
+              "reason": {"type": "string", "maxLength": 200}
+            }
+          }
+        }
+      }
+    }
+  }
+}
