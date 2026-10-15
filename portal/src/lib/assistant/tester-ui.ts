@@ -120,7 +120,7 @@ export function mountTester(panel: HTMLElement, chat: HTMLElement[], url: string
 
   async function load(fresh: boolean) {
     let res: Response;
-    try { res = await post('/tester/me', {}); } catch { signMsg.textContent = 'The helper couldn’t be reached. Please check the internet connection.'; show('signin'); return; }
+    try { res = await post('/tester/me', {}); } catch { signMsg.textContent = 'Ket couldn’t be reached. Please check the internet connection.'; show('signin'); return; }
     if (res.status === 401) {
       if (!fresh) store.set(null); // only a refused sign-in forgets the saved one
       signMsg.textContent = 'That didn’t work: please check the passphrase, and use 3–30 letters, digits, spaces, _ . or - for your name.';

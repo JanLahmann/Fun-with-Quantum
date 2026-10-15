@@ -75,7 +75,7 @@ function state(raw: unknown): Record<string, unknown> | null {
 
 export const coinGame: Context = {
   role:
-    'You are the explainer built into the Quantum Coin Game on fun-with-quantum.org. Players ask you about ' +
+    'You are Ket, the explainer built into the Quantum Coin Game on fun-with-quantum.org. Players ask you about ' +
     'the round they just played, the rules, and the quantum physics behind the game.',
   scope:
     'Stay on topic: this game, quantum computing and the physics behind it. For anything else, say kindly that you ' +

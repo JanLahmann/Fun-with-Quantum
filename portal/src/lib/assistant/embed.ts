@@ -28,43 +28,43 @@ interface EmbedTexts extends Partial<AssistantTexts> { privacyUrl: string }
 
 const HELPER_ERRORS = {
   errRate: 'That was a lot of questions — please wait a minute (or until tomorrow) and ask again.',
-  errBusy: 'The helper has answered all it can for today. Please try again tomorrow.',
-  errNetwork: 'The helper couldn’t be reached. Please check the internet connection and try again.',
+  errBusy: 'Ket has answered all it can for today. Please try again tomorrow.',
+  errNetwork: 'Ket couldn’t be reached. Please check the internet connection and try again.',
 };
 
 const RASQBERRY_PRIVACY =
-  'Your questions and the page you are on are sent to Anthropic (Claude) to answer, and stored for 30 days to improve the helper. Please don’t enter personal data.';
+  'Your questions and the page you are on are sent to Anthropic (Claude) to answer, and stored for 30 days to improve Ket. Please don’t enter personal data.';
 
 /** Texts per site/context (English only for now). */
 export const EMBED_TEXTS: Record<string, EmbedTexts> = {
   'rasqberry/build': {
-    open: 'Ask the RasQberry helper',
-    title: 'Ask about building a RasQberry',
+    open: 'Ask Ket',
+    title: 'Ket — ask about building a RasQberry',
     intro: 'Questions about parts, 3D printing, LEDs, installing the image or troubleshooting — for example “Which Raspberry Pi do I need?”',
     privacy: RASQBERRY_PRIVACY,
-    explainer: 'Helper',
+    explainer: 'Ket (AI)',
     ...HELPER_ERRORS,
     privacyUrl: 'https://fun-with-quantum.org/about/#privacy',
   },
   'rasqberry/device': {
-    open: 'Ask the RasQberry helper',
-    title: 'Ask about your RasQberry',
+    open: 'Ask Ket',
+    title: 'Ket — ask about your RasQberry',
     intro: 'Questions about the demos and games on this RasQberry, how to start them or what they show — for example “Which demo should I try first?”',
     privacy: RASQBERRY_PRIVACY,
-    explainer: 'Helper',
+    explainer: 'Ket (AI)',
     ...HELPER_ERRORS,
     privacyUrl: 'https://fun-with-quantum.org/about/#privacy',
   },
   'rasqberry/tester': {
-    open: 'Tester helper',
-    title: 'RasQberry Two tester helper',
-    intro: 'Missions that fit your setup, and a place for everything you notice. I don’t help with the missions themselves — the documentation and the RasQberry helper do.',
+    open: 'Ket · tester helper',
+    title: 'Ket, the RasQberry Two tester helper',
+    intro: 'Missions that fit your setup, and a place for everything you notice. I don’t help with the missions themselves — the documentation and Ket on the other rasqberry.org pages do.',
     privacy:
       'Your messages are answered by Claude (Anthropic). What we keep, and for how long: your tester name or ID (chosen by you, please no e-mail address), ' +
       'your hardware and preferences, your conversations with the tester helper, the findings you save, and which missions you started or finished. ' +
       'We keep them for 90 days, then delete them. The tester passphrase is checked but never stored. We use this only to find and fix problems in ' +
       'RasQberry; findings may become public GitHub issues, without your name or ID.',
-    explainer: 'Tester helper',
+    explainer: 'Ket (AI)',
     ...HELPER_ERRORS,
     errRate: 'That’s all the questions for today (60 per tester). Thank you — please continue tomorrow.',
     privacyUrl: 'https://rasqberry.org/testing/',

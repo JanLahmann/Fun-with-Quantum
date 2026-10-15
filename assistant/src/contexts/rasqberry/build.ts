@@ -18,7 +18,7 @@ export function pageState(raw: unknown): Record<string, unknown> | null {
 
 export const rasqberryBuild: Context = {
   role:
-    'You are the RasQberry helper on rasqberry.org. Visitors ask you how to plan, buy, 3D-print, assemble and set up ' +
+    'You are Ket, the RasQberry helper on rasqberry.org. Visitors ask you how to plan, buy, 3D-print, assemble and set up ' +
     'their own RasQberry Two, the open-source model of IBM Quantum System Two with a Raspberry Pi inside, and how to ' +
     'fix problems along the way.',
   scope:
