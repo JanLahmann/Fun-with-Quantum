@@ -101,6 +101,7 @@ export function oid(s: string): Uint8Array {
 const OID = {
   ecdsaSha256: oid('1.2.840.10045.4.3.2'), ecdsaSha384: oid('1.2.840.10045.4.3.3'),
   p256: oid('1.2.840.10045.3.1.7'), p384: oid('1.3.132.0.34'), nonce: oid('1.2.840.113635.100.8.2'),
+  basicConstraints: oid('2.5.29.19'),
 };
 
 export interface Cert { tbs: Uint8Array; sigAlg: Uint8Array; sig: Uint8Array; issuer: Uint8Array; subject: Uint8Array;
@@ -147,7 +148,11 @@ const extKey = (o: Uint8Array) => Array.from(o).join('.');
 export function rawSig(der: Uint8Array, size: number): Uint8Array {
   const t = tlv(der, 0);
   const [r, s] = kids(der, t).map((x) => bodyOf(der, x));
-  const fit = (v: Uint8Array) => { const x = v.slice(Math.max(0, v.length - size)); return concat(new Uint8Array(size - x.length), x); };
+  const fit = (v: Uint8Array) => {
+    if (v.length > size + 1 || (v.length === size + 1 && v[0] !== 0)) throw new Error('sig: integer too long');
+    const x = v.slice(Math.max(0, v.length - size));
+    return concat(new Uint8Array(size - x.length), x);
+  };
   return concat(fit(r), fit(s));
 }
 
@@ -164,6 +169,15 @@ async function signedBy(child: Cert, parent: Cert, now: number): Promise<boolean
     && now >= parent.notBefore && now <= parent.notAfter && verifySig(parent, child.tbs, child.sig, child.sigAlg);
 }
 
+/** basicConstraints says CA (defense in depth: the root is pinned and the chain is exactly two certificates). */
+function isCa(c: Cert): boolean {
+  const v = c.ext.get(extKey(OID.basicConstraints));
+  if (!v) return false;
+  const seq = tlv(v, 0);
+  const first = kids(v, seq)[0];
+  return !!first && first.tag === 0x01 && v[first.body] === 0xff;
+}
+
 interface AuthData { rpIdHash: Uint8Array; counter: number; aaguid?: Uint8Array; credId?: Uint8Array }
 function authData(a: Uint8Array, attested: boolean): AuthData {
   if (a.length < 37) throw new Error('authData: short');
@@ -172,6 +186,7 @@ function authData(a: Uint8Array, attested: boolean): AuthData {
     if (a.length < 55) throw new Error('authData: short');
     out.aaguid = a.slice(37, 53);
     const n = (a[53] << 8) | a[54];
+    if (55 + n > a.length) throw new Error('authData: credentialId');
     out.credId = a.slice(55, 55 + n);
   }
   return out;
@@ -195,7 +210,7 @@ export async function verifyAttestation(
     if (obj.get('fmt') !== 'apple-appattest' || !Array.isArray(x5c) || x5c.length !== 2 || !(auth instanceof Uint8Array)) return null;
     const [leaf, inter] = x5c.map(parseCert);
     const root = parseCert(b64(rootB64));
-    if (!(await signedBy(inter, root, now)) || !(await signedBy(leaf, inter, now))) return null;
+    if (!isCa(inter) || !(await signedBy(inter, root, now)) || !(await signedBy(leaf, inter, now))) return null;
     const nonce = await sha256(auth, await sha256(o.challenge));
     const ext = leaf.ext.get(extKey(OID.nonce));
     // SEQUENCE { [1] EXPLICIT OCTET STRING (32) nonce }

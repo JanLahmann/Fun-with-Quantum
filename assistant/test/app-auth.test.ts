@@ -75,6 +75,13 @@ describe('App Attest flow (CleanJibe iPhone app)', () => {
     expect((await s.run('/attest', { site: 'nope' })).status).toBe(400);
   });
 
+  it('attest routes refuse browsers (an Origin), and at most 5 new keys per address per day', async () => {
+    const s = setup();
+    expect((await s.run('/attest/challenge', { site: 'cleanjibe' }, { Origin: 'https://evil.example' })).status).toBe(403);
+    for (let i = 0; i < 5; i++) expect((await attested(s)).res.status).toBe(200);
+    expect((await attested(s)).res.status).toBe(429);
+  });
+
   it('refreshes the token with an assertion; a replayed counter is refused', async () => {
     const s = setup();
     const { a } = await attested(s);

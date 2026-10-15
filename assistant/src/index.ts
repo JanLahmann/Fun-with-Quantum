@@ -72,10 +72,13 @@ export async function handle(req: Request, env: Env, ctx: ExecutionContext, deps
   if (url.pathname === '/tester/export' || url.pathname === '/tester/triage') return triageRoute(url.pathname, req, env);
   // Native apps: no Origin; App Attest, then a token header per app.
   if (['/attest/challenge', '/attest', '/token'].includes(url.pathname)) {
+    // Only native apps, which send no Origin: a web page can't make visitors' browsers write challenges.
+    if (req.headers.get('Origin')) return json(403, { error: 'origin' });
     if (req.method !== 'POST') return json(405, { error: 'method' });
     const now = deps.now();
-    if (!(await env.RL.limit({ key: `attest:${await visitorKey(req, env, now)}` })).success) return json(429, { error: 'rate' });
-    return appRoute(url.pathname, await readJson(req), env, now, deps.attestRoot);
+    const visitor = await visitorKey(req, env, now);
+    if (!(await env.RL.limit({ key: `attest:${visitor}` })).success) return json(429, { error: 'rate' });
+    return appRoute(url.pathname, await readJson(req), env, now, visitor, deps.attestRoot);
   }
   const appSite = !req.headers.get('Origin') ? Object.keys(APPS).find((s) => req.headers.get(APPS[s].header)) : undefined;
   if (appSite && req.method === 'POST' && (url.pathname === '/chat' || url.pathname === '/feedback')) {

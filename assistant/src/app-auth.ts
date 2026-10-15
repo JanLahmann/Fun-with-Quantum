@@ -25,6 +25,8 @@ export const APPS: Record<string, App> = {
 };
 
 const CHALLENGE_MS = 5 * 60_000;
+/** New app keys per address pseudonym per day: a reinstall now and then, not a key farm. */
+const NEW_KEYS_PER_DAY = 5;
 const TOKEN_MS = 60 * 60_000;
 export const KEY_RETENTION_DAYS = 30;
 
@@ -65,7 +67,7 @@ async function takeChallenge(env: Env, site: string, c: unknown, now: number): P
 
 const keyIdOk = (k: unknown): k is string => typeof k === 'string' && /^[A-Za-z0-9+/]{43}=$/.test(k);
 
-export async function appRoute(path: string, body: Record<string, unknown> | null, env: Env, now: number, root?: string): Promise<Response> {
+export async function appRoute(path: string, body: Record<string, unknown> | null, env: Env, now: number, visitor: string, root?: string): Promise<Response> {
   const site = typeof body?.site === 'string' && Object.hasOwn(APPS, body.site) ? body.site : null;
   if (!site) return reply(400, { error: 'bad_request' });
   const app = APPS[site];
@@ -80,6 +82,13 @@ export async function appRoute(path: string, body: Record<string, unknown> | nul
     const challenge = await takeChallenge(env, site, body!.challenge, now);
     const ok = challenge && (await verifyAttestation({ keyId, attestation, challenge, bundleId }, app, now, root));
     if (!ok) return reply(401, { error: 'attest' });
+    const known = await env.DB.prepare('SELECT 1 FROM attest_keys WHERE key_id = ?').bind(keyId).first();
+    if (!known) {
+      const day = new Date(now).toISOString().slice(0, 10);
+      const n = (await env.DB.prepare('INSERT INTO quota (day, key, n) VALUES (?, ?, 1) ON CONFLICT (day, key) DO UPDATE SET n = n + 1 RETURNING n')
+        .bind(day, `${site}:newkey:${visitor}`).first<{ n: number }>())?.n ?? 0;
+      if (n > NEW_KEYS_PER_DAY) return reply(429, { error: 'rate' });
+    }
     await env.DB.prepare(
       `INSERT INTO attest_keys (key_id, site, bundle_id, env, public_key, counter, created, last_used) VALUES (?, ?, ?, ?, ?, 0, ?, ?)
        ON CONFLICT (key_id) DO NOTHING`,
