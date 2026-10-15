@@ -8,6 +8,10 @@
  * data-context-pi: the context to use when the page was opened on a RasQberry (?from=pi, kept for
  * the browser tab); its start URL may add v=<image build>, model=pi4|pi5, led=<LED layout> and
  * ledcheck=true|false|skipped (LED_LAYOUT_VERIFIED). data-public="1" shows it to everyone; until then only with ?assistant=1.
+ * A page may switch the shared script tag to another context with a marker element in its body,
+ * e.g. rasqberry.org/testing/: <div data-fwq-assistant="tester" data-public="1"></div> — on the Pi
+ * too, and public if the marker says so. It is read once, when the script starts (link to such a
+ * page with a full page load).
  * The page may define window.fwqAssistantState() to add to the state sent along (page + title).
  * The box floats bottom right in a shadow root, so the site's CSS and ours stay apart.
  */
@@ -166,9 +170,12 @@ export function embed(script: HTMLScriptElement): void {
   const d = script.dataset;
   const site = d.site ?? '';
   const onPi = flag('from', 'pi', 'fwq-from-pi');
-  const context = (onPi && d.contextPi) || d.context || '';
+  const marker = document.querySelector<HTMLElement>('[data-fwq-assistant]');
+  const own = marker?.dataset.fwqAssistant && EMBED_TEXTS[`${site}/${marker.dataset.fwqAssistant}`] ? marker.dataset.fwqAssistant : undefined;
+  const context = own ?? ((onPi && d.contextPi) || d.context || '');
   const texts = EMBED_TEXTS[`${site}/${context}`];
-  if (!texts || !(d.public === '1' || flag('assistant', '1', 'fwq-assistant'))) return;
+  const isPublic = d.public === '1' || (own !== undefined && marker!.dataset.public === '1');
+  if (!texts || !(isPublic || flag('assistant', '1', 'fwq-assistant'))) return;
 
   registerState(context, () => {
     const extra = (() => { try { return window.fwqAssistantState?.() ?? {}; } catch { return {}; } })();
