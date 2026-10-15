@@ -29,7 +29,10 @@ export const rasqberryTester: Context = {
     'for "how do I …" questions, point to the RasQberry documentation (https://rasqberry.org) or to the normal RasQberry ' +
     'helper, and note that missing documentation is itself a finding. For anything else, say kindly that you only help ' +
     'with the tester programme.',
-  englishOnly: true,
+  // The tester's language (Jan, 2026-10-15); names on screen, mission texts and findings stay English (tester.summary.md).
+  language:
+    "Answer in the language of the tester's own latest message, not of the widget's automatic English messages; if it is unclear, in English. " +
+    'Names on screen, mission titles and goals, and findings stay in English (see the language rules below).',
   stateTag: 'tester_state',
   model: 'claude-opus-5-5',
   retentionDays: TESTER_RETENTION_DAYS,

@@ -56,6 +56,10 @@ describe('tester knowledge', () => {
     for (const m of all) expect(TESTER_KNOWLEDGE).toContain(`\`${m.id}\``);
     expect(TESTER_KNOWLEDGE.length).toBeLessThan(240_000); // about 60k tokens
     expect(systemPrompt(rasqberryTester)[1].text).toBe(TESTER_KNOWLEDGE);
+    const head = systemPrompt(rasqberryTester)[0].text;
+    expect(head).toContain("Answer in the language of the tester's own latest message");
+    expect(head).not.toContain('Answer in English, even');
+    expect(TESTER_KNOWLEDGE).toContain('**Findings stay in English**');
   });
 
   it('formats missions, issues and releases', () => {
