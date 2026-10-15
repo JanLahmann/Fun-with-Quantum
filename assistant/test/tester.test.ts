@@ -94,6 +94,7 @@ describe('tester chat', () => {
     expect(st.tester.suggestions).toHaveLength(3);
     expect(st.tester.suggestions.map((m: any) => m.id)).not.toContain('first-start');
     expect(st.tester.progress['Core RasQberry']).toMatch(/^1 of \d+ done$/);
+    expect(st.tester.version).toMatchObject({ chosen: null, update_needed: true });
     const row = db.rows('SELECT tester, model, state_json FROM messages')[0];
     expect(row).toMatchObject({ tester: 'ada l', model: 'claude-opus-5-5' });
     expect(JSON.stringify(db.rows('SELECT * FROM messages'))).not.toContain(PASS);

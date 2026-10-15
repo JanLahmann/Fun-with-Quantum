@@ -19,7 +19,7 @@
  */
 import type { Env } from './env';
 import { utcDay } from './guard';
-import { catalogue, isMission, progress, started, suggest } from './contexts/rasqberry/missions';
+import { catalogue, isMission, progress, started, suggest, versionCheck } from './contexts/rasqberry/missions';
 import { MISSION_GROUPS, NEEDS_KEYS } from './contexts/rasqberry/tester.generated';
 
 export const TESTER_CONTEXT = 'rasqberry/tester';
@@ -130,11 +130,12 @@ export async function triedBy(env: Env): Promise<Record<string, number>> {
   return Object.fromEntries(rows.map((r) => [r.mission_id, r.n]));
 }
 
-/** What the tester helper sees about the tester with every question. */
-export async function testerState(env: Env, id: string, now: number): Promise<Json> {
+/** What the tester helper sees about the tester with every question (deviceVersion: what the Pi reports). */
+export async function testerState(env: Env, id: string, now: number, deviceVersion?: unknown): Promise<Json> {
   const p = await profile(env, id, now);
   return {
     preferences: p.preferences,
+    version: versionCheck(p.preferences, deviceVersion),
     suggestions: suggest(p.preferences, p.missions, await triedBy(env)),
     started: started(p.missions),
     progress: progress(p.preferences, p.missions),

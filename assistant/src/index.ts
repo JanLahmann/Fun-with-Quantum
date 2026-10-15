@@ -105,7 +105,7 @@ async function chat(req: Request, env: Env, ctx: ExecutionContext, deps: Deps, c
     if (!tester) return json(401, { error: 'tester_auth' }, cors);
     const daily = await checkTesterDaily(env, tester, context.tester, now);
     if (daily !== 'ok') return daily === 'global' ? json(503, { error: 'busy' }, cors) : json(429, { error: 'rate' }, cors);
-    pageState = { ...state, tester: await testerState(env, tester, now) };
+    pageState = { ...state, tester: await testerState(env, tester, now, (state.device as Record<string, unknown> | undefined)?.version) };
   } else {
     const daily = await checkDaily(env, body.site as string, visitor, now);
     if (daily !== 'ok') return daily === 'global' ? json(503, { error: 'busy' }, cors) : json(429, { error: 'rate' }, cors);

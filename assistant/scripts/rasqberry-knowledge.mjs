@@ -245,6 +245,8 @@ function main() {
   write('tester.generated.ts', `JanLahmann/RasQberry-Two gh-pages ${commit.slice(0, 12)} + development ${devCommit.slice(0, 12)}`, {
     TESTER_SOURCE: { pages: commit, development: devCommit, issues: issues.length },
     TESTER_KNOWLEDGE: tester, MISSION_GROUPS: mGroups, NEEDS_KEYS: needsKeys, MISSIONS: missionData,
+    // The newest image per stream: testers must use one of these (Jan, 2026-10-15).
+    LATEST_IMAGES: { beta: releases.streams?.beta?.tag ?? null, dev: releases.streams?.dev?.tag ?? null },
   });
 
   console.error(`tester.generated.ts ${(tester.length / 1024).toFixed(0)} KB (${missions.length} missions, ${known.length} known issues)`);
