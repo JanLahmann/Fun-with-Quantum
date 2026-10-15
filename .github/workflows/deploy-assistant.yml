@@ -1,15 +1,15 @@
 name: Deploy assistant
 
 # Deploys the assistant Worker (assistant/) to Cloudflare — run by hand from the Actions tab, and
-# every Monday, so the RasQberry helpers pick up the week's changes to the rasqberry.org pages
-# and the demo manifests.
+# every day, so the RasQberry helpers pick up changes to the rasqberry.org pages, the demo
+# manifests and the tester missions, and the tester helper knows today's open issues.
 # Needs three repository secrets: CLOUDFLARE_API_TOKEN (template "Edit Cloudflare Workers" plus
 # Account · D1 · Edit), CLOUDFLARE_ACCOUNT_ID and ANTHROPIC_API_KEY. Creates the D1 database
 # on the first run, applies migrations, deploys, and stores the API key as a Worker secret.
 on:
   workflow_dispatch:
   schedule:
-    - cron: '23 4 * * 1'
+    - cron: '23 4 * * *'
 
 permissions:
   contents: read
@@ -60,8 +60,12 @@ jobs:
           ref: development
           path: _rqb-dev
       - run: npm ci
-      - name: RasQberry helper knowledge from today's pages and manifests
-        run: node scripts/rasqberry-knowledge.mjs ../_rqb ../_rqb-dev
+      - name: Open RasQberry-Two issues (the tester helper's known issues)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh issue list -R JanLahmann/RasQberry-Two --state open --limit 300 --json number,title,labels,milestone,author > "$RUNNER_TEMP/rqb-issues.json"
+      - name: RasQberry helper knowledge from today's pages, manifests, missions and issues
+        run: node scripts/rasqberry-knowledge.mjs ../_rqb ../_rqb-dev "$RUNNER_TEMP/rqb-issues.json"
       # The coin-game knowledge imports the game's code from portal/, whose tsconfig extends astro's.
       - run: npm ci --prefix ../portal
       - name: Tests and type check

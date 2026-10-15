@@ -2,11 +2,13 @@ import type { Context } from '../types';
 import { TESTER_RETENTION_DAYS } from '../../tester';
 import { pageState } from './build';
 import { rasqberryDevice } from './device';
+import { TESTER_KNOWLEDGE } from './tester.generated';
 
 /**
  * The tester helper on rasqberry.org/testing/: suggests missions, collects findings, never helps
- * with the mission itself. Signed-in testers only. Its knowledge (missions, reference docs, open
- * issues, release notes) is generated in the next step; until then it only greets and explains.
+ * with the mission itself. Signed-in testers only. Knowledge: tester.generated.ts (missions,
+ * reference pages, open issues, release notes; scripts/rasqberry-knowledge.mjs). The missions it
+ * may suggest are picked by the Worker (missions.ts) and sent with the state.
  */
 function state(raw: unknown): Record<string, unknown> | null {
   const page = pageState(raw);
@@ -32,6 +34,6 @@ export const rasqberryTester: Context = {
   model: 'claude-opus-5-5',
   retentionDays: TESTER_RETENTION_DAYS,
   tester: { daily_tester: 60, daily_global: 400 },
-  knowledge: '# RasQberry Two tester programme\n\nThe mission list is not loaded yet. Tell testers that missions follow soon, and collect any finding they already have.',
+  knowledge: TESTER_KNOWLEDGE,
   state,
 };
