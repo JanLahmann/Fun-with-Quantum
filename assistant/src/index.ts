@@ -8,7 +8,8 @@
  *   /attest/challenge, /attest, /token   native apps (App Attest, see app-auth.ts); their /chat
  *                   comes without Origin, with the app's token header
  *   /chat with X-Eval-Pass (no Origin): the eval runner, which asks app contexts like an app
- *                   (budget key key:eval); fails closed without APP_EVAL_PASS
+ *                   (budget key key:eval, its own 200 a day per site, outside the visitors' budget);
+ *                   fails closed without APP_EVAL_PASS
  *
  * Guards: Origin allow-list per site, burst + daily limits, size limits, per-context state validation.
  * Every answer is logged to D1 (no IP, no cookie) and deleted after RETENTION_DAYS.

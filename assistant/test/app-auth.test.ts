@@ -145,6 +145,9 @@ describe('session state', () => {
     expect((await s.run('/chat', ask({ site: '__proto__' }), { 'X-Eval-Pass': pass })).status).toBe(403);
     expect((await s.run('/chat', ask(), { 'X-Eval-Pass': pass, Origin: 'https://cleanjibe.org' })).status).toBe(403); // session is app-only
     expect(s.db.rows("SELECT key FROM quota WHERE key LIKE 'cleanjibe:key:%'")).toEqual([{ key: 'cleanjibe:key:eval' }]);
+    // Its own 200 a day, outside the visitors' 20 per device and the site's global budget.
+    expect(s.db.rows("SELECT key FROM quota WHERE key = 'cleanjibe:*'")).toEqual([]);
+    for (let i = 0; i < 25; i++) expect((await s.run('/chat', ask(), { 'X-Eval-Pass': pass })).status).toBe(200);
     const unset = setup();
     expect((await unset.run('/chat', ask(), { 'X-Eval-Pass': '' })).status).toBe(401);
     expect((await unset.run('/chat', ask(), { 'X-Eval-Pass': 'anything' })).status).toBe(401);

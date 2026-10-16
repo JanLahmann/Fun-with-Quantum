@@ -97,7 +97,8 @@ function check(c, answer) {
   const re = (s) => (s.startsWith('=') ? new RegExp(s.slice(1), 'su') : new RegExp(s, 'isu'));
   for (const key of ['any', 'any2']) if (c[key] && !c[key].some((p) => re(p).test(answer))) fails.push(`${key}: none of ${c[key].join(' | ')}`);
   for (const p of c.none ?? []) if (re(p).test(answer)) fails.push(`none: matched ${p}`);
-  if (c.lang && !LANG[c.lang].test(answer)) fails.push(`lang: not ${c.lang}`);
+  if (c.lang && !LANG[c.lang]) fails.push(`lang: no check for "${c.lang}" (known: ${Object.keys(LANG).join(', ')})`);
+  else if (c.lang && !LANG[c.lang].test(answer)) fails.push(`lang: not ${c.lang}`);
   return fails;
 }
 
