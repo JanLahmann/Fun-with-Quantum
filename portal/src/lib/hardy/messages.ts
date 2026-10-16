@@ -39,10 +39,10 @@ export const UI = {
 
 export const PAGE = {
   title: 'Hardy’s Paradox — preview | Fun with Quantum',
-  description: 'Play Hardy’s paradox in your browser: three facts that each hold every time rule out two diesel cars — and quantum cars still deliver them, up to about 9% of the time.',
+  description: 'Play Hardy’s paradox in your browser: three facts that each hold every time rule out two diesel cars — and quantum cars still deliver them, on up to about 9% of the mornings when both inspectors check the engine.',
   kicker: 'Play · Nonlocality · preview',
   heading: 'Hardy’s Paradox',
-  lead: 'Three facts that hold every single time logically rule out one outcome — and quantum mechanics produces it anyway, up to about 9% of the time.',
+  lead: 'Three facts that hold every single time logically rule out one outcome — and quantum mechanics produces it anyway, on up to about 9% of the mornings when both inspectors check the engine.',
   notebook: 'The same paradox as a Jupyter notebook, in real Qiskit code:',
   notebookLink: 'open the notebook ↗',
 };
@@ -97,7 +97,7 @@ export const CH3 = {
     `<p>Look again at the proof in chapter 1: “car 1 is diesel, <b>so car 2 is red</b>.” In a morning when both engines are checked, nobody looks at car 2’s color. The proof uses the result of a check that was never made.</p>
 <p>For spec sheets that is fine — the color is written down whether anyone looks or not. For qubits it is not: a color that was not measured has no value — at least none fixed in advance on the car itself. “Unperformed experiments have no results”, as Asher Peres titled a 1978 paper — the proof takes a [counterfactual](#counterfactual) step, and it fails.</p>`,
     `<p>Any spec sheets, even random ones, give two diesels <b>0%</b> of the time. Quantum cars give 8.33%. So the cars cannot carry their answers with them — no [hidden variables](#hidden) can explain it, as long as a car’s sheet can’t depend on what is checked on the other car, far away.</p>
-<p>Unlike the [CHSH game](#inequality), no inequality is needed: given the three facts, <b>a single</b> diesel–diesel morning rules out every spec sheet. Nonlocality without inequalities, as the title of Hardy’s 1993 paper puts it — like the GHZ game, but with only two qubits, and the contradiction shows up only on some mornings. ([Nonlocal](#nonlocal), but no message travels: what one inspector finds doesn’t depend on what the other checks.)</p>`,
+<p>Unlike the [CHSH game](#inequality), no inequality is needed: given the three facts, <b>a single</b> diesel–diesel morning rules out every spec sheet. Nonlocality without inequalities, as it has been called since Hardy’s 1993 paper — like the GHZ game, but with only two qubits, and the contradiction shows up only on some mornings. ([Nonlocal](#nonlocal), but no message travels: what one inspector finds doesn’t depend on what the other checks.)</p>`,
     `<p>Lucien Hardy found the paradox in 1992 in a thought experiment with an electron and a positron, each in its own interferometer; the two interferometers overlap, and where they overlap the particles would annihilate. Checking which path a particle took plays the role of the color; seeing which detector clicks after the last beam splitter plays the role of the engine. Later experiments tested it with photons.</p>
 <p>In 1993 he showed it works for <b>every</b> entangled pure state of two qubits — except the maximally entangled ones, such as the Bell pair. N. David Mermin retold it with two detectors, each with a switch and red and green lights (1994). The two-qubit version follows an earlier chapter of the Qiskit Textbook; the car story comes from the first version of our notebook (2020).</p>
 <p>L. Hardy, <a href="https://doi.org/10.1103/PhysRevLett.68.2981" target="_blank" rel="noopener">Phys. Rev. Lett. 68, 2981 (1992)</a> and <a href="https://doi.org/10.1103/PhysRevLett.71.1665" target="_blank" rel="noopener">71, 1665 (1993)</a>; A. Peres, <a href="https://doi.org/10.1119/1.11393" target="_blank" rel="noopener">Am. J. Phys. 46, 745 (1978)</a>; N. D. Mermin, <a href="https://doi.org/10.1119/1.17733" target="_blank" rel="noopener">Am. J. Phys. 62, 880 (1994)</a>.</p>`,

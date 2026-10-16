@@ -118,9 +118,12 @@ export function probabilities(s: State): number[] {
   return Array.from(s.re, (r, i) => r * r + s.im[i] * s.im[i]);
 }
 
+/** Probabilities below this are rounding residue of an exact 0 (about 1e-32 here): never drawn. */
+const ZERO = 1e-12;
+
 /** One measurement of all qubits: a basis index drawn with its probability. */
 export function sample(s: State, rng: () => number = Math.random): number {
-  const p = probabilities(s);
+  const p = probabilities(s).map((x) => (x < ZERO ? 0 : x));
   let u = rng();
   for (let i = 0; i < p.length; i++) {
     u -= p[i];

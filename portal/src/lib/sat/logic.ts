@@ -23,6 +23,10 @@ export class FormulaError extends Error {
 
 type Token = { k: 'id' | '&' | '|' | '~' | '(' | ')' | 'end'; v: string; at: number };
 
+/** Python's keywords: the notebook (and Qiskit's PhaseOracleGate) can't take them as variable names. */
+const PYTHON_WORDS = new Set(('False None True and as assert async await break class continue def del elif else except finally for '
+  + 'from global if import in is lambda nonlocal not or pass raise return try while with yield').split(' '));
+
 function tokenize(src: string): Token[] {
   const out: Token[] = [];
   let i = 0;
@@ -31,7 +35,10 @@ function tokenize(src: string): Token[] {
     if (/\s/.test(ch)) { i++; continue; }
     if ('&|~()'.includes(ch)) { out.push({ k: ch as Token['k'], v: ch, at: i }); i++; continue; }
     const m = /^[A-Za-z_]\w*/.exec(src.slice(i));
-    if (m) { out.push({ k: 'id', v: m[0], at: i }); i += m[0].length; continue; }
+    if (m) {
+      if (PYTHON_WORDS.has(m[0])) throw new FormulaError(`“${m[0]}” is a Python word: pick another name`, i);
+      out.push({ k: 'id', v: m[0], at: i }); i += m[0].length; continue;
+    }
     throw new FormulaError(`unexpected “${ch}”`, i);
   }
   out.push({ k: 'end', v: '', at: src.length });
@@ -86,7 +93,7 @@ export function compareNames(a: string, b: string): number {
     const x = ka[i], y = kb[i];
     if (x !== y) return x < y ? -1 : 1; // same position → same type (text, number, text, …)
   }
-  return ka.length - kb.length;
+  return ka.length - kb.length || (a < b ? -1 : a > b ? 1 : 0); // x01 and x1: plain order, as the notebook
 }
 
 /** The variables of a formula in natural order (x2 before x10). */

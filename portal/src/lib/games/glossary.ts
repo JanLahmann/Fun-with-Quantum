@@ -86,7 +86,7 @@ export const GLOSSARY_EN: Record<TermKey, GlossaryEntry> = {
   },
   commute: {
     title: 'Commuting measurements',
-    body: 'Two measurements commute if their order does not matter: A·B = B·A. Then they can be made together. X and Z do not commute: X·Z = −Z·X. So X and Z of one qubit cannot both have a value at the same time — and a proof that multiplies all answers together, as if they did, does not apply.',
+    body: 'Two measurements commute if their order does not matter: A·B = B·A. Then they can be made together. X and Z do not commute: X·Z = −Z·X. So no quantum state gives X and Z of one qubit definite values at the same time — and a proof that multiplies all answers together, as if they did, does not apply.',
   },
   basis: {
     title: 'Measuring in another basis',
@@ -126,7 +126,7 @@ export const GLOSSARY_EN: Record<TermKey, GlossaryEntry> = {
   },
   sat: {
     title: 'Boolean satisfiability (SAT)',
-    body: 'Given a formula of true/false variables joined with AND, OR and NOT: is there an assignment that makes it true? Checking a proposed assignment is quick. Finding one can take very long: the number of possible assignments doubles with every variable, and no known method avoids searching through a large part of them in the worst case.',
+    body: 'Given a formula of true/false variables joined with AND, OR and NOT: is there an assignment that makes it true? Checking a proposed assignment is quick. Finding one can take very long: the number of possible assignments doubles with every variable, and no known method avoids exponential time in the worst case.',
   },
   cnf: {
     title: 'Clauses and 3-SAT',
