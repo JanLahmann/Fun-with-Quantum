@@ -43,14 +43,14 @@ export const PAGE = {
   description: 'Solve logic puzzles with Grover’s search in your browser: watch the amplitudes of all guest lists, see the oracle mark the solutions and interference amplify them.',
   kicker: 'Play · Grover’s search algorithm · preview',
   heading: '3-SAT with Grover’s Algorithm',
-  lead: 'Some puzzles are easy to check but hard to solve. Watch Grover’s quantum search find the solutions — with interference.',
+  lead: 'Some puzzles are easy to check but, as far as anyone knows, hard to solve. Watch Grover’s quantum search find the solutions — with interference.',
   notebook: 'The same puzzles as a Jupyter notebook, in real Qiskit code:',
   notebookLink: 'open the notebook ↗',
 };
 
 export function pct(p: number): string {
   const x = 100 * p;
-  if (x > 99.95 && x < 100 - 1e-9) return '>99.9%'; // never round "almost sure" up to 100%
+  if (x >= 99.95 && x < 100 - 1e-9) return '>99.9%'; // never round "almost sure" up to 100%
   if (x > 1e-9 && x < 0.05) return '<0.1%';
   if (Math.abs(x - Math.round(x)) < 0.05) return `${Math.round(x)}%`;
   return `${x.toFixed(1)}%`;
@@ -81,7 +81,7 @@ export const CH1 = {
 <p class="math">((A & B) | (C & D)) & ~(A & D)</p>`,
   checkAll: 'Check all 16 lists',
   next: 'Next: Grover’s search →',
-  allResult: `<b>4 of the 16 lists work.</b> Checking a list is easy; finding the good ones took 16 checks — and every extra friend doubles the number of lists. That is what makes puzzles like this [hard](#npcomplete).`,
+  allResult: `<b>4 of the 16 lists work.</b> Checking a list is easy; finding the good ones took 16 checks — and every extra friend doubles the number of lists. For puzzles like this, no known method avoids a search that grows exponentially in the worst case: that is what makes them [hard](#npcomplete).`,
 };
 
 /** The notebook's whole quantum program for the party puzzle — test/sat.test.ts checks it matches 3sat.ipynb. */
@@ -140,7 +140,7 @@ export const CH3 = {
 <p class="math">(¬x₁ ∨ ¬x₂ ∨ ¬x₃) ∧ (x₁ ∨ ¬x₂ ∨ x₃) ∧ (x₁ ∨ x₂ ∨ ¬x₃) ∧ (x₁ ∨ ¬x₂ ∨ ¬x₃) ∧ (¬x₁ ∨ x₂ ∨ x₃)</p>
 <p>The same in DIMACS format, one clause per line (k for xₖ, −k for ¬xₖ, 0 ends a clause):</p>
 <p class="math">-1 -2 -3 0<br>1 -2 3 0<br>1 2 -3 0<br>1 -2 -3 0<br>-1 2 3 0</p>
-<p>Qubit 0 is x₁, 1 is x₂, 2 is x₃. The quantum program is the same seven lines as for the party — only the formula changes. Here 3 of the 8 assignments are solutions, so one round can’t reach 100%. Step through and see.</p>`,
+<p>Qubit 0 is x₁, 1 is x₂, 2 is x₃. The quantum program is the same seven lines as for the party — only the formula and its variables change. Here 3 of the 8 assignments are solutions, so one round can’t reach 100%. Step through and see.</p>`,
   checkAll: 'Check all 8 classically',
   next: 'Next: your own puzzle →',
   allResult: (list: string) => `Checked classically: the solutions are ${list}. With 3 of 8, one Grover round finds one of them 84.4% of the time — so you always check the answer, which is easy for SAT.`,
@@ -164,6 +164,7 @@ export const CH4 = {
 export const summary = (nv: number, n: number, m: number, best: number | null, p: number | null) =>
   `${nv} variable${nv === 1 ? '' : 's'}, ${n} assignments, <b>${m}</b> solution${m === 1 ? '' : 's'}`
   + (best === null || p === null ? '.'
+    : m === n ? `. ${STEP.allSolutions}`
     : best === 0 ? `. ${2 * m === n ? 'Exactly half' : 'More than half'} are solutions, so Grover rounds don’t pay off: measuring right away finds one ${pct(p)} of the time — if not, just measure again.`
     : `. The first peak comes after <b>${best}</b> round${best === 1 ? '' : 's'}: a solution ${pct(p)} of the time.`);
 

@@ -86,6 +86,20 @@ describe('Hardy: quantum cars', () => {
     expect(hardy.eventProbability(1, 1, 0)).toBeLessThan(1e-12);
     expect(hardy.eventProbability(1, 1, 180)).toBeLessThan(1e-12);
   });
+  it('rounding residue never breaks a fact, even at the extreme random numbers and every whole angle', () => {
+    for (let phi = 0; phi <= 180; phi++) for (const u of [0, 1 - 2 ** -53]) for (const [c1, c2] of [[0, 0], [0, 1], [1, 0]] as const) {
+      const x = hardy.inspect(c1, c2, phi, () => u);
+      expect(hardy.breaksFact(c1, c2, x.r1, x.r2), `${phi}° ${c1}${c2} u=${u}`).toBe(false);
+    }
+    for (const u of [0, 1 - 2 ** -53]) for (const [c1, c2] of [[0, 1], [1, 0]] as const) {
+      const x = hardy.inspect(c1, c2, hardy.BEST_PHI, () => u);
+      expect(hardy.breaksFact(c1, c2, x.r1, x.r2)).toBe(false);
+    }
+  });
+  it('a tiny chance is never shown as 0.00%; an exact 0 is', () => {
+    expect(CH4.status(179, hardy.eventProbability(1, 1, 179), hardy.HARDY_MAX)).toContain('<b><0.01%</b>');
+    expect(CH4.status(0, hardy.eventProbability(1, 1, 0), hardy.HARDY_MAX)).toContain('<b>0.00%</b>');
+  });
   it('1000 sampled engine·engine mornings land near 8.3%', () => {
     const r = rng(5);
     let both = 0;

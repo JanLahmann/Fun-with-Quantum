@@ -104,7 +104,7 @@ export const CH4 = {
     `<p>Our proof counted the 1s of all nine answers twice. Written as numbers +1 and −1 (0 → +1, 1 → −1, see [parity](#parity)), that is multiplying them: column by column (−1) and row by row (+1). For numbers the order of multiplying doesn’t matter. For quantum measurements it does: <b>X·Z = −Z·X</b> — they don’t [commute](#commute).</p>
 <p class="math">X·Z = −iY, but Z·X = +iY<br>column 3: (X⊗X)·(Z⊗Z)·(Y⊗Y) = (X·Z·Y)⊗(X·Z·Y) = (−i)·(−i) = −1<br>row 3: (−X⊗Z)·(−Z⊗X)·(Y⊗Y) = (X·Z·Y)⊗(Z·X·Y) = (−i)·(+i) = +1</p>
 <p>Within a column or a row the measurements commute, so each player can make their three together. Across columns and rows they don’t — X⊗I and Z⊗I, for instance — so the nine results never exist all at once, and there is no complete square to count. That is [contextuality](#contextuality).</p>`,
-    `<p>Each [Bell pair](#bell) looks just as simple in every basis:</p>
+    `<p>Each [Bell pair](#bell) looks just as simple in each of the three bases Z, X and Y:</p>
 <p class="math">(|00⟩ + |11⟩)/√2<br>= (|++⟩ + |−−⟩)/√2<br>= (|+i,−i⟩ + |−i,+i⟩)/√2</p>
 <p>So when Alice and Bob measure their qubits of one pair both in Z or both in X, they always get the <b>same</b> result; both in Y, always <b>opposite</b> results.</p>
 <p>Think of each square as one measurement on each pair. In −X⊗Z, X on pair 1 agrees and Z on pair 2 agrees, so the products agree (both carry the same minus sign). Y appears only in Y⊗Y: both pairs give opposite results, and the two flips cancel.</p>`,

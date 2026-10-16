@@ -34,10 +34,11 @@ export function mountPd(root: HTMLElement) {
   let you: Move = { ...Q };
   let bob: Move = { ...D };
   let lastRound: { a: Bit; b: Bit } | null = null;
+  let mixed = false; // chapter 4: Bob mixes I, iσx, iσy, iσz at random (until Bob's move changes)
   let onChange: (() => void) | null = null;
 
   function setMode(m: Mode) {
-    mode = m; board.dataset.mode = m; lastRound = null;
+    mode = m; board.dataset.mode = m; lastRound = null; mixed = false;
     if (m === 'quantum' || m === 'map') { // EWL's two angles; Bob back to C, D or Q
       you = { theta: you.theta, phi: Math.min(90, you.phi) };
       if (!Object.values(NAMES).some((n) => same(n, bob))) bob = { ...D };
@@ -58,11 +59,23 @@ export function mountPd(root: HTMLElement) {
   }
 
   /* ---- outcome odds for the current moves ---- */
+  /** One decimal, but never "100.0%" or "0.0%" for an outcome that is only almost sure or almost impossible. */
+  const pct1 = (p: number) => {
+    const x = 100 * p;
+    return x >= 99.95 && x < 100 - 1e-18 ? '>99.9%' : x > 1e-18 && x < 0.05 ? '<0.1%' : `${x.toFixed(1)}%`;
+  };
+
   function paintOdds() {
     const p = outcomes(you, bob), [ea, eb] = payoffs(you, bob);
     const labels = ['C · C', 'D · C', 'C · D', 'D · D']; // index a + 2b: your move first
-    odds.innerHTML = `<div class="pd-bars">${[0, 2, 1, 3].map((i) => `<div class="pd-bar${lastRound && lastRound.a + 2 * lastRound.b === i ? ' hit' : ''}"><span class="lab">${labels[i]}</span><span class="track"><span class="fill" style="width:${(100 * p[i]).toFixed(1)}%"></span></span><span class="num">${(100 * p[i]).toFixed(1)}%</span></div>`).join('')}</div>`
+    odds.innerHTML = `<div class="pd-bars">${[0, 2, 1, 3].map((i) => `<div class="pd-bar${lastRound && lastRound.a + 2 * lastRound.b === i ? ' hit' : ''}"><span class="lab">${labels[i]}</span><span class="track"><span class="fill" style="width:${(100 * p[i]).toFixed(1)}%"></span></span><span class="num">${pct1(p[i])}</span></div>`).join('')}</div>`
       + `<p class="pd-exp">${UI.expected(ea, eb)}</p>`;
+  }
+
+  /** Against Bob's random mix: your average points (2.25 for every move). */
+  function paintMixed() {
+    const avg = QUATERNIONS.reduce((sum, m) => sum + payoffs(you, m)[0], 0) / QUATERNIONS.length;
+    odds.innerHTML = `<p class="pd-exp">${UI.mixExpected(avg)}</p>`;
   }
 
   /* ---- the payoff map (chapter 3) ---- */
@@ -92,12 +105,14 @@ export function mountPd(root: HTMLElement) {
     });
     presetBtns.forEach((b) => b.setAttribute('aria-pressed', String(same(you, NAMES[b.dataset.m!]))));
     bobBtns.forEach((b) => b.setAttribute('aria-pressed', String(same(bob, NAMES[b.dataset.m!]))));
-    bobLabel.textContent = `${UI.bobPlays}: ${nameOf(bob)}`;
+    bobLabel.textContent = `${UI.bobPlays}: ${mixed ? UI.mixLabel : nameOf(bob)}`;
   }
 
   function repaint() {
     paintMoves();
-    if (mode !== 'classic') { paintOdds(); shell.circuit(circuitSvg(UI.qubits, gameSteps(you, bob), UI.circuitTitle)); }
+    if (mixed) paintMixed();
+    else if (mode !== 'classic') paintOdds();
+    if (mode !== 'classic') { shell.circuit(circuitSvg(UI.qubits, gameSteps(you, bob), UI.circuitTitle)); }
     if (mode === 'classic' || mode === 'quantum') paintMatrix();
     if (mode === 'map') onChange?.();
   }
@@ -109,7 +124,7 @@ export function mountPd(root: HTMLElement) {
     const bobBtn = t.closest<HTMLButtonElement>('.pd-bob button');
     const lc = t.closest<SVGRectElement>('rect.lc');
     if (preset) { you = { ...NAMES[preset.dataset.m!] }; lastRound = null; repaint(); }
-    else if (bobBtn) { bob = { ...NAMES[bobBtn.dataset.m!] }; lastRound = null; repaint(); }
+    else if (bobBtn) { bob = { ...NAMES[bobBtn.dataset.m!] }; mixed = false; lastRound = null; repaint(); }
     else if (lc && mode === 'map') { you = { theta: Number(lc.dataset.theta), phi: Number(lc.dataset.phi) }; lastRound = null; repaint(); }
   });
   sliders.forEach((s, i) => s.addEventListener('input', () => {
@@ -201,19 +216,18 @@ export function mountPd(root: HTMLElement) {
       ]);
       if (typeof v === 'number') { s = v; track('Portal: pd catch section', { section: s + 1 }); continue; }
       if (v === 'counter') {
-        bob = { ...Q }; you = { ...COUNTER_Q }; repaint();
+        bob = { ...Q }; you = { ...COUNTER_Q }; mixed = false; repaint();
         const [pa, pb] = payoffs(you, bob);
         shell.say(CH4.counterResult(pa, pb));
       } else if (v === 'random') {
         bob = randomMove();
         const c = counterMove(bob);
-        you = c.move;
+        you = c.move; mixed = false;
         repaint();
         shell.say(CH4.randomResult(UI.describe(bob), UI.describe(you), c.points));
       } else {
         const avg = QUATERNIONS.reduce((sum, m) => sum + payoffs(you, m)[0], 0) / QUATERNIONS.length;
-        bobLabel.textContent = `${UI.bobPlays}: ${UI.mixLabel}`;
-        odds.innerHTML = `<p class="pd-exp">${UI.mixExpected(avg)}</p>`;
+        mixed = true; repaint();
         shell.say(CH4.mixedResult(UI.describe(you), avg));
       }
       track('Portal: pd catch', { action: v });

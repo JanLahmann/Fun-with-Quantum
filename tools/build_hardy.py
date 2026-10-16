@@ -16,7 +16,7 @@ md("""# Hardy's Paradox
 
 ### Three facts that hold every single time rule out one outcome — and quantum mechanics produces it anyway
 
-Two cars, two inspectors, three facts and one simple logical conclusion. Classical cars obey it. Quantum cars — two entangled qubits — break it, up to about **9%** of the time.
+Two cars, two inspectors, three facts and one simple logical conclusion. Classical cars obey it. Quantum cars — two entangled qubits — break it, on up to about **9%** of the mornings when both inspectors check the engine.
 
 Based on Lucien Hardy (1992, 1993). The two-qubit version (one "impossible" result in 12) follows the former Qiskit Textbook chapter [The Unique Properties of Qubits](https://github.com/qiskit-community/qiskit-textbook/blob/main/content/ch-states/old-unique-properties-qubits.ipynb); the car story comes from the first version of this notebook (2020).
 Original notebook by Jan-R. Lahmann (2020), improved by Bengt Wegner (2022), rebuilt in 2026 with [Qiskit](https://www.ibm.com/quantum/qiskit).
@@ -186,9 +186,9 @@ For spec sheets that is fine — the color is written down whether anyone looks 
 
 ## No spec sheets
 
-Spec sheets — even random ones — give two diesels 0% of the time; quantum cars give 8.33%. So the cars cannot carry their answers with them: no **local hidden variables** can explain it — as long as a car's sheet can't depend on what is checked on the other car, far away.
+Spec sheets — even random ones — give two diesels on 0% of the mornings when both engines are checked; quantum cars on 8.33%. So the cars cannot carry their answers with them: no **local hidden variables** can explain it — as long as a car's sheet can't depend on what is checked on the other car, far away.
 
-No inequality and no averaging are needed: given the three facts, a **single** diesel–diesel morning rules out every spec sheet — *nonlocality without inequalities*, as the title of Hardy's 1993 paper puts it. Like the GHZ game, but with only two qubits — and the contradiction shows up only on some mornings, not every time. And no message travels: what one inspector finds doesn't depend on what the other checks.""")
+No inequality and no averaging are needed: given the three facts, a **single** diesel–diesel morning rules out every spec sheet — *nonlocality without inequalities*, as it has been called since Hardy's 1993 paper. Like the GHZ game, but with only two qubits — and the contradiction shows up only on some mornings, not every time. And no message travels: what one inspector finds doesn't depend on what the other checks.""")
 
 md("""# Find the 9%""")
 md("""The engine check doesn't have to be X. Let the engine be measured along an arrow at angle φ on the Bloch circle: gasoline along the arrow, diesel the opposite way. For each φ, the factory makes the state a·(|red, blue⟩ + |blue, red⟩) + c·|blue, blue⟩ with
@@ -228,7 +228,7 @@ plt.axvline(90, color='grey', ls=':', label='X (90°): 1/12')
 plt.xlabel('engine arrow φ (degrees)'); plt.ylabel('P(both diesel)'); plt.legend(loc='lower center'); plt.grid(alpha=0.3)
 plt.show()
 print(f"best: cos²(φ/2) = (√5 − 1)/2 = {u_best:.4f}, φ = {phi_best:.2f}°, P = (5√5 − 11)/2 = {p_best:.4f}")""")
-md("""* At **φ ≈ 76.35°** the cars are both diesel **(5√5 − 11)/2 ≈ 9.02%** of the time — Hardy's maximum for two qubits. (cos²(φ/2) = (√5 − 1)/2 ≈ 0.618 is one over the golden ratio.)
+md("""* At **φ ≈ 76.35°** the cars are both diesel on **(5√5 − 11)/2 ≈ 9.02%** of the mornings when both engines are checked — Hardy's maximum for two qubits. (cos²(φ/2) = (√5 − 1)/2 ≈ 0.618 is one over the golden ratio.)
 * At **0°** the engine check *is* the color check; the state (|red, blue⟩ + |blue, red⟩)/√2 is **maximally entangled** — and the paradox vanishes. Hardy showed in 1993 that it works for every entangled pure two-qubit state *except* the maximally entangled ones.
 * At **180°** both cars are always blue: no entanglement, no paradox.""", slide='fragment')
 md("""Is 9.02% really the limit? Any two different checks per car (each with two outcomes) can be turned into "color = Z" by rotating each qubit, so it is enough to let the engine arrows point anywhere on the Bloch sphere — a different one for each car. For each choice, the three facts leave one state (three conditions in four dimensions). Try 20,000 random choices:""", slide='fragment')
@@ -248,7 +248,7 @@ for _ in range(20000):
     conditions = np.array([np.kron(red, red), np.kron(diesel1, blue), np.kron(blue, diesel2)]).conj()   # car 1 ⊗ car 2
     state = np.linalg.svd(conditions)[2][-1].conj()          # the one state with all three conditions = 0
     best = max(best, abs(np.kron(diesel1, diesel2).conj() @ state) ** 2)
-print(f"best found: {best:.4f}    (5√5 − 11)/2 = {p_best:.4f}")""")
+print(f"best found: {best:.6f}    (5√5 − 11)/2 = {p_best:.6f}")""")
 md("""The search comes close but never beats (5√5 − 11)/2 — a check, not a proof. The proof exists: no quantum system of any size does better (Rabelo, Zhi and Scarani, 2012).""", slide='fragment')
 
 md("""## Hardy's original thought experiment

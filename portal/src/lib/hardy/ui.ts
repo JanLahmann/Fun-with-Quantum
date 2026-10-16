@@ -15,7 +15,7 @@ import {
 import { CH1, CH2, CH3, CH4, TERMS, UI } from './messages';
 
 type Mode = 'cards' | 'pick' | 'explain' | 'angle' | 'off';
-const pct2 = (p: number) => `${(100 * Math.max(0, p)).toFixed(2)}%`;
+const pct2 = (p: number) => (p > 1e-20 && p < 5e-5 ? '<0.01%' : `${(100 * Math.max(0, p)).toFixed(2)}%`);
 
 /** The Bloch circle for chapter 4: color up–down (red |0⟩ top, blue |1⟩ bottom), the engine arrow at φ. */
 function circleSvg(phi: number): string {

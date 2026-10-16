@@ -130,7 +130,7 @@ md("""Now a referee prepares two qubits in |00⟩ (0 = C, 1 = D) and **entangles
 * U(0°, 0°) does nothing: **C**. U(180°, 0°) flips the qubit: **D**. With these two, J and J† cancel and the old game comes back.
 * A new move: **Q** = U(0°, 90°).
 
-Eisert, Wilkens and Lewenstein write J = exp(i·π/4·D⊗D). In Qiskit that is the gate RYY(π/2) — let's check, together with our gates for U:""")
+Eisert, Wilkens and Lewenstein's Letter (1999) writes J = exp(i·π/4·D⊗D), as do Benjamin and Hayden; the authors later corrected the sign to exp(−i·π/4·D⊗D) (arXiv version 4, 2020). We keep the Letter's sign: for C, D and Q both signs give the same probabilities and points. In Qiskit, the Letter's J is the gate RYY(π/2) — let's check, together with our gates for U:""")
 code("""qc = QuantumCircuit(2); qc.ryy(np.pi / 2, 0, 1)        # J was defined from the matrices in the first cell
 print("J = RYY(π/2):", np.allclose(Operator(qc).data, J))
 for move in [(0, 0), (180, 0), (0, 90), (70, 30), (120, 200, 45)]:

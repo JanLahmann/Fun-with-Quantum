@@ -27,6 +27,13 @@ describe('formulas', () => {
     expect(variables(parse('x10 | x2 | x1'))).toEqual(['x1', 'x2', 'x10']); // natural order, as the notebook
     expect(variables(parse('b2 | a10 | B | a2 | a'))).toEqual(['B', 'a', 'a2', 'a10', 'b2']);
     expect(variables(parse('_a & b_2'))).toEqual(['_a', 'b_2']);
+    expect(variables(parse('x1 | x01 | y'))).toEqual(['x01', 'x1', 'y']); // same natural key: plain order, as the notebook
+    expect(variables(parse('x01 | x1 | y'))).toEqual(['x01', 'x1', 'y']);
+  });
+
+  it('reject Python words as names (the notebook and PhaseOracleGate cannot take them)', () => {
+    for (const f of ['True & x', 'None | x', 'x & lambda', 'if']) expect(() => parse(f), f).toThrow(/Python word/);
+    expect(variables(parse('Truth & nonee & iff'))).toEqual(['Truth', 'iff', 'nonee']);
   });
 
   it('reject broken formulas with a position', () => {
@@ -177,7 +184,15 @@ describe('Grover', () => {
     expect(countSolutions(none)).toBe(0);
     for (let k = 0; k < 4; k++) expect(probabilities(afterRounds(none, k))).toEqual([0.5, 0.5].map((x) => expect.closeTo(x, 12)));
     const all = puzzle('a | ~a');
+    expect(M.summary(1, 2, 2, 0, 1)).toBe(`1 variable, 2 assignments, <b>2</b> solutions. ${M.STEP.allSolutions}`);
     for (let k = 0; k < 4; k++) expect(successProbability(afterRounds(all, k), all.solution)).toBeCloseTo(1, 12);
+  });
+
+  it('never draws a rounding residue of an exact 0, and sorts digit runs of any length like Python', () => {
+    const p = puzzle('(a & b) & (c | ~c) & (d | ~d) & (e | ~e)'); // 8 of 32: one round gives 100%
+    const amps = afterRounds(p, 1);
+    for (const u of [0, 1 - 2 ** -53]) expect(p.solution[sample(amps, () => u)]).toBe(true);
+    expect(variables(parse('x9007199254740992 | x09007199254740993'))).toEqual(['x9007199254740992', 'x09007199254740993']);
   });
 
   it('measures with the given random source', () => {

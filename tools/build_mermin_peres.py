@@ -215,7 +215,7 @@ Each Bell pair is (|00⟩ + |11⟩)/√2. Written in the X basis (|+⟩, |−⟩
 
 (|00⟩ + |11⟩)/√2 = (|++⟩ + |−−⟩)/√2 = (|+i,−i⟩ + |−i,+i⟩)/√2
 
-So when Alice and Bob measure their two qubits of a pair in the **Z** or the **X** basis, they always get the **same** result; in the **Y** basis, always **opposite** results. Perfect correlations in every basis — the pair is *maximally entangled*.
+So when Alice and Bob measure their two qubits of a pair in the **Z** or the **X** basis, they always get the **same** result; in the **Y** basis, always **opposite** results. Perfect correlations in each of the three bases Z, X and Y — the pair is *maximally entangled*.
 
 Every square is a product of one measurement on each pair. In −X⊗Z, X on pair 1 agrees, Z on pair 2 agrees, so the products agree (both carry the same minus sign). Y appears only in Y⊗Y: both pairs give opposite results, and the two sign flips cancel.""")
 code("""ket = lambda label: Statevector.from_label(label)   # 'r' = |+i⟩, 'l' = |−i⟩
@@ -234,7 +234,7 @@ A quantum computer only measures **Z**: it reads each qubit as 0 or 1. To measur
 * One qubit: H·Z·H = X — apply H, then measure, and you have measured X.
 * Two qubits: with U = (H⊗I)·SWAP, U†·(Z⊗I)·U = SWAP·(X⊗I)·SWAP = **I⊗X**, and U†·(I⊗Z)·U = **Z⊗I**.
 
-Each player measures the first two observables of their column or row this way; the third answer follows from the rule (in ±1 numbers: Alice x³ = −x¹·x², Bob y³ = y¹·y²).
+Each player measures the first two observables of their column or row this way; the third answer follows from the rule (in ±1 numbers: Alice x₃ = −x₁·x₂, Bob y₃ = y₁·y₂).
 
 | | gates | measures |
 |---|---|---|
@@ -348,7 +348,7 @@ print(f"\\nQuantum team: {sum(results.values()) / 9:.1%} — the best classical 
 md("""# What does it mean?
 
 * **No communication** happens: Alice's answers on their own are completely random, and nothing Bob does changes what Alice sees. Still, the answers fit together perfectly — *quantum pseudo-telepathy*.
-* **No hidden script** could explain it: a pre-agreed list of answers is exactly a classical strategy, and those top out at 8 of 9. Quantum measurement results are not fixed in advance (the Kochen–Specker theorem).
+* **No hidden script** could explain it: a pre-agreed list of answers is exactly a classical strategy, and those top out at 8 of 9. Quantum measurement results are not fixed in advance independent of which other measurements are made with them (the Kochen–Specker theorem).
 * On a **real quantum computer**, noise lowers the 100% — the game is a test of how good the hardware is. The [appendix](#appendix) plays it on simulated copies of six IBM quantum computers and, if you like, on a real one.""")
 md("""## Learn more
 
@@ -498,7 +498,7 @@ code("""pd.DataFrame([{'device': b.name, 'win rate': pct(results[b.name]['win ra
                'mitigated estimate beats 8 of 9?': 'yes' if results[b.name]['mitigated'] > 8 / 9 else 'no'} for b in backends])""")
 md("""Mitigation wins back nearly all the rounds that readout errors cost, but not the others: errors in the gates (and, on real hardware, decoherence while the qubits wait) remain. And the result is a corrected *estimate* of the win rate, not a list of better rounds.
 
-A strict test of quantum pseudo-telepathy counts only the rounds actually played — the raw win rate — and has to beat 88.9% by more than the statistical uncertainty of the experiment. The mitigated rate tells you how good the quantum computer is apart from its readout.""", slide='fragment')
+A strict test of quantum pseudo-telepathy would also need Alice's and Bob's qubits far apart, with the questions drawn only after the pairs are shared. On one chip the game measures the hardware: the raw win rate — the rounds actually played — counts, and it has to beat 88.9% by more than the statistical uncertainty to show the chip beats every classical strategy. The mitigated rate tells you how good the quantum computer is apart from its readout.""", slide='fragment')
 
 md("""## Run it on a real quantum computer
 

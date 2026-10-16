@@ -4,7 +4,7 @@
 # gets an entry here, so no figure reaches the site or a notebook unchecked.
 #   python3 tools/check_numbers.py      exits 1 on an unlisted number or a failing computation
 # Scanned: the markdown of every notebook, README.md, the game pages (portal/src/content/games), the
-# browser games' English texts (portal/src/lib/*/messages.ts, qcoin/i18n/en.ts, qcoin/v2/en.ts; the other languages
+# browser games' English texts (portal/src/lib/*/messages.ts, qcoin/i18n/en.ts, qcoin/v2/en.ts, games/glossary.ts; the other languages
 # are kept equal by the parity tests) and the portal's pages (outside <style>).
 
 import glob
@@ -65,6 +65,8 @@ NUMBERS = {
     '76.35': (lambda: f'{math.degrees(2 * math.acos(math.sqrt(HARDY_X))):.2f}' == '76.35', 'the best angle φ'),
     # 3-SAT / Grover
     '84%': (lambda: abs(grover(3, 8, 1) - 27 / 32) < 1e-12 and pct(27 / 32, 0) == '84%', 'one Grover round, 3 solutions among 8'),
+    '84.4%': (lambda: pct(grover(3, 8, 1)) == '84.4%', 'one Grover round, 3 solutions among 8 (browser game, one decimal)'),
+    '37.8': (lambda: f'{math.degrees(math.asin(math.sqrt(3 / 8))):.1f}' == '37.8', 'the angle θ = arcsin √(3/8) of the 3-SAT puzzle, in degrees'),
     '16%': (lambda: pct(1 - 27 / 32, 0) == '16%', 'the wrong answers after one round'),
     '99%': (lambda: pct(grover(3, 8, 3), 0) == '99%', 'three Grover rounds, 3 solutions among 8'),
     '25%': (lambda: party_solutions() == 4 and abs(grover(4, 16, 1) - 1) < 1e-12 and pct(grover(4, 16, 2), 0) == '25%'
@@ -84,13 +86,19 @@ NUMBERS = {
     '99.9%': (None, 'display text ">99.9%" for almost-sure outcomes'),
     '0.05': (None, 'display threshold in pct()'),
     '0.1%': (None, 'display text "<0.1%"'),
+    '0.01%': (None, 'display text "<0.01%" (Hardy, tiny but not zero)'),
+    '0.75': (lambda: 3 / 4 == 0.75, 'the classical CHSH win rate 3/4 in code (chsh/messages.ts)'),
 }
 
 TOKEN = re.compile(r'(?<![\w.])(\d+(?:\.\d+)?\s?%|\d+\.\d+(?!\.\d)|\d+\s?/\s?\d+(?![\d/]))')
 
 
-def clean(text):
+def clean(name, text):
     text = re.sub(r'<style.*?</style>', ' ', text, flags=re.S)
+    # In Markdown, `…` is inline code; in TypeScript and Astro it is a template literal — page text,
+    # scanned whole (its ${…} parts often hold text too, e.g. in a ternary).
+    if name.endswith(('.ts', '.astro')):
+        return re.sub(r'https?://\S+|\(\S+\.(ipynb|png|pdf)\)', ' ', text)
     return re.sub(r'https?://\S+|\(\S+\.(ipynb|png|pdf)\)|`[^`]*`', ' ', text)
 
 
@@ -101,6 +109,7 @@ def sources():
                 yield p.name, ''.join(c['source'])
     files = (['README.md'] + glob.glob('portal/src/content/games/*.md', root_dir=ROOT)
              + glob.glob('portal/src/lib/*/messages.ts', root_dir=ROOT) + ['portal/src/lib/qcoin/i18n/en.ts', 'portal/src/lib/qcoin/v2/en.ts']
+             + ['portal/src/lib/games/glossary.ts']
              + glob.glob('portal/src/pages/**/*.astro', root_dir=ROOT, recursive=True))
     for f in sorted(files):
         yield f, (ROOT / f).read_text()
@@ -108,7 +117,7 @@ def sources():
 
 errors, used = [], set()
 for name, text in sources():
-    for m in TOKEN.finditer(clean(text)):
+    for m in TOKEN.finditer(clean(name, text)):
         token = m.group(1).replace(' ', '')
         if token not in NUMBERS:
             errors.append(f'{name}: "{token}" is not in tools/check_numbers.py — add it with a computation or a reason')

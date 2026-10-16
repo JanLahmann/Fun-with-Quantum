@@ -25,7 +25,7 @@ md("""# 3-SAT with Grover's Algorithm
 
 ### Solving logic puzzles with a quantum computer
 
-Some puzzles are easy to *check* but hard to *solve*: is there a way to fill in the variables so that every rule is satisfied? This notebook builds **Grover's search algorithm** step by step from [Qiskit](https://www.ibm.com/quantum/qiskit) building blocks and uses it to solve two such puzzles — a party guest list and a classic 3-SAT formula.
+Some puzzles are easy to *check* but, as far as anyone knows, hard to *solve*: is there a way to fill in the variables so that every rule is satisfied? This notebook builds **Grover's search algorithm** step by step from [Qiskit](https://www.ibm.com/quantum/qiskit) building blocks and uses it to solve two such puzzles — a party guest list and a classic 3-SAT formula.
 
 Part of [Fun with Quantum](https://fun-with-quantum.org). First versions by Jan-R. Lahmann (2019–2022), rebuilt in 2026 for Qiskit 2. The party puzzle comes from James Weaver's Qiskit workshop notebook "Grover search party"; the 3-SAT problem from the Qiskit tutorial "Using Grover search for 3-SAT problems" by Jay Gambetta and Richard Chen ([today in qiskit-community-tutorials](https://github.com/qiskit-community/qiskit-community-tutorials/blob/master/optimization/grover.ipynb)) and a hands-on workshop by David Mesterhazy.
 
@@ -99,7 +99,7 @@ With M solutions among N assignments and $\sin^2\theta = M/N$, the chance after 
 A classical search needs about N/M checks; Grover needs only about $\sqrt{N/M}$ rounds — a quadratic speed-up.""")
 
 md("""To look inside — draw the circuit, choose the number of rounds, check the answers, try your own puzzles — we load a few helper functions. Click into the cell and press "Shift Enter".""")
-code(r'''import math, re
+code(r'''import keyword, math, re
 from itertools import product
 from IPython.display import HTML, display
 from qiskit import QuantumCircuit, transpile
@@ -115,7 +115,10 @@ def variables(expr):
     if bad:
         raise ValueError(f"use letters a-z/A-Z, digits, _ and & | ~ ( ) only, not: {' '.join(sorted(bad))}")
     names = set(re.findall(r'[A-Za-z_]\w*', expr))
-    return sorted(names, key=lambda v: [int(t) if t.isdigit() else t for t in re.split(r'(\d+)', v)])
+    taken = sorted(v for v in names if keyword.iskeyword(v))
+    if taken:
+        raise ValueError(f"these are Python words, pick other names: {' '.join(taken)}")
+    return sorted(names, key=lambda v: ([int(t) if t.isdigit() else t for t in re.split(r'(\d+)', v)], v))
 
 def oracle_for(expr):
     """The phase oracle of a formula, with the qubit order fixed to variables(expr)."""
@@ -142,7 +145,8 @@ def grover_circuit(oracle_gate, iterations):
 def best_iterations(n_vars, n_solutions):
     """Rounds k that reach the first peak of the chance sin²((2k+1)θ) of a solution, with sin²θ = M/N
     (M solutions among N = 2^n). About π/4·√(N/M) when solutions are rare; 0 when half or more of
-    all assignments are solutions — then no round raises the chance."""
+    all assignments are solutions — then one round can't raise the chance, and later peaks cost more
+    rounds than simply measuring again."""
     if n_solutions == 0:
         raise ValueError("no solutions: nothing to search for")
     if 2 * n_solutions >= 2 ** n_vars:

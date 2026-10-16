@@ -21,7 +21,7 @@ notebook: 3sat.ipynb
 ---
 
 Satisfiability — finding an assignment of true/false values that makes a logical formula true —
-is the classic example of a problem that is easy to check but hard to solve. This notebook takes
+is the classic example of a problem that is easy to check but, as far as anyone knows, hard to solve. This notebook takes
 a party guest-list puzzle and a small **3-SAT** problem and solves them with **Grover's algorithm**, the quantum search routine that finds a marked item among N
 possibilities in roughly √N steps instead of N.
 
