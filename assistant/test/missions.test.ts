@@ -19,6 +19,11 @@ describe('mission picker', () => {
     expect(hasNeed({ offline: true }, 'internet')).toBe(false);
     expect(hasNeed({ offline: true, 'ibm-account': true }, 'ibm-account')).toBe(false);
     expect(hasNeed({ 'ibm-account': true }, 'ibm-account')).toBe(true);
+    expect(hasNeed({}, 'big-card')).toBe(true); // 32 GB or more unless the tester says smaller
+    expect(hasNeed({ 'small-card': true }, 'big-card')).toBe(false);
+    expect(hasNeed({ version: 'dev' }, 'dev-image')).toBe(true);
+    expect(hasNeed({ version: 'beta' }, 'dev-image')).toBe(false);
+    expect(hasNeed({}, 'dev-image')).toBe(false);
   });
 
   it('never suggests a mission whose needs the tester lacks, or one that is coming', () => {

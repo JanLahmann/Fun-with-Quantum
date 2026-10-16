@@ -172,7 +172,7 @@ export function mountTester(panel: HTMLElement, chat: HTMLElement[], url: string
     group('Raspberry Pi', radio('pi', 'pi4', 'Pi 4'), radio('pi', 'pi5', 'Pi 5')),
     group('Image', radio('image', 'ab', 'A/B image'), radio('image', 'single', 'single-system image'), radio('image', 'unsure', 'not sure')),
     group('Hardware', box('led-panel', 'LED panel'), kit, box('display', 'screen'), box('touchscreen', 'touchscreen'),
-      box('bluetooth-speaker', 'Bluetooth speaker'), box('camera', 'camera')),
+      box('bluetooth-speaker', 'Bluetooth speaker'), box('camera', 'camera'), box('small-card', 'SD card smaller than 32 GB')),
     group('Accounts and network', box('ibm-account', 'IBM Quantum account'), box('offline', 'offline system (no internet)')),
     group('Interests', box('i-core', 'core RasQberry'), box('i-games', 'games'), box('i-leds', 'LEDs'), box('i-coding', 'coding'), box('i-big', 'big demos')),
     setupButtons,

@@ -14,13 +14,14 @@ export const isMission = (id: string) => BY_ID.has(id);
 const groupTitle = (id: string) => MISSION_GROUPS.find((g) => g.id === id)?.title ?? id;
 const groupOrder = (id: string) => MISSION_GROUPS.findIndex((g) => g.id === id);
 
-/** Interests in the setup form → mission groups. */
-const INTEREST_GROUPS: Record<string, string[]> = { core: ['core', 'user', 'advanced'], games: ['fwq'], leds: ['led'], coding: ['learn', 'advanced'], big: ['big'] };
+/** Interests in the setup form → mission groups (fwq is the older name of play). */
+const INTEREST_GROUPS: Record<string, string[]> = { core: ['core', 'user', 'advanced'], games: ['play', 'fwq'], leds: ['led'], coding: ['learn', 'advanced'], big: ['big'] };
 
 /**
  * Does the tester's setup cover this need? The image is one choice (ab | single); a touchscreen is
  * a screen; internet is the default unless the tester ticked "offline system", and an IBM Quantum
- * account needs the internet too.
+ * account needs the internet too. An SD card of 32 GB or more is the default unless the tester ticked
+ * "SD card smaller than 32 GB"; a development image means the tester chose the development stream.
  */
 export function hasNeed(prefs: Prefs, need: string): boolean {
   const online = prefs.offline !== true;
@@ -29,6 +30,8 @@ export function hasNeed(prefs: Prefs, need: string): boolean {
   if (need === 'ab-image') return prefs.image === 'ab';
   if (need === 'single-image') return prefs.image === 'single';
   if (need === 'display') return prefs.display === true || prefs.touchscreen === true;
+  if (need === 'big-card') return prefs['small-card'] !== true;
+  if (need === 'dev-image') return prefs.version === 'dev';
   return prefs[need] === true;
 }
 
