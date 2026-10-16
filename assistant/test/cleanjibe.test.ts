@@ -56,7 +56,7 @@ describe('cleanjibe site', () => {
     const head = systemPrompt(cleanjibeHelp)[0].text;
     expect(head).toContain('You are the CleanJibe help desk.');
     expect(head).not.toContain('Ket');
-    expect(head).toContain('Answer in the language of the user');
+    expect(head).toContain('Answer in the language the user\'s question is written in');
   });
 
   it('keeps known app facts, drops the rest', () => {
