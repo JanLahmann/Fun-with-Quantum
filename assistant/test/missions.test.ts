@@ -27,7 +27,8 @@ describe('mission picker', () => {
   });
 
   it('never suggests a mission whose needs the tester lacks, or one that is coming', () => {
-    for (const m of suggest({ offline: true }, {}, {}, 99)) expect(all.find((x) => x.id === m.id)!.needs).toEqual([]);
+    // An offline tester with no hardware gets only missions whose needs hold by default (e.g. big-card).
+    for (const m of suggest({ offline: true }, {}, {}, 99)) for (const n of all.find((x) => x.id === m.id)!.needs) expect(hasNeed({ offline: true }, n), `${m.id}: ${n}`).toBe(true);
     const ids = suggest(full, {}, {}, 99).map((m) => m.id);
     for (const m of all.filter((m) => m.status === 'coming')) expect(ids).not.toContain(m.id);
     expect(ids.length).toBe(all.filter((m) => fits(m, full)).length);
