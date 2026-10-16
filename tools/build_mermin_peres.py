@@ -455,7 +455,7 @@ print("Ready.")""")
 
 md("""## Six noisy quantum computers
 
-Two small 5-qubit devices from the early years of IBM's quantum cloud, and four large ones: ibm_brisbane with an Eagle processor, ibm_torino, ibm_fez and ibm_marrakesh with Heron processors. The transpiler prepares the circuits with optimization level 2 (more on that on the next slides). This takes a few minutes:""")
+Two small 5-qubit devices from the early years of IBM's quantum cloud, and four large ones: ibm_brisbane with an Eagle processor, ibm_torino, ibm_fez and ibm_marrakesh with Heron processors. The transpiler prepares the circuits with optimization level 2 (more on that on the next slides). This takes a few minutes (2–3 on a Raspberry Pi 4):""")
 code("""backends = [FakeYorktownV2(), FakeAthensV2(), FakeBrisbane(), FakeTorino(), FakeFez(), FakeMarrakesh()]
 results = {b.name: play(b) for b in backends}
 
