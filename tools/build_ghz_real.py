@@ -202,7 +202,7 @@ md("""For the rest of the notebook, the **win rate** is the average over the fou
 md("""## 2. The game on noisy computers<a name="noisy"></a>
 [[Top](#top)]
 
-Now the same four circuits run on simulated copies of six IBM quantum computers: two small 5-qubit devices from the early years of IBM's quantum cloud, and four large ones — ibm_brisbane with an Eagle processor, ibm_torino, ibm_fez and ibm_marrakesh with Heron processors. The table shows the date of each calibration snapshot. The transpiler prepares the circuits for each device with its default settings.""")
+Now the same four circuits run on simulated copies of six IBM quantum computers: two small 5-qubit devices from the early years of IBM's quantum cloud, and four large ones — ibm_brisbane with an Eagle processor, ibm_torino, ibm_fez and ibm_marrakesh with Heron processors. The table shows the date of each calibration snapshot. The transpiler prepares the circuits for each device with its default settings. This takes a few minutes (2–3 on a Raspberry Pi 4).""")
 code("""backends = [FakeYorktownV2(), FakeVigoV2(), FakeBrisbane(), FakeTorino(), FakeFez(), FakeMarrakesh()]
 
 rows = []
@@ -282,7 +282,7 @@ md("""Mitigation wins back most of the rounds that readout errors cost — and i
 md("""## 5. Putting it all together<a name="together"></a>
 [[Top](#top)]
 
-All six devices, three ways: level 0 on qubits 0, 1, 2; the transpiler's choice (level 2); and the transpiler's choice with readout error mitigation.""")
+All six devices, three ways: level 0 on qubits 0, 1, 2; the transpiler's choice (level 2); and the transpiler's choice with readout error mitigation. This takes a few minutes, longer on a Raspberry Pi.""")
 code("""rows = []
 for b in backends:
     plain = play(b, level=0)

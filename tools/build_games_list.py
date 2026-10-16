@@ -54,7 +54,7 @@ index = ROOT / 'Readme.ipynb'
 nb = nbformat.read(index, as_version=4)
 first = nb.cells[0]
 intro = first.source.split('\n1. ')[0].rstrip()
-first.source = intro + '\n\n' + '\n'.join(f"{i}. [{g['title']}](./{g['notebook']})" for i, g in enumerate(games, 1))
+first.source = intro + '\n\n' + '\n'.join(f"{i}. [{g['title']}](./{g['notebook']}) — {g['tagline']}" for i, g in enumerate(games, 1))
 nbformat.write(nb, index)
 
 # --- the "At a glance" box in the notebooks without a builder ---------------------------------
