@@ -9,6 +9,8 @@ import { chunked, claudeStream, fakeClaude, makeCtx, makeEnv } from './fakes';
 import { makeAttestation, makeCa } from './appattest-fixture';
 
 const TEAM = '685X8YLYSB';
+/** What the app hashes: the challenge string's UTF-8 bytes (SHA256(Data(challenge.utf8))). */
+const utf8 = (s: string) => new TextEncoder().encode(s);
 const example = (f: string) => JSON.parse(readFileSync(fileURLToPath(new URL(`./cleanjibe-example-session-${f}.json`, import.meta.url).href), 'utf8'));
 let ca: ReturnType<typeof makeCa>;
 beforeAll(() => { ca = makeCa(); });
@@ -33,7 +35,7 @@ function setup(envOver: Record<string, unknown> = {}) {
 
 async function attested(s: ReturnType<typeof setup>, bundleId = 'de.lahmann.wingfoil') {
   const { challenge } = await (await s.run('/attest/challenge', { site: 'cleanjibe' })).json() as any;
-  const a = await makeAttestation(ca, { teamId: TEAM, bundleId, challenge: b64(challenge) });
+  const a = await makeAttestation(ca, { teamId: TEAM, bundleId, challenge: utf8(challenge) });
   const res = await s.run('/attest', { site: 'cleanjibe', keyId: a.keyId, attestation: a.attestation, challenge, bundleId });
   return { a, res, body: await res.json() as any };
 }
@@ -68,11 +70,15 @@ describe('App Attest flow (CleanJibe iPhone app)', () => {
   it('a challenge works once; a wrong bundle or a replayed attestation is refused', async () => {
     const s = setup();
     const { challenge } = await (await s.run('/attest/challenge', { site: 'cleanjibe' })).json() as any;
-    const a = await makeAttestation(ca, { teamId: TEAM, bundleId: 'de.lahmann.wingfoil', challenge: b64(challenge) });
+    const a = await makeAttestation(ca, { teamId: TEAM, bundleId: 'de.lahmann.wingfoil', challenge: utf8(challenge) });
     const req = { site: 'cleanjibe', keyId: a.keyId, attestation: a.attestation, challenge, bundleId: 'de.lahmann.wingfoil' };
     expect((await s.run('/attest', { ...req, bundleId: 'de.lahmann.wingfoil.dev' })).status).toBe(401);
     expect((await s.run('/attest', req)).status).toBe(401); // the challenge was used up by the failed try
     expect((await s.run('/attest', { site: 'nope' })).status).toBe(400);
+    // The app hashes the challenge string's UTF-8 bytes; an attestation over the decoded bytes is refused.
+    const { challenge: c2 } = await (await s.run('/attest/challenge', { site: 'cleanjibe' })).json() as any;
+    const b = await makeAttestation(ca, { teamId: TEAM, bundleId: 'de.lahmann.wingfoil', challenge: b64(c2) });
+    expect((await s.run('/attest', { ...req, keyId: b.keyId, attestation: b.attestation, challenge: c2 })).status).toBe(401);
   });
 
   it('attest routes refuse browsers (an Origin), and at most 5 new keys per address per day', async () => {
@@ -87,11 +93,15 @@ describe('App Attest flow (CleanJibe iPhone app)', () => {
     const { a } = await attested(s);
     const fresh = async () => ((await (await s.run('/attest/challenge', { site: 'cleanjibe' })).json()) as any).challenge as string;
     const c1 = await fresh();
-    const r1 = await s.run('/token', { site: 'cleanjibe', keyId: a.keyId, assertion: await a.assert(b64(c1), 1), challenge: c1 });
+    const r1 = await s.run('/token', { site: 'cleanjibe', keyId: a.keyId, assertion: await a.assert(utf8(c1), 1), challenge: c1 });
     expect(r1.status).toBe(200);
     expect((await s.run('/chat', ask({ context: 'help', state: { surface: 'ios', channel: 'beta', appVersion: '1.0.1', engineVersion: '0.29.0', units: { speed: 'kn', distance: 'km' } } }), { 'X-CleanJibe-Token': ((await r1.json()) as any).token })).status).toBe(200);
     const c2 = await fresh();
-    expect((await s.run('/token', { site: 'cleanjibe', keyId: a.keyId, assertion: await a.assert(b64(c2), 1), challenge: c2 })).status).toBe(401);
+    expect((await s.run('/token', { site: 'cleanjibe', keyId: a.keyId, assertion: await a.assert(utf8(c2), 1), challenge: c2 })).status).toBe(401);
+    const c3 = await fresh(); // signed over the decoded challenge instead of its UTF-8 string: refused
+    expect((await s.run('/token', { site: 'cleanjibe', keyId: a.keyId, assertion: await a.assert(b64(c3), 2), challenge: c3 })).status).toBe(401);
+    const c4 = await fresh();
+    expect((await s.run('/token', { site: 'cleanjibe', keyId: a.keyId, assertion: await a.assert(utf8(c4), 2), challenge: c4 })).status).toBe(200);
   });
 
   it('20 questions per device per day; app keys are deleted 30 days after their last use', async () => {

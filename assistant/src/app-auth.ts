@@ -6,7 +6,8 @@
  *   POST /token    {site, keyId, assertion, challenge}              → {token, expires} | 401 {error: "attest"}
  *   POST /chat     with header <app.header>: <token>                (no Origin; 401 {error: "token"} → refresh)
  *
- * clientDataHash (what the app signs) = SHA-256 of the challenge bytes. Tokens: keyId.expiry.HMAC,
+ * clientDataHash (what the app signs) = SHA-256 of the challenge string's UTF-8 bytes, as the app
+ * sends it back (Swift: SHA256(Data(challenge.utf8))), for attestKey and generateAssertion alike. Tokens: keyId.expiry.HMAC,
  * valid an hour; the key must still be registered (so a key can be revoked by deleting its row).
  */
 import { b64, b64url, verifyAssertion, verifyAttestation, type AppConfig, type AttestEnv } from './attest';
@@ -58,11 +59,11 @@ export async function tokenKey(env: Env, site: string, token: string | null, now
   return row ? keyId : null;
 }
 
-/** Takes a challenge once; false if unknown, used or expired. */
+/** Takes a challenge once; null if unknown, used or expired, else the bytes the app hashed (the string's UTF-8). */
 async function takeChallenge(env: Env, site: string, c: unknown, now: number): Promise<Uint8Array | null> {
   if (typeof c !== 'string' || !/^[\w-]{43}$/.test(c)) return null;
   const row = await env.DB.prepare('DELETE FROM attest_challenges WHERE challenge = ? AND site = ? AND expires >= ? RETURNING challenge').bind(c, site, now).first();
-  return row ? b64(c) : null;
+  return row ? new TextEncoder().encode(c) : null;
 }
 
 const keyIdOk = (k: unknown): k is string => typeof k === 'string' && /^[A-Za-z0-9+/]{43}=$/.test(k);
