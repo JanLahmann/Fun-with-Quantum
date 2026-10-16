@@ -16,7 +16,9 @@
  * after saving the case's `setup` ({preferences, missions}) through the tester endpoints.
  *
  * App-only contexts (CleanJibe "session") ask like the app: no Origin, with APP_EVAL_PASS from the
- * environment as X-Eval-Pass. `stateFile` loads the case's state from a file, relative to the set.
+ * environment as X-Eval-Pass; `--via app` does the same for every context of an app site (CleanJibe
+ * help too), so large sets don't use up a visitor's budget. `stateFile` loads the case's state from a
+ * file, relative to the set.
  */
 import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -32,6 +34,8 @@ const file = arg('file', new URL('./coin-game.jsonl', import.meta.url));
 /** Each case may name its site and context (default: the coin game); the Origin follows the site. */
 const ORIGINS = { fwq: 'https://fun-with-quantum.org', rasqberry: 'https://rasqberry.org', cleanjibe: 'https://cleanjibe.org' };
 const APP_ONLY = new Set(['cleanjibe/session']);
+/** Sites with an app: `--via app` asks all their contexts like the app (eval pass, its own budget). */
+const APP_SITES = new Set(['cleanjibe']);
 const only = arg('only');
 const cases = readFileSync(file, 'utf8').trim().split('\n').map((l) => JSON.parse(l)).filter((c) => !only || c.id === only)
   .map((c) => (c.stateFile ? { ...c, state: JSON.parse(readFileSync(new URL(c.stateFile, file instanceof URL ? file : pathToFileURL(resolve(file))), 'utf8')) } : c));
@@ -63,7 +67,7 @@ async function testerFor(c, headers) {
 
 async function askOnce(c, t0) {
   const headers = { 'Content-Type': 'application/json', Origin: arg('origin') ?? ORIGINS[c.site ?? 'fwq'] };
-  if (APP_ONLY.has(`${c.site}/${c.context}`)) {
+  if (APP_ONLY.has(`${c.site}/${c.context}`) || (arg('via') === 'app' && APP_SITES.has(c.site))) {
     if (!process.env.APP_EVAL_PASS) return { error: 'APP_EVAL_PASS is not set', ms: 0 };
     delete headers.Origin;
     headers['X-Eval-Pass'] = process.env.APP_EVAL_PASS;

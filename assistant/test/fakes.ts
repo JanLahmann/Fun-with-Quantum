@@ -69,7 +69,7 @@ export function makeCtx() {
 }
 
 /** SSE text as Claude streams it, split into awkward chunks to exercise the parser. */
-export function claudeStream(parts: string[], opts: { error?: boolean; truncate?: boolean } = {}): string {
+export function claudeStream(parts: string[], opts: { error?: boolean; truncate?: boolean; stop?: string } = {}): string {
   const ev = (event: string, data: unknown) => `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
   let s = ev('message_start', { type: 'message_start', message: { usage: { input_tokens: 120, cache_read_input_tokens: 2048, cache_creation_input_tokens: 0, output_tokens: 1 } } });
   s += ev('content_block_start', { type: 'content_block_start', index: 0, content_block: { type: 'text', text: '' } });
@@ -77,7 +77,7 @@ export function claudeStream(parts: string[], opts: { error?: boolean; truncate?
   if (opts.error) return s + ev('error', { type: 'error', error: { type: 'overloaded_error', message: 'Overloaded' } });
   if (opts.truncate) return s;
   s += ev('content_block_stop', { type: 'content_block_stop', index: 0 });
-  s += ev('message_delta', { type: 'message_delta', delta: { stop_reason: 'end_turn' }, usage: { output_tokens: 42 } });
+  s += ev('message_delta', { type: 'message_delta', delta: { stop_reason: opts.stop ?? 'end_turn' }, usage: { output_tokens: 42 } });
   return s + ev('message_stop', { type: 'message_stop' });
 }
 

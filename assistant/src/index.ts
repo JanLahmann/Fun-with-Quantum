@@ -22,6 +22,22 @@ import { isLevel, systemPrompt, userMessage } from './prompt';
 import { APPS, appRoute, purgeApps, tokenKey } from './app-auth';
 import { checkTesterDaily, purgeTester, sameSecret, signedIn, testerRoute, testerState, triageRoute } from './tester';
 
+/** The answer when the API refuses a question (it then sends no text), in the page language. */
+const REFUSED: Record<string, string> = {
+  en: 'I can’t help with that. Feel free to ask me something else.',
+  de: 'Dabei kann ich nicht helfen. Frag mich gern etwas anderes.',
+  ja: 'その質問にはお手伝いできません。ほかのことなら気軽に聞いてください。',
+  es: 'No puedo ayudarte con eso. Pregúntame otra cosa si quieres.',
+  uk: 'З цим я не можу допомогти. Запитай мене про щось інше.',
+  it: 'Non posso aiutarti con questo. Chiedimi pure qualcos’altro.',
+  fr: 'Je ne peux pas t’aider avec ça. N’hésite pas à me poser une autre question.',
+  nl: 'Daar kan ik niet mee helpen. Vraag me gerust iets anders.',
+};
+export const refusedText = (locale: string) => REFUSED[locale.slice(0, 2)] ?? REFUSED.en;
+
+/** Key- or token-like strings (32+ letters, digits, - or _) never reach the log, e.g. a pasted IBM Quantum API key. */
+export const scrubKeys = (s: string) => s.replace(/[A-Za-z0-9_-]{32,}/g, '[removed]');
+
 const MAX_BODY = 32_000;
 const MAX_QUESTION = 1_000;
 const MAX_HISTORY_MESSAGE = 4_000;
@@ -154,7 +170,7 @@ async function chat(req: Request, env: Env, ctx: ExecutionContext, deps: Deps, c
          stop_reason, error, in_tok, out_tok, cache_read_tok, cache_write_tok, latency_ms, tester)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     ).bind(
-      id, now, body.site as string, body.context as string, locale, level, question, JSON.stringify(pageState), history.length / 2, answer, model,
+      id, now, body.site as string, body.context as string, locale, level, scrubKeys(question), JSON.stringify(pageState), history.length / 2, answer, model,
       extra.stop_reason ?? null, extra.error ?? null, extra.in_tok ?? null, extra.out_tok ?? null,
       extra.cache_read_tok ?? null, extra.cache_write_tok ?? null, deps.now() - now, tester,
     ).run();
@@ -181,6 +197,8 @@ async function chat(req: Request, env: Env, ctx: ExecutionContext, deps: Deps, c
   const send = (event: string, data: unknown) => writer.write(enc.encode(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`));
   ctx.waitUntil((async () => {
     const r = await relay(upstream.body!, send);
+    // A refusal by the API comes without any text: say so briefly instead of an empty bubble.
+    if (!r.error && !r.text && r.stopReason === 'refusal') await send('delta', { t: refusedText(locale) }).catch(() => {});
     // Log first, then say `done`: a thumbs vote right after the answer must find its row.
     await log(r.text, {
       stop_reason: r.stopReason, error: r.error, in_tok: r.inTok, out_tok: r.outTok,

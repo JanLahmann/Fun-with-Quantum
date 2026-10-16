@@ -17,7 +17,7 @@ const KET = 'Your name is Ket (from the ket, as in |0⟩, of bra-ket notation); 
 export function rules(ctx: Context): string {
   const language = ctx.language ? `- ${ctx.language}` : ctx.englishOnly
     ? "- Answer in English, even when the question is in another language (this site is English only)."
-    : "- Answer in the language of the user's question. If the language is unclear, use the page language given with the question.";
+    : "- Answer in the language the user's question is written in, even when the page language differs (an English question on the Italian page gets an English answer). Use the page language given with the question only when the question's language is unclear (a single word, a number, a name).";
   return `How you answer:
 ${language}
 - Be friendly, precise and short: usually two to five sentences, at most about 150 words unless the user asks for more${ctx.levels ? ' (see the levels below)' : ''}. No hype.
@@ -54,8 +54,12 @@ export function systemPrompt(ctx: Context): SystemBlock[] {
   ];
 }
 
+/** Browser text can't close or open our tags: < and > become &lt; and &gt; (state: JSON escapes). */
+export const tagSafe = (s: string) => s.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const tagSafeJson = (v: unknown) => JSON.stringify(v).replace(/</g, '\\u003c').replace(/>/g, '\\u003e');
+
 /** The dynamic part: page language, level, live state and the question, in the user message. */
 export function userMessage(locale: string, level: Level | null, state: Record<string, unknown>, question: string, stateTag = 'game_state'): string {
   const lvl = level ? `<level>${level}</level>\n` : '';
-  return `<page_language>${locale}</page_language>\n${lvl}<${stateTag}>${JSON.stringify(state)}</${stateTag}>\n<question>${question}</question>`;
+  return `<page_language>${locale}</page_language>\n${lvl}<${stateTag}>${tagSafeJson(state)}</${stateTag}>\n<question>${tagSafe(question)}</question>`;
 }
