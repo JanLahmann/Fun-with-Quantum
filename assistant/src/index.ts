@@ -161,7 +161,7 @@ async function chat(req: Request, env: Env, ctx: ExecutionContext, deps: Deps, c
   let upstream: Response;
   try {
     upstream = await callClaude(
-      { apiKey: env.ANTHROPIC_API_KEY, model, maxTokens: intVar(env.MAX_TOKENS, 1500), system: systemPrompt(context), messages },
+      { apiKey: env.ANTHROPIC_API_KEY, model, maxTokens: intVar(env.MAX_TOKENS, 4000), system: systemPrompt(context), messages },
       deps.fetch,
     );
   } catch (e) {

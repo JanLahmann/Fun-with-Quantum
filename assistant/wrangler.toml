@@ -7,10 +7,12 @@ compatibility_date = "2026-10-01"
 
 [vars]
 MODEL = "claude-sonnet-5-5"
-# Output budget per answer. It also covers the model's own reasoning before it writes, so it is
-# well above the longest answer (about 220 words at the "With math" level); at 600, answers
-# were cut off mid-sentence (stop_reason max_tokens).
-MAX_TOKENS = "1500"
+# Output budget per answer. It also covers the model's own reasoning before it writes (Sonnet 5.5
+# and Opus 5.5 think by default, hidden, and those tokens count here), so it is far above the
+# longest answer (about 220 words at the "With math" level). At 600 coin-game answers were cut
+# off; at 1500 a CleanJibe session question (12 KB of session data) thought for the whole budget
+# and stopped after half a paragraph. Tokens are billed only as used.
+MAX_TOKENS = "4000"
 # Question/answer pairs sent along as conversation history (code caps it at 10).
 MAX_HISTORY_TURNS = "5"
 # Logged questions and answers are deleted after this many days.
