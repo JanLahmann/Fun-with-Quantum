@@ -62,7 +62,7 @@ export function mountPd(root: HTMLElement) {
   /** One decimal, but never "100.0%" or "0.0%" for an outcome that is only almost sure or almost impossible. */
   const pct1 = (p: number) => {
     const x = 100 * p;
-    return x > 99.95 && x < 100 - 1e-9 ? '>99.9%' : x > 1e-9 && x < 0.05 ? '<0.1%' : `${x.toFixed(1)}%`;
+    return x >= 99.95 && x < 100 - 1e-18 ? '>99.9%' : x > 1e-18 && x < 0.05 ? '<0.1%' : `${x.toFixed(1)}%`;
   };
 
   function paintOdds() {

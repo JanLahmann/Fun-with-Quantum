@@ -96,6 +96,10 @@ describe('Hardy: quantum cars', () => {
       expect(hardy.breaksFact(c1, c2, x.r1, x.r2)).toBe(false);
     }
   });
+  it('a tiny chance is never shown as 0.00%; an exact 0 is', () => {
+    expect(CH4.status(179, hardy.eventProbability(1, 1, 179), hardy.HARDY_MAX)).toContain('<b><0.01%</b>');
+    expect(CH4.status(0, hardy.eventProbability(1, 1, 0), hardy.HARDY_MAX)).toContain('<b>0.00%</b>');
+  });
   it('1000 sampled engine·engine mornings land near 8.3%', () => {
     const r = rng(5);
     let both = 0;

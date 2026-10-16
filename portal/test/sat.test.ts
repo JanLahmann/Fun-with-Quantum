@@ -188,6 +188,13 @@ describe('Grover', () => {
     for (let k = 0; k < 4; k++) expect(successProbability(afterRounds(all, k), all.solution)).toBeCloseTo(1, 12);
   });
 
+  it('never draws a rounding residue of an exact 0, and sorts digit runs of any length like Python', () => {
+    const p = puzzle('(a & b) & (c | ~c) & (d | ~d) & (e | ~e)'); // 8 of 32: one round gives 100%
+    const amps = afterRounds(p, 1);
+    for (const u of [0, 1 - 2 ** -53]) expect(p.solution[sample(amps, () => u)]).toBe(true);
+    expect(variables(parse('x9007199254740992 | x09007199254740993'))).toEqual(['x9007199254740992', 'x09007199254740993']);
+  });
+
   it('measures with the given random source', () => {
     const p = puzzle(M.PARTY);
     const a = afterRounds(p, 1);

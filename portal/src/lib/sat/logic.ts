@@ -84,8 +84,8 @@ export function parse(src: string): Node {
  * Natural order, as the notebook's variables(): split names into text and number runs, compare
  * text by code point (capitals before small letters, like Python) and numbers by value.
  */
-function naturalKey(v: string): (string | number)[] {
-  return v.split(/(\d+)/).map((t, i) => (i % 2 ? Number(t) : t));
+function naturalKey(v: string): (string | bigint)[] {
+  return v.split(/(\d+)/).map((t, i) => (i % 2 ? BigInt(t) : t)); // BigInt: any length, like Python's int
 }
 export function compareNames(a: string, b: string): number {
   const ka = naturalKey(a), kb = naturalKey(b);
@@ -197,12 +197,14 @@ export function bestIterations(nVars: number, m: number): number | null {
 
 /** One measurement: an assignment index drawn with its probability. */
 export function sample(amps: readonly number[], rng: () => number = Math.random): number {
+  // Squares below 1e-20 are rounding residue of an exact 0 (real ones here are at least about 9e-9): never drawn.
+  const p = amps.map((a) => (a * a < 1e-20 ? 0 : a * a));
   let u = rng();
-  for (let i = 0; i < amps.length; i++) {
-    u -= amps[i] * amps[i];
+  for (let i = 0; i < p.length; i++) {
+    u -= p[i];
     if (u < 0) return i;
   }
-  for (let i = amps.length - 1; i >= 0; i--) if (amps[i] !== 0) return i; // rounding
+  for (let i = p.length - 1; i >= 0; i--) if (p[i] !== 0) return i; // rounding
   return amps.length - 1;
 }
 

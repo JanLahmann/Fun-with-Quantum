@@ -50,7 +50,7 @@ export const PAGE = {
 
 export function pct(p: number): string {
   const x = 100 * p;
-  if (x > 99.95 && x < 100 - 1e-9) return '>99.9%'; // never round "almost sure" up to 100%
+  if (x >= 99.95 && x < 100 - 1e-9) return '>99.9%'; // never round "almost sure" up to 100%
   if (x > 1e-9 && x < 0.05) return '<0.1%';
   if (Math.abs(x - Math.round(x)) < 0.05) return `${Math.round(x)}%`;
   return `${x.toFixed(1)}%`;

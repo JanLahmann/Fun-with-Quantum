@@ -498,7 +498,7 @@ code("""pd.DataFrame([{'device': b.name, 'win rate': pct(results[b.name]['win ra
                'mitigated estimate beats 8 of 9?': 'yes' if results[b.name]['mitigated'] > 8 / 9 else 'no'} for b in backends])""")
 md("""Mitigation wins back nearly all the rounds that readout errors cost, but not the others: errors in the gates (and, on real hardware, decoherence while the qubits wait) remain. And the result is a corrected *estimate* of the win rate, not a list of better rounds.
 
-A strict test of quantum pseudo-telepathy would also need Alice's and Bob's qubits far apart, with the questions drawn only after the pairs are shared. On one chip the game measures the hardware: the raw win rate — the rounds actually played — counts, and it has to beat 88.9% by more than the statistical uncertainty. The mitigated rate tells you how good the quantum computer is apart from its readout.""", slide='fragment')
+A strict test of quantum pseudo-telepathy would also need Alice's and Bob's qubits far apart, with the questions drawn only after the pairs are shared. On one chip the game measures the hardware: the raw win rate — the rounds actually played — counts, and it has to beat 88.9% by more than the statistical uncertainty to show the chip beats every classical strategy. The mitigated rate tells you how good the quantum computer is apart from its readout.""", slide='fragment')
 
 md("""## Run it on a real quantum computer
 

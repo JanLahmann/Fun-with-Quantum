@@ -86,6 +86,8 @@ NUMBERS = {
     '99.9%': (None, 'display text ">99.9%" for almost-sure outcomes'),
     '0.05': (None, 'display threshold in pct()'),
     '0.1%': (None, 'display text "<0.1%"'),
+    '0.01%': (None, 'display text "<0.01%" (Hardy, tiny but not zero)'),
+    '0.75': (lambda: 3 / 4 == 0.75, 'the classical CHSH win rate 3/4 in code (chsh/messages.ts)'),
 }
 
 TOKEN = re.compile(r'(?<![\w.])(\d+(?:\.\d+)?\s?%|\d+\.\d+(?!\.\d)|\d+\s?/\s?\d+(?![\d/]))')
@@ -94,9 +96,10 @@ TOKEN = re.compile(r'(?<![\w.])(\d+(?:\.\d+)?\s?%|\d+\.\d+(?!\.\d)|\d+\s?/\s?\d+
 def clean(name, text):
     text = re.sub(r'<style.*?</style>', ' ', text, flags=re.S)
     # In Markdown, `…` is inline code; in TypeScript and Astro it is a template literal — page text,
-    # so only its ${…} interpolations (code) are left out.
-    code = r'\$\{[^}]*\}' if name.endswith(('.ts', '.astro')) else r'`[^`]*`'
-    return re.sub(r'https?://\S+|\(\S+\.(ipynb|png|pdf)\)|' + code, ' ', text)
+    # scanned whole (its ${…} parts often hold text too, e.g. in a ternary).
+    if name.endswith(('.ts', '.astro')):
+        return re.sub(r'https?://\S+|\(\S+\.(ipynb|png|pdf)\)', ' ', text)
+    return re.sub(r'https?://\S+|\(\S+\.(ipynb|png|pdf)\)|`[^`]*`', ' ', text)
 
 
 def sources():
