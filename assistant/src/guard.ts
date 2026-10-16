@@ -52,6 +52,10 @@ export async function visitorKey(req: Request, env: Env, now: number): Promise<s
 
 const BUMP = 'INSERT INTO quota (day, key, n) VALUES (?, ?, 1) ON CONFLICT (day, key) DO UPDATE SET n = n + 1 RETURNING n';
 
+/** The eval runner's budget key and its daily limit per site. */
+export const EVAL_KEY = 'key:eval';
+export const EVAL_DAILY = 200;
+
 async function bump(env: Env, day: string, key: string): Promise<number> {
   const row = await env.DB.prepare(BUMP).bind(day, key).first<{ n: number }>();
   return row?.n ?? 0;
@@ -65,6 +69,8 @@ async function bump(env: Env, day: string, key: string): Promise<number> {
 export async function checkDaily(env: Env, site: string, key: string, now: number): Promise<'ok' | 'visitor' | 'global'> {
   const day = utcDay(now);
   const cfg = env.SITES[site];
+  // The eval runner (behind APP_EVAL_PASS) has its own daily limit and leaves the visitors' budget alone.
+  if (key === EVAL_KEY) return (await bump(env, day, `${site}:${key}`)) > EVAL_DAILY ? 'visitor' : 'ok';
   if ((await bump(env, day, `${site}:${key}`)) > intVar(String(cfg.daily_visitor), 50)) return 'visitor';
   if ((await bump(env, day, `${site}:*`)) > intVar(String(cfg.daily_global), 1000)) return 'global';
   return 'ok';
