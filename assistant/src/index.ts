@@ -7,6 +7,8 @@
  *   /tester/*       the RasQberry tester programme (see tester.ts)
  *   /attest/challenge, /attest, /token   native apps (App Attest, see app-auth.ts); their /chat
  *                   comes without Origin, with the app's token header
+ *   /chat with X-Eval-Pass (no Origin): the eval runner, which asks app contexts like an app
+ *                   (budget key key:eval); fails closed without APP_EVAL_PASS
  *
  * Guards: Origin allow-list per site, burst + daily limits, size limits, per-context state validation.
  * Every answer is logged to D1 (no IP, no cookie) and deleted after RETENTION_DAYS.
@@ -17,7 +19,7 @@ import { intVar, type Env } from './env';
 import { checkDaily, checkOrigin, corsHeaders, siteConfig, visitorKey } from './guard';
 import { isLevel, systemPrompt, userMessage } from './prompt';
 import { APPS, appRoute, purgeApps, tokenKey } from './app-auth';
-import { checkTesterDaily, purgeTester, signedIn, testerRoute, testerState, triageRoute } from './tester';
+import { checkTesterDaily, purgeTester, sameSecret, signedIn, testerRoute, testerState, triageRoute } from './tester';
 
 const MAX_BODY = 32_000;
 const MAX_QUESTION = 1_000;
@@ -80,6 +82,11 @@ export async function handle(req: Request, env: Env, ctx: ExecutionContext, deps
     if (!(await env.RL.limit({ key: `attest:${visitor}` })).success) return json(429, { error: 'rate' });
     return appRoute(url.pathname, await readJson(req), env, now, visitor, deps.attestRoot);
   }
+  // The eval runner: app contexts without a device, behind its own pass.
+  if (!req.headers.get('Origin') && req.headers.has('X-Eval-Pass') && req.method === 'POST' && url.pathname === '/chat') {
+    if (!(await sameSecret(req.headers.get('X-Eval-Pass'), env.APP_EVAL_PASS))) return json(401, { error: 'eval' });
+    return chat(req, env, ctx, deps, {}, { keyId: 'eval' });
+  }
   const appSite = !req.headers.get('Origin') ? Object.keys(APPS).find((s) => req.headers.get(APPS[s].header)) : undefined;
   if (appSite && req.method === 'POST' && (url.pathname === '/chat' || url.pathname === '/feedback')) {
     const keyId = await tokenKey(env, appSite, req.headers.get(APPS[appSite].header), deps.now());
@@ -102,7 +109,7 @@ export async function handle(req: Request, env: Env, ctx: ExecutionContext, deps
 }
 
 async function chat(req: Request, env: Env, ctx: ExecutionContext, deps: Deps, cors: Record<string, string>,
-  app?: { site: string; keyId: string }): Promise<Response> {
+  app?: { site?: string; keyId: string }): Promise<Response> {
   const now = deps.now();
   // An attested app counts per app key (the device); a web visitor per daily IP pseudonym.
   const visitor = app ? `key:${app.keyId}` : await visitorKey(req, env, now);
@@ -111,7 +118,8 @@ async function chat(req: Request, env: Env, ctx: ExecutionContext, deps: Deps, c
   const body = await readJson(req);
   const site = siteConfig(env, body?.site);
   if (body && site && !app && !site.origins.includes(req.headers.get('Origin')!)) return json(403, { error: 'origin' }, cors);
-  if (body && app && (body.site !== app.site || !APPS[app.site].contexts.includes(body.context as string))) return json(403, { error: 'origin' });
+  // An app token holds for its own site; the eval pass for any app site.
+  if (body && app && ((app.site && body.site !== app.site) || !Object.hasOwn(APPS, body.site as string) || !APPS[body.site as string].contexts.includes(body.context as string))) return json(403, { error: 'origin' });
   const context = site && contextFor(body!.site, body!.context);
   if (context?.appOnly && !app) return json(403, { error: 'origin' }, cors);
   const question = typeof body?.question === 'string' ? body.question.trim() : '';

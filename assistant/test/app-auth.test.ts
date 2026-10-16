@@ -13,9 +13,9 @@ const example = (f: string) => JSON.parse(readFileSync(fileURLToPath(new URL(`./
 let ca: ReturnType<typeof makeCa>;
 beforeAll(() => { ca = makeCa(); });
 
-function setup() {
+function setup(envOver: Record<string, unknown> = {}) {
   const claude = fakeClaude(() => new Response(chunked(claudeStream(['Die 14:26 ', 'war ein Touchdown.'])), { status: 200 }));
-  const { env, db } = makeEnv();
+  const { env, db } = makeEnv(envOver);
   // A running clock (the test certificates are made during the test), shifted by at(): later days.
   let shift = 0, n = 0;
   const deps: Deps = { now: () => Date.now() + shift, fetch: claude.fetch, uuid: () => `00000000-0000-4000-8000-${String(n++).padStart(12, '0')}`, attestRoot: ca.rootB64 };
@@ -123,5 +123,20 @@ describe('session state', () => {
     const s = sessionState({ ...STATE, session: { ...STATE.session, turnList: Array(80).fill(turn) } }) as any;
     expect(JSON.stringify(s).length).toBeLessThanOrEqual(MAX_STATE);
     expect(s.session.turnList.length).toBeLessThan(80);
+  });
+
+  it('the eval pass asks app contexts without a device; fails closed; never from a browser', async () => {
+    const pass = 'eval-pass-for-tests';
+    const s = setup({ APP_EVAL_PASS: pass });
+    expect((await s.run('/chat', ask(), { 'X-Eval-Pass': pass })).status).toBe(200);
+    expect((await s.run('/chat', ask({ context: 'help' }), { 'X-Eval-Pass': pass })).status).toBe(200);
+    expect((await s.run('/chat', ask(), { 'X-Eval-Pass': 'wrong' })).status).toBe(401);
+    expect((await s.run('/chat', { ...ask(), site: 'fwq', context: 'coin-game' }, { 'X-Eval-Pass': pass })).status).toBe(403);
+    expect((await s.run('/chat', ask({ site: '__proto__' }), { 'X-Eval-Pass': pass })).status).toBe(403);
+    expect((await s.run('/chat', ask(), { 'X-Eval-Pass': pass, Origin: 'https://cleanjibe.org' })).status).toBe(403); // session is app-only
+    expect(s.db.rows("SELECT key FROM quota WHERE key LIKE 'cleanjibe:key:%'")).toEqual([{ key: 'cleanjibe:key:eval' }]);
+    const unset = setup();
+    expect((await unset.run('/chat', ask(), { 'X-Eval-Pass': '' })).status).toBe(401);
+    expect((await unset.run('/chat', ask(), { 'X-Eval-Pass': 'anything' })).status).toBe(401);
   });
 });
