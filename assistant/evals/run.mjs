@@ -14,8 +14,13 @@
  * Tester cases (context "tester") sign in with TESTER_PASSPHRASE from the environment, as a fresh
  * tester per case (eval-<run>-<n>: the Worker leaves eval- testers out of coverage and the export),
  * after saving the case's `setup` ({preferences, missions}) through the tester endpoints.
+ *
+ * App-only contexts (CleanJibe "session") ask like the app: no Origin, with APP_EVAL_PASS from the
+ * environment as X-Eval-Pass. `stateFile` loads the case's state from a file, relative to the set.
  */
 import { readFileSync, writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 const arg = (name, fallback) => {
   const i = process.argv.indexOf(`--${name}`);
@@ -25,9 +30,11 @@ const url = arg('url');
 if (!url) { console.error('usage: node evals/run.mjs --url <worker url> [--only id] [--out report.md]'); process.exit(2); }
 const file = arg('file', new URL('./coin-game.jsonl', import.meta.url));
 /** Each case may name its site and context (default: the coin game); the Origin follows the site. */
-const ORIGINS = { fwq: 'https://fun-with-quantum.org', rasqberry: 'https://rasqberry.org' };
+const ORIGINS = { fwq: 'https://fun-with-quantum.org', rasqberry: 'https://rasqberry.org', cleanjibe: 'https://cleanjibe.org' };
+const APP_ONLY = new Set(['cleanjibe/session']);
 const only = arg('only');
-const cases = readFileSync(file, 'utf8').trim().split('\n').map((l) => JSON.parse(l)).filter((c) => !only || c.id === only);
+const cases = readFileSync(file, 'utf8').trim().split('\n').map((l) => JSON.parse(l)).filter((c) => !only || c.id === only)
+  .map((c) => (c.stateFile ? { ...c, state: JSON.parse(readFileSync(new URL(c.stateFile, file instanceof URL ? file : pathToFileURL(resolve(file))), 'utf8')) } : c));
 
 const LANG = { de: /\b(der|die|das|und|ist|nicht|du)\b/i, en: /\b(the|and|is|you)\b/i, ja: /[぀-ヿ一-鿿]/ };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -56,6 +63,11 @@ async function testerFor(c, headers) {
 
 async function askOnce(c, t0) {
   const headers = { 'Content-Type': 'application/json', Origin: arg('origin') ?? ORIGINS[c.site ?? 'fwq'] };
+  if (APP_ONLY.has(`${c.site}/${c.context}`)) {
+    if (!process.env.APP_EVAL_PASS) return { error: 'APP_EVAL_PASS is not set', ms: 0 };
+    delete headers.Origin;
+    headers['X-Eval-Pass'] = process.env.APP_EVAL_PASS;
+  }
   let tester;
   if (c.context === 'tester') {
     if (!process.env.TESTER_PASSPHRASE) return { error: 'TESTER_PASSPHRASE is not set', ms: 0 };

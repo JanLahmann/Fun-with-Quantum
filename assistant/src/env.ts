@@ -9,6 +9,8 @@ export interface Env {
   /** RasQberry tester programme: the shared passphrase (Jan sets it; never logged) and the triage export token. */
   TESTER_PASSPHRASE?: string;
   TESTER_EXPORT_TOKEN?: string;
+  /** The eval runner's pass for app-only contexts (header X-Eval-Pass, no Origin), in place of an App Attest token. */
+  APP_EVAL_PASS?: string;
   DB: D1Database;
   RL: RateLimit;
 }
