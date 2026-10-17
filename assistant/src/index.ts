@@ -5,6 +5,7 @@
  *   POST /chat      {site, context, locale, level, question, state, history} → SSE: delta… then done|error
  *   POST /feedback  {id, vote: 1 | -1}                                 → 204
  *   /tester/*       the RasQberry tester programme (see tester.ts)
+ *   /ideas/export, /ideas/mark   riders' ideas for the team (CleanJibe, see ideas.ts), Bearer token
  *   /attest/challenge, /attest, /token   native apps (App Attest, see app-auth.ts); their /chat
  *                   comes without Origin, with the app's token header
  *   /chat with X-Eval-Pass (no Origin): the eval runner, which asks app contexts like an app
@@ -20,6 +21,7 @@ import { intVar, type Env } from './env';
 import { checkDaily, checkOrigin, corsHeaders, siteConfig, visitorKey } from './guard';
 import { isLevel, systemPrompt, userMessage } from './prompt';
 import { APPS, appRoute, purgeApps, tokenKey } from './app-auth';
+import { IdeaFilter, ideasRoute, purgeIdeas, saveIdea, splitIdea } from './ideas';
 import { checkTesterDaily, purgeTester, sameSecret, signedIn, testerRoute, testerState, triageRoute } from './tester';
 
 /** The answer when the API refuses a question (it then sends no text), in the page language. */
@@ -89,6 +91,7 @@ export async function handle(req: Request, env: Env, ctx: ExecutionContext, deps
   const url = new URL(req.url);
   // Triage is server to server (no Origin): its own Bearer token instead.
   if (url.pathname === '/tester/export' || url.pathname === '/tester/triage') return triageRoute(url.pathname, req, env);
+  if (url.pathname === '/ideas/export' || url.pathname === '/ideas/mark') return ideasRoute(url.pathname, req, env);
   // Native apps: no Origin; App Attest, then a token header per app.
   if (['/attest/challenge', '/attest', '/token'].includes(url.pathname)) {
     // Only native apps, which send no Origin: a web page can't make visitors' browsers write challenges.
@@ -195,8 +198,13 @@ async function chat(req: Request, env: Env, ctx: ExecutionContext, deps: Deps, c
   const writer = writable.getWriter();
   const enc = new TextEncoder();
   const send = (event: string, data: unknown) => writer.write(enc.encode(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`));
+  // Contexts that collect ideas: the hidden idea line never reaches the rider.
+  const ideas = context.ideas ? new IdeaFilter((t) => send('delta', { t })) : null;
   ctx.waitUntil((async () => {
-    const r = await relay(upstream.body!, send);
+    const r = await relay(upstream.body!, ideas ? (_e, d) => ideas.push(d.t) : send);
+    await ideas?.flush().catch(() => {});
+    const { answer, idea } = ideas ? splitIdea(r.text) : { answer: r.text, idea: null };
+    r.text = answer;
     // A refusal by the API comes without any text: say so briefly instead of an empty bubble.
     if (!r.error && !r.text && r.stopReason === 'refusal') await send('delta', { t: refusedText(locale) }).catch(() => {});
     // Log first, then say `done`: a thumbs vote right after the answer must find its row.
@@ -204,6 +212,12 @@ async function chat(req: Request, env: Env, ctx: ExecutionContext, deps: Deps, c
       stop_reason: r.stopReason, error: r.error, in_tok: r.inTok, out_tok: r.outTok,
       cache_read_tok: r.cacheReadTok, cache_write_tok: r.cacheWriteTok,
     }).catch(() => {});
+    if (idea && !r.error) {
+      await saveIdea(env, {
+        id, ts: now, site: body.site as string, context: body.context as string, locale,
+        summary: idea, words: scrubKeys(question), state,
+      }).catch(() => {});
+    }
     await (r.error ? send('error', { error: 'upstream' }) : send('done', { id, stop: r.stopReason })).catch(() => {});
     await writer.close().catch(() => {});
   })());
@@ -244,6 +258,7 @@ export async function purge(env: Env, now: number): Promise<void> {
     ]),
     ...purgeTester(env, now),
     ...purgeApps(env, now),
+    ...purgeIdeas(env, now),
     env.DB.prepare('DELETE FROM quota WHERE day < ?').bind(yesterday),
   ]);
 }

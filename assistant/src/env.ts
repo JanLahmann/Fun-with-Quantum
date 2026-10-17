@@ -11,6 +11,8 @@ export interface Env {
   TESTER_EXPORT_TOKEN?: string;
   /** The eval runner's pass for app-only contexts (header X-Eval-Pass, no Origin), in place of an App Attest token. */
   APP_EVAL_PASS?: string;
+  /** The ideas export (ideas.ts): Bearer token for /ideas/export and /ideas/mark. */
+  IDEAS_EXPORT_TOKEN?: string;
   DB: D1Database;
   RL: RateLimit;
 }
