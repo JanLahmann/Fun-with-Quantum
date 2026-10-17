@@ -1,0 +1,6 @@
+/* Shared by the app's 3D viewer pages: the viewer fills the screen; the app's navigation bar is native. */
+:root { color-scheme: light dark; --ink: #1d2433; --muted: #5b6475; --card: #fff; --line: #d7dbe2; --accent: #0f7f9c; --stage: radial-gradient(ellipse at 50% 35%, #ffffff 0%, #eef0f3 60%, #e2e5ea 100%); }
+@media (prefers-color-scheme: dark) { :root { --ink: #e8ebf1; --muted: #a3abba; --card: #1b2130; --line: #343c4e; --accent: #4cc3e0; --stage: radial-gradient(ellipse at 50% 35%, #2a3142 0%, #1a1f2b 65%, #121722 100%); } }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; height: 100%; background: var(--stage); color: var(--ink); font: 16px/1.4 -apple-system, system-ui, sans-serif; overscroll-behavior: none; -webkit-user-select: none; user-select: none; }
+.status { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--muted); padding: 24px; text-align: center; }

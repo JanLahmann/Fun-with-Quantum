@@ -1,0 +1,32 @@
+{
+  "$comment": "The 3D viewers and models of the app's Build tab, from the family's own repositories, pinned to a commit (ios/scripts/build-web.mjs fetches them). To update: set the new commit, rebuild, check the viewers in the simulator.",
+  "rasqberry-two": {
+    "repo": "JanLahmann/RasQberry-Two",
+    "ref": "91f16a6e22ed56473f48ba8982726771de10733a",
+    "files": {
+      "viewer.ts": "src/components/ModelViewer/viewer.ts",
+      "rasqberry-two.glb": "public/3d-model/rasqberry-two.glb"
+    }
+  },
+  "quantego": {
+    "repo": "JanLahmann/Quantego",
+    "ref": "450bb2871b683c64091108d844518e3511f0913e",
+    "files": {
+      "ldraw-viewer.js": "assets/js/ldraw-viewer.js",
+      "viewer.css": "assets/css/viewer.css",
+      "quantego-one.mpd": "assets/models/quantego-one.mpd",
+      "quantego-two.mpd": "assets/models/quantego-two.mpd",
+      "quantego-two-1024.mpd": "assets/models/quantego-two-1024.mpd",
+      "quantego-one.usdz": "assets/models/quantego-one.usdz",
+      "quantego-two.usdz": "assets/models/quantego-two.usdz"
+    }
+  },
+  "qutie": {
+    "repo": "JanLahmann/Qutie",
+    "ref": "0209c90a65acc60bd03d23ec48f60b97e912dbc9",
+    "files": {
+      "qutie-system-one.stl": "stl/Qutie System One v06.stl",
+      "qutie-system-two.stl": "stl/Qutie System Two v02.stl"
+    }
+  }
+}

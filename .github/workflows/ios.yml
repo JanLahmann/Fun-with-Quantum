@@ -1,0 +1,55 @@
+name: iOS app
+
+# Builds the iOS app (ios/) for the simulator and runs its UI smoke test: web content, Xcode
+# project (XcodeGen), build, test. No signing, no upload.
+on:
+  pull_request:
+    paths:
+      - 'ios/**'
+      - 'portal/**'
+      - '.github/workflows/ios.yml'
+  push:
+    branches: [master]
+    paths:
+      - 'ios/**'
+      - '.github/workflows/ios.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            portal/package-lock.json
+            ios/web/package-lock.json
+      - run: npm ci --prefix portal
+      - run: npm ci --prefix ios/web
+      - name: Web content (portal, model viewers, catalog)
+        run: node ios/scripts/build-web.mjs
+      - run: brew install xcodegen
+      - name: Xcode project
+        working-directory: ios
+        run: xcodegen generate
+      - name: Build and smoke test (simulator)
+        working-directory: ios
+        run: |
+          sim=$(xcrun simctl list devices available | grep -oE 'iPhone [0-9]+( Pro)?' | head -1)
+          echo "Simulator: $sim"
+          mkdir -p "$RUNNER_TEMP/shots"
+          set -o pipefail
+          TEST_RUNNER_FWQ_SCREENSHOTS="$RUNNER_TEMP/shots" xcodebuild test -project FunWithQuantum.xcodeproj -scheme FunWithQuantum \
+            -destination "platform=iOS Simulator,name=$sim" -derivedDataPath build/DerivedData CODE_SIGNING_ALLOWED=NO | tail -40
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: screenshots
+          path: ${{ runner.temp }}/shots
