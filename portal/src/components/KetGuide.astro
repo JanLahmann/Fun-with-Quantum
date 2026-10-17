@@ -17,7 +17,7 @@ const t = { ...ASSISTANT_TEXTS.en, ...GUIDE_TEXTS };
 {url && !OFFLINE && (
   <section class="fwq-assist fa-float" aria-label={t.title} data-url={url} data-site="fwq" data-context="guide" data-locale="en" data-public={isPublic ? '1' : undefined} hidden>
     <div class="fa-panel" id="fa-guide-panel" hidden>
-      <h3>{t.title}</h3>
+      <h2 class="fa-h">{t.title}</h2>
       <p class="fa-intro">{t.intro}</p>
       <p class="fa-privacy">{t.privacy} <a href="/about/#privacy">{t.privacyLink}</a></p>
       <div class="fa-log" aria-live="polite"></div>
@@ -27,7 +27,7 @@ const t = { ...ASSISTANT_TEXTS.en, ...GUIDE_TEXTS };
         <button type="submit">{t.send}</button>
       </form>
     </div>
-    <button type="button" class="fa-open" aria-expanded="false" aria-controls="fa-guide-panel">💬 {t.open}</button>
+    <button type="button" class="fa-open" aria-expanded="false" aria-controls="fa-guide-panel"><span aria-hidden="true">💬</span> {t.open}</button>
   </section>
 )}
 
@@ -40,6 +40,11 @@ const t = { ...ASSISTANT_TEXTS.en, ...GUIDE_TEXTS };
     root.hidden = false;
     registerState('guide', () => ({ page: location.pathname }));
     mountAssistant(root, { texts: GUIDE_TEXTS });
+    // Escape closes the box and gives the focus back to its button.
+    const open = root.querySelector<HTMLButtonElement>('.fa-open')!;
+    root.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !root.querySelector<HTMLElement>('.fa-panel')!.hidden) { open.click(); open.focus(); }
+    });
   }
 </script>
 
@@ -55,14 +60,14 @@ const t = { ...ASSISTANT_TEXTS.en, ...GUIDE_TEXTS };
   }
   .fa-open:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
   .fa-panel {
-    width: min(400px, calc(100vw - 32px)); max-height: calc(100vh - 90px); overflow: auto;
+    width: min(400px, calc(100vw - 32px)); max-height: calc(100vh - 90px); max-height: calc(100dvh - 90px); overflow: auto;
     background: var(--card); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow);
     padding: 14px 16px 16px; box-sizing: border-box;
   }
-  .fa-panel h3 { font-size: 1.02rem; margin-bottom: 4px; }
+  .fa-panel .fa-h { font-size: 1.02rem; margin: 0 0 4px; }
   .fa-intro { color: var(--ink); font-size: 0.9rem; margin-bottom: 6px; }
   .fa-privacy { color: var(--muted); font-size: 0.78rem; margin-bottom: 12px; }
-  .fa-log { display: flex; flex-direction: column; gap: 10px; max-height: min(420px, calc(100vh - 340px)); min-height: 120px; overflow-y: auto; margin-bottom: 12px; }
+  .fa-log { display: flex; flex-direction: column; gap: 10px; max-height: min(420px, calc(100vh - 340px)); max-height: min(420px, calc(100dvh - 340px)); min-height: 120px; overflow-y: auto; margin-bottom: 12px; }
   .fa-log:empty { display: none; }
   .fa-log :global(.fa-msg) { font-size: 0.93rem; line-height: 1.5; }
   .fa-log :global(.fa-who) { display: block; font: 600 0.7rem var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
@@ -78,7 +83,7 @@ const t = { ...ASSISTANT_TEXTS.en, ...GUIDE_TEXTS };
   .fa-log :global(.fa-vote button:hover) { border-color: var(--cyan); }
   form { display: flex; gap: 8px; align-items: flex-end; }
   textarea {
-    flex: 1; font: 0.95rem var(--sans); color: var(--ink); background: var(--paper); border: 1px solid var(--line);
+    flex: 1; font: 1rem var(--sans); /* 16px: iOS doesn't zoom in on focus */ color: var(--ink); background: var(--paper); border: 1px solid var(--line);
     border-radius: 10px; padding: 8px 10px; resize: vertical; min-height: 44px;
   }
   textarea:focus { outline: 2px solid var(--cyan); outline-offset: 1px; }

@@ -1,5 +1,6 @@
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { execFileSync } from 'node:child_process';
 import { describe, expect, it } from 'vitest';
 import { GUIDE_KNOWLEDGE } from '../src/contexts/fwq/guide.generated';
 import { fwqGuide, GUIDE_PAGES } from '../src/contexts/fwq/guide';
@@ -24,6 +25,10 @@ describe('guide knowledge', () => {
   it('is current: the committed module is what the script builds from family.json and portal/src/content', () => {
     const committed = file('../src/contexts/fwq/guide.generated.ts');
     expect(committed, 'run: node scripts/fwq-guide-knowledge.mjs').toBe(moduleText(buildGuideKnowledge()));
+  });
+
+  it('the script\'s --check passes (and is reachable as a command)', () => {
+    expect(() => execFileSync('node', [fileURLToPath(new URL('../scripts/fwq-guide-knowledge.mjs', import.meta.url).href), '--check'], { stdio: 'pipe' })).not.toThrow();
   });
 
   it('never links an unlisted /preview/ page or a member hidden from the footers', () => {
@@ -54,7 +59,7 @@ describe('guide knowledge', () => {
     for (const l of LOCALES) expect(s).toContain(`${MESSAGES[l].langName} https://fun-with-quantum.org${pagePath(l)}`);
   });
 
-  it('gives away no game\'s trick: no learning goals, never the coin game\'s Hadamard move', () => {
+  it('gives away no game\'s trick: no learning goals in the games list; the coin game\'s section names no gate', () => {
     const games = GUIDE_KNOWLEDGE.slice(GUIDE_KNOWLEDGE.indexOf('### The games'));
     expect(games).not.toMatch(/Hadamard|goals/i);
     expect(section('Quantum Coin Game')).not.toMatch(/(?<!\p{L})H(?!\p{L})/u);
@@ -86,6 +91,7 @@ describe('front matter', () => {
 
   it('fails on YAML it doesn\'t know instead of guessing', () => {
     expect(() => frontMatter('---\ntext: >\n  folded\n---\n')).toThrow(/unsupported/);
+    expect(() => frontMatter('---\ntext: >\n---\n')).toThrow(/unsupported/);
     expect(() => frontMatter('no front matter')).toThrow(/no front matter/);
   });
 });
@@ -101,9 +107,11 @@ describe('guide context', () => {
   it('GUIDE_PAGES are exactly the portal pages with the guide box', () => {
     const files: Record<string, string> = { '/': 'index', '/play/': 'play/index', '/build/': 'build', '/learn/': 'learn', '/teachers/': 'teachers/index', '/workshops/': 'workshops' };
     expect(Object.keys(files).sort()).toEqual([...GUIDE_PAGES].sort());
-    for (const f of Object.values(files)) expect(file(`../../portal/src/pages/${f}.astro`), f).toContain('<KetGuide />');
-    const others = ['about', '404', 'play/[slug]', '[lang]/play/quantum-coin-game', 'teachers/handout'];
-    for (const f of others) expect(file(`../../portal/src/pages/${f}.astro`), f).not.toContain('KetGuide');
+    const pages = (readdirSync(fileURLToPath(new URL('../../portal/src/pages/', import.meta.url).href), { recursive: true }) as string[])
+      .filter((f) => f.endsWith('.astro')).map((f) => f.replace(/\.astro$/, ''));
+    expect(pages.length).toBeGreaterThan(10);
+    const withBox = pages.filter((f) => file(`../../portal/src/pages/${f}.astro`).includes('KetGuide'));
+    expect(withBox.sort()).toEqual(Object.values(files).sort());
   });
 
   it('keeps only a known page from the state', () => {
