@@ -21,14 +21,24 @@ let selected: string | null = null;
 let isolate = false;
 let assembling = false;
 
-const viewer = new ModelViewer(stage, {
+let viewer: ModelViewer;
+try {
+  viewer = new ModelViewer(stage, {
   onSelect: (key) => { selected = key; showInfo(); markList(); },
   onStep: (s) => {
     stepEl.hidden = !s;
     stepEl.textContent = s?.label ?? '';
     if (!s) setAssembling(false);
   },
-});
+  });
+} catch (e) {
+  status.textContent = 'The 3D view needs WebGL, which is not available here.';
+  throw e;
+}
+// The canvas is the picture; the overlays next to it stay reachable for VoiceOver.
+const canvas = stage.querySelector('canvas');
+canvas?.setAttribute('role', 'img');
+canvas?.setAttribute('aria-label', stage.dataset.label ?? '3D model');
 
 function setAssembling(on: boolean) {
   assembling = on;
@@ -93,7 +103,7 @@ resetBtn.addEventListener('click', () => {
 explode.addEventListener('input', () => { setAssembling(false); viewer.setExplode(Number(explode.value)); });
 assembleBtn.addEventListener('click', () => {
   if (assembling) { viewer.stopAssembly(); setAssembling(false); return; }
-  isolate = false; explode.value = '0'; setAssembling(true);
+  isolate = false; viewer.setIsolate(false); viewer.select(null); explode.value = '0'; setAssembling(true);
   viewer.playAssembly();
 });
 partsBtn.addEventListener('click', () => {

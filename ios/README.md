@@ -13,8 +13,9 @@ fun-with-quantum.org. Not in the App Store yet.
 
 - `FunWithQuantum/Sources/`: SwiftUI. Web content is served from the app bundle as `fwq://app/…`
   (`WebContent.swift`); pages can't load anything from the internet, and links to the web open in Safari.
-- `scripts/build-web.mjs` builds `FunWithQuantum/Web/` (not committed): the portal (`portal/dist`,
-  without analytics and Ket, never the unlisted `/preview/` pages), the model viewers and
+- `scripts/build-web.mjs` builds `FunWithQuantum/Web/` (not committed): the portal (its app build, `PUBLIC_FWQ_APP=1` → `portal/dist-app`,
+  without analytics, CDN and Ket; never the unlisted `/preview/` pages or their code), the model viewers,
+  `licenses.txt` (About → Licenses) and
   `catalog.json` for the native lists.
 - `web/`: the model pages. The viewers and models are the family's own, fetched from their
   repositories at the commits in `web/sources.json`, each bundled with the three.js version it uses
@@ -24,7 +25,7 @@ fun-with-quantum.org. Not in the App Store yet.
 
 ```bash
 cd portal && npm ci && cd ../ios/web && npm ci && cd ..
-node scripts/build-web.mjs          # --skip-portal reuses portal/dist
+node scripts/build-web.mjs          # --skip-portal reuses portal/dist-app
 xcodegen generate
 open FunWithQuantum.xcodeproj       # or: xcodebuild test -scheme FunWithQuantum -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
 ```

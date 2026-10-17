@@ -18,7 +18,8 @@
       "quantego-two.mpd": "assets/models/quantego-two.mpd",
       "quantego-two-1024.mpd": "assets/models/quantego-two-1024.mpd",
       "quantego-one.usdz": "assets/models/quantego-one.usdz",
-      "quantego-two.usdz": "assets/models/quantego-two.usdz"
+      "quantego-two.usdz": "assets/models/quantego-two.usdz",
+      "LICENSE-Apache-2.0.txt": "LICENSE"
     }
   },
   "qutie": {

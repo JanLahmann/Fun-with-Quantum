@@ -1,6 +1,7 @@
 /**
- * Qutie: a one-piece print, so a turntable — drag to spin, pinch to zoom. Lighting and colors as on
- * qutie.org's showroom stage (JanLahmann/Qutie site/src/pages/index.astro).
+ * Qutie: a one-piece print, so a turntable — drag to spin, pinch to zoom. Lighting as on qutie.org's
+ * showroom stage (JanLahmann/Qutie site/src/pages/index.astro); each model's color, finish and start
+ * angle come from the page (data-color, data-metalness, data-roughness, data-rotate, from there too).
  */
 import * as THREE from 'three';
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js';
@@ -8,7 +9,13 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 const stage = document.getElementById('stage')!;
 const status = document.getElementById('status')!;
-const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+let renderer: THREE.WebGLRenderer;
+try {
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+} catch (e) {
+  status.textContent = 'The 3D view needs WebGL, which is not available here.';
+  throw e;
+}
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 stage.append(renderer.domElement);
 renderer.domElement.style.cssText = 'display:block;width:100%;height:100%;touch-action:none';
@@ -58,8 +65,10 @@ new STLLoader().loadAsync(src).then((geometry) => {
   geometry.center();
   geometry.computeBoundingSphere();
   const r = geometry.boundingSphere?.radius ?? 1;
-  const mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({ color: new THREE.Color(stage.dataset.color || '#2fa9cc'), roughness: 0.55, metalness: 0.05 }));
+  const d = stage.dataset;
+  const mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({ color: new THREE.Color(d.color || '#2fa9cc'), roughness: Number(d.roughness ?? 0.55), metalness: Number(d.metalness ?? 0.05) }));
   mesh.rotation.x = -Math.PI / 2; // STL is Z-up, three.js Y-up
+  mesh.rotation.z = (Number(d.rotate ?? 0) * Math.PI) / 180; // the model's start angle
   scene.add(mesh);
   radius = r;
   status.remove();

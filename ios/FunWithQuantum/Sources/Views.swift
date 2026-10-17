@@ -16,7 +16,7 @@ struct PlayView: View {
 
             Section {
                 ForEach(catalog.games.filter { !$0.webGame }) { game in
-                    Button { Safari.open(URL(string: game.notebookUrl)!) } label: { GameRow(game: game, external: true) }
+                    Button { if let url = URL(string: game.notebookUrl) { Safari.open(url) } } label: { GameRow(game: game, external: true) }
                         .tint(.primary)
                 }
             } header: { Text("Notebook games") } footer: { Text("Interactive Jupyter notebooks with the Qiskit code. They open in a free online session (mybinder.org via QuBins), which can take a few minutes to start.") }
@@ -135,7 +135,7 @@ struct ProjectSection: View {
     var body: some View {
         Section {
             ForEach(projects) { p in
-                Button { Safari.open(URL(string: p.url)!) } label: {
+                Button { if let url = URL(string: p.url) { Safari.open(url) } } label: {
                     HStack(alignment: .top, spacing: 12) {
                         Text(p.icon).font(.title2).accessibilityHidden(true)
                         VStack(alignment: .leading, spacing: 4) {
@@ -175,7 +175,7 @@ struct AboutView: View {
             List {
                 Section {
                     Text("Quantum computing you can play, build and learn. Open source, built by Jan-R. Lahmann and the RasQberry community.")
-                    Button("fun-with-quantum.org") { Safari.open(URL(string: "https://fun-with-quantum.org")!) }
+                    Link("fun-with-quantum.org", destination: URL(string: "https://fun-with-quantum.org")!)
                 }
                 Section("Privacy") {
                     Text("This app has no account, no tracking and no analytics. The games and models run on your device; links open in Safari, where the linked site's own privacy policy applies.")
@@ -184,7 +184,12 @@ struct AboutView: View {
                     ForEach(catalog.credits, id: \.repo) { c in
                         Button("\(c.repo) (\(String(c.ref.prefix(8))))") { Safari.open(URL(string: "https://github.com/\(c.repo)")!) }
                     }
-                    Text("Viewers and models from the family's open-source repositories (Apache License 2.0), with three.js (MIT).").font(.footnote).foregroundStyle(.secondary)
+                    Text("Viewers and models from the family's open-source repositories (Apache License 2.0), with three.js (MIT) and parts from the LDraw Parts Library (CC BY 4.0).").font(.footnote).foregroundStyle(.secondary)
+                    NavigationLink("Licenses") { LicensesView() }
+                }
+                Section {
+                    Text("Not affiliated with or endorsed by IBM, the LEGO Group or BrickLink. IBM, IBM Quantum and Qiskit are trademarks of International Business Machines Corporation; LEGO and BrickLink are trademarks of the LEGO Group.")
+                        .font(.footnote).foregroundStyle(.secondary)
                 }
                 Section {
                     Text("Version \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "?") (\(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "?"))")
@@ -195,5 +200,17 @@ struct AboutView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
         }
+    }
+}
+
+struct LicensesView: View {
+    private let text = WebContent.root.flatMap { try? String(contentsOf: $0.appendingPathComponent("licenses.txt"), encoding: .utf8) } ?? ""
+
+    var body: some View {
+        ScrollView {
+            Text(text).font(.system(.footnote, design: .monospaced)).textSelection(.enabled).padding()
+        }
+        .navigationTitle("Licenses")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
