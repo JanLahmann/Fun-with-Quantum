@@ -9,9 +9,9 @@
   "properties": {
     "surface": {"enum": ["ios", "web"]},
     "channel": {"enum": ["release", "beta", "dev"]},
-    "appVersion": {"type": "string", "maxLength": 16},
+    "appVersion": {"type": "string", "maxLength": 16, "pattern": "^\\d{1,3}(\\.\\d{1,3}){1,2}$"},
     "build": {"type": "integer", "minimum": 0},
-    "engineVersion": {"type": "string", "maxLength": 16},
+    "engineVersion": {"type": "string", "maxLength": 16, "pattern": "^\\d{1,3}(\\.\\d{1,3}){1,2}$"},
     "units": {
       "type": "object", "additionalProperties": false, "required": ["speed", "distance"],
       "properties": {
