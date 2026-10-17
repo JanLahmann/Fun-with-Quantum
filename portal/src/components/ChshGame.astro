@@ -70,7 +70,7 @@ const bits = [0, 1] as const;
     font: 700 1.2rem var(--mono); width: 40px; height: 40px; margin-left: 4px; border-radius: 10px; cursor: pointer;
     border: 2px solid var(--line); background: var(--card); color: var(--ink);
   }
-  .ch-ans:hover { border-color: var(--cyan); }
+  @media (hover: hover) { .ch-ans:hover { border-color: var(--cyan); } }
 
   .ch-circle :global(.ch-circle-svg) { display: block; width: 100%; max-width: 280px; margin: 0 auto; height: auto; }
   .ch-circle :global(.rim) { fill: none; stroke: var(--line); stroke-width: 2; }
@@ -107,7 +107,7 @@ const bits = [0, 1] as const;
   }
   .ch-q:disabled { opacity: 1; }
   .ch-board[data-mode='pick'] .ch-q, .ch-board[data-mode='explain'] .ch-q { cursor: pointer; }
-  .ch-board[data-mode='pick'] .ch-q:hover, .ch-board[data-mode='explain'] .ch-q:hover { border-color: var(--cyan); }
+  @media (hover: hover) { .ch-board[data-mode='pick'] .ch-q:hover, .ch-board[data-mode='explain'] .ch-q:hover { border-color: var(--cyan); } }
   .ch-board[data-busy] .ch-q { cursor: progress; }
   .ch-q .qh { font: 600 0.8rem var(--mono); }
   .ch-q .need { color: var(--muted); font-size: 0.75rem; }
@@ -116,7 +116,16 @@ const bits = [0, 1] as const;
   .ch-q.win { border-color: var(--win); box-shadow: 0 0 0 3px color-mix(in srgb, var(--win) 25%, transparent); }
   .ch-q.lose { border-color: var(--lose); box-shadow: 0 0 0 3px color-mix(in srgb, var(--lose) 25%, transparent); }
   @media (max-width: 420px) {
-    .ch-slider { grid-template-columns: 6.6em 1fr 3em; }
+    /* the slider gets the full width: name and angle above it, so a 5° step is not a fiddly 2px */
+    .ch-slider { grid-template-columns: 1fr auto; row-gap: 0; }
+    .ch-slider input { grid-column: 1 / -1; grid-row: 2; }
     .ch-rule { font-size: 0.8rem; }
+  }
+  @media (orientation: landscape) and (max-height: 500px) and (max-width: 960px) {
+    .ch-circle :global(.ch-circle-svg) { max-width: 200px; }
+  }
+  @media (pointer: coarse) {
+    .ch-ans { width: 44px; height: 44px; }
+    .ch-slider input { height: 36px; }
   }
 </style>

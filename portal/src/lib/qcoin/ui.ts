@@ -16,6 +16,7 @@ import { GATE_ROTATIONS, HEADS, apply, bloch, measure, pHeads, stateLabel, type 
 import { emptyScore, quantumA, quantumB, randomClassical, tally, type Player, type Score, type Strategy } from './game';
 import { IDENTITY, axisAngle, mul, type Mat3 } from './rotation';
 import { CoinView, reducedMotion } from './view';
+import { reveal as showText } from '../games/shell';
 import { MESSAGES, doqLink, ibmLink, isLocale, rich, type Locale, type Messages, type TermKey } from './i18n';
 
 type Chapter = 1 | 2 | 3 | 4 | 5 | 6;
@@ -119,6 +120,12 @@ export function mountCoinGame(root: HTMLElement) {
     circuitEl.innerHTML = parts.join('');
   };
 
+  /** Whether the last move was a tap or a click: then no focus ring. Keyboard and screen-reader players
+   *  (whose activation sends no keydown to the page) get the next move's first button focused. */
+  let pointer = false;
+  root.addEventListener('pointerdown', () => { pointer = true; });
+  root.addEventListener('keydown', () => { pointer = false; });
+
   /** Render buttons, resolve with the chosen value; aborts if the chapter changes meanwhile. */
   function ask<T>(e: number, options: { label: string; value: T; kind?: 'primary' | 'quantum'; gate?: GateName }[], extra = ''): Promise<T> {
     actions.innerHTML = '';
@@ -137,7 +144,7 @@ export function mountCoinGame(root: HTMLElement) {
         actions.appendChild(b);
       }
       if (extra) actions.insertAdjacentHTML('beforeend', extra);
-      actions.querySelector('button')?.focus({ preventScroll: true });
+      if (!pointer) actions.querySelector('button')?.focus({ preventScroll: true }); // after a tap, a focus ring would only distract
     });
   }
 
@@ -484,6 +491,7 @@ export function mountCoinGame(root: HTMLElement) {
       seen = { lastAction: choice === 'I' ? 'math-leave' : 'math-flip' };
       resetCoin();
       setText(m.ch6.intro + (choice === 'I' ? m.ch6.caseLeave : m.ch6.caseFlip) + m.ch6.conclusion);
+      showText(title);
       say('');
       const slots: Slot[] = [{ gate: 'H', who: m.ui.whoComputer }, { gate: choice, who: m.ui.whoYou }, { gate: 'H', who: m.ui.whoComputer }];
       for (let i = 0; i < 3; i++) {
@@ -568,6 +576,7 @@ export function mountCoinGame(root: HTMLElement) {
     resetCoin();
     if (!initial) track('Portal: coin game chapter', { chapter: ch }); // page views already count chapter 1
     CHAPTERS[ch](e).catch((err) => { if (!(err instanceof Abort)) console.error(err); });
+    if (!initial) showText(title); // on phones the text sits above the coin; a chapter sets it before its first wait
   }
   tabs.forEach((t) => t.addEventListener('click', () => go(Number(t.dataset.chapter) as Chapter)));
   window.addEventListener('resize', () => coin.render());

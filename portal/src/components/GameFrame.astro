@@ -68,7 +68,7 @@ const { id, label, locale, chapters, chaptersLabel, explain, explainTitle, close
     display: inline-grid; place-items: center; width: 18px; height: 18px; margin-right: 4px;
     border-radius: 50%; font: 600 0.7rem var(--mono); background: var(--line); color: var(--ink);
   }
-  .qg-chapters button:hover { border-color: var(--cyan); color: var(--cyan); }
+  @media (hover: hover) { .qg-chapters button:hover { border-color: var(--cyan); color: var(--cyan); } }
   .qg-chapters button[aria-selected='true'] { color: var(--ink); border-color: var(--magenta); }
   .qg-chapters button[aria-selected='true'] .n { background: var(--grad); color: #fff; }
   .qg-chapters button.done .n { background: color-mix(in srgb, var(--cyan) 22%, transparent); color: var(--cyan); }
@@ -76,21 +76,29 @@ const { id, label, locale, chapters, chaptersLabel, explain, explainTitle, close
     flex: 0 0 auto; font: 600 0.82rem var(--sans); color: var(--cyan); background: transparent;
     border: 1px solid var(--cyan); border-radius: 20px; padding: 6px 12px; cursor: pointer;
   }
-  .qg-explain-btn:hover { background: color-mix(in srgb, var(--cyan) 10%, transparent); }
+  @media (hover: hover) { .qg-explain-btn:hover { background: color-mix(in srgb, var(--cyan) 10%, transparent); } }
 
   .qg-arena { display: grid; grid-template-columns: minmax(280px, 1fr) 1.15fr; gap: 26px; align-items: start; }
   .qg-stage { min-width: 0; }
   .qg-panel { min-width: 0; }
-  @media (max-width: 860px) {
-    .qg-arena { grid-template-columns: 1fr; gap: 14px; }
-    /* on phones keep the moves right under the stage; the explanation follows */
-    .qg-panel { display: flex; flex-direction: column; }
+  /* Phones (and narrow windows), except a phone on its side: one column — the rules first, then the stage
+     with the moves right under it. A phone on its side keeps the two columns, so stage and buttons fit together. */
+  @media (max-width: 860px) and (orientation: portrait), (max-width: 860px) and (min-height: 501px) {
+    .qg-top { flex-wrap: wrap; }
+    .qg-chapters { flex: 1 1 100%; } /* the tabs get the full width; Explain follows them */
+    .qg-explain-btn { margin-left: auto; }
+    .qg-arena { display: flex; flex-direction: column; align-items: stretch; gap: 0; }
+    .qg-panel { display: contents; }
     .qg-title { order: 0; }
-    .qg-status { order: 1; }
-    .qg-actions { order: 2; }
-    .qg-score { order: 3; }
-    .qg-circuit { order: 4; }
-    .qg-text { order: 5; margin-top: 12px; }
+    .qg-text { order: 1; }
+    .qg-stage { order: 2; margin: 6px 0 4px; }
+    .qg-status { order: 3; }
+    .qg-actions { order: 4; }
+    .qg-score { order: 5; }
+    .qg-circuit { order: 6; }
+  }
+  @media (orientation: landscape) and (max-height: 500px) and (max-width: 960px) {
+    .qg-arena { grid-template-columns: minmax(240px, 1fr) 1.15fr; gap: 18px; }
   }
 
   .qg-title { font-size: 1.2rem; margin-bottom: 6px; }
@@ -114,9 +122,9 @@ const { id, label, locale, chapters, chaptersLabel, explain, explainTitle, close
     font: 600 0.93rem var(--sans); padding: 10px 16px; border-radius: 10px; cursor: pointer;
     border: 1.5px solid var(--line); background: var(--card); color: var(--ink);
   }
-  .qg-actions button:hover:not(:disabled) { border-color: var(--cyan); color: var(--cyan); }
+  @media (hover: hover) { .qg-actions button:hover:not(:disabled) { border-color: var(--cyan); color: var(--cyan); } }
   .qg-actions button.primary { background: var(--grad); color: #fff; border-color: transparent; }
-  .qg-actions button.primary:hover:not(:disabled) { color: #fff; filter: brightness(1.08); }
+  @media (hover: hover) { .qg-actions button.primary:hover:not(:disabled) { color: #fff; filter: brightness(1.08); } }
   .qg-actions button.quantum { border-color: var(--magenta); }
   .qg-actions button.current { border-color: var(--magenta); color: var(--magenta); }
   .qg-actions button:disabled { opacity: 0.45; cursor: default; }
@@ -127,12 +135,12 @@ const { id, label, locale, chapters, chaptersLabel, explain, explainTitle, close
     font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: help;
     text-decoration: underline dotted color-mix(in srgb, var(--cyan) 70%, transparent); text-underline-offset: 3px;
   }
-  .qg-term:hover { color: var(--cyan); }
+  @media (hover: hover) { .qg-term:hover { color: var(--cyan); } }
 
   /* circuit (src/lib/games/circuit.ts) */
   .qg-circuit { overflow-x: auto; margin: 6px 0 2px; }
   .qg-circuit:empty { display: none; }
-  .qg-circuit-svg { display: block; width: 100%; height: auto; } /* fits the panel; wide ones scroll on phones (min-width inline) */
+  .qg-circuit-svg { display: block; width: 100%; height: auto; } /* fits the panel, at most its own size (max-width inline) */
   .qg-circuit-svg .wl { font: 11px var(--mono); fill: var(--muted); }
   .qg-circuit-svg .wire { stroke: var(--muted); stroke-width: 1.2; opacity: 0.6; }
   .qg-circuit-svg .barrier { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 3 3; opacity: 0.6; }
@@ -164,7 +172,7 @@ const { id, label, locale, chapters, chaptersLabel, explain, explainTitle, close
     position: absolute; top: 10px; right: 12px; width: 32px; height: 32px; border-radius: 50%;
     border: 1px solid var(--line); background: var(--card); color: var(--muted); font-size: 1.2rem; cursor: pointer;
   }
-  .qg-close:hover { color: var(--ink); border-color: var(--cyan); }
+  @media (hover: hover) { .qg-close:hover { color: var(--ink); border-color: var(--cyan); } }
   .qg-explain h3 { font-size: 1.15rem; margin: 6px 36px 10px 0; }
   .qg-explain h3:focus { outline: none; }
   .qg-explain p { color: var(--ink); font-size: 0.97rem; margin-bottom: 12px; }
@@ -175,4 +183,10 @@ const { id, label, locale, chapters, chaptersLabel, explain, explainTitle, close
   .qg-explain .qg-terms .qg-term { text-align: left; }
   .qg-noscript { color: var(--muted); }
   @media (max-width: 480px) { .qg { padding: 14px; } }
+  /* touch screens: tap targets of at least 44px (Apple's guideline) */
+  @media (pointer: coarse) {
+    .qg-chapters button, .qg-explain-btn, .qg-actions button, .qg-explain .qg-back { min-height: 44px; }
+    .qg-close { width: 44px; height: 44px; top: 6px; right: 8px; }
+    .qg-explain .qg-terms .qg-term { min-height: 44px; }
+  }
 </style>

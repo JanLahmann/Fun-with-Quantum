@@ -1,7 +1,8 @@
 /**
  * Draws a small quantum circuit as an SVG string: one wire per qubit, gates placed in the earliest
  * free column, two-qubit gates as dots / ⊕ / × joined by a line, a barrier, then the meters.
- * Colors come from CSS classes (`tone-…`), so it follows the page's light/dark theme.
+ * Colors come from CSS classes (`tone-…`), so it follows the page's light/dark theme. The SVG scales
+ * down to the width it gets: a scrolled-off part would hide gates and meters on a phone.
  */
 import type { Op } from '../qsim';
 
@@ -9,13 +10,15 @@ export type Step = (Op & { tone?: string }) | { g: 'barrier' } | { g: 'measure';
   /** A named block over qubits from…to, e.g. Grover's oracle. */
   | { g: 'box'; label: string; from: number; to: number; tone?: string };
 
-const COL = 46, ROW = 44, LEFT = 92, TOP = 26, BOX = 30;
+const COL = 46, ROW = 44, TOP = 26, BOX = 30;
 const NAME: Record<string, string> = { h: 'H', x: 'X', y: 'Y', z: 'Z', s: 'S', sdg: 'S†', ry: 'Ry', rz: 'Rz' };
 /** An Ry angle in degrees, as written above the gate: −45°. */
 const degrees = (t: number) => `${Math.round((t * 180) / Math.PI)}°`.replace('-', '−');
 
 export function circuitSvg(labels: readonly string[], steps: readonly Step[], title = ''): string {
   const n = labels.length;
+  // room for the wire labels (11px monospace, about 6.6px a character), not more: on phones the circuit scales down to fit
+  const LEFT = 16 + Math.ceil(6.6 * Math.max(1, ...labels.map((l) => l.length)));
   const next = new Array<number>(n).fill(0);
   const placed: { step: Step; col: number }[] = [];
   for (const step of steps) {
@@ -33,7 +36,7 @@ export function circuitSvg(labels: readonly string[], steps: readonly Step[], ti
   const y = (q: number) => TOP + q * ROW;
   const x = (col: number) => LEFT + col * COL + COL / 2;
   const out: string[] = [];
-  out.push(`<svg class="qg-circuit-svg" viewBox="0 0 ${width} ${height}" style="max-width:${width}px;min-width:${Math.min(width, 420)}px" role="img" aria-label="${title}">`);
+  out.push(`<svg class="qg-circuit-svg" viewBox="0 0 ${width} ${height}" style="max-width:${width}px" role="img" aria-label="${title}">`);
   labels.forEach((l, q) => {
     out.push(`<text class="wl" x="${LEFT - 10}" y="${y(q) + 4}" text-anchor="end">${l}</text>`);
     out.push(`<line class="wire" x1="${LEFT - 4}" y1="${y(q)}" x2="${width - 8}" y2="${y(q)}"/>`);

@@ -20,6 +20,8 @@ export const UI = {
   answerTo: (who: 'x' | 'y', q: Bit) => `if ${who} = ${q}, answer`,
   question: (x: Bit, y: Bit) => `x = ${x} · y = ${y}`,
   need: (x: Bit, y: Bit) => (x & y ? 'different answers' : 'same answer'),
+  /** The same in a sentence: they need … */
+  needs: (x: Bit, y: Bit) => (x & y ? 'different answers' : 'the same answer'),
   sliders: ['Alice, x = 0', 'Alice, x = 1', 'Bob, y = 0', 'Bob, y = 1'],
   circleTitle: 'The Bloch circle: the directions Alice and Bob measure along',
   circleHint: 'dot at the tip: answer 0 · dot at the other end: answer 1',
@@ -44,7 +46,7 @@ export const RULES = `<p>Alice and Bob may agree on a strategy beforehand — th
 
 export const CH1 = {
   title: 'Play classically',
-  intro: `${RULES}<p>A [classical strategy](#classical) is a table: what Alice answers to x = 0 and to x = 1, what Bob answers to y = 0 and to y = 1. <b>Click the answers</b> to make your table — the four squares show which questions it wins.</p>`,
+  intro: `${RULES}<p>A [classical strategy](#classical) is a table: what Alice answers to x = 0 and to x = 1, what Bob answers to y = 0 and to y = 1. <b>Change the answers</b> to make your table — the four squares show which questions it wins.</p>`,
   result: (wins: number, proofShown = false) =>
     `Your table wins <b>${wins} of 4</b> questions (${wins * 25}%).${wins === 3 && !proofShown ? ' Can you find one that wins all four?' : ''}`,
   many: 'Play 1000 rounds',
@@ -65,7 +67,7 @@ export const CH1 = {
 export const CH2 = {
   title: 'The quantum team',
   intro: `<p>Now Alice and Bob share a [Bell pair](#bell): two [entangled](#entanglement) [qubits](#qubit), one for each. In their rooms, each [measures](#measurement) their qubit along an arrow on the [Bloch circle](#bloch) that depends on their question: Alice along A0 (0°) or A1 (90°), Bob along B0 (45°) or B1 (−45°). The result is their answer: 0 along the arrow, 1 the opposite way.</p>
-<p><b>Click a question</b> in the squares — or let the quiz master pick.</p>`,
+<p><b>Choose a question</b> in the squares — or let the quiz master pick.</p>`,
   again: 'They don’t win every round. Play on: in the long run they win about 85% — more than any classical table.',
   ask: 'Quiz master asks',
   many: 'Play 1000 rounds',
@@ -78,7 +80,7 @@ export const CH2 = {
 /** One round, with the reason for its odds: P(same) = cos²(Δ/2). */
 export const round = (r: Round, alpha: number, beta: number) => {
   const d = between(alpha, beta), same = Math.cos((d * Math.PI) / 360) ** 2;
-  return `x = ${r.x}, y = ${r.y}: they need ${UI.need(r.x, r.y)}.<br>Alice along ${deg(alpha)}: <b>${r.a}</b> · Bob along ${deg(beta)}: <b>${r.b}</b> — ${result(r.win)}`
+  return `x = ${r.x}, y = ${r.y}: they need ${UI.needs(r.x, r.y)}.<br>Alice along ${deg(alpha)}: <b>${r.a}</b> · Bob along ${deg(beta)}: <b>${r.b}</b> — ${result(r.win)}`
     + `<br><small>Their arrows are ${d}° apart, so they answer the same with probability cos²(${d}°/2) = ${pct(same)}.</small>`;
 };
 
@@ -124,14 +126,14 @@ export const CH4 = {
 <p>J. F. Clauser, M. A. Horne, A. Shimony, R. A. Holt, <a href="https://doi.org/10.1103/PhysRevLett.23.880" target="_blank" rel="noopener">Phys. Rev. Lett. 23, 880 (1969)</a>; studied as a nonlocal game: R. Cleve, P. Høyer, B. Toner, J. Watrous, <a href="https://arxiv.org/abs/quant-ph/0404076" target="_blank" rel="noopener">arXiv:quant-ph/0404076</a> (2004); B. S. Tsirelson (Cirel’son), <a href="https://doi.org/10.1007/BF00417500" target="_blank" rel="noopener">Lett. Math. Phys. 4, 93 (1980)</a>. More in IBM Quantum Learning’s lesson <a href="https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/entanglement-in-action/chsh-game" target="_blank" rel="noopener">The CHSH game</a>.</p>`,
   ],
   said: [
-    'Click a question square to see its two arrows and their angle.',
+    'Pick a question square to see its two arrows and their angle.',
     'Classical tables: S ≤ 2, win rate ≤ 75% — the CHSH inequality.',
     'Best angles: S = 2√2 ≈ 2.83, win rate 85.4% — Tsirelson’s bound.',
     'Quantum: 85.4%. Classical: 75%. An imagined PR box: 100%.',
   ],
   question: (x: Bit, y: Bit, alpha: number, beta: number, win: number) => {
     const d = between(alpha, beta);
-    return `x = ${x}, y = ${y}: arrows ${d}° apart, the same answer with cos²(${d}°/2) = ${pct(Math.cos((d * Math.PI) / 360) ** 2)}; they need ${UI.need(x, y)} — win ${pct(win)}.`;
+    return `x = ${x}, y = ${y}: arrows ${d}° apart, the same answer with cos²(${d}°/2) = ${pct(Math.cos((d * Math.PI) / 360) ** 2)}; they need ${UI.needs(x, y)} — win ${pct(win)}.`;
   },
 };
 

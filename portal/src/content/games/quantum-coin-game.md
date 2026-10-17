@@ -28,6 +28,9 @@ You and a quantum computer take turns flipping a coin — without looking at it.
 at the end, the quantum computer wins. Play a few rounds and you'll notice something unsettling:
 you lose. Every time.
 
+<details class="spoiler">
+<summary>Show the solution</summary>
+
 The trick is that the quantum computer doesn't flip the coin, it puts it into **superposition** —
 heads and tails at once. Whatever you do on your turn, its second move uses
 **interference** to steer the coin back to heads with certainty. The game is a gentle
@@ -37,3 +40,5 @@ In the notebook, two players make the moves: first with ordinary coin moves only
 gets the quantum H move. You see the circuit for the moves, run it on a simulator, try your own
 gate sequences, and follow the short calculation that shows why A wins every time
 with two H moves.
+
+</details>

@@ -19,6 +19,15 @@ export function track(name: string, data?: Record<string, string | number>) {
 
 export const reducedMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 
+/**
+ * On phones the text sits above the stage (GameFrame.astro): when a new text replaces one whose start has
+ * scrolled out of view, scroll back to its title, or the change would go unseen.
+ */
+export function reveal(title: HTMLElement) {
+  if (title.getBoundingClientRect().top >= 0) return;
+  title.scrollIntoView({ block: 'start', behavior: reducedMotion() ? 'auto' : 'smooth' });
+}
+
 export interface Choice<T> { label: string; value: T; kind?: 'primary' | 'quantum' | 'current' }
 
 export interface UiLabels {
@@ -57,6 +66,7 @@ export function mountShell(
   const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>('.qg-chapters button'));
   let epoch = 0;
   let pending: ((v: never) => void) | null = null;
+  let lastText = '';
 
   function buttons<T>(e: number, options: Choice<T>[], done: (v: T) => void, extra: string) {
     actions.innerHTML = '';
@@ -76,7 +86,13 @@ export function mountShell(
     root,
     get epoch() { return epoch; },
     setTitle: (t) => { title.textContent = t; },
-    setText: (html) => { text.innerHTML = rich(html); },
+    setText: (html) => {
+      if (html === lastText) return;
+      const first = !lastText; // a chapter's first text: go() takes care of it
+      lastText = html;
+      text.innerHTML = rich(html);
+      if (!first) reveal(title);
+    },
     say: (html) => { status.innerHTML = rich(html); },
     score: (t) => { scoreEl.textContent = t; },
     circuit: (svg) => { circuitEl.innerHTML = svg; },
@@ -165,10 +181,11 @@ export function mountShell(
     const e = epoch;
     current = ch;
     paintTabs();
-    actions.innerHTML = ''; scoreEl.textContent = ''; status.innerHTML = ''; circuitEl.innerHTML = ''; text.innerHTML = '';
+    actions.innerHTML = ''; scoreEl.textContent = ''; status.innerHTML = ''; circuitEl.innerHTML = ''; text.innerHTML = ''; lastText = '';
     opts.onEnter?.(ch);
     if (!initial) track(`Portal: ${game} chapter`, { chapter: ch });
     chapters[ch - 1](e).catch((err) => { if (!(err instanceof Abort)) console.error(err); });
+    if (!initial) reveal(title); // a chapter's title and text are set before its first wait
   }
   tabs.forEach((t) => t.addEventListener('click', () => go(Number(t.dataset.chapter))));
   queueMicrotask(() => go(1, true));

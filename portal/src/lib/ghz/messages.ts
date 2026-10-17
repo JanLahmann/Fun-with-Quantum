@@ -52,7 +52,7 @@ export const RULES = `<p>Alice, Bob and you are a team. Each of you is asked eit
 
 export const CH1 = {
   title: 'Team classical',
-  intro: `${RULES}<p>A [classical strategy](#classical): each player thinks of an object — a red or blue star or rectangle — and answers from it. <b>Click a player’s object to change it</b>, then let the quiz master ask all four questions.</p>`,
+  intro: `${RULES}<p>A [classical strategy](#classical): each player thinks of an object — a red or blue star or rectangle — and answers from it. <b>Select a player’s object to change it</b>, then let the quiz master ask all four questions.</p>`,
   askAll: 'Ask all four questions',
   all: 'Try all classical teams',
   why: 'Why never 4 of 4?',

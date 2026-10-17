@@ -47,7 +47,7 @@ import { PAGE, UI, questionLabel } from '../lib/ghz/messages';
     font: 600 0.74rem var(--mono); color: var(--muted); background: transparent; cursor: pointer;
     border: 1px solid var(--line); border-radius: 16px; padding: 5px 10px;
   }
-  .gz-questions button:hover { border-color: var(--cyan); color: var(--cyan); }
+  @media (hover: hover) { .gz-questions button:hover { border-color: var(--cyan); color: var(--cyan); } }
   .gz-questions button[aria-pressed='true'] { color: var(--ink); border-color: var(--magenta); background: color-mix(in srgb, var(--magenta) 10%, transparent); }
 
   .gz-players { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
@@ -66,7 +66,7 @@ import { PAGE, UI, questionLabel } from '../lib/ghz/messages';
   .thing { background: none; border: 0; padding: 2px; border-radius: 10px; cursor: default; color: var(--ink); }
   .thing:disabled { opacity: 1; }
   .gz-board[data-mode='edit'] .thing { cursor: pointer; outline: 1.5px dashed color-mix(in srgb, var(--tone) 60%, transparent); outline-offset: 2px; }
-  .gz-board[data-mode='edit'] .thing:hover { background: color-mix(in srgb, var(--tone) 12%, transparent); }
+  @media (hover: hover) { .gz-board[data-mode='edit'] .thing:hover { background: color-mix(in srgb, var(--tone) 12%, transparent); } }
   .thing :global(svg) { display: block; }
   .thing :global(.red) { fill: var(--red); }
   .thing :global(.blue) { fill: var(--blue); }
@@ -96,4 +96,5 @@ import { PAGE, UI, questionLabel } from '../lib/ghz/messages';
     .gz-players { gap: 6px; }
     .gz-player .said { font-size: 0.78rem; }
   }
+  @media (pointer: coarse) { .gz-questions button { min-height: 44px; } }
 </style>

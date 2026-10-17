@@ -1,7 +1,7 @@
 /**
  * Browser side of the CHSH game (markup: components/ChshGame.astro).
  *
- *   1  Play classically     — click a table of answers; 3 of 4 at best; try all 16; the parity proof.
+ *   1  Play classically     — pick a table of answers; 3 of 4 at best; try all 16; the parity proof.
  *   2  The quantum team     — a Bell pair measured along four arrows: about 85% of the rounds.
  *   3  Turn the angles      — sliders for the four arrows, exact win rates, 1000 sampled rounds.
  *   4  Why 85% is the limit — the Bloch circle, S ≤ 2, S ≤ 2√2, what it means.
@@ -30,8 +30,17 @@ function circleSvg(angles: Angles, active: { x: Bit; y: Bit } | null, answers: {
     const both = who === 'alice' ? angles.alice : angles.bob, P = who === 'alice' ? 'A' : 'B';
     const same = (((both[0] - both[1]) % 360) + 360) % 360 === 0; // both arrows on top of each other: one label
     const label = same ? (q === 0 ? `${P}0,1` : '') : `${P}${q}`;
-    const [x, y] = pt(deg), [lx, ly] = pt(deg, R + (who === 'alice' ? 16 : 30));
     const t = (deg * Math.PI) / 180, ux = Math.sin(t), uy = -Math.cos(t), px = -uy, py = ux;
+    // Labels sit just beyond the tip. A Bob label within 25° of an Alice arrow would collide with hers: it moves along
+    // the circle, away from her arrow; right on top of it, 14px up (near the bottom, down), as a step outward would
+    // leave the picture at the sides.
+    const [x, y] = pt(deg);
+    let [lx, ly] = pt(deg, R + 16);
+    if (who === 'bob') {
+      const d = angles.alice.map((a) => ((((deg - a) % 360) + 540) % 360) - 180).reduce((m, v) => (Math.abs(v) < Math.abs(m) ? v : m));
+      if (d === 0) ly += Math.cos(t) > -0.5 ? -14 : 14;
+      else if (Math.abs(d) < 25) { const k = Math.max(18 - 0.6 * Math.abs(d), 6) * Math.sign(d); lx += k * px; ly += k * py; }
+    }
     const head = `${x},${y} ${x - 10 * ux + 5 * px},${y - 10 * uy + 5 * py} ${x - 10 * ux - 5 * px},${y - 10 * uy - 5 * py}`;
     out.push(`<g class="arrow ${who}${on ? ' on' : ''}"><line x1="${C}" y1="${C}" x2="${x - 8 * ux}" y2="${y - 8 * uy}"/><polygon points="${head}"/>`
       + `<text x="${lx}" y="${ly + 4}" text-anchor="middle">${label}</text></g>`);
@@ -56,7 +65,8 @@ export function mountChsh(root: HTMLElement) {
   const cellAt = (x: Bit, y: Bit) => cells[2 * x + y];
 
   let mode: Mode = 'off';
-  let table: { alice: [Bit, Bit]; bob: [Bit, Bit] } = { alice: [0, 1], bob: [1, 0] }; // chapter 1's table survives chapter switches
+  // Starts at 1 of 4 (Alice always 0, Bob always 1), so there is something to find; survives chapter switches.
+  let table: { alice: [Bit, Bit]; bob: [Bit, Bit] } = { alice: [0, 0], bob: [1, 1] };
   let angles: Angles = BEST_ANGLES;
   let pickResolve: ((v: 'pick') => void) | null = null;
   let proofShown = false; // after the proof, chapter 1 stops asking for a table that wins all four
