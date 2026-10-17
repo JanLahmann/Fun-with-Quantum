@@ -28,8 +28,10 @@ final class SmokeTests: XCTestCase {
 
         open("Quantum Coin Game")
         XCTAssertTrue(app.webViews.firstMatch.waitForExistence(timeout: 10))
-        XCTAssertTrue(app.webViews.staticTexts.containing(NSPredicate(format: "label CONTAINS[c] 'coin'")).firstMatch.waitForExistence(timeout: 15), "the coin game page didn't render")
+        // A cold simulator on CI takes a while for its first web page; the screenshot comes first, so a failure shows what was there.
+        let rendered = app.webViews.staticTexts.containing(NSPredicate(format: "label CONTAINS[c] 'coin'")).firstMatch.waitForExistence(timeout: 60)
         sleep(2); shot("2-coin-game")
+        XCTAssertTrue(rendered, "the coin game page didn't render")
         app.navigationBars.buttons.firstMatch.tap()
 
         XCTAssertTrue(app.tabBars.buttons["Build"].waitForExistence(timeout: 5))
