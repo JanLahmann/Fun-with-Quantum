@@ -24,7 +24,7 @@ struct PlayView: View {
             ProjectSection(title: "More to play", projects: catalog.projects(door: "play"))
         }
         .navigationTitle("Play")
-        .toolbar { AboutButton(catalog: catalog) }
+        .toolbar { AboutButton(catalog: catalog); AskKetButton(texts: catalog.ket, page: "/play/") }
     }
 }
 
@@ -85,7 +85,7 @@ struct BuildView: View {
             ProjectSection(title: "Build your own", projects: catalog.projects(door: "build"))
         }
         .navigationTitle("Build")
-        .toolbar { AboutButton(catalog: catalog) }
+        .toolbar { AboutButton(catalog: catalog); AskKetButton(texts: catalog.ket, page: "/build/") }
     }
 }
 
@@ -122,7 +122,7 @@ struct LearnView: View {
             ProjectSection(title: "Learn quantum computing", projects: catalog.projects(door: "learn"))
         }
         .navigationTitle("Learn")
-        .toolbar { AboutButton(catalog: catalog) }
+        .toolbar { AboutButton(catalog: catalog); AskKetButton(texts: catalog.ket, page: "/learn/") }
     }
 }
 
@@ -178,7 +178,10 @@ struct AboutView: View {
                     Link("fun-with-quantum.org", destination: URL(string: "https://fun-with-quantum.org")!)
                 }
                 Section("Privacy") {
-                    Text("This app has no account, no tracking and no analytics. The games and models run on your device; links open in Safari, where the linked site's own privacy policy applies.")
+                    Text("This app has no account and no tracking, and it doesn't count how you use it. The games and models run on your device; links open in Safari, where the linked site's own privacy policy applies.")
+                    Text("Ket, the AI helper: only when you send a question, it goes with the earlier questions and answers of the chat, the page or the visible game state, the level you picked and the language through our server at Cloudflare to Anthropic, whose Claude model writes the answer. We store the question, the answer, the page or game state and your thumbs up or down for 30 days to answer and to improve Ket, then delete them. So that only this app can ask, it proves it is genuine with Apple's App Attest: the server keeps that key (its ID and public key, which say nothing about you) until 30 days after its last use and counts the questions per key per day; to limit new keys, it counts them per day under a pseudonym of your IP address that changes every day. Please don't enter personal data.")
+                        .font(.footnote)
+                    Button("More about privacy") { Safari.open(URL(string: "https://fun-with-quantum.org/about/#privacy")!) }
                 }
                 Section("The 3D models") {
                     ForEach(catalog.credits, id: \.repo) { c in

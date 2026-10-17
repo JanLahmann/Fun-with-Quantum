@@ -23,6 +23,14 @@ export const APPS: Record<string, App> = {
     header: 'X-CleanJibe-Token',
     contexts: ['help', 'session'],
   },
+  // The Fun with Quantum iOS app (Jan, 2026-10-17): the coin game's chat and the family guide.
+  // TestFlight and App Store builds attest in production, builds run from Xcode in development.
+  fwq: {
+    teamId: '685X8YLYSB',
+    bundles: { 'de.lahmann.funwithquantum': ['production', 'development'] },
+    header: 'X-FwQ-Token',
+    contexts: ['coin-game', 'guide'],
+  },
 };
 
 const CHALLENGE_MS = 5 * 60_000;

@@ -27,8 +27,13 @@ enum WebContent {
     }
 }
 
+@MainActor
 final class BundleSchemeHandler: NSObject, WKURLSchemeHandler {
+    /// Ket requests on their way (fwq://app/__ket/…), so a page that goes away stops them.
+    private var live: [ObjectIdentifier: Task<Void, Never>] = [:]
+
     func webView(_ webView: WKWebView, start task: WKURLSchemeTask) {
+        if let url = task.request.url, url.host == "app", url.path.hasPrefix("/__ket/") { return forwardToKet(task, url) }
         guard let url = task.request.url, let file = WebContent.file(for: url), let data = try? Data(contentsOf: file, options: .mappedIfSafe) else {
             let response = HTTPURLResponse(url: task.request.url!, statusCode: 404, httpVersion: "HTTP/1.1", headerFields: [:])!
             task.didReceive(response)
@@ -42,7 +47,68 @@ final class BundleSchemeHandler: NSObject, WKURLSchemeHandler {
         task.didFinish()
     }
 
-    func webView(_ webView: WKWebView, stop task: WKURLSchemeTask) {}
+    func webView(_ webView: WKWebView, stop task: WKURLSchemeTask) {
+        live.removeValue(forKey: ObjectIdentifier(task))?.cancel()
+    }
+
+    /// The coin game's chat (portal widget, data-url fwq://app/__ket): its /chat and /feedback go to the
+    /// Worker natively, with the App Attest token and no Origin; the answer streams back to the page as is.
+    /// Pages themselves still can't reach the internet (the content rule list), only through here.
+    private func forwardToKet(_ task: WKURLSchemeTask, _ url: URL) {
+        let id = ObjectIdentifier(task)
+        let path = String(url.path.dropFirst("/__ket".count))
+        let body = task.request.httpBody ?? task.request.httpBodyStream.map(Self.read) ?? Data()
+        guard task.request.httpMethod == "POST", path == "/chat" || path == "/feedback" else {
+            return Self.reply(task, url, status: 404, json: #"{"error":"not_found"}"#)
+        }
+        live[id] = Task { [weak self] in
+            let alive = { self?.live[id] != nil }
+            var responseSent = false
+            do {
+                let (response, bytes) = try await KetClient.shared.forward(path, body: body)
+                guard alive() else { return }
+                let type = response.value(forHTTPHeaderField: "Content-Type") ?? "application/json"
+                task.didReceive(HTTPURLResponse(url: url, statusCode: response.statusCode, httpVersion: "HTTP/1.1", headerFields: ["Content-Type": type])!)
+                responseSent = true
+                // Pass each line on as it arrives, so the answer appears while it is written.
+                var line = Data()
+                for try await byte in bytes {
+                    line.append(byte)
+                    if byte == 0x0A { guard alive() else { return }; task.didReceive(line); line.removeAll(keepingCapacity: true) }
+                }
+                guard alive() else { return }
+                if !line.isEmpty { task.didReceive(line) }
+                task.didFinish()
+            } catch {
+                guard alive() else { return }
+                // Once the response has started, a second one would crash WebKit: end the stream as failed instead.
+                if responseSent { task.didFailWithError(error) } else {
+                    let failure = error as? KetClient.Failure ?? .network
+                    Self.reply(task, url, status: failure.status, json: #"{"error":"ket"}"#)
+                }
+            }
+            self?.live[id] = nil
+        }
+    }
+
+    private static func reply(_ task: WKURLSchemeTask, _ url: URL, status: Int, json: String) {
+        task.didReceive(HTTPURLResponse(url: url, statusCode: status, httpVersion: "HTTP/1.1", headerFields: ["Content-Type": "application/json"])!)
+        task.didReceive(Data(json.utf8))
+        task.didFinish()
+    }
+
+    private static func read(_ stream: InputStream) -> Data {
+        var data = Data()
+        stream.open()
+        defer { stream.close() }
+        var buffer = [UInt8](repeating: 0, count: 16_384)
+        while stream.hasBytesAvailable {
+            let n = stream.read(&buffer, maxLength: buffer.count)
+            if n <= 0 { break }
+            data.append(buffer, count: n)
+        }
+        return data
+    }
 
     private static let mime = ["js": "text/javascript", "mjs": "text/javascript", "mpd": "text/plain", "glb": "model/gltf-binary", "stl": "model/stl", "webmanifest": "application/manifest+json"]
 }

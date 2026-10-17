@@ -34,8 +34,8 @@ const file = arg('file', new URL('./coin-game.jsonl', import.meta.url));
 /** Each case may name its site and context (default: the coin game); the Origin follows the site. */
 const ORIGINS = { fwq: 'https://fun-with-quantum.org', rasqberry: 'https://rasqberry.org', cleanjibe: 'https://cleanjibe.org' };
 const APP_ONLY = new Set(['cleanjibe/session']);
-/** Sites with an app: `--via app` asks all their contexts like the app (eval pass, its own budget). */
-const APP_SITES = new Set(['cleanjibe']);
+/** Sites with an app: `--via app` asks their app contexts like the app (eval pass, its own budget), e.g. fwq coin-game and guide. */
+const APP_SITES = new Set(['cleanjibe', 'fwq']);
 const only = arg('only');
 const cases = readFileSync(file, 'utf8').trim().split('\n').map((l) => JSON.parse(l)).filter((c) => !only || c.id === only)
   .map((c) => (c.stateFile ? { ...c, state: JSON.parse(readFileSync(new URL(c.stateFile, file instanceof URL ? file : pathToFileURL(resolve(file))), 'utf8')) } : c));

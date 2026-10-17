@@ -160,7 +160,8 @@ async function chat(req: Request, env: Env, ctx: ExecutionContext, deps: Deps, c
     if (daily !== 'ok') return daily === 'global' ? json(503, { error: 'busy' }, cors) : json(429, { error: 'rate' }, cors);
     pageState = { ...state, tester: await testerState(env, tester, now, (state.device as Record<string, unknown> | undefined)?.version) };
   } else {
-    const daily = await checkDaily(env, body.site as string, visitor, now, body.context as string);
+    // An attested app counts against the site's app budget when it has one (fwq: the iOS app), else like the page.
+    const daily = await checkDaily(env, body.site as string, visitor, now, app?.site && siteConfig(env, body.site)?.budgets?.app ? 'app' : (body.context as string));
     if (daily !== 'ok') return daily === 'global' ? json(503, { error: 'busy' }, cors) : json(429, { error: 'rate' }, cors);
   }
 

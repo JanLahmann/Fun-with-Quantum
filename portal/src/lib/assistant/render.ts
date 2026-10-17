@@ -3,7 +3,8 @@
  * is escaped first; then bold, paragraphs, and links — but only to sites we trust, the rest stay
  * plain text.
  */
-const TRUSTED = new RegExp(
+/** Exported for the iOS app's native chat, which links the same sites (ios/scripts/build-web.mjs → catalog.json). */
+export const TRUSTED = new RegExp(
   '^https://((?:[a-z]{2}\\.)?doqumentation\\.org|quantum\\.cloud\\.ibm\\.com|fun-with-quantum\\.org|rasqberry\\.org|cleanjibe\\.org' +
   '|testflight\\.apple\\.com/join/nygqGGcn|github\\.com/(?:JanLahmann|QuBins|QAMP-62)' +
   // the family's other sites (family/family.json), which the portal's guide links

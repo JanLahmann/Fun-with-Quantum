@@ -26,12 +26,27 @@ final class SmokeTests: XCTestCase {
         XCTAssertTrue(app.navigationBars["Play"].waitForExistence(timeout: 10))
         shot("1-play")
 
+        // The guide sheet: asks the Worker through App Attest, which the simulator doesn't have.
+        app.navigationBars["Play"].buttons["Ask Ket"].tap()
+        let field = app.textFields.firstMatch
+        XCTAssertTrue(field.waitForExistence(timeout: 5))
+        field.tap()
+        field.typeText("I have a 3D printer. What can I build?")
+        app.buttons["Ask"].tap()
+        XCTAssertTrue(app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'needs an iPhone or iPad'")).firstMatch.waitForExistence(timeout: 10))
+        shot("1b-ket-guide")
+        app.buttons["Done"].tap()
+
         open("Quantum Coin Game")
         XCTAssertTrue(app.webViews.firstMatch.waitForExistence(timeout: 10))
         // A cold simulator on CI takes a while for its first web page; the screenshot comes first, so a failure shows what was there.
         let rendered = app.webViews.staticTexts.containing(NSPredicate(format: "label CONTAINS[c] 'coin'")).firstMatch.waitForExistence(timeout: 60)
         sleep(2); shot("2-coin-game")
         XCTAssertTrue(rendered, "the coin game page didn't render")
+        // Ket's chat under the game is there (the app's own Ket, through fwq://app/__ket).
+        let askKet = app.webViews.buttons.containing(NSPredicate(format: "label CONTAINS 'Ask Ket'")).firstMatch
+        for _ in 0..<12 where !askKet.exists { app.swipeUp() }
+        XCTAssertTrue(askKet.exists, "the coin game has no Ask Ket button")
         app.navigationBars.buttons.firstMatch.tap()
 
         XCTAssertTrue(app.tabBars.buttons["Build"].waitForExistence(timeout: 5))
