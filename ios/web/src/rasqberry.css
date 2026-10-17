@@ -1,0 +1,23 @@
+body { display: flex; flex-direction: column; height: 100%; }
+[hidden] { display: none !important; }
+#stage { position: relative; flex: 1; min-height: 0; }
+#stage canvas { display: block; width: 100%; height: 100%; outline: none; }
+.overlay { position: absolute; left: 12px; max-width: calc(100% - 24px); padding: 8px 12px; border-radius: 10px; background: color-mix(in srgb, var(--card) 92%, transparent); box-shadow: 0 1px 6px rgba(0,0,0,.18); font-size: 0.9rem; }
+#info { top: 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; }
+#info span { color: var(--muted); font: 0.75rem ui-monospace, monospace; }
+#info label { display: flex; align-items: center; gap: 4px; }
+#step { bottom: 12px; font-weight: 600; }
+.bottom { background: var(--card); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom); }
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; padding: 10px 12px; }
+.toolbar label { flex: 1 1 100%; display: flex; align-items: center; gap: 10px; font-size: 0.85rem; color: var(--muted); }
+.toolbar input[type=range] { flex: 1; accent-color: var(--accent); }
+.toolbar button { flex: 1; }
+@media (min-width: 600px) { .toolbar { flex-wrap: nowrap; } .toolbar label { flex: 1 1 auto; order: 1; } .toolbar button { flex: 0 0 auto; order: 2; } }
+button { font: 600 0.88rem -apple-system, system-ui, sans-serif; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; min-height: 40px; }
+button[aria-pressed=true] { color: #fff; background: var(--accent); border-color: var(--accent); }
+button:disabled { opacity: .45; }
+#parts { max-height: 38vh; overflow: auto; padding: 4px 16px 12px; border-bottom: 1px solid var(--line); -webkit-user-select: text; user-select: text; }
+#parts h3 { margin: 8px 0 4px; font-size: 1rem; }
+#parts h4 { margin: 12px 0 6px; font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+#parts ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+#parts button { min-height: 34px; padding: 4px 10px; font-weight: 500; }

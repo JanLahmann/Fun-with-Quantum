@@ -1,0 +1,37 @@
+# Fun with Quantum for iPhone and iPad
+
+The family's browser games and 3D models as an app, offline, with the same three doors as
+fun-with-quantum.org. Not in the App Store yet.
+
+| Tab | What |
+|---|---|
+| Play | the launched browser games (`webGame: true` in `portal/src/content/games/`), from the portal build, offline; the notebook games and the Play projects open in Safari |
+| Build | 3D models: RasQberry Two (rasqberry.org's viewer: explode, parts, assembly), Quantego One, Two and Two 1024 (quantego.org's LDraw viewer: building steps, explode, parts, tour), Qutie System One and Two (turntable); Quantego One and Two also in AR (AR Quick Look); the Build projects |
+| Learn | the Learn projects, in Safari |
+
+## How it is built
+
+- `FunWithQuantum/Sources/`: SwiftUI. Web content is served from the app bundle as `fwq://app/…`
+  (`WebContent.swift`); pages can't load anything from the internet, and links to the web open in Safari.
+- `scripts/build-web.mjs` builds `FunWithQuantum/Web/` (not committed): the portal (its app build, `PUBLIC_FWQ_APP=1` → `portal/dist-app`,
+  without analytics, CDN and Ket; never the unlisted `/preview/` pages or their code), the model viewers,
+  `licenses.txt` (About → Licenses) and
+  `catalog.json` for the native lists.
+- `web/`: the model pages. The viewers and models are the family's own, fetched from their
+  repositories at the commits in `web/sources.json`, each bundled with the three.js version it uses
+  on the web (`three-160` for Quantego, `three-169` for RasQberry). A fetched viewer is changed only by
+  the exact-match `PATCHES` in `build-web.mjs` (one today: Quantego's framing in portrait).
+- `project.yml`: the Xcode project, generated with [XcodeGen](https://github.com/yonaskolb/XcodeGen).
+
+```bash
+cd portal && npm ci && cd ../ios/web && npm ci && cd ..
+node scripts/build-web.mjs          # --skip-portal reuses portal/dist-app
+xcodegen generate
+open FunWithQuantum.xcodeproj       # or: xcodebuild test -scheme FunWithQuantum -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
+```
+
+`UITests/SmokeTests.swift` walks the tabs and opens a game and each viewer; with
+`TEST_RUNNER_FWQ_SCREENSHOTS=<dir>` it saves a screenshot of every screen. CI: `.github/workflows/ios.yml`.
+
+To update a model or viewer: put the new commit in `web/sources.json`, rebuild, run the smoke test
+and look at the screenshots.

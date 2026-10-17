@@ -1,6 +1,7 @@
 # build output
 dist/
 dist-offline/
+dist-app/
 # generated types
 .astro/
 

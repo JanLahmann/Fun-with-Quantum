@@ -1,7 +1,7 @@
 ---
 import '../styles/global.css';
 import FamilyFooter from '../components/FamilyFooter.astro';
-import { OFFLINE } from '../data/offline';
+import { NO_REMOTE, OFFLINE } from '../data/offline';
 
 interface Props {
   title: string;
@@ -49,7 +49,7 @@ const path = Astro.url.pathname;
     {!noindex && <meta property="og:url" content={new URL(path, Astro.site)} />}
     <meta name="twitter:card" content="summary_large_image" />
     {/* Umami analytics (cookieless, shared family property — filter by hostname); none offline */}
-    {!OFFLINE && <script defer src="https://cloud.umami.is/script.js" data-website-id="97f347ac-e7ba-4be3-b26f-ab4b328bdbf2" data-domains="fun-with-quantum.org"></script>}
+    {!NO_REMOTE && <script defer src="https://cloud.umami.is/script.js" data-website-id="97f347ac-e7ba-4be3-b26f-ab4b328bdbf2" data-domains="fun-with-quantum.org"></script>}
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>

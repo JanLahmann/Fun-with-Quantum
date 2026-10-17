@@ -4,7 +4,7 @@ import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import KetGuide from '../components/KetGuide.astro';
 import Highlights from '../components/Highlights.astro';
-import { OFFLINE } from '../data/offline';
+import { NO_REMOTE, OFFLINE } from '../data/offline';
 import heroPhoto from '../assets/RasQberry2model.png';
 import qoffeeMug from '../assets/qoffee-mug.png';
 import quantegoPhoto from '../assets/quantego-two-photo.jpg';
@@ -187,9 +187,9 @@ const doors = [
 
         <div class="card">
           <span class="badge cat-build">build</span>
-          <h3>{OFFLINE ? 'The LEGO model' : 'Spin the model'}</h3>
-          <p>Quantego Two, a LEGO model of IBM Quantum System Two{OFFLINE ? '.' : ' — drag to spin it in 3D.'}</p>
-          {OFFLINE ? (
+          <h3>{NO_REMOTE ? 'The LEGO model' : 'Spin the model'}</h3>
+          <p>Quantego Two, a LEGO model of IBM Quantum System Two{NO_REMOTE ? '.' : ' — drag to spin it in 3D.'}</p>
+          {NO_REMOTE ? (
             <Image class="feature-photo" src={quantegoPhoto} alt="Quantego Two, a LEGO model of IBM Quantum System Two" widths={[480, 760]} sizes="(max-width: 820px) 90vw, 340px" />
           ) : (
           <div class="model-wrap">
@@ -281,7 +281,7 @@ const doors = [
   <KetGuide />
 </Base>
 
-{!OFFLINE && <script is:inline type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>}
+{!NO_REMOTE && <script is:inline type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>}
 
 <script>
   const form = document.getElementById('launch-form') as HTMLFormElement | null;

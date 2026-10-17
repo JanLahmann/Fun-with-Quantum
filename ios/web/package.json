@@ -1,0 +1,12 @@
+{
+  "name": "fwq-ios-web",
+  "private": true,
+  "type": "module",
+  "description": "The web part of the iOS app: the family's 3D viewers, each with the three.js version it uses on the web.",
+  "devDependencies": {
+    "esbuild": "^0.25.10",
+    "three-160": "npm:three@0.160.0",
+    "three-169": "npm:three@0.169.0",
+    "typescript": "^6.0.3"
+  }
+}
