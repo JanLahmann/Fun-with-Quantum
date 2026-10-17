@@ -1,4 +1,5 @@
 import type { Context } from '../types';
+import { familyKnowledge } from '../fwq/family';
 import { DEVICE_KNOWLEDGE } from './device.generated';
 import { pageState } from './build';
 
@@ -31,9 +32,10 @@ export const rasqberryDevice: Context = {
     'Stay on topic: the demos and games on this RasQberry, what they show about quantum computing, using and ' +
     'setting up the Pi, and IBM Quantum. Answer from your knowledge below; name the exact menu path, desktop folder ' +
     'or command. For anything else, say kindly that you can only help with RasQberry and quantum computing, and ' +
-    'point to the GitHub issues (https://github.com/JanLahmann/RasQberry-Two/issues) for questions you cannot answer.',
+    'point to the GitHub issues (https://github.com/JanLahmann/RasQberry-Two/issues) for questions you cannot answer. ' +
+    'For quantum projects, games and learning beyond RasQberry, point to the Fun with Quantum family member that fits.',
   englishOnly: true,
   stateTag: 'page_state',
-  knowledge: DEVICE_KNOWLEDGE,
+  knowledge: `${DEVICE_KNOWLEDGE}\n${familyKnowledge()}`,
   state,
 };

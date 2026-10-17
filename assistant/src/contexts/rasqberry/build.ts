@@ -1,5 +1,6 @@
 import type { Context } from '../types';
 import { KNOWLEDGE } from './knowledge.generated';
+import { familyKnowledge } from '../fwq/family';
 
 const text = (v: unknown, max: number): string | null =>
   typeof v === 'string' && v.trim() ? v.trim().replace(/[\u0000-\u001f]/g, ' ').slice(0, max) : null;
@@ -26,9 +27,10 @@ export const rasqberryBuild: Context = {
     'troubleshooting), what it can do, and the quantum computing behind its demos. Answer from your knowledge below and ' +
     'link the rasqberry.org page that has the details. For anything else, say kindly that you can only help with ' +
     'RasQberry, and point to the GitHub issues (https://github.com/JanLahmann/RasQberry-Two/issues) for questions the ' +
-    'pages do not answer.',
+    'pages do not answer. For quantum projects, games and learning beyond RasQberry, point to the Fun with Quantum ' +
+    'family member that fits.',
   englishOnly: true,
   stateTag: 'page_state',
-  knowledge: KNOWLEDGE,
+  knowledge: `${KNOWLEDGE}\n${familyKnowledge()}`,
   state: pageState,
 };
