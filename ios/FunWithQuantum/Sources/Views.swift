@@ -105,7 +105,7 @@ struct ModelView: View {
                     Button { arFile = file } label: { Label("View in AR", systemImage: "arkit") }
                 }
                 if let project, let url = URL(string: project.url) {
-                    Button { Safari.open(url) } label: { Label("About \(project.title)", systemImage: "info.circle") }
+                    Button { Safari.open(url) } label: { Label("\(project.title) website", systemImage: "safari") }
                 }
             }
             .quickLookPreview($arFile)
@@ -154,14 +154,13 @@ struct ProjectSection: View {
     }
 }
 
+/// The (i) button: the welcome page, which links on to the fine print (About).
 struct AboutButton: ToolbarContent {
     let catalog: Catalog
-    @State private var shown = false
 
     var body: some ToolbarContent {
         ToolbarItem(placement: .topBarTrailing) {
-            Button { shown = true } label: { Label("About", systemImage: "info.circle") }
-                .sheet(isPresented: $shown) { AboutView(catalog: catalog) }
+            Button { NotificationCenter.default.post(name: .showWelcome, object: nil) } label: { Label("Welcome", systemImage: "info.circle") }
         }
     }
 }
@@ -193,12 +192,6 @@ struct AboutView: View {
                 Section {
                     Text("Not affiliated with or endorsed by IBM, the LEGO Group or BrickLink. IBM, IBM Quantum and Qiskit are trademarks of International Business Machines Corporation; LEGO and BrickLink are trademarks of the LEGO Group.")
                         .font(.footnote).foregroundStyle(.secondary)
-                }
-                Section {
-                    Button("Welcome page") {
-                        dismiss()
-                        NotificationCenter.default.post(name: .showWelcome, object: nil)
-                    }
                 }
                 Section {
                     Text("Version \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "?") (\(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "?"))")

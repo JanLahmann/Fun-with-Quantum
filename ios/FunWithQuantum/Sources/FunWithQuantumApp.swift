@@ -17,6 +17,8 @@ struct RootView: View {
     /// The welcome page shows once, on the first start (and again from About).
     @AppStorage("welcomeSeen") private var welcomeSeen = false
     @State private var welcomeShown = false
+    /// Opened again from (i): it can be closed without changing the tab.
+    @State private var welcomeAgain = false
 
     var body: some View {
         TabView(selection: $tab) {
@@ -27,11 +29,11 @@ struct RootView: View {
             NavigationStack { LearnView(catalog: catalog) }
                 .tabItem { Label("Learn", systemImage: "graduationcap") }.tag("learn")
         }
-        .onAppear { if !welcomeSeen { welcomeShown = true } }
-        .onReceive(NotificationCenter.default.publisher(for: .showWelcome)) { _ in welcomeShown = true }
+        .onAppear { if !welcomeSeen { welcomeAgain = false; welcomeShown = true } }
+        .onReceive(NotificationCenter.default.publisher(for: .showWelcome)) { _ in welcomeAgain = true; welcomeShown = true }
         .fullScreenCover(isPresented: $welcomeShown) {
-            WelcomeView(catalog: catalog) { door in
-                tab = door
+            WelcomeView(catalog: catalog, closable: welcomeAgain) { door in
+                if let door { tab = door }
                 welcomeSeen = true
                 welcomeShown = false
             }
@@ -40,6 +42,6 @@ struct RootView: View {
 }
 
 extension Notification.Name {
-    /// About → "Welcome page".
+    /// The (i) button on every tab.
     static let showWelcome = Notification.Name("fwq.showWelcome")
 }

@@ -4,8 +4,12 @@ import SwiftUI
 /// photos and words (portal/src/data/home.ts, through catalog.json), and a word about Ket. A door opens its tab.
 struct WelcomeView: View {
     let catalog: Catalog
-    let done: (String) -> Void
+    /// Opened again from (i): a close button that keeps the current tab.
+    var closable = false
+    /// The tab to open, or nil to keep the current one.
+    let done: (String?) -> Void
     @Environment(\.horizontalSizeClass) private var width
+    @State private var finePrint = false
 
     private static let doorColor: [String: Color] = [
         "play": Color(red: 0.047, green: 0.463, blue: 0.576),   // --cyan
@@ -41,12 +45,26 @@ struct WelcomeView: View {
                     Text("Let's play").font(.headline).frame(maxWidth: .infinity).padding(.vertical, 6)
                 }
                 .buttonStyle(.borderedProminent)
+
+                Button("About, privacy and licenses") { finePrint = true }
+                    .font(.footnote)
+                    .frame(maxWidth: .infinity)
             }
             .padding(24)
             .frame(maxWidth: 980)
             .frame(maxWidth: .infinity)
         }
         .background(Color("LaunchBackground"))
+        .overlay(alignment: .topTrailing) {
+            if closable {
+                Button { done(nil) } label: {
+                    Image(systemName: "xmark").font(.body.weight(.semibold)).padding(10).background(.thinMaterial, in: Circle())
+                }
+                .accessibilityLabel("Close")
+                .padding()
+            }
+        }
+        .sheet(isPresented: $finePrint) { AboutView(catalog: catalog) }
     }
 
     /// "Quantum computing you can play, build & learn." with the door words colored as on the homepage
