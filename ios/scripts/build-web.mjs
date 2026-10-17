@@ -22,6 +22,7 @@ import { fileURLToPath } from 'node:url';
 import { frontMatter } from '../../assistant/scripts/fwq-guide-knowledge.mjs';
 import { ASSISTANT_TEXTS, GUIDE_TEXTS } from '../../portal/src/lib/assistant/i18n.ts';
 import { TRUSTED } from '../../portal/src/lib/assistant/render.ts';
+import { DOORS, HERO } from '../../portal/src/data/home.ts';
 
 const IOS = fileURLToPath(new URL('..', import.meta.url));
 const ROOT = join(IOS, '..');
@@ -277,8 +278,19 @@ function catalog() {
   const t = { ...ASSISTANT_TEXTS.en, ...GUIDE_TEXTS };
   const ket = Object.fromEntries(['open', 'title', 'intro', 'privacy', 'placeholder', 'send', 'thinking', 'you', 'explainer', 'helpful', 'notHelpful', 'thanks', 'errRate', 'errBusy', 'errNetwork']
     .map((k) => { if (typeof t[k] !== 'string' || !t[k]) throw new Error(`catalog: Ket text ${k} missing`); return [k, t[k]]; }));
+  // The welcome page: the homepage's hero and three doors (portal/src/data/home.ts), photos resized for the app.
+  mkdirSync(join(OUT, 'welcome'), { recursive: true });
+  const welcome = {
+    title: HERO.title,
+    lead: HERO.lead,
+    doors: DOORS.map((d) => {
+      const out = join(OUT, 'welcome', `${d.key}.jpg`);
+      run('sips', ['-s', 'format', 'jpeg', '-s', 'formatOptions', '80', '-Z', '900', join(ROOT, 'portal', 'src', 'assets', d.image), '--out', out], ROOT);
+      return { key: d.key, title: d.title, text: d.text, image: `/welcome/${d.key}.jpg`, imageAlt: d.imageAlt, fit: d.fit };
+    }),
+  };
   ket.trusted = TRUSTED.source; // links in an answer become tappable only to these sites, as on the web
-  writeFileSync(join(OUT, 'catalog.json'), `${JSON.stringify({ games, projects, models, credits, ket }, null, 1)}\n`);
+  writeFileSync(join(OUT, 'catalog.json'), `${JSON.stringify({ games, projects, models, credits, ket, welcome }, null, 1)}\n`);
 }
 
 rmSync(OUT, { recursive: true, force: true });

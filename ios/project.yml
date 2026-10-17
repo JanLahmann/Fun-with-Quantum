@@ -31,7 +31,11 @@ targets:
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         LSApplicationCategoryType: public.app-category.education
         ITSAppUsesNonExemptEncryption: false
-        UILaunchScreen: {}
+        # The die mark on the portal's paper color (--paper, light and dark), only while the app starts.
+        UILaunchScreen:
+          UIImageName: LaunchMark
+          UIColorName: LaunchBackground
+          UIImageRespectsSafeAreaInsets: true
         UIApplicationSupportsIndirectInputEvents: true
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
         UISupportedInterfaceOrientations~ipad: [UIInterfaceOrientationPortrait, UIInterfaceOrientationPortraitUpsideDown, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
