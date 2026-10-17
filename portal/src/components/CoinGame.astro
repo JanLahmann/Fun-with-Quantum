@@ -106,12 +106,12 @@ const RIM_SEGMENTS = 44;
     flex: 0 0 auto; font: 600 0.82rem var(--sans); color: var(--cyan); background: transparent;
     border: 1px solid var(--cyan); border-radius: 20px; padding: 6px 12px; cursor: pointer;
   }
-  .qc-explain-btn:hover { background: color-mix(in srgb, var(--cyan) 10%, transparent); }
+  @media (hover: hover) { .qc-explain-btn:hover { background: color-mix(in srgb, var(--cyan) 10%, transparent); } }
   .qcoin :global(.qc-term) {
     font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: help;
     text-decoration: underline dotted color-mix(in srgb, var(--cyan) 70%, transparent); text-underline-offset: 3px;
   }
-  .qcoin :global(.qc-term:hover) { color: var(--cyan); }
+  @media (hover: hover) { .qcoin :global(.qc-term:hover) { color: var(--cyan); } }
   .qc-info {
     position: absolute; right: -4px; top: -22px; width: 20px; height: 20px; border-radius: 50%;
     border: 0; background: transparent; color: var(--cyan); cursor: help; font-size: 0.9rem;
@@ -127,7 +127,7 @@ const RIM_SEGMENTS = 44;
     position: absolute; top: 10px; right: 12px; width: 32px; height: 32px; border-radius: 50%;
     border: 1px solid var(--line); background: var(--card); color: var(--muted); font-size: 1.2rem; cursor: pointer;
   }
-  .qc-close:hover { color: var(--ink); border-color: var(--cyan); }
+  @media (hover: hover) { .qc-close:hover { color: var(--ink); border-color: var(--cyan); } }
   .qc-explain :global(h3) { font-size: 1.15rem; margin: 6px 36px 10px 0; }
   .qc-explain :global(p) { color: var(--ink); font-size: 0.97rem; margin-bottom: 12px; }
   .qc-explain :global(.qc-more) { font: 0.85rem var(--sans); line-height: 1.9; margin-bottom: 0; }
@@ -143,23 +143,36 @@ const RIM_SEGMENTS = 44;
     display: inline-grid; place-items: center; width: 18px; height: 18px; margin-right: 4px;
     border-radius: 50%; font: 600 0.7rem var(--mono); background: var(--line); color: var(--ink);
   }
-  .qc-chapters button:hover { border-color: var(--cyan); color: var(--cyan); }
+  @media (hover: hover) { .qc-chapters button:hover { border-color: var(--cyan); color: var(--cyan); } }
   .qc-chapters button[aria-selected='true'] { color: var(--ink); border-color: var(--magenta); }
   .qc-chapters button[aria-selected='true'] .n { background: var(--grad); color: #fff; }
   .qc-chapters button.done .n { background: color-mix(in srgb, var(--cyan) 22%, transparent); color: var(--cyan); }
 
   .qc-arena { display: grid; grid-template-columns: minmax(280px, 1fr) 1.15fr; gap: 26px; align-items: start; }
-  @media (max-width: 860px) {
-    .qc-arena { grid-template-columns: 1fr; gap: 14px; }
-    /* on phones keep the moves right under the coin; the explanation follows */
-    .qc-panel { display: flex; flex-direction: column; }
+  .qc-stage, .qc-panel { min-width: 0; } /* a long circuit scrolls inside its box instead of widening the page */
+  /* Phones (and narrow windows), except a phone on its side: one column — the rules first, then the coin
+     with the moves right under it. A phone on its side keeps the two columns, so coin and buttons fit together. */
+  @media (max-width: 860px) and (orientation: portrait), (max-width: 860px) and (min-height: 501px) {
+    .qc-top { flex-wrap: wrap; }
+    .qc-chapters { flex: 1 1 100%; } /* the tabs get the full width; Explain follows them */
+    .qc-explain-btn { margin-left: auto; }
+    .qc-arena { display: flex; flex-direction: column; align-items: stretch; gap: 0; }
+    .qc-panel { display: contents; }
     .qc-title { order: 0; }
-    .qc-order { order: 0; }
-    .qc-circuit { order: 1; }
-    .qc-status { order: 2; }
-    .qc-actions { order: 3; }
-    .qc-score { order: 4; }
-    .qc-text { order: 5; margin-top: 12px; }
+    .qc-text { order: 1; }
+    .qc-stage { order: 2; margin: 6px 0 4px; }
+    .qc-order { order: 3; }
+    .qc-circuit { order: 4; }
+    .qc-status { order: 5; }
+    .qc-actions { order: 6; }
+    .qc-score { order: 7; }
+  }
+  @media (orientation: landscape) and (max-height: 500px) {
+    .qcoin { --coin: 120px; }
+    .qc-arena { grid-template-columns: minmax(240px, 1fr) 1.15fr; gap: 18px; }
+    .qc-scene { height: 200px; }
+    .qc-box { top: 6%; width: 170px; height: 160px; margin-left: -85px; }
+    .qc-box span { font-size: 3.4rem; }
   }
 
   /* ---------- the 3D coin ---------- */
@@ -262,7 +275,7 @@ const RIM_SEGMENTS = 44;
     border: 1px solid var(--line); background: transparent; color: var(--muted);
   }
   .qc-order button[aria-pressed='true'] { border-color: var(--cyan); color: var(--cyan); background: color-mix(in srgb, var(--cyan) 10%, transparent); }
-  .qc-order button:hover { border-color: var(--cyan); }
+  @media (hover: hover) { .qc-order button:hover { border-color: var(--cyan); } }
   .qc-status { font-size: 1.02rem; min-height: 1.6em; margin: 10px 0; }
   .qc-status :global(strong) { color: var(--magenta); }
   .qc-actions { display: flex; flex-wrap: wrap; gap: 8px; min-height: 44px; }
@@ -270,9 +283,9 @@ const RIM_SEGMENTS = 44;
     font: 600 0.93rem var(--sans); padding: 10px 16px; border-radius: 10px; cursor: pointer;
     border: 1.5px solid var(--line); background: var(--card); color: var(--ink);
   }
-  .qc-actions :global(button:hover:not(:disabled)) { border-color: var(--cyan); color: var(--cyan); }
+  @media (hover: hover) { .qc-actions :global(button:hover:not(:disabled)) { border-color: var(--cyan); color: var(--cyan); } }
   .qc-actions :global(button.primary) { background: var(--grad); color: #fff; border-color: transparent; }
-  .qc-actions :global(button.primary:hover:not(:disabled)) { color: #fff; filter: brightness(1.08); }
+  @media (hover: hover) { .qc-actions :global(button.primary:hover:not(:disabled)) { color: #fff; filter: brightness(1.08); } }
   .qc-actions :global(button.quantum) { border-color: var(--magenta); }
   .qc-actions :global(button:disabled) { opacity: 0.45; cursor: default; }
   .qc-actions :global(button .g) { font-family: var(--mono); font-weight: 700; margin-right: 4px; }
@@ -308,5 +321,13 @@ const RIM_SEGMENTS = 44;
     .qcoin { --coin: 150px; padding: 14px; }
     .qc-scene { height: 260px; }
     .qc-box { width: 200px; height: 186px; margin-left: -100px; }
+  }
+  /* touch screens: tap targets of at least 44px (Apple's guideline) */
+  @media (pointer: coarse) {
+    .qc-chapters button, .qc-explain-btn, .qc-order button, .qc-actions :global(button), .qc-explain :global(.qc-back) { min-height: 44px; }
+    .qc-close { width: 44px; height: 44px; top: 6px; right: 8px; }
+    .qc-explain :global(.qc-terms .qc-term) { min-height: 44px; }
+    .qc-info { width: 44px; height: 44px; right: -16px; top: -34px; }
+    .qcoin .qc-caption { padding: 15px 8px; margin: -15px -8px; } /* a bigger target without moving the caption */
   }
 </style>
