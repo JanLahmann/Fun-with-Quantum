@@ -8,6 +8,7 @@ final class SmokeTests: XCTestCase {
     override func setUp() {
         continueAfterFailure = false
         app = XCUIApplication()
+        app.launchArguments = ["-welcomeSeen", "NO"] // always start on the welcome page
         app.launch()
     }
 
@@ -23,6 +24,11 @@ final class SmokeTests: XCTestCase {
     }
 
     func testPlayBuildLearn() {
+        // The welcome page: the homepage's three doors; "Let's play" opens the Play tab.
+        XCTAssertTrue(app.buttons["Let's play"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts.containing(NSPredicate(format: "label BEGINSWITH '3D-print or LEGO-build'")).firstMatch.exists)
+        shot("0-welcome")
+        app.buttons["Let's play"].tap()
         XCTAssertTrue(app.navigationBars["Play"].waitForExistence(timeout: 10))
         shot("1-play")
 
@@ -32,9 +38,12 @@ final class SmokeTests: XCTestCase {
         XCTAssertTrue(field.waitForExistence(timeout: 5))
         field.tap()
         field.typeText("I have a 3D printer. What can I build?")
+        // The simulator's one-time keyboard tip can cover the sheet.
+        if app.buttons["Continue"].waitForExistence(timeout: 1) { app.buttons["Continue"].tap() }
         app.buttons["Ask"].tap()
-        XCTAssertTrue(app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'needs an iPhone or iPad'")).firstMatch.waitForExistence(timeout: 10))
+        let unsupported = app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'needs an iPhone or iPad'")).firstMatch.waitForExistence(timeout: 10)
         shot("1b-ket-guide")
+        XCTAssertTrue(unsupported, "the guide sheet didn't answer")
         app.buttons["Done"].tap()
 
         open("Quantum Coin Game")

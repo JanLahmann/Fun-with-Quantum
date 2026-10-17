@@ -195,6 +195,12 @@ struct AboutView: View {
                         .font(.footnote).foregroundStyle(.secondary)
                 }
                 Section {
+                    Button("Welcome page") {
+                        dismiss()
+                        NotificationCenter.default.post(name: .showWelcome, object: nil)
+                    }
+                }
+                Section {
                     Text("Version \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "?") (\(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "?"))")
                         .foregroundStyle(.secondary)
                 }

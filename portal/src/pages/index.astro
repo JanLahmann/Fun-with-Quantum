@@ -5,6 +5,7 @@ import Base from '../layouts/Base.astro';
 import KetGuide from '../components/KetGuide.astro';
 import Highlights from '../components/Highlights.astro';
 import { NO_REMOTE, OFFLINE } from '../data/offline';
+import { DOORS, HERO } from '../data/home';
 import heroPhoto from '../assets/RasQberry2model.png';
 import qoffeeMug from '../assets/qoffee-mug.png';
 import quantegoPhoto from '../assets/quantego-two-photo.jpg';
@@ -26,38 +27,15 @@ const doorLinks = (door: string) =>
     .sort((a, b) => a.data.order - b.data.order)
     .map((p) => ({ label: p.data.title, href: p.data.url! }));
 
-const doors = [
-  {
-    key: 'play',
-    href: '/play/',
-    img: qoffeeMug,
-    imgAlt: 'The Qoffee-Maker mug with a quantum circuit printed on it',
-    fit: 'contain',
-    title: 'Play',
-    text: 'Build circuits with your hands, order coffee with a circuit, steer a runner with quantum gates — and try to beat a quantum computer at coin flipping.',
-    links: [...doorLinks('play'), { label: `${games.length} notebook games`, href: '/play/' }],
-  },
-  {
-    key: 'build',
-    href: '/build/',
-    img: quantegoPhoto,
-    imgAlt: 'Quantego — a LEGO model of an IBM Quantum computer, mid-build',
-    fit: 'cover',
-    title: 'Build',
-    text: '3D-print or LEGO-build your own model of an IBM Quantum computer.',
-    links: doorLinks('build'),
-  },
-  {
-    key: 'learn',
-    href: '/learn/',
-    img: ibmLearning,
-    imgAlt: 'The IBM Quantum Learning platform: “Learn quantum computing” with a library of courses',
-    fit: 'left',
-    title: 'Learn',
-    text: 'Take the official courses, keep coding in ready-made environments, prepare for the Qiskit certification, run real Qiskit code in your browser — and build your own quantum games.',
-    links: doorLinks('learn'),
-  },
-];
+// Words and photos of the three doors: src/data/home.ts (shared with the iOS app's welcome page).
+const DOOR_IMAGES = { play: qoffeeMug, build: quantegoPhoto, learn: ibmLearning };
+const doors = DOORS.map((d) => ({
+  ...d,
+  href: `/${d.key}/`,
+  img: DOOR_IMAGES[d.key],
+  imgAlt: d.imageAlt,
+  links: d.key === 'play' ? [...doorLinks('play'), { label: `${games.length} notebook games`, href: '/play/' }] : doorLinks(d.key),
+}));
 ---
 
 <Base
@@ -67,11 +45,8 @@ const doors = [
   <section class="hero">
     <div class="wrap hero-grid">
       <div class="hero-copy">
-        <h1>Quantum computing you can <span class="hl-play">play</span>, <span class="hl-build">build</span> &amp; <span class="hl-learn">learn</span> — nothing to install.</h1>
-        <p>
-          Quantum games, LEGO and 3D-printed quantum computer models, and hands-on ways to learn.
-          Open source, workshop-tested, built by the RasQberry community.
-        </p>
+        <h1>{HERO.title.map((p) => (p.door ? <span class={`hl-${p.door}`}>{p.text}</span> : p.text))}{HERO.webTail}</h1>
+        <p>{HERO.lead}</p>
         <div class="hero-actions">
           <a class="btn primary" href="/play/quantum-coin-game/#coin-game" data-umami-event="Portal: hero click" data-umami-event-target="coin-game">▶ Play in your browser</a>
           <a class="btn ghost" href="/play/" data-umami-event="Portal: hero click" data-umami-event-target="play">All games</a>

@@ -13,15 +13,33 @@ struct FunWithQuantumApp: App {
 
 struct RootView: View {
     private let catalog = Catalog.bundled
+    @State private var tab = "play"
+    /// The welcome page shows once, on the first start (and again from About).
+    @AppStorage("welcomeSeen") private var welcomeSeen = false
+    @State private var welcomeShown = false
 
     var body: some View {
-        TabView {
+        TabView(selection: $tab) {
             NavigationStack { PlayView(catalog: catalog) }
-                .tabItem { Label("Play", systemImage: "gamecontroller") }
+                .tabItem { Label("Play", systemImage: "gamecontroller") }.tag("play")
             NavigationStack { BuildView(catalog: catalog) }
-                .tabItem { Label("Build", systemImage: "cube") }
+                .tabItem { Label("Build", systemImage: "cube") }.tag("build")
             NavigationStack { LearnView(catalog: catalog) }
-                .tabItem { Label("Learn", systemImage: "graduationcap") }
+                .tabItem { Label("Learn", systemImage: "graduationcap") }.tag("learn")
+        }
+        .onAppear { if !welcomeSeen { welcomeShown = true } }
+        .onReceive(NotificationCenter.default.publisher(for: .showWelcome)) { _ in welcomeShown = true }
+        .fullScreenCover(isPresented: $welcomeShown) {
+            WelcomeView(catalog: catalog) { door in
+                tab = door
+                welcomeSeen = true
+                welcomeShown = false
+            }
         }
     }
+}
+
+extension Notification.Name {
+    /// About → "Welcome page".
+    static let showWelcome = Notification.Name("fwq.showWelcome")
 }

@@ -25,6 +25,16 @@ struct Catalog: Decodable {
     let models: [Model]
     let credits: [Credit]
     let ket: KetTexts
+    let welcome: Welcome
+
+    /// The welcome page: the homepage's hero and its three doors (portal/src/data/home.ts).
+    struct Welcome: Decodable {
+        struct Part: Decodable { let text: String; let door: String? }
+        struct Door: Decodable, Identifiable { let key, title, text, image, imageAlt, fit: String; var id: String { key } }
+        let title: [Part]
+        let lead: String
+        let doors: [Door]
+    }
 
     func projects(door: String) -> [Project] { projects.filter { $0.door == door } }
     func project(_ id: String?) -> Project? { projects.first { $0.id == id } }
