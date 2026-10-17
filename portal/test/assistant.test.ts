@@ -14,6 +14,15 @@ describe('assistant answer rendering', () => {
     expect(html).not.toContain('href="https://evil.example');
     expect(html).not.toContain('href="https://github.com/JanLahmannX');
   });
+  it('links the family\'s own sites, and nothing that only looks like them', () => {
+    for (const u of ['https://qutie.org/', 'https://quantego.org', 'https://rasqberry.one/x', 'https://certiq.dev/', 'https://entangible.org', 'https://qoffee-maker.org',
+      'https://qubins.org/launch/', 'https://qamposer.org/quantum-runner/', 'https://github.com/QuBins/qiskit-images', 'https://github.com/QAMP-62/qamposer-react']) {
+      expect(renderAnswer(u), u).toContain(`<a href="${u}"`);
+    }
+    for (const u of ['https://qutie.org.evil.example/', 'https://evilqutie.org/', 'https://qubins.org@evil.example/', 'https://github.com/QuBinsX/a', 'http://qutie.org/']) {
+      expect(renderAnswer(u), u).not.toContain('<a ');
+    }
+  });
   it('cannot break out of the href attribute', () => {
     expect(renderAnswer('https://quantum.cloud.ibm.com/"onmouseover="x')).not.toMatch(/href="[^"]*"onmouseover/);
     expect(renderAnswer('See the [Bill of Materials](https://rasqberry.org/01-3d-model/01-bill-of-materials/).')).toBe(

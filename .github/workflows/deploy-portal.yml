@@ -34,6 +34,8 @@ jobs:
           # FWQ_ASSISTANT_PUBLIC=1 shows it to everyone, otherwise only with ?assistant=1.
           PUBLIC_FWQ_ASSISTANT_URL: ${{ vars.FWQ_ASSISTANT_URL }}
           PUBLIC_FWQ_ASSISTANT_PUBLIC: ${{ vars.FWQ_ASSISTANT_PUBLIC }}
+          # The family guide (home page, doors, teachers, workshops) has its own switch: FWQ_GUIDE_PUBLIC=1.
+          PUBLIC_FWQ_GUIDE_PUBLIC: ${{ vars.FWQ_GUIDE_PUBLIC }}
         with:
           path: ./portal
           node-version: 24

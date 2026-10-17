@@ -32,6 +32,7 @@ npm run a11y     # axe-core accessibility check of dist/ (WCAG 2.1 A/AA, light +
 | `test/a11y.mjs` | the accessibility check (`npm run a11y`, also in Portal CI) |
 | `public/robots.txt` | allows everything, points to the sitemap (previews stay crawlable so search engines see their `noindex`) |
 | `src/components/AssistantChat.astro`, `src/lib/assistant/` | the explainer chat under a game (“Ask the explainer”), talking to the Worker in `../assistant/`. Built only when `PUBLIC_FWQ_ASSISTANT_URL` is set (repository variable `FWQ_ASSISTANT_URL` in `deploy-portal.yml`) and never offline; shown to everyone with `FWQ_ASSISTANT_PUBLIC=1`, else only with `?assistant=1`. A game registers what the player can see (`registerState`; the coin game: `snapshot()` in `qcoin/ui.ts`, hidden moves as `?`) |
+| `src/components/KetGuide.astro` | Ket as the family guide (#153): a floating “Ask Ket” box on the home page, the three doors, `/teachers/` and `/workshops/` that points visitors to the project or game that fits them (Worker context `fwq/guide`; its knowledge is built from `family/family.json` and `src/content/` by `assistant/scripts/fwq-guide-knowledge.mjs` — rerun it after changing them). Same build rules as the game chat, but its own switch: `FWQ_GUIDE_PUBLIC=1` shows it to everyone, else only `?assistant=1` |
 
 ## The Quantum Coin Game in the browser
 

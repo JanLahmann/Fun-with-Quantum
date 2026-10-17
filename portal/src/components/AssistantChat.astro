@@ -45,7 +45,7 @@ const id = `fa-${context}`;
 
 <script>
   import { mountAssistant } from '../lib/assistant/widget';
-  for (const root of document.querySelectorAll<HTMLElement>('.fwq-assist')) {
+  for (const root of document.querySelectorAll<HTMLElement>('.fwq-assist:not([data-context="guide"])')) {
     if (root.dataset.public === '1' || new URLSearchParams(location.search).get('assistant') === '1') {
       root.hidden = false;
       mountAssistant(root);

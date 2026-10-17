@@ -165,3 +165,14 @@ export const ASSISTANT_TEXTS: Record<Locale, AssistantTexts> = {
     levels: { kids: 'Enfants', normal: 'Normal', math: 'Avec les maths' },
   },
 };
+
+/**
+ * The family guide's texts (KetGuide.astro: home page, doors, teachers, workshops). Those pages are
+ * English; Ket answers in the language of the question.
+ */
+export const GUIDE_TEXTS: Partial<AssistantTexts> = {
+  open: 'Ask Ket',
+  title: 'Ket — which project is for me?',
+  intro: 'Tell me what you’d like to do — play, build, learn, teach or run an event — and what you have at hand. For example “I have a 3D printer and a free weekend” or “a quantum lesson for 15-year-olds”.',
+  privacy: 'Your questions and the page you are on are sent to Anthropic (Claude) to answer, and stored for 30 days to improve Ket. Please don’t enter personal data.',
+};

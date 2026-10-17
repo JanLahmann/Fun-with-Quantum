@@ -9,6 +9,8 @@ on:
       - 'portal/src/lib/qcoin/**' # the coin-game knowledge is built from the game's own code
       - 'portal/src/lib/assistant/**' # level labels in the rules; widget.js is built from here
       - 'portal/src/lib/level.ts'
+      - 'portal/src/content/**' # the family guide's knowledge (scripts/fwq-guide-knowledge.mjs)
+      - 'family/family.json'
       - '.github/workflows/assistant-ci.yml'
   push:
     branches: [master]
@@ -17,6 +19,8 @@ on:
       - 'portal/src/lib/qcoin/**'
       - 'portal/src/lib/level.ts'
       - 'portal/src/lib/assistant/**'
+      - 'portal/src/content/**'
+      - 'family/family.json'
       - '.github/workflows/assistant-ci.yml'
   workflow_dispatch:
 

@@ -20,6 +20,8 @@ export interface SiteConfig {
   /** Requests per visitor per UTC day, and for all visitors of this site together. */
   daily_visitor: number;
   daily_global: number;
+  /** Contexts with a budget of their own, apart from the rest of the site (the portal's family guide). */
+  budgets?: Record<string, { daily_visitor: number; daily_global: number }>;
 }
 
 /** The rate-limiting binding ([[ratelimits]] in wrangler.toml). */

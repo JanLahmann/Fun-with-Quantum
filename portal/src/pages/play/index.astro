@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import KetGuide from '../../components/KetGuide.astro';
 import ProjectRow from '../../components/ProjectRow.astro';
 
 const games = (await getCollection('games')).sort((a, b) => a.data.order - b.data.order);
@@ -42,6 +43,7 @@ const projects = (await getCollection('projects'))
       </div>
     </div>
   </section>
+  <KetGuide />
 </Base>
 
 <style>

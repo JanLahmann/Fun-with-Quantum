@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { handle, purge, cleanHistory, type Deps } from '../src/index';
 import { addressKey } from '../src/guard';
@@ -360,6 +362,42 @@ describe('rasqberry site', () => {
   it('refuses the build context from the portal origin', async () => {
     const { run, claude } = setup();
     expect((await run(req('/chat', rqb()))).res.status).toBe(403);
+    expect(claude.calls).toHaveLength(0);
+  });
+});
+
+describe('fwq guide', () => {
+  it('answers the portal with the guide context: its own knowledge, the page, no level', async () => {
+    const { run, claude, db } = setup();
+    const { res } = await run(req('/chat', { site: 'fwq', context: 'guide', locale: 'en', level: 'kids', question: 'I have a 3D printer. What can I build?', state: { page: '/build/' } }));
+    expect(res.status).toBe(200);
+    expect(claude.calls[0].body.system[1].text).toContain('### Build: https://fun-with-quantum.org/build/');
+    expect(claude.calls[0].body.messages.at(-1).content).toContain('<page_state>{"page":"/build/"}</page_state>');
+    expect(claude.calls[0].body.messages.at(-1).content).not.toContain('<level>');
+    expect(db.rows('SELECT site, context, level FROM messages')).toEqual([{ site: 'fwq', context: 'guide', level: null }]);
+  });
+
+  it('counts against its own budget: the game chat\'s budget is untouched, and the other way round', async () => {
+    const guide = (ip: string) => req('/chat', { site: 'fwq', context: 'guide', locale: 'en', question: 'Hi', state: {} }, { 'CF-Connecting-IP': ip });
+    const t = setup(undefined, { SITES: { fwq: { origins: [ORIGIN], daily_visitor: 1, daily_global: 1, budgets: { guide: { daily_visitor: 2, daily_global: 3 } } } } });
+    expect((await t.run(req('/chat', ask()))).res.status).toBe(200);
+    expect((await t.run(req('/chat', ask(), { 'CF-Connecting-IP': '198.51.100.1' }))).res.status).toBe(503); // the game chat's global budget is used up
+    for (let i = 0; i < 2; i++) expect((await t.run(guide('203.0.113.7'))).res.status).toBe(200);
+    expect((await t.run(guide('203.0.113.7'))).res.status).toBe(429); // the guide's own per-visitor limit
+    expect((await t.run(guide('198.51.100.2'))).res.status).toBe(200);
+    expect((await t.run(guide('198.51.100.3'))).res.status).toBe(503); // the guide's own global limit (3)
+    expect(t.db.rows("SELECT key, n FROM quota WHERE key LIKE '%*' ORDER BY key")).toEqual([{ key: 'fwq/guide:*', n: 4 }, { key: 'fwq:*', n: 2 }]);
+  });
+
+  it('wrangler.toml gives the guide its own budget', () => {
+    const toml = readFileSync(fileURLToPath(new URL('../wrangler.toml', import.meta.url).href), 'utf8');
+    expect(toml).toMatch(/\[vars\.SITES\.fwq\.budgets\.guide\]\ndaily_visitor = \d+\ndaily_global = \d+/);
+  });
+
+  it('refuses the guide from another site\'s origin', async () => {
+    const { run, claude } = setup();
+    const r = req('/chat', { site: 'fwq', context: 'guide', locale: 'en', question: 'Hi', state: {} }, { Origin: 'https://rasqberry.org' });
+    expect((await run(r)).res.status).toBe(403);
     expect(claude.calls).toHaveLength(0);
   });
 });
