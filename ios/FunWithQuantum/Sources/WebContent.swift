@@ -140,6 +140,16 @@ struct WebPage: UIViewRepresentable {
         view.backgroundColor = .systemBackground
         view.scrollView.contentInsetAdjustmentBehavior = sitePage ? .automatic : .never
         view.scrollView.isScrollEnabled = sitePage
+        // A page's own links (the coin game's languages) open in place: a swipe from the edge goes back.
+        view.allowsBackForwardNavigationGestures = sitePage
+        if sitePage { view.pageZoom = Self.zoom(context.environment.dynamicTypeSize) }
+        // The first page takes a moment (the web process starts, the rule list compiles): show that it's coming.
+        let spinner = UIActivityIndicatorView(style: .large)
+        spinner.translatesAutoresizingMaskIntoConstraints = false
+        spinner.startAnimating()
+        view.addSubview(spinner)
+        NSLayoutConstraint.activate([spinner.centerXAnchor.constraint(equalTo: view.centerXAnchor), spinner.centerYAnchor.constraint(equalTo: view.centerYAnchor)])
+        context.coordinator.spinner = spinner
         #if DEBUG
         if #available(iOS 16.4, *) { view.isInspectable = true }
         #endif
@@ -150,9 +160,25 @@ struct WebPage: UIViewRepresentable {
         return view
     }
 
-    func updateUIView(_ view: WKWebView, context: Context) {}
+    func updateUIView(_ view: WKWebView, context: Context) {
+        if sitePage { view.pageZoom = Self.zoom(context.environment.dynamicTypeSize) } // a new text size calls this again
+    }
+
+    /// The iPhone's text size (Settings → Display & Brightness → Text Size, or Accessibility → Larger Text)
+    /// as the page's zoom: 1 at the default size, from 0.85 up to 1.4 — more would squeeze the games'
+    /// layout into too narrow a page.
+    static func zoom(_ size: DynamicTypeSize) -> CGFloat {
+        let traits = UITraitCollection(preferredContentSizeCategory: UIContentSizeCategory(size))
+        return min(1.4, max(0.85, UIFontMetrics(forTextStyle: .body).scaledValue(for: 17, compatibleWith: traits) / 17))
+    }
 
     final class Coordinator: NSObject, WKNavigationDelegate, WKUIDelegate {
+        weak var spinner: UIActivityIndicatorView?
+
+        func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) { spinner?.removeFromSuperview() }
+        func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) { spinner?.removeFromSuperview() }
+        func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) { spinner?.removeFromSuperview() }
+
         private static let rules = #"[{"trigger":{"url-filter":"^https?://"},"action":{"type":"block"}}]"#
         private static let ruleID = "fwq-block-remote-v1"
 

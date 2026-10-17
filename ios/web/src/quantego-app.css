@@ -2,3 +2,16 @@
 html body .viewer { position: fixed; inset: 0 0 env(safe-area-inset-bottom) 0; width: 100%; height: auto; max-width: none; aspect-ratio: auto; border: 0; border-radius: 0; margin: 0; }
 /* The screenshot download and the share-link buttons are for the website: links to quantego.org views don't open in the app. */
 .viewer .viewer-extras { display: none; }
+/* Touch-sized controls: the website's are sized for a mouse pointer (Apple's guideline is 44pt). */
+html body .viewer-controls { gap: 8px; }
+html body .viewer-btn { min-height: 40px; padding: .5rem .85rem; font-size: .95rem; }
+html body .viewer-transport { bottom: 10px; gap: 10px; }
+html body .viewer-play { min-width: 44px; min-height: 44px; font-size: 1.1rem; }
+html body .viewer-mode .viewer-btn { min-height: 44px; padding: .3rem .7rem; font-size: .85rem; }
+html body .viewer-scrub { height: 44px; }
+html body .viewer-status { font-size: .85rem; }
+html body .viewer-tourcard { font-size: .95rem; }
+html body .viewer-tourcard.is-overlay { bottom: 64px; }
+html body .viewer-tourcard-nav .viewer-btn { min-width: 44px; min-height: 44px; font-size: 1rem; }
+html body .viewer-parts-row { padding: .7rem .8rem; font-size: .9rem; }
+html body .viewer-parts-close { min-width: 44px; min-height: 44px; }
