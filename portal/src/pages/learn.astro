@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import KetGuide from '../components/KetGuide.astro';
 import ProjectRow from '../components/ProjectRow.astro';
 
 const projects = (await getCollection('projects'))
@@ -27,5 +28,6 @@ const projects = (await getCollection('projects'))
 
     </div>
   </section>
+  <KetGuide />
 </Base>
 

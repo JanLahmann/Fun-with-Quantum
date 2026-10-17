@@ -363,3 +363,22 @@ describe('rasqberry site', () => {
     expect(claude.calls).toHaveLength(0);
   });
 });
+
+describe('fwq guide', () => {
+  it('answers the portal with the guide context: its own knowledge, the page, no level', async () => {
+    const { run, claude, db } = setup();
+    const { res } = await run(req('/chat', { site: 'fwq', context: 'guide', locale: 'en', level: 'kids', question: 'I have a 3D printer. What can I build?', state: { page: '/build/' } }));
+    expect(res.status).toBe(200);
+    expect(claude.calls[0].body.system[1].text).toContain('### Build: https://fun-with-quantum.org/build/');
+    expect(claude.calls[0].body.messages.at(-1).content).toContain('<page_state>{"page":"/build/"}</page_state>');
+    expect(claude.calls[0].body.messages.at(-1).content).not.toContain('<level>');
+    expect(db.rows('SELECT site, context, level FROM messages')).toEqual([{ site: 'fwq', context: 'guide', level: null }]);
+  });
+
+  it('refuses the guide from another site\'s origin', async () => {
+    const { run, claude } = setup();
+    const r = req('/chat', { site: 'fwq', context: 'guide', locale: 'en', question: 'Hi', state: {} }, { Origin: 'https://rasqberry.org' });
+    expect((await run(r)).res.status).toBe(403);
+    expect(claude.calls).toHaveLength(0);
+  });
+});

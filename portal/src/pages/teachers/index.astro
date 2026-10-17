@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import KetGuide from '../../components/KetGuide.astro';
 
 const games = (await getCollection('games')).sort((a, b) => a.data.order - b.data.order);
 const browser = games.filter((g) => g.data.webGame);
@@ -96,6 +97,7 @@ const browser = games.filter((g) => g.data.webGame);
       </div>
     </div>
   </section>
+  <KetGuide />
 </Base>
 
 <style>

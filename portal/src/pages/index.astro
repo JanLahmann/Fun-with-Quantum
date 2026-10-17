@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
+import KetGuide from '../components/KetGuide.astro';
 import Highlights from '../components/Highlights.astro';
 import { OFFLINE } from '../data/offline';
 import heroPhoto from '../assets/RasQberry2model.png';
@@ -277,6 +278,7 @@ const doors = [
     <span>workshop-ready</span>
     <span>from the makers of RasQberry</span>
   </div>
+  <KetGuide />
 </Base>
 
 {!OFFLINE && <script is:inline type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>}

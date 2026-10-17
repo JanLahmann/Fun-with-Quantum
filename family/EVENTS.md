@@ -32,8 +32,8 @@ Most events need **no JavaScript**: Umami's tracker records a click on any eleme
 | `Portal: coin game math` | `action` (toggle), `move`, `step`, `v` (2) | redesign preview, chapter 6: your move changed |
 
 The redesign preview sends the coin-game events above with an extra `v: 2`, and `Portal: coin game round` also with `replay` (yes \| no: "Same round, other move").
-| `Portal: assistant open` | `context` | the explainer's chat box opened (under a game) |
-| `Portal: assistant ask` | `context`, `level` | a question sent |
+| `Portal: assistant open` | `context` (coin-game \| guide) | Ket's chat box opened: under a game, or the family guide (home page, doors, teachers, workshops) |
+| `Portal: assistant ask` | `context`, `level` (games only) | a question sent |
 | `Portal: assistant level` | `context`, `level` (kids \| normal \| math) | the level switch changed |
 | `Portal: assistant vote` | `context`, `vote` (up \| down) | thumbs under an answer |
 | `QuBins: notebook launch` | `image`, `mode`, `ui`, `notebook` | qubins.org/launch (waits ≤1.5 s for the tracker, then redirects) |

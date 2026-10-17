@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import KetGuide from '../components/KetGuide.astro';
 import { eventsEmail, QDC_2025 } from '../data/events';
 
 const requestUrl = 'https://github.com/JanLahmann/Fun-with-Quantum/issues/new?template=workshop-request.yml';
@@ -68,6 +69,7 @@ const requestUrl = 'https://github.com/JanLahmann/Fun-with-Quantum/issues/new?te
       </div>
     </div>
   </section>
+  <KetGuide />
 </Base>
 
 <style>

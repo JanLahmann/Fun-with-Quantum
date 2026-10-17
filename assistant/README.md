@@ -59,6 +59,14 @@ its English glossary, its learning-link table, and probabilities computed with i
 `portal/src/lib/qcoin` — so the assistant and the game can't drift apart. `test/knowledge.test.ts`
 pins the key numbers.
 
+The family guide on the portal's home and door pages (`fwq/guide`, issue #153) knows what the
+portal shows: `scripts/fwq-guide-knowledge.mjs` builds `src/contexts/fwq/guide.generated.ts` from
+`guide.summary.md` (how to guide, written by hand), `family/family.json` (members hidden from the
+footers stay out), `portal/src/content/projects/` and `portal/src/content/games/` (never the
+unlisted `/preview/` pages, nor the games' learning goals, which can name a game's trick). Rerun
+it after changing any of them; `test/guide.test.ts` fails while the committed module is stale.
+Evals: `evals/fwq-guide.jsonl` (recommendations) and `evals/ket-stress-guide.jsonl`.
+
 `evals/coin-game.jsonl` holds the eval cases (spoiler rule in chapter 2, languages, off-topic,
 prompt injection, honest "don't know", links, history). `node evals/run.mjs --url <worker>` runs
 them with heuristic checks and prints every answer for a human read; the **Eval assistant**

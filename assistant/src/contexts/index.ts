@@ -1,4 +1,5 @@
 import { coinGame } from './coin-game';
+import { fwqGuide } from './fwq/guide';
 import { cleanjibeHelp } from './cleanjibe/help';
 import { cleanjibeSession } from './cleanjibe/session';
 import { rasqberryBuild } from './rasqberry/build';
@@ -9,6 +10,7 @@ import type { Context } from './types';
 /** Every context the Worker serves, keyed `<site>/<context>`. */
 export const CONTEXTS: Record<string, Context> = {
   'fwq/coin-game': coinGame,
+  'fwq/guide': fwqGuide,
   'rasqberry/build': rasqberryBuild,
   'rasqberry/device': rasqberryDevice,
   'rasqberry/tester': rasqberryTester,

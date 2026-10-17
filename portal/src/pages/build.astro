@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
+import KetGuide from '../components/KetGuide.astro';
 import ProjectRow from '../components/ProjectRow.astro';
 import rasqberryPhoto from '../assets/RasQberry2model.png';
 import quantegoPhoto from '../assets/quantego-two-photo.jpg';
@@ -42,6 +43,7 @@ const projects = (await getCollection('projects'))
       {projects.map((p) => <ProjectRow project={p} />)}
     </div>
   </section>
+  <KetGuide />
 </Base>
 
 <style>
