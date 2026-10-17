@@ -32,6 +32,12 @@ daily_global = 2000
 daily_visitor = 20
 daily_global = 500
 
+# The iOS app (App Attest): per device and for all devices together, apart from the website's
+# budgets, so the app can't use up the site's (Jan, 2026-10-17).
+[vars.SITES.fwq.budgets.app]
+daily_visitor = 30
+daily_global = 500
+
 # RasQberry: at a booth, every visitor at one Pi shares its address, hence the higher per-visitor limit.
 [vars.SITES.rasqberry]
 origins = ["https://rasqberry.org", "http://localhost:3000"]

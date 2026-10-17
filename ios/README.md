@@ -8,6 +8,22 @@ fun-with-quantum.org. Not in the App Store yet.
 | Play | the launched browser games (`webGame: true` in `portal/src/content/games/`), from the portal build, offline; the notebook games and the Play projects open in Safari |
 | Build | 3D models: RasQberry Two (rasqberry.org's viewer: explode, parts, assembly), Quantego One, Two and Two 1024 (quantego.org's LDraw viewer: building steps, explode, parts, tour), Qutie System One and Two (turntable); Quantego One and Two also in AR (AR Quick Look); the Build projects |
 | Learn | the Learn projects, in Safari |
+| all | "Ask Ket": the family guide (below); Ket also answers under the coin game |
+
+## Ket, the AI helper
+
+- **Under the coin game:** the portal's own chat (`AssistantChat.astro`), shown in the app build. Its requests go to
+  `fwq://app/__ket/chat` and `/feedback`; the app forwards them to the Worker (`WebContent.swift`), so pages still
+  load nothing from the internet themselves.
+- **The family guide:** a native sheet ("Ask Ket" on the Play, Build and Learn tabs, `KetGuideSheet.swift`), context
+  `guide`, with the tab's page as state; texts and the sites an answer may link come from the portal (`catalog.json`).
+- **Sign-in:** App Attest (`Ket.swift`, as in CleanJibe): the Worker knows the app as site `fwq`
+  (`assistant/src/app-auth.ts`), contexts `coin-game` and `guide`, header `X-FwQ-Token`, and counts it against its own
+  budget (`[vars.SITES.fwq.budgets.app]`: 30 per device, 500 for all devices per day). The simulator has no App Attest:
+  Ket answers only on a real iPhone or iPad.
+- **Before the App Store:** Ket is in the app's TestFlight builds while it is still hidden on the website
+  (`?assistant=1`). Decide with Jan whether it ships, and keep the App Store privacy answers in line with
+  `PrivacyInfo.xcprivacy` (questions and an App Attest key ID, not linked, not tracking).
 
 ## How it is built
 

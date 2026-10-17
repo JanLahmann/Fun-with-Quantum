@@ -5,7 +5,7 @@
  * until then only with ?assistant=1 in the address (for testing on the live site).
  * Logic: src/lib/assistant/; server: assistant/ (Cloudflare Worker).
  */
-import { OFFLINE } from '../data/offline';
+import { APP, OFFLINE } from '../data/offline';
 import { ASSISTANT_TEXTS } from '../lib/assistant/i18n';
 import type { Locale } from '../lib/qcoin/i18n';
 import { LEVELS } from '../lib/level';
@@ -16,7 +16,8 @@ interface Props {
 }
 const { context, locale = 'en' } = Astro.props;
 const url = import.meta.env.PUBLIC_FWQ_ASSISTANT_URL ?? '';
-const isPublic = import.meta.env.PUBLIC_FWQ_ASSISTANT_PUBLIC === '1';
+// The iOS app (TestFlight) shows it: the app's own Ket, signed in with App Attest (ios/README.md).
+const isPublic = import.meta.env.PUBLIC_FWQ_ASSISTANT_PUBLIC === '1' || APP;
 const t = ASSISTANT_TEXTS[locale];
 const id = `fa-${context}`;
 ---

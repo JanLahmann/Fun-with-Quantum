@@ -145,7 +145,7 @@ describe('session state', () => {
     expect((await s.run('/chat', ask(), { 'X-Eval-Pass': pass })).status).toBe(200);
     expect((await s.run('/chat', ask({ context: 'help' }), { 'X-Eval-Pass': pass })).status).toBe(200);
     expect((await s.run('/chat', ask(), { 'X-Eval-Pass': 'wrong' })).status).toBe(401);
-    expect((await s.run('/chat', { ...ask(), site: 'fwq', context: 'coin-game' }, { 'X-Eval-Pass': pass })).status).toBe(403);
+    expect((await s.run('/chat', { ...ask(), site: 'rasqberry', context: 'build' }, { 'X-Eval-Pass': pass })).status).toBe(403); // not an app site
     expect((await s.run('/chat', ask({ site: '__proto__' }), { 'X-Eval-Pass': pass })).status).toBe(403);
     expect((await s.run('/chat', ask(), { 'X-Eval-Pass': pass, Origin: 'https://cleanjibe.org' })).status).toBe(403); // session is app-only
     expect(s.db.rows("SELECT key FROM quota WHERE key LIKE 'cleanjibe:key:%'")).toEqual([{ key: 'cleanjibe:key:eval' }]);
@@ -155,5 +155,45 @@ describe('session state', () => {
     const unset = setup();
     expect((await unset.run('/chat', ask(), { 'X-Eval-Pass': '' })).status).toBe(401);
     expect((await unset.run('/chat', ask(), { 'X-Eval-Pass': 'anything' })).status).toBe(401);
+  });
+});
+
+describe('App Attest flow (Fun with Quantum iOS app)', () => {
+  const FWQ_SITES = {
+    SITES: {
+      fwq: { origins: ['https://fun-with-quantum.org'], daily_visitor: 50, daily_global: 2000, budgets: { guide: { daily_visitor: 20, daily_global: 500 }, app: { daily_visitor: 2, daily_global: 3 } } },
+      cleanjibe: { origins: ['https://cleanjibe.org'], daily_visitor: 20, daily_global: 500 },
+    },
+  };
+  async function fwqApp(s: ReturnType<typeof setup>) {
+    const { challenge } = await (await s.run('/attest/challenge', { site: 'fwq' })).json() as any;
+    const a = await makeAttestation(ca, { teamId: TEAM, bundleId: 'de.lahmann.funwithquantum', challenge: utf8(challenge) });
+    const res = await s.run('/attest', { site: 'fwq', keyId: a.keyId, attestation: a.attestation, challenge, bundleId: 'de.lahmann.funwithquantum' });
+    expect(res.status).toBe(200);
+    return (await res.json() as any).token as string;
+  }
+  const guide = { site: 'fwq', context: 'guide', locale: 'en', question: 'What can I build with a 3D printer?', state: { page: '/build/' } };
+  const coin = { site: 'fwq', context: 'coin-game', locale: 'en', level: 'kids', question: 'Why did I lose?', state: { game: 'quantum-coin-game', chapter: 1 } };
+
+  it('the guide and the coin game answer the app, with no Origin; nothing else of the site', async () => {
+    const s = setup(FWQ_SITES);
+    const token = await fwqApp(s);
+    expect((await s.run('/chat', guide, { 'X-FwQ-Token': token })).status).toBe(200);
+    expect((await s.run('/chat', coin, { 'X-FwQ-Token': token })).status).toBe(200);
+    expect(s.db.rows('SELECT site, context, level FROM messages ORDER BY ts, context')).toEqual(expect.arrayContaining([
+      { site: 'fwq', context: 'guide', level: null }, { site: 'fwq', context: 'coin-game', level: 'kids' },
+    ]));
+    // its token is for fwq only, and a CleanJibe app token is not one
+    expect((await s.run('/chat', { ...ask(), site: 'cleanjibe' }, { 'X-FwQ-Token': token })).status).toBe(403);
+    expect((await s.run('/chat', guide, { 'X-CleanJibe-Token': token })).status).toBe(401);
+  });
+
+  it('counts against the app budget, apart from the website and the guide on the web', async () => {
+    const s = setup(FWQ_SITES);
+    const token = await fwqApp(s);
+    for (let i = 0; i < 2; i++) expect((await s.run('/chat', guide, { 'X-FwQ-Token': token })).status).toBe(200);
+    expect((await s.run('/chat', guide, { 'X-FwQ-Token': token })).status).toBe(429); // 2 per device
+    expect((await s.run('/chat', guide, { Origin: 'https://fun-with-quantum.org' })).status).toBe(200); // the web guide is untouched
+    expect(s.db.rows("SELECT key, n FROM quota WHERE key LIKE '%*' ORDER BY key")).toEqual([{ key: 'fwq/app:*', n: 2 }, { key: 'fwq/guide:*', n: 1 }]);
   });
 });

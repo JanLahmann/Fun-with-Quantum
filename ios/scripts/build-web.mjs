@@ -11,7 +11,8 @@
  * - models/: the Build tab's 3D viewers — the family's own viewers and models, fetched from their
  *   repositories at the commits pinned in ios/web/sources.json (cached in ios/web/.cache/), each
  *   bundled with the three.js version it uses on the web.
- * - catalog.json: what the native lists show (games, projects, models), from portal/src/content.
+ * - catalog.json: what the native lists show (games, projects, models), from portal/src/content, and the
+ *   texts of the native Ket guide sheet (portal/src/lib/assistant/i18n.ts).
  */
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
@@ -19,6 +20,8 @@ import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statS
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { frontMatter } from '../../assistant/scripts/fwq-guide-knowledge.mjs';
+import { ASSISTANT_TEXTS, GUIDE_TEXTS } from '../../portal/src/lib/assistant/i18n.ts';
+import { TRUSTED } from '../../portal/src/lib/assistant/render.ts';
 
 const IOS = fileURLToPath(new URL('..', import.meta.url));
 const ROOT = join(IOS, '..');
@@ -126,7 +129,8 @@ const astroRefs = (text, inAstro) => [
 function buildPortal() {
   const portal = join(ROOT, 'portal');
   const dist = join(portal, 'dist-app');
-  if (!skipPortal) run('npx', ['astro', 'build', '--outDir', dist], portal, { PUBLIC_FWQ_APP: '1', PUBLIC_FWQ_ASSISTANT_URL: '', PUBLIC_FWQ_OFFLINE: '' });
+  // Ket's chat under the coin game talks to fwq://app/__ket, which the app forwards to the Worker with its App Attest token.
+  if (!skipPortal) run('npx', ['astro', 'build', '--outDir', dist], portal, { PUBLIC_FWQ_APP: '1', PUBLIC_FWQ_ASSISTANT_URL: 'fwq://app/__ket', PUBLIC_FWQ_OFFLINE: '' });
   if (!existsSync(join(dist, 'index.html'))) throw new Error('portal/dist-app is missing: run without --skip-portal');
   const site = join(OUT, 'site');
   const isPreview = (src) => relative(dist, src).split('/').includes('preview');
@@ -269,7 +273,12 @@ function catalog() {
     https(p.url, `project ${p.id}`);
   }
   const credits = Object.entries(SOURCES).filter(([k]) => !k.startsWith('$')).map(([name, s]) => ({ name, repo: s.repo, ref: s.ref }));
-  writeFileSync(join(OUT, 'catalog.json'), `${JSON.stringify({ games, projects, models, credits }, null, 1)}\n`);
+  // The native guide sheet's texts: the portal's guide box (KetGuide.astro), so app and site say the same.
+  const t = { ...ASSISTANT_TEXTS.en, ...GUIDE_TEXTS };
+  const ket = Object.fromEntries(['open', 'title', 'intro', 'privacy', 'placeholder', 'send', 'thinking', 'you', 'explainer', 'helpful', 'notHelpful', 'thanks', 'errRate', 'errBusy', 'errNetwork']
+    .map((k) => { if (typeof t[k] !== 'string' || !t[k]) throw new Error(`catalog: Ket text ${k} missing`); return [k, t[k]]; }));
+  ket.trusted = TRUSTED.source; // links in an answer become tappable only to these sites, as on the web
+  writeFileSync(join(OUT, 'catalog.json'), `${JSON.stringify({ games, projects, models, credits, ket }, null, 1)}\n`);
 }
 
 rmSync(OUT, { recursive: true, force: true });

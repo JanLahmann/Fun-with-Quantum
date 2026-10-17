@@ -15,11 +15,16 @@ struct Catalog: Decodable {
         let project: String?
     }
     struct Credit: Decodable { let name, repo, ref: String }
+    /// The guide sheet's texts (the portal's guide box) and the sites an answer may link (render.ts TRUSTED).
+    struct KetTexts: Decodable {
+        let open, title, intro, privacy, placeholder, send, thinking, you, explainer, helpful, notHelpful, thanks, errRate, errBusy, errNetwork, trusted: String
+    }
 
     let games: [Game]
     let projects: [Project]
     let models: [Model]
     let credits: [Credit]
+    let ket: KetTexts
 
     func projects(door: String) -> [Project] { projects.filter { $0.door == door } }
     func project(_ id: String?) -> Project? { projects.first { $0.id == id } }

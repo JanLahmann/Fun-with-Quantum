@@ -7,14 +7,15 @@
  * everyone once PUBLIC_FWQ_GUIDE_PUBLIC=1 (repository variable FWQ_GUIDE_PUBLIC), until then only with
  * ?assistant=1 in the address.
  */
-import { OFFLINE } from '../data/offline';
+import { APP, OFFLINE } from '../data/offline';
 import { ASSISTANT_TEXTS, GUIDE_TEXTS } from '../lib/assistant/i18n';
 
 const url = import.meta.env.PUBLIC_FWQ_ASSISTANT_URL ?? '';
 const isPublic = import.meta.env.PUBLIC_FWQ_GUIDE_PUBLIC === '1';
 const t = { ...ASSISTANT_TEXTS.en, ...GUIDE_TEXTS };
 ---
-{url && !OFFLINE && (
+{/* Not in the iOS app: it has the guide as a native sheet on its tabs. */}
+{url && !OFFLINE && !APP && (
   <section class="fwq-assist fa-float" aria-label={t.title} data-url={url} data-site="fwq" data-context="guide" data-locale="en" data-public={isPublic ? '1' : undefined} hidden>
     <div class="fa-panel" id="fa-guide-panel" hidden>
       <h2 class="fa-h">{t.title}</h2>
