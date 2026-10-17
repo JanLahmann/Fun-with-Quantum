@@ -1,6 +1,6 @@
 ---
 import { getCollection, render } from 'astro:content';
-import { OFFLINE } from '../../data/offline';
+import { APP, OFFLINE } from '../../data/offline';
 import Base from '../../layouts/Base.astro';
 import CoinGame from '../../components/CoinGame.astro';
 import GhzGame from '../../components/GhzGame.astro';
@@ -47,7 +47,7 @@ const launchVia = launchTarget === 'qubins' ? 'mybinder.org (via QuBins)' : laun
   <section class="section">
     <div class="wrap">
       <div class="top">
-        <div class="kicker">Play · {game.data.concept}</div>
+        {!APP && <div class="kicker">Play · {game.data.concept}</div>}
         {coin && (
           <nav class="langs" aria-label="Language">
             {LOCALES.map((l) => (
@@ -56,7 +56,8 @@ const launchVia = launchTarget === 'qubins' ? 'mybinder.org (via QuBins)' : laun
           </nav>
         )}
       </div>
-      <h1>{game.data.icon} {game.data.title}</h1>
+      {/* in the app the screen's title bar names the game already */}
+      <h1 class:list={[{ 'sr-only': APP }]}>{game.data.icon} {game.data.title}</h1>
       <p class="lead">{game.data.tagline}</p>
 
       {WebGame && <WebGame />}
@@ -83,9 +84,9 @@ const launchVia = launchTarget === 'qubins' ? 'mybinder.org (via QuBins)' : laun
             Opens a free Jupyter session on {launchVia} — starting it can take a few minutes
           </div>
         </div>
-        <div class="alt">
+        {!APP && <div class="alt">
           Prefer it local? <code>git clone</code> the{' '}<a href="https://github.com/JanLahmann/Fun-with-Quantum" target="_blank" rel="noopener">repository</a>, create the conda environment from <code>environment.yml</code>, and open <code>{game.data.notebook}</code>.
-        </div>
+        </div>}
       </div>
       )}
 
@@ -93,16 +94,21 @@ const launchVia = launchTarget === 'qubins' ? 'mybinder.org (via QuBins)' : laun
         <Content />
       </div>
 
-      <h3 class="more-title">More games</h3>
-      <div class="grid cols-3">
-        {others.map((g) => (
-          <a class="card" href={`/play/${g.id}/`}>
-            <span class="icon">{g.data.icon}</span>
-            <h3>{g.data.title}</h3>
-            <span class="meta">{g.data.concept}</span>
-          </a>
-        ))}
-      </div>
+      {/* in the app the Play tab lists the games; some of these are notebook pages */}
+      {!APP && (
+        <>
+        <h3 class="more-title">More games</h3>
+        <div class="grid cols-3">
+          {others.map((g) => (
+            <a class="card" href={`/play/${g.id}/`}>
+              <span class="icon">{g.data.icon}</span>
+              <h3>{g.data.title}</h3>
+              <span class="meta">{g.data.concept}</span>
+            </a>
+          ))}
+        </div>
+        </>
+      )}
     </div>
   </section>
 </Base>
