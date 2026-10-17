@@ -167,13 +167,6 @@ const RIM_SEGMENTS = 44;
     .qc-actions { order: 6; }
     .qc-score { order: 7; }
   }
-  @media (orientation: landscape) and (max-height: 500px) {
-    .qcoin { --coin: 120px; }
-    .qc-arena { grid-template-columns: minmax(240px, 1fr) 1.15fr; gap: 18px; }
-    .qc-scene { height: 200px; }
-    .qc-box { top: 6%; width: 170px; height: 160px; margin-left: -85px; }
-    .qc-box span { font-size: 3.4rem; }
-  }
 
   /* ---------- the 3D coin ---------- */
   .qc-stage { position: relative; }
@@ -321,6 +314,14 @@ const RIM_SEGMENTS = 44;
     .qcoin { --coin: 150px; padding: 14px; }
     .qc-scene { height: 260px; }
     .qc-box { width: 200px; height: 186px; margin-left: -100px; }
+  }
+  /* a phone on its side (after the base rules, which it overrides) */
+  @media (orientation: landscape) and (max-height: 500px) and (max-width: 960px) {
+    .qcoin { --coin: 120px; }
+    .qc-arena { grid-template-columns: minmax(240px, 1fr) 1.15fr; gap: 18px; }
+    .qc-scene { height: 200px; }
+    .qc-box { top: 6%; width: 170px; height: 160px; margin-left: -85px; }
+    .qc-box span { font-size: 3.4rem; }
   }
   /* touch screens: tap targets of at least 44px (Apple's guideline) */
   @media (pointer: coarse) {

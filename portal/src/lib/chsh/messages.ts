@@ -67,7 +67,7 @@ export const CH1 = {
 export const CH2 = {
   title: 'The quantum team',
   intro: `<p>Now Alice and Bob share a [Bell pair](#bell): two [entangled](#entanglement) [qubits](#qubit), one for each. In their rooms, each [measures](#measurement) their qubit along an arrow on the [Bloch circle](#bloch) that depends on their question: Alice along A0 (0°) or A1 (90°), Bob along B0 (45°) or B1 (−45°). The result is their answer: 0 along the arrow, 1 the opposite way.</p>
-<p><b>Pick a question</b> in the squares — or let the quiz master pick.</p>`,
+<p><b>Choose a question</b> in the squares — or let the quiz master pick.</p>`,
   again: 'They don’t win every round. Play on: in the long run they win about 85% — more than any classical table.',
   ask: 'Quiz master asks',
   many: 'Play 1000 rounds',

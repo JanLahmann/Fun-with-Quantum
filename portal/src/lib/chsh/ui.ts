@@ -12,7 +12,7 @@ import {
   BEST_ANGLES, QUESTIONS, TSIRELSON_WIN, allStrategies, classicalWins, gameSteps,
   playClassical, playQuantum, randomBit, totalWin, winProbability, type Angles, type Bit, type Round,
 } from './game';
-import { CH1, CH2, CH3, CH4, TERMS, UI, between, round } from './messages';
+import { CH1, CH2, CH3, CH4, TERMS, UI, round } from './messages';
 
 type Mode = 'strategy' | 'pick' | 'angles' | 'explain' | 'off';
 const pct = (p: number) => `${(100 * p).toFixed(1)}%`;
@@ -30,12 +30,17 @@ function circleSvg(angles: Angles, active: { x: Bit; y: Bit } | null, answers: {
     const both = who === 'alice' ? angles.alice : angles.bob, P = who === 'alice' ? 'A' : 'B';
     const same = (((both[0] - both[1]) % 360) + 360) % 360 === 0; // both arrows on top of each other: one label
     const label = same ? (q === 0 ? `${P}0,1` : '') : `${P}${q}`;
-    // Labels sit just beyond the tip. A Bob label within 25° of an Alice arrow would collide with hers, so it moves
-    // 14px up (or, near the bottom, down) — at the sides a step outward would leave the picture.
-    const near = who === 'bob' && angles.alice.some((a) => between(a, deg) < 25);
-    const [x, y] = pt(deg), [lx, ly0] = pt(deg, R + 16);
-    const ly = ly0 + (near ? (Math.cos((deg * Math.PI) / 180) > -0.5 ? -14 : 14) : 0);
     const t = (deg * Math.PI) / 180, ux = Math.sin(t), uy = -Math.cos(t), px = -uy, py = ux;
+    // Labels sit just beyond the tip. A Bob label within 25° of an Alice arrow would collide with hers: it moves along
+    // the circle, away from her arrow; right on top of it, 14px up (near the bottom, down), as a step outward would
+    // leave the picture at the sides.
+    const [x, y] = pt(deg);
+    let [lx, ly] = pt(deg, R + 16);
+    if (who === 'bob') {
+      const d = angles.alice.map((a) => ((((deg - a) % 360) + 540) % 360) - 180).reduce((m, v) => (Math.abs(v) < Math.abs(m) ? v : m));
+      if (d === 0) ly += Math.cos(t) > -0.5 ? -14 : 14;
+      else if (Math.abs(d) < 25) { const k = Math.max(18 - 0.6 * Math.abs(d), 6) * Math.sign(d); lx += k * px; ly += k * py; }
+    }
     const head = `${x},${y} ${x - 10 * ux + 5 * px},${y - 10 * uy + 5 * py} ${x - 10 * ux - 5 * px},${y - 10 * uy - 5 * py}`;
     out.push(`<g class="arrow ${who}${on ? ' on' : ''}"><line x1="${C}" y1="${C}" x2="${x - 8 * ux}" y2="${y - 8 * uy}"/><polygon points="${head}"/>`
       + `<text x="${lx}" y="${ly + 4}" text-anchor="middle">${label}</text></g>`);

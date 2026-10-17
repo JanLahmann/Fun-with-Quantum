@@ -120,10 +120,11 @@ export function mountCoinGame(root: HTMLElement) {
     circuitEl.innerHTML = parts.join('');
   };
 
-  /** Whether the player uses the keyboard: then the next move's first button gets the focus. */
-  let keyboard = false;
-  root.addEventListener('keydown', () => { keyboard = true; });
-  root.addEventListener('pointerdown', () => { keyboard = false; });
+  /** Whether the last move was a tap or a click: then no focus ring. Keyboard and screen-reader players
+   *  (whose activation sends no keydown to the page) get the next move's first button focused. */
+  let pointer = false;
+  root.addEventListener('pointerdown', () => { pointer = true; });
+  root.addEventListener('keydown', () => { pointer = false; });
 
   /** Render buttons, resolve with the chosen value; aborts if the chapter changes meanwhile. */
   function ask<T>(e: number, options: { label: string; value: T; kind?: 'primary' | 'quantum'; gate?: GateName }[], extra = ''): Promise<T> {
@@ -143,7 +144,7 @@ export function mountCoinGame(root: HTMLElement) {
         actions.appendChild(b);
       }
       if (extra) actions.insertAdjacentHTML('beforeend', extra);
-      if (keyboard) actions.querySelector('button')?.focus({ preventScroll: true }); // after a tap, a focus ring would only distract
+      if (!pointer) actions.querySelector('button')?.focus({ preventScroll: true }); // after a tap, a focus ring would only distract
     });
   }
 
