@@ -26,6 +26,12 @@ origins = ["https://fun-with-quantum.org", "http://localhost:4321"]
 daily_visitor = 50
 daily_global = 2000
 
+# The family guide on the home and door pages (#153) has a budget of its own, so its traffic can't
+# use up the game chat's (Jan, 2026-10-17).
+[vars.SITES.fwq.budgets.guide]
+daily_visitor = 20
+daily_global = 500
+
 # RasQberry: at a booth, every visitor at one Pi shares its address, hence the higher per-visitor limit.
 [vars.SITES.rasqberry]
 origins = ["https://rasqberry.org", "http://localhost:3000"]

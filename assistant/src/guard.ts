@@ -64,14 +64,17 @@ async function bump(env: Env, day: string, key: string): Promise<number> {
 /**
  * Daily counters per site, checked after the burst limiter and after the request proved valid:
  * first the visitor's own count; only requests within it count towards the site's global limit,
- * so one visitor can never use up everyone's budget, and one site never another site's.
+ * so one visitor can never use up everyone's budget, and one site never another site's. A context
+ * listed in the site's `budgets` counts apart from the rest of the site (counters `<site>/<context>:…`).
  */
-export async function checkDaily(env: Env, site: string, key: string, now: number): Promise<'ok' | 'visitor' | 'global'> {
+export async function checkDaily(env: Env, site: string, key: string, now: number, context?: string): Promise<'ok' | 'visitor' | 'global'> {
   const day = utcDay(now);
-  const cfg = env.SITES[site];
+  const own = context && env.SITES[site].budgets && Object.hasOwn(env.SITES[site].budgets!, context) ? env.SITES[site].budgets![context] : null;
+  const cfg = own ?? env.SITES[site];
+  const scope = own ? `${site}/${context}` : site;
   // The eval runner (behind APP_EVAL_PASS) has its own daily limit and leaves the visitors' budget alone.
-  if (key === EVAL_KEY) return (await bump(env, day, `${site}:${key}`)) > EVAL_DAILY ? 'visitor' : 'ok';
-  if ((await bump(env, day, `${site}:${key}`)) > intVar(String(cfg.daily_visitor), 50)) return 'visitor';
-  if ((await bump(env, day, `${site}:*`)) > intVar(String(cfg.daily_global), 1000)) return 'global';
+  if (key === EVAL_KEY) return (await bump(env, day, `${scope}:${key}`)) > EVAL_DAILY ? 'visitor' : 'ok';
+  if ((await bump(env, day, `${scope}:${key}`)) > intVar(String(cfg.daily_visitor), 50)) return 'visitor';
+  if ((await bump(env, day, `${scope}:*`)) > intVar(String(cfg.daily_global), 1000)) return 'global';
   return 'ok';
 }
