@@ -35,3 +35,18 @@ open FunWithQuantum.xcodeproj       # or: xcodebuild test -scheme FunWithQuantum
 
 To update a model or viewer: put the new commit in `web/sources.json`, rebuild, run the smoke test
 and look at the screenshots.
+
+## TestFlight
+
+App Store Connect: "Fun with Quantum" (app id 6823967331, SKU `fun-with-quantum-ios`, bundle id
+`de.lahmann.funwithquantum`, created 2026-10-17). TestFlight group **Internal** gets every build.
+
+```bash
+ASC_KEY_ID=… ASC_ISSUER_ID=… ios/scripts/testflight.sh <next build number>
+```
+
+The script builds the web content, archives and uploads; the API key stays in `~/.appstoreconnect`.
+Signing is local (Apple Distribution certificate, profile "Fun with Quantum App Store", see
+`ExportOptions.plist`), because the API key may not use Xcode's cloud signing. When the profile
+expires (2027-08-11, with the certificate), create a new one for the bundle id in the developer portal
+or through the API, with the same name.
