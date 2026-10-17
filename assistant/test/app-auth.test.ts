@@ -188,6 +188,14 @@ describe('App Attest flow (Fun with Quantum iOS app)', () => {
     expect((await s.run('/chat', guide, { 'X-CleanJibe-Token': token })).status).toBe(401);
   });
 
+  it('the eval pass may ask the fwq app contexts (its own budget), still never with an Origin', async () => {
+    const s = setup({ ...FWQ_SITES, APP_EVAL_PASS: 'eval-pass-for-tests-0123456789abcdef' });
+    expect((await s.run('/chat', guide, { 'X-Eval-Pass': 'eval-pass-for-tests-0123456789abcdef' })).status).toBe(200);
+    expect(s.db.rows("SELECT key FROM quota WHERE key LIKE '%eval%'")).toEqual([{ key: 'fwq/guide:key:eval' }]);
+    expect((await s.run('/chat', guide, { 'X-Eval-Pass': 'eval-pass-for-tests-0123456789abcdef', Origin: 'https://fun-with-quantum.org' })).status).toBe(200); // with an Origin it is a web request
+    expect(s.db.rows("SELECT key FROM quota WHERE key LIKE 'fwq/app%'")).toEqual([]);
+  });
+
   it('counts against the app budget, apart from the website and the guide on the web', async () => {
     const s = setup(FWQ_SITES);
     const token = await fwqApp(s);

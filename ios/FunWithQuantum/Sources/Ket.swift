@@ -52,6 +52,8 @@ actor KetClient {
 
     private var token: String?
     private var tokenExpires = Date.distantPast
+    /// One sign-in at a time: two refreshes at once would race on the key's counter, and the loser would throw a good key away.
+    private var signingIn: Task<String, Error>?
     private let session: URLSession = {
         let c = URLSessionConfiguration.ephemeral
         c.httpCookieStorage = nil
@@ -129,6 +131,14 @@ actor KetClient {
     private func validToken() async throws -> String {
         if let token, tokenExpires.timeIntervalSinceNow > 60 { return token }
         guard Self.isSupported else { throw Failure.unsupported }
+        if let signingIn { return try await signingIn.value }
+        let task = Task { try await self.signIn() }
+        signingIn = task
+        defer { signingIn = nil }
+        return try await task.value
+    }
+
+    private func signIn() async throws -> String {
         if let keyId = UserDefaults.standard.string(forKey: Self.keyDefault) {
             do { return try await refresh(keyId) } catch Failure.attest {
                 UserDefaults.standard.removeObject(forKey: Self.keyDefault)
@@ -193,7 +203,8 @@ actor KetClient {
         do { (data, response) = try await session.data(for: req) } catch { throw Failure.network }
         let status = (response as? HTTPURLResponse)?.statusCode ?? 0
         let json = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any] ?? [:]
-        guard status == 200 else { throw status == 401 ? Failure.attest : Self.failure(status: status) }
+        // A 429 here is the sign-in's own limit (new keys per address), not today's questions.
+        guard status == 200 else { throw status == 401 ? Failure.attest : status == 429 ? Failure.server : Self.failure(status: status) }
         return json
     }
 

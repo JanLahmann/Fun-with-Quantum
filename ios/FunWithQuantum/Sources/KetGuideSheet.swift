@@ -11,6 +11,7 @@ struct KetGuideSheet: View {
     @State private var input = ""
     @State private var task: Task<Void, Never>?
     @FocusState private var focused: Bool
+    @State private var trusted: Regex<AnyRegexOutput>?
 
     struct Message: Identifiable {
         let id = UUID()
@@ -42,6 +43,7 @@ struct KetGuideSheet: View {
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
             .environment(\.openURL, OpenURLAction { url in Safari.open(url); return .handled })
         }
+        .onAppear { trusted = try? Regex(texts.trusted) }
         .onDisappear { task?.cancel() }
     }
 
@@ -94,20 +96,26 @@ struct KetGuideSheet: View {
         let question = input.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !question.isEmpty, task == nil else { return }
         input = ""
+        // The Worker takes up to 1000 UTF-16 units (what the web box's maxlength counts).
+        var q = Substring(question)
+        while q.utf16.count > 1000 { q = q.dropLast() }
+        let asked = String(q)
         // The last ten question/answer pairs that went through, for follow-up questions.
         var history: [KetClient.Turn] = []
         for (q, a) in zip(messages, messages.dropFirst()) where q.fromUser && !a.fromUser && a.answerId != nil {
             history += [.init(role: "user", content: q.text), .init(role: "assistant", content: a.text)]
         }
-        messages.append(Message(fromUser: true, text: String(question.prefix(1000))))
+        messages.append(Message(fromUser: true, text: asked))
         messages.append(Message(fromUser: false, text: ""))
         let index = messages.count - 1
         task = Task {
             do {
-                for try await event in await KetClient.shared.ask(String(question.prefix(1000)), page: page, history: Array(history.suffix(20))) {
+                for try await event in await KetClient.shared.ask(asked, page: page, history: Array(history.suffix(20))) {
                     switch event {
                     case .delta(let t): messages[index].text += t
-                    case .done(let id): messages[index].answerId = id.isEmpty ? nil : id
+                    case .done(let id):
+                        messages[index].answerId = id.isEmpty ? nil : id
+                        AccessibilityNotification.Announcement(messages[index].text).post()
                     }
                 }
             } catch {
@@ -132,7 +140,6 @@ struct KetGuideSheet: View {
     private func rendered(_ text: String) -> AttributedString {
         let options = AttributedString.MarkdownParsingOptions(interpretedSyntax: .inlineOnlyPreservingWhitespace)
         var s = (try? AttributedString(markdown: text, options: options)) ?? AttributedString(text)
-        let trusted = try? Regex(texts.trusted)
         for run in s.runs {
             guard let url = run.link else { continue }
             let ok = trusted.map { url.absoluteString.firstMatch(of: $0) != nil } ?? false

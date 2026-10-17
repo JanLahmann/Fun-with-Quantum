@@ -33,7 +33,7 @@ final class BundleSchemeHandler: NSObject, WKURLSchemeHandler {
     private var live: [ObjectIdentifier: Task<Void, Never>] = [:]
 
     func webView(_ webView: WKWebView, start task: WKURLSchemeTask) {
-        if let url = task.request.url, url.path.hasPrefix("/__ket/") { return forwardToKet(task, url) }
+        if let url = task.request.url, url.host == "app", url.path.hasPrefix("/__ket/") { return forwardToKet(task, url) }
         guard let url = task.request.url, let file = WebContent.file(for: url), let data = try? Data(contentsOf: file, options: .mappedIfSafe) else {
             let response = HTTPURLResponse(url: task.request.url!, statusCode: 404, httpVersion: "HTTP/1.1", headerFields: [:])!
             task.didReceive(response)
@@ -63,11 +63,13 @@ final class BundleSchemeHandler: NSObject, WKURLSchemeHandler {
         }
         live[id] = Task { [weak self] in
             let alive = { self?.live[id] != nil }
+            var responseSent = false
             do {
                 let (response, bytes) = try await KetClient.shared.forward(path, body: body)
                 guard alive() else { return }
                 let type = response.value(forHTTPHeaderField: "Content-Type") ?? "application/json"
                 task.didReceive(HTTPURLResponse(url: url, statusCode: response.statusCode, httpVersion: "HTTP/1.1", headerFields: ["Content-Type": type])!)
+                responseSent = true
                 // Pass each line on as it arrives, so the answer appears while it is written.
                 var line = Data()
                 for try await byte in bytes {
@@ -79,8 +81,11 @@ final class BundleSchemeHandler: NSObject, WKURLSchemeHandler {
                 task.didFinish()
             } catch {
                 guard alive() else { return }
-                let failure = error as? KetClient.Failure ?? .network
-                Self.reply(task, url, status: failure.status, json: #"{"error":"ket"}"#)
+                // Once the response has started, a second one would crash WebKit: end the stream as failed instead.
+                if responseSent { task.didFailWithError(error) } else {
+                    let failure = error as? KetClient.Failure ?? .network
+                    Self.reply(task, url, status: failure.status, json: #"{"error":"ket"}"#)
+                }
             }
             self?.live[id] = nil
         }
