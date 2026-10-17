@@ -38,7 +38,7 @@ export const DOORS: Door[] = [
   {
     key: 'learn',
     title: 'Learn',
-    text: 'Take the official courses, keep coding in ready-made environments, prepare for the Qiskit certification, run real Qiskit code in your browser — and build your own quantum games.',
+    text: 'Take the official courses from IBM, keep coding in ready-made environments, prepare for the Qiskit certification, run real Qiskit code in your browser — and build your own quantum games.',
     image: 'ibm-quantum-learning.png',
     imageAlt: 'The IBM Quantum Learning platform: “Learn quantum computing” with a library of courses',
     fit: 'left',
