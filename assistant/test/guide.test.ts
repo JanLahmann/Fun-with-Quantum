@@ -122,3 +122,24 @@ describe('guide context', () => {
     expect(fwqGuide.state([])).toBeNull();
   });
 });
+
+describe('RasQberry Two demos in the guide', () => {
+  it('carries every demo and learning path the Pi\'s helper knows, without its setup and website sections', async () => {
+    const { rasqberryDemos } = await import('../src/contexts/fwq/guide');
+    const { DEMO_IDS } = await import('../src/contexts/rasqberry/device.generated');
+    const demos = rasqberryDemos();
+    expect(demos).toContain('\n### Demo groups');
+    expect(demos).toContain('\n### Learning paths');
+    for (const id of DEMO_IDS) expect(demos, id).toContain(`id \`${id}\``);
+    expect(demos).not.toContain('Setting up and fixing the Pi');
+    expect(fwqGuide.knowledge).toContain(demos);
+    expect(rasqberryDemos('no such sections')).toBe('');
+  });
+
+  it('names nothing unlisted or hidden', async () => {
+    const { rasqberryDemos } = await import('../src/contexts/fwq/guide');
+    const demos = rasqberryDemos().toLowerCase();
+    expect(demos).not.toContain('/preview/');
+    for (const m of family.members.filter((x: { footer: boolean }) => !x.footer)) expect(demos).not.toContain(m.name.toLowerCase());
+  });
+});

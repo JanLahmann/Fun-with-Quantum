@@ -1,5 +1,28 @@
 import type { Context } from '../types';
 import { GUIDE_KNOWLEDGE } from './guide.generated';
+import { DEVICE_KNOWLEDGE } from '../rasqberry/device.generated';
+
+/**
+ * The RasQberry Two demos and learning paths, exactly as the helper on the Pi knows them: its knowledge
+ * module is rebuilt from the demo manifests at every deploy (scripts/rasqberry-knowledge.mjs), so the guide
+ * advises on today's demos. Empty if the sections ever move (test/guide.test.ts checks they are found).
+ */
+export function rasqberryDemos(device = DEVICE_KNOWLEDGE): string {
+  const from = device.indexOf('## Demo groups');
+  const to = device.indexOf('## Setting up and fixing the Pi');
+  if (from < 0 || to < from) return '';
+  return `# RasQberry Two demos — what you know
+
+The demos and learning paths below come with RasQberry Two and run on the model's Raspberry Pi (from the demo
+manifests on the Pi, current as of the last deploy). Use them to advise visitors who have, plan or will meet a
+RasQberry Two: which demo fits their goal, audience, time and hardware (LED panel, screen, internet, IBM Quantum
+account), and which learning path gives a guided order. Demos and paths marked beta are early versions; say so.
+For the exact steps to start or fix a demo, point to the demo list on rasqberry.org
+(https://rasqberry.org/03-quantum-computing-demos/01-demo-list/) and to Ket on rasqberry.org and on the Pi itself.
+
+${device.slice(from, to).trim().replace(/^(#+) /gm, '#$1 ')}
+`;
+}
 
 /** The portal pages the guide box is on (portal/src/components/KetGuide.astro). */
 export const GUIDE_PAGES = ['/', '/play/', '/build/', '/learn/', '/teachers/', '/workshops/'] as const;
@@ -25,6 +48,6 @@ export const fwqGuide: Context = {
     'For anything else, say kindly that you help visitors find their way around the Fun with Quantum family, and offer ' +
     'to help with that.',
   stateTag: 'page_state',
-  knowledge: GUIDE_KNOWLEDGE,
+  knowledge: `${GUIDE_KNOWLEDGE}\n${rasqberryDemos()}`,
   state,
 };
