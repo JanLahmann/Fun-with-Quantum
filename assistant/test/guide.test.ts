@@ -143,3 +143,21 @@ describe('RasQberry Two demos in the guide', () => {
     for (const m of family.members.filter((x: { footer: boolean }) => !x.footer)) expect(demos).not.toContain(m.name.toLowerCase());
   });
 });
+
+describe('the family for the RasQberry helpers', () => {
+  it('Ket on rasqberry.org and on the Pi know the family and its games, without the guide\'s own instructions', async () => {
+    const { familyKnowledge } = await import('../src/contexts/fwq/family');
+    const { rasqberryBuild } = await import('../src/contexts/rasqberry/build');
+    const { rasqberryDevice } = await import('../src/contexts/rasqberry/device');
+    const family = familyKnowledge();
+    expect(family).toContain('### Build: https://fun-with-quantum.org/build/');
+    expect(family).toContain('https://fun-with-quantum.org/play/quantum-coin-game/');
+    expect(family).not.toContain('How you guide visitors');
+    expect(family).not.toContain('/preview/');
+    for (const ctx of [rasqberryBuild, rasqberryDevice]) {
+      expect(ctx.knowledge.endsWith(family)).toBe(true);
+      expect(ctx.scope).toContain('Fun with Quantum family member');
+    }
+    expect(familyKnowledge('nothing here')).toBe('');
+  });
+});
