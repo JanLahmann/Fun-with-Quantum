@@ -72,9 +72,10 @@ export const EMBED_TEXTS: Record<string, EmbedTexts> = {
   'cleanjibe/help': {
     open: 'Ask CleanJibe',
     title: 'CleanJibe help',
-    intro: 'Questions about the app, the watch and your numbers — for example “What does CPH mean?”',
+    intro: 'Questions about the app, the watch and your numbers — for example “What does CPH mean?” Got an idea for CleanJibe? Tell me, and the team reads it.',
     privacy:
       'When you ask, your question and the answer go through Cloudflare to Anthropic (Claude) and are kept for 30 days to improve the answers. ' +
+      'An idea you share is kept for the team for up to a year, with the date and app version only. ' +
       'No account, no IP address, no location. Please don’t enter personal data.',
     explainer: 'CleanJibe (AI)',
     ...HELPER_ERRORS,

@@ -98,17 +98,18 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: printf '%s' "$ANTHROPIC_API_KEY" | npx wrangler secret put ANTHROPIC_API_KEY
-      # RasQberry tester programme and the eval runner's pass for app-only contexts: optional
+      # RasQberry tester programme, the CleanJibe ideas export and the eval runner's pass for app-only contexts: optional
       # repository secrets. Without them the tester helper refuses everyone, the triage export and
       # the eval pass answer 401 (fails closed); deleting a repository secret also deletes the
       # Worker secret on the next deploy, so access ends.
-      - name: Store (or remove) the tester passphrase, export token and eval pass as Worker secrets
+      - name: Store (or remove) the tester passphrase, export tokens and eval pass as Worker secrets
         env:
           TESTER_PASSPHRASE: ${{ secrets.TESTER_PASSPHRASE }}
           TESTER_EXPORT_TOKEN: ${{ secrets.TESTER_EXPORT_TOKEN }}
           APP_EVAL_PASS: ${{ secrets.APP_EVAL_PASS }}
+          IDEAS_EXPORT_TOKEN: ${{ secrets.IDEAS_EXPORT_TOKEN }}
         run: |
-          for v in TESTER_PASSPHRASE TESTER_EXPORT_TOKEN APP_EVAL_PASS; do
+          for v in TESTER_PASSPHRASE TESTER_EXPORT_TOKEN APP_EVAL_PASS IDEAS_EXPORT_TOKEN; do
             if [ -n "${!v}" ]; then printf '%s' "${!v}" | npx wrangler secret put "$v"; else npx wrangler secret delete "$v" --force >/dev/null 2>&1 || true; echo "$v not set: removed"; fi
           done
       - name: Summary

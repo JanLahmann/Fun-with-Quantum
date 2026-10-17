@@ -28,6 +28,8 @@ export interface Context {
   retentionDays?: number;
   /** Only for signed-in testers (passphrase + tester ID), with budgets per tester instead of per visitor. */
   tester?: { daily_tester: number; daily_global: number };
+  /** Collects riders' ideas for the team (ideas.ts): the idea rule in the prompt, the hidden idea line. */
+  ideas?: boolean;
   /** Checks and trims the page state; returns null when it is unusable. */
   state(raw: unknown): Record<string, unknown> | null;
 }

@@ -20,7 +20,8 @@ widget ──POST /feedback {id, vote: 1 | -1}──► Worker ──► D1
 | `src/prompt.ts` | Shared answering rules; system prompt = role + rules + knowledge (cache breakpoint) |
 | `src/anthropic.ts` | Messages API call (`stream: true`), SSE parser, relay to the widget |
 | `src/contexts/` | One file per context: role, static knowledge, validator for the live state |
-| `migrations/` | D1 schema: `messages`, `feedback`, `quota` |
+| `src/ideas.ts` | Riders' ideas (CleanJibe): the idea rule, the filter that hides the `[[idea: …]]` line, `/ideas/export` and `/ideas/mark` |
+| `migrations/` | D1 schema: `messages`, `feedback`, `quota`, and later `ideas` |
 
 The system prompt is identical on every request of a context, so it is prompt-cached (once the
 knowledge block passes the model's minimum cacheable length, ~1024 tokens); the live
@@ -40,6 +41,12 @@ coin game sends the quantum computer's hidden moves as `?`).
 - When the player closes the widget mid-answer, the Claude stream is cancelled (no tokens for nobody).
 - Logged: question, answer, page state, language, token usage — no IP, no cookie. Deleted after
   `RETENTION_DAYS` (30) by the daily cron.
+- Ideas (contexts with `ideas`, CleanJibe's help desk): when a rider suggests a feature, the model
+  thanks them and ends the answer with a hidden `[[idea: …]]` line. The Worker strips it from the
+  stream and the log and keeps the idea in `ideas` for a year: the rider's words, a one-line
+  summary, date, channel and app version, no key id. Read them with `GET /ideas/export` (Bearer
+  `IDEAS_EXPORT_TOKEN`, an optional repository secret like `TESTER_EXPORT_TOKEN`; without it the
+  export answers 401); the CleanJibe repo's `web/tools/ideas_digest.py` prints the digest.
 - History: the widget sends earlier question/answer pairs; the Worker keeps the last
   `MAX_HISTORY_TURNS` (5, at most 10).
 
