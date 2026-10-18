@@ -1,5 +1,5 @@
 {
-  "$comment": "The 3D viewers and models of the app's Build tab, and Quantum Golf (a release asset of Entangible, checked by its sha256), from the family's own repositories, pinned to a commit (ios/scripts/build-web.mjs fetches them). To update: set the new commit, rebuild, check the viewers in the simulator.",
+  "$comment": "The 3D viewers and models of the app's Build tab, and the bundled games Quantum Golf and Quantum Runner (release assets of Entangible, checked by their sha256), from the family's own repositories, pinned to a commit (ios/scripts/build-web.mjs fetches them). To update: set the new commit, rebuild, check the viewers in the simulator.",
   "rasqberry-two": {
     "repo": "JanLahmann/RasQberry-Two",
     "ref": "91f16a6e22ed56473f48ba8982726771de10733a",
@@ -36,5 +36,12 @@
     "ref": "bc4306ca2fb77aeda55f604771f2a1a35d672a30",
     "asset": "entangible-golf-bc4306c.tar.gz",
     "sha256": "a1dcc51f9e14ac4790d1bf5938f2a591cf36a5a8d2363d7456e2102f42a19360"
+  },
+  "quantum-runner": {
+    "repo": "JanLahmann/entangible",
+    "release": "runner-v1",
+    "ref": "e8b0d91fa3cc4269e3d4d27a147a214ee73f065e",
+    "asset": "entangible-runner-e8b0d91.tar.gz",
+    "sha256": "01495d81d6972c83878af1ecae0a08b274125bb9ce63c870d1e6fdc94de773cc"
   }
 }

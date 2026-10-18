@@ -1,6 +1,6 @@
 import XCTest
 
-/// Walks the three tabs, opens a game, Quantum Golf and each kind of 3D viewer, and checks the web content
+/// Walks the three tabs, opens a game, the bundled games and each kind of 3D viewer, and checks the web content
 /// rendered. With FWQ_SCREENSHOTS=<dir> in the environment, saves a screenshot of each screen there.
 final class SmokeTests: XCTestCase {
     private var app: XCUIApplication!
@@ -65,6 +65,14 @@ final class SmokeTests: XCTestCase {
         let golf = app.webViews.switches.firstMatch.waitForExistence(timeout: 30)
         sleep(2); shot("2b-quantum-golf")
         XCTAssertTrue(golf, "Quantum Golf didn't render")
+        app.navigationBars.buttons.firstMatch.tap()
+
+        // Quantum Runner: Entangible's runner bundle; a run starts with its Start button (any language).
+        open("Quantum Runner")
+        XCTAssertTrue(app.webViews.firstMatch.waitForExistence(timeout: 10))
+        let runner = app.webViews.buttons.matching(NSPredicate(format: "label CONTAINS[c] 'start'")).firstMatch.waitForExistence(timeout: 30)
+        sleep(2); shot("2c-quantum-runner")
+        XCTAssertTrue(runner, "Quantum Runner didn't render")
         app.navigationBars.buttons.firstMatch.tap()
 
         XCTAssertTrue(app.tabBars.buttons["Build"].waitForExistence(timeout: 5))

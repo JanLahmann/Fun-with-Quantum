@@ -5,7 +5,7 @@ fun-with-quantum.org. Not in the App Store yet.
 
 | Tab | What |
 |---|---|
-| Play | the launched browser games (`webGame: true` in `portal/src/content/games/`), from the portal build, and the family games bundled as their own builds (Quantum Golf from Entangible), offline; the notebook games and the Play projects open in Safari |
+| Play | the launched browser games (`webGame: true` in `portal/src/content/games/`), from the portal build, and the family games bundled as their own builds (Quantum Golf and Quantum Runner from Entangible), offline; the notebook games and the Play projects open in Safari |
 | Build | 3D models: RasQberry Two (rasqberry.org's viewer: explode, parts, assembly), Quantego One, Two and Two 1024 (quantego.org's LDraw viewer: building steps, explode, parts, tour), Qutie System One and Two (turntable); Quantego One and Two also in AR (AR Quick Look); the Build projects |
 | Learn | the Learn projects, in Safari |
 | all | "Ask Ket": the family guide (below); Ket also answers under the coin game |
@@ -33,7 +33,7 @@ fun-with-quantum.org. Not in the App Store yet.
   without analytics, CDN and Ket; never the unlisted `/preview/` pages or their code), the model viewers,
   `licenses.txt` (About → Licenses) and
   `catalog.json` for the native lists.
-- `bundles/`: the family's games played as their own builds (today Quantum Golf, Entangible's `npm run build:golf`),
+- `bundles/`: the family's games played as their own builds (Quantum Golf and Quantum Runner, Entangible's `npm run build:golf` and `build:runner`),
   from GitHub release assets (in `web/sources.json`: tag, asset name and sha256; the game's texts in `BUNDLED` in
   `build-web.mjs`); the build checks the hash, the archive's paths and that nothing in it reaches the internet, and
   adds each `THIRD_PARTY_NOTICES.txt` to `licenses.txt`. To update: put the new release in `web/sources.json`,
