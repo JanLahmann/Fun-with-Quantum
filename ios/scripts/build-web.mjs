@@ -63,6 +63,11 @@ export const BUNDLED = [
     tagline: 'Build the target state in as few moves as you can: 18 holes, from one qubit on the Bloch sphere to five entangled qubits.',
     concept: 'Gates, superposition, entanglement, phase',
     about: 'The golf game of Entangible, the family\'s hands-on circuit composer (Apache License 2.0).' },
+  { id: 'quantum-runner', source: 'quantum-runner', title: 'Quantum Runner', icon: '🏃', project: 'entangible', from: 'Entangible', background: '#0f1117',
+    replaces: 'quantum-runner',
+    tagline: 'You run in every lane at once: coins pay out by probability, every obstacle is a measurement, and an entangled pair slips past some of them untouched.',
+    concept: 'Superposition, measurement, entanglement',
+    about: 'Entangible\'s take on Quantum Runner by the QAMPoser project (Apache License 2.0).' },
 ].filter((b) => SOURCES[b.source]);
 
 const THREE = { quantego: 'three-160', rasqberry: 'three-169', qutie: 'three-169' };
