@@ -57,8 +57,8 @@ The redesign preview sends the coin-game events above with an extra `v: 2`, and 
 | `App: notebook launch` | `notebook` (game id) | the app's Play tab, a notebook game row |
 | `App: AR open` | `model` | the app's Build tab, "View in AR" |
 | `App: assistant open` · `ask` · `vote` | `context` (guide), `vote` (up \| down) | the app's native Ket guide sheet |
-| `Entangible: runner start` · `runner finish` | `level` (+ `score` on finish) | entangible.org Runner |
-| `Entangible: golf hole finished` · `golf round finished` | `qubits`, `score`, `course` / `course`, `scope` | entangible.org Golf |
+| `Entangible: runner start` · `runner finish` | `level` (+ `score` on finish) | entangible.org Runner; also in the FwQ app, as Golf (start: once per run, when play begins) |
+| `Entangible: golf hole finished` · `golf round finished` | `qubits`, `score`, `course` / `course`, `scope` | entangible.org Golf; also in the FwQ app (hostname `app.fun-with-quantum.org`), through its `window.umami` bridge |
 | `racetraQ: mode change` · `track change` | `mode` (watch \| race \| evolution), `track` | racetraq.org (browser edition) — header tabs |
 | `racetraQ: driver change` · `rival change` | `driver` (weights id), `qubits` / `rival` (none \| mlp \| pro) | browser edition — driver and rival chips |
 | `racetraQ: race lap` | `track`, `lap_time` (s, 1 decimal), `clean` (yes \| no), `opponent` | a visitor's finished lap in Race mode |

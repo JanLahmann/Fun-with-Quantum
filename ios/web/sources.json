@@ -32,16 +32,16 @@
   },
   "quantum-golf": {
     "repo": "JanLahmann/entangible",
-    "release": "golf-v5",
-    "ref": "c88a8c8fbd2eac6009ed9e48798c27db9e93d05c",
-    "asset": "entangible-golf-c88a8c8.tar.gz",
-    "sha256": "2ed5f942778ced789ba050c4978814a5eb7eb1e135fdae85b2d43eddba427b07"
+    "release": "golf-v6",
+    "ref": "ae9ab7f18a261bb67d708bc11f7710bff631cc11",
+    "asset": "entangible-golf-ae9ab7f.tar.gz",
+    "sha256": "4cbb10787771cb4f85d6b216160a0a7b5c6a78ad27c48789bf0548eb655b51aa"
   },
   "quantum-runner": {
     "repo": "JanLahmann/entangible",
-    "release": "runner-v2",
-    "ref": "7ffcfe0da2eaa83e4b27f9a2f05d61fae0384c9b",
-    "asset": "entangible-runner-7ffcfe0.tar.gz",
-    "sha256": "1afd2b883956051afb364363f1801b543d8e4b618c50984a4a7c613e0045979f"
+    "release": "runner-v3",
+    "ref": "ae9ab7f18a261bb67d708bc11f7710bff631cc11",
+    "asset": "entangible-runner-ae9ab7f.tar.gz",
+    "sha256": "4210f3825e216f1ffdbe7b366cf269289b1634ba1ef9f435a20895d254b21229"
   }
 }
