@@ -19,7 +19,10 @@ struct PlayView: View {
 
             Section {
                 ForEach(catalog.games.filter { !$0.webGame }) { game in
-                    Button { if let url = URL(string: game.notebookUrl) { Safari.open(url) } } label: { GameRow(game: game, external: true) }
+                    Button {
+                        Analytics.event("App: notebook launch", ["notebook": game.id], path: "/play/")
+                        if let url = URL(string: game.notebookUrl) { Safari.open(url) }
+                    } label: { GameRow(game: game, external: true) }
                         .tint(.primary)
                 }
             } header: { Text("Notebook games") } footer: { Text("Interactive Jupyter notebooks with the Qiskit code. They open in a free online session (mybinder.org via QuBins), which can take a few minutes to start.") }
@@ -27,6 +30,7 @@ struct PlayView: View {
             ProjectSection(title: "More to play", projects: catalog.projects(door: "play"))
         }
         .navigationTitle("Play")
+        .onAppear { Analytics.view("/play/", title: "Play") }
         .toolbar { AboutButton(catalog: catalog); AskKetButton(texts: catalog.ket, page: "/play/") }
     }
 }
@@ -135,6 +139,7 @@ struct BuildView: View {
             ProjectSection(title: "Build your own", projects: catalog.projects(door: "build"))
         }
         .navigationTitle("Build")
+        .onAppear { Analytics.view("/build/", title: "Build") }
         .toolbar { AboutButton(catalog: catalog); AskKetButton(texts: catalog.ket, page: "/build/") }
     }
 }
@@ -152,7 +157,10 @@ struct ModelView: View {
             .toolbar(.hidden, for: .tabBar)
             .toolbar {
                 if let ar = model.ar, let file = WebContent.root?.appendingPathComponent(String(ar.dropFirst())) {
-                    Button { arFile = file } label: { Label("View in AR", systemImage: "arkit") }
+                    Button {
+                        Analytics.event("App: AR open", ["model": model.id], path: model.page)
+                        arFile = file
+                    } label: { Label("View in AR", systemImage: "arkit") }
                 }
                 if let project, let url = URL(string: project.url) {
                     Button { Safari.open(url) } label: { Label("\(project.title) website", systemImage: "safari") }
@@ -172,6 +180,7 @@ struct LearnView: View {
             ProjectSection(title: "Learn quantum computing", projects: catalog.projects(door: "learn"))
         }
         .navigationTitle("Learn")
+        .onAppear { Analytics.view("/learn/", title: "Learn") }
         .toolbar { AboutButton(catalog: catalog); AskKetButton(texts: catalog.ket, page: "/learn/") }
     }
 }
@@ -227,7 +236,9 @@ struct AboutView: View {
                     Link("fun-with-quantum.org", destination: URL(string: "https://fun-with-quantum.org")!)
                 }
                 Section("Privacy") {
-                    Text("This app has no account and no tracking, and it doesn't count how you use it. The games and models run on your device; links open in Safari, where the linked site's own privacy policy applies.")
+                    Text("This app has no account and no tracking. The games and models run on your device; links open in Safari, where the linked site's own privacy policy applies.")
+                    Text("Like the family's websites, the app counts anonymously which screens and games are used, with Umami (no cookies, no IDs): the screen or page, game events such as a finished round, and what Umami derives from the request: device type, system, language and country. It doesn't identify you. Offline, nothing is counted.")
+                        .font(.footnote)
                     Text("Ket, the AI helper: only when you send a question, it goes with the earlier questions and answers of the chat, the page or the visible game state, the level you picked and the language through our server at Cloudflare to Anthropic, whose Claude model writes the answer. We store the question, the answer, the page or game state and your thumbs up or down for 30 days to answer and to improve Ket, then delete them. So that only this app can ask, it proves it is genuine with Apple's App Attest: the server keeps that key (its ID and public key, which say nothing about you) until 30 days after its last use and counts the questions per key per day; to limit new keys, it counts them per day under a pseudonym of your IP address that changes every day. Please don't enter personal data.")
                         .font(.footnote)
                     Button("More about privacy") { Safari.open(URL(string: "https://fun-with-quantum.org/about/#privacy")!) }

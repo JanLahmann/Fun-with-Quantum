@@ -53,6 +53,10 @@ The redesign preview sends the coin-game events above with an extra `v: 2`, and 
 | `RasQberry Two: beta box click` | `target` (imager \| release-notes \| feedback \| ab-image \| learning-paths) | rasqberry.org homepage "New beta" box |
 | `RasQberry Two: newsletter open` | — | rasqberry.org footer |
 | `RasQberry Two: assistant open` / `ask` / `vote` | `context` (build \| device), `vote` | the RasQberry helper (widget.js from the assistant Worker) |
+| `App: outbound click` | `host` | the FwQ iOS app (hostname `app.fun-with-quantum.org`): any link that opens in Safari |
+| `App: notebook launch` | `notebook` (game id) | the app's Play tab, a notebook game row |
+| `App: AR open` | `model` | the app's Build tab, "View in AR" |
+| `App: assistant open` · `ask` · `vote` | `context` (guide), `vote` (up \| down) | the app's native Ket guide sheet |
 | `Entangible: runner start` · `runner finish` | `level` (+ `score` on finish) | entangible.org Runner |
 | `Entangible: golf hole finished` · `golf round finished` | `qubits`, `score`, `course` / `course`, `scope` | entangible.org Golf |
 | `racetraQ: mode change` · `track change` | `mode` (watch \| race \| evolution), `track` | racetraq.org (browser edition) — header tabs |
@@ -68,6 +72,11 @@ v1 names (`family-footer`, `launch`, `download`, `outbound`, `game`, `newsletter
 racetraQ (formerly traQmania): only the browser edition (racetraq.org, GitHub Pages) is
 instrumented — the Python demo app has no web tracker. Events are defined in `browser/src/analytics.ts`.
 Not instrumented: qamposer.org (no Umami tag yet — co-owned).
+**The FwQ iOS app** reports with hostname `app.fun-with-quantum.org`: page views at the website's paths for its own
+screens (`/`, `/play/`, `/build/`, `/learn/`) and for every page it shows (`/play/<game>/`, `/models/<id>.html`,
+`/bundles/<id>/index.html`), the pages' own events under their website names (`Portal: coin game round`, …) and the
+`App: …` events above. No tracker script: `ios/FunWithQuantum/Sources/Analytics.swift` gives the pages
+`window.umami` and sends natively; simulator runs send nothing.
 cleanjibe.org (Jan's WingFoil project, not a family site) also reports into this property — the
 Umami Hobby plan allows one website. Exclude hostname `cleanjibe.org` in family-wide reports.
 

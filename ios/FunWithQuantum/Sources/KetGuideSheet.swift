@@ -42,6 +42,7 @@ struct KetGuideSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
             .environment(\.openURL, OpenURLAction { url in Safari.open(url); return .handled })
+            .onAppear { Analytics.event("App: assistant open", ["context": "guide"], path: page) }
         }
         .onAppear { trusted = try? Regex(texts.trusted) }
         .onDisappear { task?.cancel() }
@@ -106,6 +107,7 @@ struct KetGuideSheet: View {
             history += [.init(role: "user", content: q.text), .init(role: "assistant", content: a.text)]
         }
         messages.append(Message(fromUser: true, text: asked))
+        Analytics.event("App: assistant ask", ["context": "guide"], path: page)
         messages.append(Message(fromUser: false, text: ""))
         let index = messages.count - 1
         task = Task {
@@ -133,6 +135,7 @@ struct KetGuideSheet: View {
 
     private func vote(_ m: Binding<Message>, _ id: String, _ value: Int) {
         m.wrappedValue.voted = true
+        Analytics.event("App: assistant vote", ["context": "guide", "vote": value > 0 ? "up" : "down"], path: page)
         Task { await KetClient.shared.vote(id, value) }
     }
 

@@ -55,6 +55,7 @@ struct WelcomeView: View {
             .frame(maxWidth: .infinity)
         }
         .background(Color("LaunchBackground"))
+        .onAppear { Analytics.view("/", title: "Welcome") }
         .overlay(alignment: .topTrailing) {
             if closable {
                 Button { done(nil) } label: {
