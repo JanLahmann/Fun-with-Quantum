@@ -2,7 +2,7 @@
 # Fun with Quantum — family hygiene audit (read-only).
 # Checks every member site for HTTPS, icons, OG image, Umami, family footer, GitHub Pages
 # config, domain-verification TXT record, README family block, and Qiskit-ecosystem membership.
-# Usage: family/audit/family-audit.sh [> report.txt]   (needs curl, dig, gh, jq; ~2 min)
+# Usage: family/audit/family-audit.sh [> family/audit/results/YYYY-MM-DD.txt]   (needs curl, dig, gh, jq; ~2 min)
 set -u
 UMAMI=97f347ac-e7ba-4be3-b26f-ab4b328bdbf2
 MEMBERS=(
@@ -17,7 +17,9 @@ MEMBERS=(
   "qutie.org JanLahmann/Qutie janlahmann"
   "entangible.org JanLahmann/entangible janlahmann"
   "certiq.dev JanLahmann/qiskit-developer-certification-prep janlahmann"
+  "racetraq.org JanLahmann/racetraQ janlahmann"
 )
+FAMILY_JSON="$(dirname "$0")/../family.json"
 eco=$(gh api "repos/Qiskit/ecosystem/git/trees/main?recursive=1" --jq '.tree[].path | select(startswith("resources/members/"))' 2>/dev/null | tr '\n' ' ')
 echo "family audit $(date -u +%Y-%m-%dT%H:%MZ)"
 printf '%-22s %-5s %-6s %-8s %-5s %-6s %-7s %-6s %-6s %-6s %-7s %-8s %-6s\n' domain https http→s icons ico apple og umami footer readme txt enforced eco
@@ -32,6 +34,9 @@ for m in "${MEMBERS[@]}"; do
   og=$(printf '%s' "$html" | grep -qiE 'property=["'"'"']og:image' && echo yes || echo no)
   ucount=$(printf '%s' "$html" | grep -o "$UMAMI" | wc -l | tr -d ' '); uother=$(printf '%s' "$html" | grep -oE 'data-website-id=\\?"[0-9a-f-]{36}' | grep -vc "$UMAMI"); umami="$ucount"; [ "$uother" -gt 0 ] && umami="$ucount+other"
   footer=$(printf '%s' "$html" | grep -oE 'class="[^"]*(\bmember\b|fwq-member|footer_member)[^"]*"' | wc -l | tr -d ' ')
+  # footer: false in family.json = not shown on purpose; an app shell (id="root", no <footer>) draws it after load
+  if [ "$(jq -r --arg u "https://$d" '.members[] | select(.url == $u) | .footer' "$FAMILY_JSON")" = false ]; then footer=off
+  elif [ "$footer" = 0 ] && printf '%s' "$html" | grep -q 'id="root"' && ! printf '%s' "$html" | grep -qi '<footer'; then footer=js; fi
   readme=$(gh api "repos/$repo/readme" -H 'Accept: application/vnd.github.raw' 2>/dev/null | grep -q 'FWQ-FAMILY:START' && echo block || echo none)
   # a real TXT answer is a quoted string; a wildcard CNAME (*.domain → *.github.io) answers with a hostname instead
   txt=$(dig +short TXT "_github-pages-challenge-$owner.$d" | grep '^"' | head -1); [ -n "$txt" ] && txt=yes || txt=NO
@@ -40,5 +45,4 @@ for m in "${MEMBERS[@]}"; do
   slug=$(echo "$d" | sed 's/\..*//; s/-//g' | cut -c1-11); ecomem=$(echo "$eco" | grep -qi "members/$slug" && echo member || echo no)
   printf '%-22s %-5s %-6s %-8s %-5s %-6s %-7s %-6s %-6s %-6s %-7s %-8s %-6s\n' "$d" "$https" "$redir" "$icons" "$ico" "$apple" "$og" "$umami" "$footer" "$readme" "$txt" "$enforced" "$ecomem"
 done
-printf '%-22s ' racetraQ; r=$(gh api repos/JanLahmann/racetraQ/readme -H 'Accept: application/vnd.github.raw' 2>/dev/null | grep -q 'FWQ-FAMILY:START' && echo block || echo none); echo "(repo only) readme=$r"
-echo; echo "legend: icons = <link rel=icon> tags; ico = /favicon.ico status; umami = occurrences of the shared property id (Next.js embeds it in the RSC payload too, so 2 is normal; +other = another property present); footer = family-footer member links; txt = _github-pages-challenge TXT present; eco = Qiskit ecosystem member file (by domain slug — RasQberry legacy and QAMPoser entries checked separately)"
+echo; echo "legend: icons = <link rel=icon> tags; ico = /favicon.ico status; umami = occurrences of the shared property id (Next.js embeds it in the RSC payload too, so 2 is normal; +other = another property present); footer = family-footer member links (js = drawn in the browser after load, not checkable here; off = footer: false in family.json); txt = _github-pages-challenge TXT present; eco = Qiskit ecosystem member file (by domain slug — RasQberry legacy and QAMPoser entries checked separately)"
