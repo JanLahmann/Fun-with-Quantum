@@ -39,9 +39,9 @@
   },
   "quantum-runner": {
     "repo": "JanLahmann/entangible",
-    "release": "runner-v1",
-    "ref": "e8b0d91fa3cc4269e3d4d27a147a214ee73f065e",
-    "asset": "entangible-runner-e8b0d91.tar.gz",
-    "sha256": "01495d81d6972c83878af1ecae0a08b274125bb9ce63c870d1e6fdc94de773cc"
+    "release": "runner-v2",
+    "ref": "7ffcfe0da2eaa83e4b27f9a2f05d61fae0384c9b",
+    "asset": "entangible-runner-7ffcfe0.tar.gz",
+    "sha256": "1afd2b883956051afb364363f1801b543d8e4b618c50984a4a7c613e0045979f"
   }
 }
