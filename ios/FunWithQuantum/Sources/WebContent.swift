@@ -4,7 +4,7 @@ import UniformTypeIdentifiers
 import WebKit
 
 /// The bundled web content, served to WKWebView as fwq://app/… (ES modules and fetch need a real
-/// origin, which file:// URLs don't give): /models/… from Web/models, /golf/… from Web/golf, everything else from Web/site.
+/// origin, which file:// URLs don't give): /models/… from Web/models, /bundles/… from Web/bundles, everything else from Web/site.
 enum WebContent {
     static let scheme = "fwq"
     static let root = Bundle.main.url(forResource: "Web", withExtension: nil)
@@ -16,7 +16,7 @@ enum WebContent {
         guard let root, url.host == "app" else { return nil }
         var path = url.path
         if path.isEmpty || path.hasSuffix("/") { path += "index.html" }
-        let base = path.hasPrefix("/models/") || path.hasPrefix("/golf/") ? root : root.appendingPathComponent("site")
+        let base = path.hasPrefix("/models/") || path.hasPrefix("/bundles/") ? root : root.appendingPathComponent("site")
         let file = base.appendingPathComponent(path).standardizedFileURL
         guard file.path.hasPrefix(root.standardizedFileURL.path + "/") else { return nil }
         var isDir: ObjCBool = false
@@ -121,9 +121,9 @@ struct WebPage: UIViewRepresentable {
     /// inset the scrolling page. A model page (false) is a fixed full-screen layout that handles the
     /// safe area itself (CSS env(safe-area-inset-bottom)).
     var sitePage = true
-    /// Whether the page scrolls; by default only website pages do (Quantum Golf is a full-screen page that scrolls on a phone).
+    /// Whether the page scrolls; by default only website pages do (a bundled game is a full-screen page that may scroll on a phone).
     var scrolls: Bool?
-    /// The view's colour until the page paints (Quantum Golf is dark only).
+    /// The view's colour until the page paints (the bundled games are dark).
     var background: UIColor = .systemBackground
 
     func makeCoordinator() -> Coordinator { Coordinator() }
