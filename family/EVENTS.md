@@ -78,7 +78,8 @@ screens (`/`, `/play/`, `/build/`, `/learn/`) and for every page it shows (`/pla
 `App: …` events above. No tracker script: `ios/FunWithQuantum/Sources/Analytics.swift` gives the pages
 `window.umami` and sends natively; simulator runs send nothing.
 cleanjibe.org (Jan's WingFoil project, not a family site) also reports into this property — the
-Umami Hobby plan allows one website. Exclude hostname `cleanjibe.org` in family-wide reports.
+Umami Hobby plan allows one website — and so will its iOS app, as `ios.cleanjibe.org`. Exclude the hostnames
+`cleanjibe.org` and `ios.cleanjibe.org` in family-wide reports.
 
 ## Reading it in Umami
 
