@@ -1,6 +1,6 @@
 import XCTest
 
-/// Walks the three tabs, opens a game and each kind of 3D viewer, and checks the web content
+/// Walks the three tabs, opens a game, Quantum Golf and each kind of 3D viewer, and checks the web content
 /// rendered. With FWQ_SCREENSHOTS=<dir> in the environment, saves a screenshot of each screen there.
 final class SmokeTests: XCTestCase {
     private var app: XCUIApplication!
@@ -56,6 +56,14 @@ final class SmokeTests: XCTestCase {
         let askKet = app.webViews.buttons.containing(NSPredicate(format: "label CONTAINS 'Ask Ket'")).firstMatch
         for _ in 0..<12 where !askKet.exists { app.swipeUp() }
         XCTAssertTrue(askKet.exists, "the coin game has no Ask Ket button")
+        app.navigationBars.buttons.firstMatch.tap()
+
+        // Quantum Golf: Entangible's golf-only bundle, offline from the app.
+        open("Quantum Golf")
+        XCTAssertTrue(app.webViews.firstMatch.waitForExistence(timeout: 10))
+        let golf = app.webViews.staticTexts.containing(NSPredicate(format: "label CONTAINS[c] 'hole'")).firstMatch.waitForExistence(timeout: 30)
+        sleep(2); shot("2b-quantum-golf")
+        XCTAssertTrue(golf, "Quantum Golf didn't render")
         app.navigationBars.buttons.firstMatch.tap()
 
         XCTAssertTrue(app.tabBars.buttons["Build"].waitForExistence(timeout: 5))
