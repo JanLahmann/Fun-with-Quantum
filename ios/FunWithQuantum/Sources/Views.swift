@@ -82,7 +82,7 @@ struct GolfView: View {
     let project: Catalog.Project?
 
     var body: some View {
-        WebPage(path: golf.page, sitePage: false, scrolls: true)
+        WebPage(path: golf.page, sitePage: false, scrolls: true, background: UIColor(red: 15 / 255, green: 17 / 255, blue: 23 / 255, alpha: 1))
             .ignoresSafeArea(edges: .bottom)
             .navigationTitle(golf.title)
             .navigationBarTitleDisplayMode(.inline)

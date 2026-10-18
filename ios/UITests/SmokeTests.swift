@@ -61,7 +61,8 @@ final class SmokeTests: XCTestCase {
         // Quantum Golf: Entangible's golf-only bundle, offline from the app.
         open("Quantum Golf")
         XCTAssertTrue(app.webViews.firstMatch.waitForExistence(timeout: 10))
-        let golf = app.webViews.staticTexts.containing(NSPredicate(format: "label CONTAINS[c] 'hole'")).firstMatch.waitForExistence(timeout: 30)
+        // its gate tools are switches, in any language (the game follows the device: English or German)
+        let golf = app.webViews.switches.firstMatch.waitForExistence(timeout: 30)
         sleep(2); shot("2b-quantum-golf")
         XCTAssertTrue(golf, "Quantum Golf didn't render")
         app.navigationBars.buttons.firstMatch.tap()

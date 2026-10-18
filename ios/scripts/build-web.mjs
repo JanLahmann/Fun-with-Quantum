@@ -55,8 +55,8 @@ export const MODELS = [
 /** Quantum Golf: Entangible's golf-only bundle (sources.json `quantum-golf`), a game of the Play tab. */
 export const GOLF = {
   id: 'quantum-golf', title: 'Quantum Golf', icon: '⛳', project: 'entangible', page: '/golf/index.html',
-  tagline: 'Build the target state with as few gates as you can: 18 holes, from one qubit on the Bloch sphere to five entangled qubits.',
-  concept: 'Gates, superposition, entanglement',
+  tagline: 'Build the target state in as few moves as you can: 18 holes, from one qubit on the Bloch sphere to five entangled qubits.',
+  concept: 'Gates, superposition, entanglement, phase',
 };
 
 const THREE = { quantego: 'three-160', rasqberry: 'three-169', qutie: 'three-169' };
@@ -102,11 +102,17 @@ async function fetchRelease(s, dir) {
   if (sha !== s.sha256) throw new Error(`${url}: sha256 ${sha}, expected ${s.sha256}`);
   const tgz = join(CACHE, `${s.asset}`);
   writeFileSync(tgz, buf);
-  const entries = execFileSync('tar', ['-tzf', tgz], { encoding: 'utf8' }).split('\n').filter(Boolean);
-  const bad = entries.find((e) => e.startsWith('/') || e.split('/').includes('..'));
-  if (bad) throw new Error(`${s.asset}: unsafe path ${bad}`);
-  run('tar', ['-xzf', tgz, '-C', dir], CACHE);
-  rmSync(tgz);
+  try {
+    // only plain files and folders, inside the archive: no absolute paths, no `..`, no links
+    const entries = execFileSync('tar', ['-tzf', tgz], { encoding: 'utf8' }).split('\n').filter(Boolean);
+    const bad = entries.find((e) => e.startsWith('/') || e.split('/').includes('..'));
+    if (bad) throw new Error(`${s.asset}: unsafe path ${bad}`);
+    const link = execFileSync('tar', ['-tvzf', tgz], { encoding: 'utf8' }).split('\n').filter(Boolean).find((l) => !/^[-d]/.test(l));
+    if (link) throw new Error(`${s.asset}: not a plain file or folder: ${link}`);
+    run('tar', ['-xzf', tgz, '-C', dir], CACHE);
+  } finally {
+    rmSync(tgz, { force: true });
+  }
   console.log(`fetched ${s.repo} ${s.release}/${s.asset} (${(buf.length / 1e6).toFixed(1)} MB, sha256 ok)`);
 }
 
@@ -240,6 +246,12 @@ function buildModels() {
   }
 }
 
+/**
+ * The web addresses Quantum Golf's code may contain: XML namespaces, React's error-decoder text and the link to
+ * entangible.org (which opens in Safari). Any other address fails the build, whatever would use it.
+ */
+const GOLF_URLS = /^https?:\/\/(www\.w3\.org\/|reactjs\.org\/docs\/error-decoder\.html|entangible\.org\/)/;
+
 /** Quantum Golf as the release built it, after checking that nothing in it reaches the internet. */
 function buildGolf() {
   const src = join(CACHE, 'quantum-golf');
@@ -252,6 +264,8 @@ function buildGolf() {
     if (f.endsWith('.html') && remoteLoads(text).length) throw new Error(`${rel} would load from the internet: ${remoteLoads(text)[0]}`);
     if (/import\(\s*["'`]https?:|from\s*["']https?:|@import\s+(url\()?["']?https?:|url\(\s*["']?https?:/.test(text)) throw new Error(`${rel} would load from the internet`);
     if (/new WebSocket\(|serviceWorker\.register|navigator\.sendBeacon/.test(text)) throw new Error(`${rel} opens a connection or registers a service worker`);
+    const url = (text.match(/https?:\/\/[^\s"'`)<>\\]+/g) ?? []).find((u) => !GOLF_URLS.test(u));
+    if (url) throw new Error(`${rel} contains a web address the app doesn't expect: ${url}`);
   }
 }
 

@@ -123,6 +123,8 @@ struct WebPage: UIViewRepresentable {
     var sitePage = true
     /// Whether the page scrolls; by default only website pages do (Quantum Golf is a full-screen page that scrolls on a phone).
     var scrolls: Bool?
+    /// The view's colour until the page paints (Quantum Golf is dark only).
+    var background: UIColor = .systemBackground
 
     func makeCoordinator() -> Coordinator { Coordinator() }
 
@@ -139,7 +141,7 @@ struct WebPage: UIViewRepresentable {
         view.navigationDelegate = context.coordinator
         view.uiDelegate = context.coordinator
         view.isOpaque = false
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = background
         view.scrollView.contentInsetAdjustmentBehavior = sitePage ? .automatic : .never
         view.scrollView.isScrollEnabled = scrolls ?? sitePage
         // A page's own links (the coin game's languages) open in place: a swipe from the edge goes back.
