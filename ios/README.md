@@ -27,6 +27,10 @@ fun-with-quantum.org. Not in the App Store yet.
 
 ## How it is built
 
+- Analytics: anonymous Umami counts as on the websites (`Analytics.swift`, hostname `app.fun-with-quantum.org`,
+  events in `family/EVENTS.md`). The pages get `window.umami` from an injected script and post to `fwq://app/__umami`;
+  the app sends natively. Nothing is sent from the simulator (`FWQ_ANALYTICS_LOG=1` logs instead), so tests and CI
+  don't count. Declared in `PrivacyInfo.xcprivacy` (product interaction, coarse location; analytics, not linked).
 - `FunWithQuantum/Sources/`: SwiftUI. Web content is served from the app bundle as `fwq://app/…`
   (`WebContent.swift`); pages can't load anything from the internet, and links to the web open in Safari.
 - `scripts/build-web.mjs` builds `FunWithQuantum/Web/` (not committed): the portal (its app build, `PUBLIC_FWQ_APP=1` → `portal/dist-app`,

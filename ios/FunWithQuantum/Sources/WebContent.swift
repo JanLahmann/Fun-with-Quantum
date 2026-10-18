@@ -34,6 +34,10 @@ final class BundleSchemeHandler: NSObject, WKURLSchemeHandler {
 
     func webView(_ webView: WKWebView, start task: WKURLSchemeTask) {
         if let url = task.request.url, url.host == "app", url.path.hasPrefix("/__ket/") { return forwardToKet(task, url) }
+        if let url = task.request.url, url.host == "app", url.path == "/__umami" {
+            if task.request.httpMethod == "POST" { Analytics.forward(task.request.httpBody ?? task.request.httpBodyStream.map(Self.read) ?? Data()) }
+            return Self.reply(task, url, status: 200, json: "{}")
+        }
         guard let url = task.request.url, let file = WebContent.file(for: url), let data = try? Data(contentsOf: file, options: .mappedIfSafe) else {
             let response = HTTPURLResponse(url: task.request.url!, statusCode: 404, httpVersion: "HTTP/1.1", headerFields: [:])!
             task.didReceive(response)
@@ -132,6 +136,7 @@ struct WebPage: UIViewRepresentable {
         let config = WKWebViewConfiguration()
         config.setURLSchemeHandler(BundleSchemeHandler(), forURLScheme: WebContent.scheme)
         config.allowsInlineMediaPlayback = true
+        config.userContentController.addUserScript(Analytics.pageScript) // window.umami, as on the website
         if sitePage {
             let css = "body > header, body > footer, .skip-link { display: none !important; }"
             let js = "const s = document.createElement('style'); s.textContent = \(String(reflecting: css)); document.documentElement.appendChild(s);"
@@ -230,6 +235,7 @@ struct WebPage: UIViewRepresentable {
 enum Safari {
     @MainActor static func open(_ url: URL) {
         guard url.scheme == "https" || url.scheme == "http" else { return }
+        Analytics.event("App: outbound click", ["host": url.host() ?? ""])
         let scenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
         guard let scene = scenes.first(where: { $0.activationState == .foregroundActive }) ?? scenes.first,
               var top = scene.windows.first(where: \.isKeyWindow)?.rootViewController else { return }
