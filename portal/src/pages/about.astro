@@ -42,13 +42,24 @@ import Base from '../layouts/Base.astro';
           <li>
             <strong>Ket, the AI helper.</strong> Under some games you can ask questions in a chat (“Ask
             Ket”); Ket as the guide on some pages of this site, and Ket on rasqberry.org, work the same way and send the page you are on instead of a game state. Ket is an AI, not a person. Only when you send a question, it goes together with the visible game state
-            (chapter, moves, score), the explanation level you picked (in a game) and the page language through our server at Cloudflare to Anthropic,
+            (chapter, moves, score), the earlier questions and answers of the chat, the explanation level you picked (in a game) and the page language through our server at Cloudflare to Anthropic,
             whose Claude model writes the answer (see Anthropic's{' '}<a href="https://www.anthropic.com/legal/privacy" target="_blank" rel="noopener">privacy policy</a>).
             We store the question, the answer, the game state and your thumbs up or down for 30 days to
             improve Ket, then delete them. We store no IP address and no cookie with them; to
             limit requests, the server counts questions per day under a pseudonym derived from your IP
             address that changes every day. The level you pick (Kids, Normal, With math) is remembered only in
             your own browser. Please don't enter personal data.
+          </li>
+          <li>
+            <strong>The iPhone and iPad app.</strong> The Fun with Quantum app (in test, through Apple's TestFlight) has no
+            account and no tracking, and it doesn't count how you use it: no Umami, no cookies. The games and 3D models run
+            on your device, also offline; links open in Safari, where the linked site's own privacy policy applies. Ket in
+            the app works as described above. So that only the app can ask, it proves it is genuine with Apple's App Attest:
+            the server keeps that key (its ID and public key, which say nothing about you) until 30 days after its last use
+            and counts the questions per key per day; to limit new keys, it counts them per day under a pseudonym of your IP
+            address that changes every day. If you test the app through TestFlight, Apple collects crash logs, usage
+            information and the feedback you send and shares them with us; if you joined through the public link, Apple
+            doesn't show us your name or email address (see Apple's{' '}<a href="https://www.apple.com/legal/privacy/data/en/test-flight/" target="_blank" rel="noopener">TestFlight &amp; Privacy</a>).
           </li>
           <li>
             <strong>Hosting.</strong> The site is served by GitHub Pages; GitHub processes your IP address to
