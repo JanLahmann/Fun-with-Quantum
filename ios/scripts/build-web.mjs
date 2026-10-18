@@ -11,7 +11,9 @@
  * - models/: the Build tab's 3D viewers — the family's own viewers and models, fetched from their
  *   repositories at the commits pinned in ios/web/sources.json (cached in ios/web/.cache/), each
  *   bundled with the three.js version it uses on the web.
- * - catalog.json: what the native lists show (games, projects, models), from portal/src/content, and the
+ * - golf/: Quantum Golf, Entangible's golf-only build (its `npm run build:golf`), from the release asset pinned in
+ *   ios/web/sources.json and checked against its sha256. It loads nothing from the internet (checked here too).
+ * - catalog.json: what the native lists show (games, projects, models, Quantum Golf), from portal/src/content, and the
  *   texts of the native Ket guide sheet (portal/src/lib/assistant/i18n.ts).
  */
 import { execFileSync } from 'node:child_process';
@@ -50,6 +52,13 @@ export const MODELS = [
     look: { color: '#c7ccd6', metalness: 0.45, roughness: 0.35, rotate: 0 }, blurb: 'Palm-sized, prints in one piece: spin it.' },
 ];
 
+/** Quantum Golf: Entangible's golf-only bundle (sources.json `quantum-golf`), a game of the Play tab. */
+export const GOLF = {
+  id: 'quantum-golf', title: 'Quantum Golf', icon: '⛳', project: 'entangible', page: '/golf/index.html',
+  tagline: 'Build the target state in as few moves as you can: 18 holes, from one qubit on the Bloch sphere to five entangled qubits.',
+  concept: 'Gates, superposition, entanglement, phase',
+};
+
 const THREE = { quantego: 'three-160', rasqberry: 'three-169', qutie: 'three-169' };
 
 /**
@@ -83,7 +92,31 @@ function applyPatches() {
 
 const run = (cmd, args, cwd, env = {}) => execFileSync(cmd, args, { cwd, stdio: 'inherit', env: { ...process.env, ...env } });
 
-/** Fetches the pinned files once per source entry (repo, commit and file list); refuses Git LFS pointers and empty files. */
+/** Downloads a pinned release asset (a .tar.gz), checks its sha256 and unpacks it into dir. */
+async function fetchRelease(s, dir) {
+  const url = `https://github.com/${s.repo}/releases/download/${encodeURIComponent(s.release)}/${encodeURIComponent(s.asset)}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`${url}: HTTP ${res.status}`);
+  const buf = Buffer.from(await res.arrayBuffer());
+  const sha = createHash('sha256').update(buf).digest('hex');
+  if (sha !== s.sha256) throw new Error(`${url}: sha256 ${sha}, expected ${s.sha256}`);
+  const tgz = join(CACHE, `${s.asset}`);
+  writeFileSync(tgz, buf);
+  try {
+    // only plain files and folders, inside the archive: no absolute paths, no `..`, no links
+    const entries = execFileSync('tar', ['-tzf', tgz], { encoding: 'utf8' }).split('\n').filter(Boolean);
+    const bad = entries.find((e) => e.startsWith('/') || e.split('/').includes('..'));
+    if (bad) throw new Error(`${s.asset}: unsafe path ${bad}`);
+    const link = execFileSync('tar', ['-tvzf', tgz], { encoding: 'utf8' }).split('\n').filter(Boolean).find((l) => !/^[-d]/.test(l));
+    if (link) throw new Error(`${s.asset}: not a plain file or folder: ${link}`);
+    run('tar', ['-xzf', tgz, '-C', dir], CACHE);
+  } finally {
+    rmSync(tgz, { force: true });
+  }
+  console.log(`fetched ${s.repo} ${s.release}/${s.asset} (${(buf.length / 1e6).toFixed(1)} MB, sha256 ok)`);
+}
+
+/** Fetches each source entry once (cached by its pinned fields): a release asset, or files at a commit (refusing Git LFS pointers and empty files). */
 async function fetchSources() {
   for (const [name, s] of Object.entries(SOURCES)) {
     if (name.startsWith('$')) continue;
@@ -93,7 +126,8 @@ async function fetchSources() {
     if (existsSync(marker) && readFileSync(marker, 'utf8') === key) continue;
     rmSync(dir, { recursive: true, force: true });
     mkdirSync(dir, { recursive: true });
-    for (const [file, path] of Object.entries(s.files)) {
+    if (s.asset) await fetchRelease(s, dir);
+    else for (const [file, path] of Object.entries(s.files)) {
       const url = `https://raw.githubusercontent.com/${s.repo}/${s.ref}/${path.split('/').map(encodeURIComponent).join('/')}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error(`${url}: HTTP ${res.status}`);
@@ -212,16 +246,41 @@ function buildModels() {
   }
 }
 
+/**
+ * The web addresses Quantum Golf's code may contain: XML namespaces, React's error-decoder text and the link to
+ * entangible.org (which opens in Safari). Any other address fails the build, whatever would use it.
+ */
+const GOLF_URLS = /^https?:\/\/(www\.w3\.org\/|reactjs\.org\/docs\/error-decoder\.html|entangible\.org\/)/;
+
+/** Quantum Golf as the release built it, after checking that nothing in it reaches the internet. */
+function buildGolf() {
+  const src = join(CACHE, 'quantum-golf');
+  if (!existsSync(join(src, 'index.html'))) throw new Error('quantum-golf: the release has no index.html at its root');
+  const dir = join(OUT, 'golf');
+  cpSync(src, dir, { recursive: true, filter: (f) => !f.endsWith('/.key') });
+  for (const f of walk(dir).filter((f) => /\.(html|js|mjs|css)$/.test(f))) {
+    const text = readFileSync(f, 'utf8');
+    const rel = relative(OUT, f);
+    if (f.endsWith('.html') && remoteLoads(text).length) throw new Error(`${rel} would load from the internet: ${remoteLoads(text)[0]}`);
+    if (/import\(\s*["'`]https?:|from\s*["']https?:|@import\s+(url\()?["']?https?:|url\(\s*["']?https?:/.test(text)) throw new Error(`${rel} would load from the internet`);
+    if (/new WebSocket\(|serviceWorker\.register|navigator\.sendBeacon/.test(text)) throw new Error(`${rel} opens a connection or registers a service worker`);
+    const url = (text.match(/https?:\/\/[^\s"'`)<>\\]+/g) ?? []).find((u) => !GOLF_URLS.test(u));
+    if (url) throw new Error(`${rel} contains a web address the app doesn't expect: ${url}`);
+  }
+}
+
 /** The notices the app shows under About → Licenses: everything it bundles that isn't Jan's own text. */
 function licenses() {
   const three = readFileSync(join(WEB, 'node_modules', 'three-169', 'LICENSE'), 'utf8').trim();
   const apache = readFileSync(join(CACHE, 'quantego', 'LICENSE-Apache-2.0.txt'), 'utf8').trim();
+  const golfNotices = readFileSync(join(CACHE, 'quantum-golf', 'THIRD_PARTY_NOTICES.txt'), 'utf8').trim();
   const text = `Fun with Quantum bundles these works. Thank you to their authors.
 
 THE FAMILY'S PROJECTS
 The games and pages of fun-with-quantum.org (github.com/JanLahmann/Fun-with-Quantum), the 3D viewers and models of
 RasQberry Two (github.com/JanLahmann/RasQberry-Two), Quantego (github.com/JanLahmann/Quantego) and Qutie
-(github.com/JanLahmann/Qutie): Apache License 2.0, text below.
+(github.com/JanLahmann/Qutie), and Quantum Golf from Entangible (github.com/JanLahmann/entangible): Apache License 2.0,
+text below.
 
 LDRAW PARTS
 The Quantego models contain parts from the LDraw Parts Library (ldraw.org), by the LDraw.org contributors,
@@ -234,6 +293,9 @@ ${three}
 MESHOPTIMIZER (meshopt decoder, part of three.js)
 MIT License. Copyright (C) 2016-2022, by Arseny Kapoulkine (arseny.kapoulkine@gmail.com). The permission notice
 is the same as three.js's above.
+
+QUANTUM GOLF: THIRD-PARTY NOTICES (from Entangible's golf bundle)
+${golfNotices}
 
 TRADEMARKS
 This app is not affiliated with or endorsed by IBM, the LEGO Group or BrickLink. IBM, IBM Quantum and Qiskit are
@@ -259,6 +321,8 @@ function catalog() {
   const projects = collection('portal/src/content/projects')
     .filter((p) => p.url && !hidden.includes(new URL(p.url).hostname) && (p.status ?? 'live') === 'live')
     .map((p) => ({ id: p.id, door: p.door, title: p.title, tagline: p.tagline, icon: p.icon, url: p.url }));
+  if (!projects.find((p) => p.id === GOLF.project)) throw new Error(`catalog: Quantum Golf's project ${GOLF.project} is not listed`);
+  const golf = { ...GOLF, repo: SOURCES['quantum-golf'].repo, release: SOURCES['quantum-golf'].release };
   const models = MODELS.map(({ id, title, blurb, ar, project }) => ({
     id, title, blurb, page: `/models/${id}.html`, ...(ar ? { ar: `/models/${MODELS.find((m) => m.id === id).from}/${ar}` } : {}),
     ...(projects.find((p) => p.id === project) ? { project } : {}),
@@ -273,7 +337,7 @@ function catalog() {
     for (const k of ['id', 'door', 'title', 'tagline', 'icon']) if (typeof p[k] !== 'string' || !p[k]) throw new Error(`catalog: project ${p.id} lacks ${k}`);
     https(p.url, `project ${p.id}`);
   }
-  const credits = Object.entries(SOURCES).filter(([k]) => !k.startsWith('$')).map(([name, s]) => ({ name, repo: s.repo, ref: s.ref }));
+  const credits = Object.entries(SOURCES).filter(([k]) => !k.startsWith('$') && k !== 'quantum-golf').map(([name, s]) => ({ name, repo: s.repo, ref: s.ref }));
   // The native guide sheet's texts: the portal's guide box (KetGuide.astro), so app and site say the same.
   const t = { ...ASSISTANT_TEXTS.en, ...GUIDE_TEXTS };
   const ket = Object.fromEntries(['open', 'title', 'intro', 'privacy', 'placeholder', 'send', 'thinking', 'you', 'explainer', 'helpful', 'notHelpful', 'thanks', 'errRate', 'errBusy', 'errNetwork']
@@ -290,7 +354,7 @@ function catalog() {
     }),
   };
   ket.trusted = TRUSTED.source; // links in an answer become tappable only to these sites, as on the web
-  writeFileSync(join(OUT, 'catalog.json'), `${JSON.stringify({ games, projects, models, credits, ket, welcome }, null, 1)}\n`);
+  writeFileSync(join(OUT, 'catalog.json'), `${JSON.stringify({ games, golf, projects, models, credits, ket, welcome }, null, 1)}\n`);
 }
 
 rmSync(OUT, { recursive: true, force: true });
@@ -299,6 +363,7 @@ await fetchSources();
 applyPatches();
 buildPortal();
 buildModels();
+buildGolf();
 licenses();
 catalog();
 console.log(`web content → ${relative(ROOT, OUT)}`);

@@ -12,6 +12,7 @@ struct PlayView: View {
                 ForEach(catalog.games.filter(\.webGame)) { game in
                     NavigationLink { GameView(game: game) } label: { GameRow(game: game) }
                 }
+                NavigationLink { GolfView(golf: catalog.golf, project: catalog.project(catalog.golf.project)) } label: { GolfRow(golf: catalog.golf) }
             } header: { Text("Play right here") } footer: { Text("Nothing to install, no account: the games run on your device, also offline.") }
 
             Section {
@@ -57,6 +58,44 @@ struct GameView: View {
             .navigationTitle(game.title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar(.hidden, for: .tabBar)
+    }
+}
+
+struct GolfRow: View {
+    let golf: Catalog.Golf
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Text(golf.icon).font(.title2).accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(golf.title).font(.headline)
+                Text(golf.tagline).font(.subheadline).foregroundStyle(.secondary)
+                Text("\(golf.concept) · from Entangible").font(.caption).foregroundStyle(.tertiary)
+            }
+        }
+        .padding(.vertical, 4)
+    }
+}
+
+struct GolfView: View {
+    let golf: Catalog.Golf
+    let project: Catalog.Project?
+
+    var body: some View {
+        WebPage(path: golf.page, sitePage: false, scrolls: true, background: UIColor(red: 15 / 255, green: 17 / 255, blue: 23 / 255, alpha: 1))
+            .ignoresSafeArea(edges: .bottom)
+            .navigationTitle(golf.title)
+            .navigationBarTitleDisplayMode(.inline)
+            // The game is dark only (as on entangible.org): a dark title bar in its colour (#0f1117).
+            .toolbarBackground(Color(red: 15 / 255, green: 17 / 255, blue: 23 / 255), for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarColorScheme(.dark, for: .navigationBar)
+            .toolbar(.hidden, for: .tabBar)
+            .toolbar {
+                if let project, let url = URL(string: project.url) {
+                    Button { Safari.open(url) } label: { Label("\(project.title) website", systemImage: "safari") }
+                }
+            }
     }
 }
 
@@ -181,6 +220,10 @@ struct AboutView: View {
                     Text("Ket, the AI helper: only when you send a question, it goes with the earlier questions and answers of the chat, the page or the visible game state, the level you picked and the language through our server at Cloudflare to Anthropic, whose Claude model writes the answer. We store the question, the answer, the page or game state and your thumbs up or down for 30 days to answer and to improve Ket, then delete them. So that only this app can ask, it proves it is genuine with Apple's App Attest: the server keeps that key (its ID and public key, which say nothing about you) until 30 days after its last use and counts the questions per key per day; to limit new keys, it counts them per day under a pseudonym of your IP address that changes every day. Please don't enter personal data.")
                         .font(.footnote)
                     Button("More about privacy") { Safari.open(URL(string: "https://fun-with-quantum.org/about/#privacy")!) }
+                }
+                Section("Quantum Golf") {
+                    Button("\(catalog.golf.repo) (\(catalog.golf.release))") { Safari.open(URL(string: "https://github.com/\(catalog.golf.repo)")!) }
+                    Text("The golf game of Entangible, the family's hands-on circuit composer (Apache License 2.0).").font(.footnote).foregroundStyle(.secondary)
                 }
                 Section("The 3D models") {
                     ForEach(catalog.credits, id: \.repo) { c in
