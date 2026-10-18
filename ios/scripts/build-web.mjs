@@ -11,9 +11,10 @@
  * - models/: the Build tab's 3D viewers — the family's own viewers and models, fetched from their
  *   repositories at the commits pinned in ios/web/sources.json (cached in ios/web/.cache/), each
  *   bundled with the three.js version it uses on the web.
- * - golf/: Quantum Golf, Entangible's golf-only build (its `npm run build:golf`), from the release asset pinned in
- *   ios/web/sources.json and checked against its sha256. It loads nothing from the internet (checked here too).
- * - catalog.json: what the native lists show (games, projects, models, Quantum Golf), from portal/src/content, and the
+ * - bundles/: the family's games the app plays as they are, each its own build (Entangible's `npm run build:golf`,
+ *   …), from the release asset pinned in ios/web/sources.json and checked against its sha256. They load nothing
+ *   from the internet (checked here too).
+ * - catalog.json: what the native lists show (games, projects, models, bundled games), from portal/src/content, and the
  *   texts of the native Ket guide sheet (portal/src/lib/assistant/i18n.ts).
  */
 import { execFileSync } from 'node:child_process';
@@ -52,12 +53,17 @@ export const MODELS = [
     look: { color: '#c7ccd6', metalness: 0.45, roughness: 0.35, rotate: 0 }, blurb: 'Palm-sized, prints in one piece: spin it.' },
 ];
 
-/** Quantum Golf: Entangible's golf-only bundle (sources.json `quantum-golf`), a game of the Play tab. */
-export const GOLF = {
-  id: 'quantum-golf', title: 'Quantum Golf', icon: '⛳', project: 'entangible', page: '/golf/index.html',
-  tagline: 'Build the target state in as few moves as you can: 18 holes, from one qubit on the Bloch sphere to five entangled qubits.',
-  concept: 'Gates, superposition, entanglement, phase',
-};
+/**
+ * Games of the Play tab that come as a family member's own build (`source`: their sources.json entry, a release asset),
+ * served from bundles/<id>/. `from` names the member (its project gives the website button), `background` is the
+ * page's colour while it loads, `replaces` a Play project the website links to instead (the app lists the game once).
+ */
+export const BUNDLED = [
+  { id: 'quantum-golf', source: 'quantum-golf', title: 'Quantum Golf', icon: '⛳', project: 'entangible', from: 'Entangible', background: '#0f1117',
+    tagline: 'Build the target state in as few moves as you can: 18 holes, from one qubit on the Bloch sphere to five entangled qubits.',
+    concept: 'Gates, superposition, entanglement, phase',
+    about: 'The golf game of Entangible, the family\'s hands-on circuit composer (Apache License 2.0).' },
+].filter((b) => SOURCES[b.source]);
 
 const THREE = { quantego: 'three-160', rasqberry: 'three-169', qutie: 'three-169' };
 
@@ -247,16 +253,20 @@ function buildModels() {
 }
 
 /**
- * The web addresses Quantum Golf's code may contain: XML namespaces, React's error-decoder text and the link to
+ * The web addresses a bundled game's code may contain: XML namespaces, React's error-decoder text and the link to
  * entangible.org (which opens in Safari). Any other address fails the build, whatever would use it.
  */
-const GOLF_URLS = /^https?:\/\/(www\.w3\.org\/|reactjs\.org\/docs\/error-decoder\.html|entangible\.org\/)/;
+const BUNDLE_URLS = /^https?:\/\/(www\.w3\.org\/|reactjs\.org\/docs\/error-decoder\.html|entangible\.org\/)/;
 
-/** Quantum Golf as the release built it, after checking that nothing in it reaches the internet. */
-function buildGolf() {
-  const src = join(CACHE, 'quantum-golf');
-  if (!existsSync(join(src, 'index.html'))) throw new Error('quantum-golf: the release has no index.html at its root');
-  const dir = join(OUT, 'golf');
+/** The bundled games as their releases built them, after checking that nothing in them reaches the internet. */
+function buildBundles() {
+  for (const b of BUNDLED) buildBundle(b);
+}
+
+function buildBundle(b) {
+  const src = join(CACHE, b.source);
+  for (const f of ['index.html', 'LICENSE', 'THIRD_PARTY_NOTICES.txt']) if (!existsSync(join(src, f))) throw new Error(`${b.source}: the release has no ${f} at its root`);
+  const dir = join(OUT, 'bundles', b.id);
   cpSync(src, dir, { recursive: true, filter: (f) => !f.endsWith('/.key') });
   for (const f of walk(dir).filter((f) => /\.(html|js|mjs|css)$/.test(f))) {
     const text = readFileSync(f, 'utf8');
@@ -264,7 +274,7 @@ function buildGolf() {
     if (f.endsWith('.html') && remoteLoads(text).length) throw new Error(`${rel} would load from the internet: ${remoteLoads(text)[0]}`);
     if (/import\(\s*["'`]https?:|from\s*["']https?:|@import\s+(url\()?["']?https?:|url\(\s*["']?https?:/.test(text)) throw new Error(`${rel} would load from the internet`);
     if (/new WebSocket\(|serviceWorker\.register|navigator\.sendBeacon/.test(text)) throw new Error(`${rel} opens a connection or registers a service worker`);
-    const url = (text.match(/https?:\/\/[^\s"'`)<>\\]+/g) ?? []).find((u) => !GOLF_URLS.test(u));
+    const url = (text.match(/https?:\/\/[^\s"'`)<>\\]+/g) ?? []).find((u) => !BUNDLE_URLS.test(u));
     if (url) throw new Error(`${rel} contains a web address the app doesn't expect: ${url}`);
   }
 }
@@ -273,14 +283,18 @@ function buildGolf() {
 function licenses() {
   const three = readFileSync(join(WEB, 'node_modules', 'three-169', 'LICENSE'), 'utf8').trim();
   const apache = readFileSync(join(CACHE, 'quantego', 'LICENSE-Apache-2.0.txt'), 'utf8').trim();
-  const golfNotices = readFileSync(join(CACHE, 'quantum-golf', 'THIRD_PARTY_NOTICES.txt'), 'utf8').trim();
+  const notices = BUNDLED.map((b) => `${b.title.toUpperCase()}: THIRD-PARTY NOTICES (from ${b.from}'s ${b.title} build)
+${readFileSync(join(CACHE, b.source, 'THIRD_PARTY_NOTICES.txt'), 'utf8').trim()}
+
+`).join('');
+  const members = [...new Set(BUNDLED.map((b) => `${b.from} (github.com/${SOURCES[b.source].repo})`))];
   const text = `Fun with Quantum bundles these works. Thank you to their authors.
 
 THE FAMILY'S PROJECTS
 The games and pages of fun-with-quantum.org (github.com/JanLahmann/Fun-with-Quantum), the 3D viewers and models of
 RasQberry Two (github.com/JanLahmann/RasQberry-Two), Quantego (github.com/JanLahmann/Quantego) and Qutie
-(github.com/JanLahmann/Qutie), and Quantum Golf from Entangible (github.com/JanLahmann/entangible): Apache License 2.0,
-text below.
+(github.com/JanLahmann/Qutie), and the game${BUNDLED.length > 1 ? 's' : ''} ${BUNDLED.map((b) => b.title).join(' and ')} from ${members.join(' and ')}:
+Apache License 2.0, text below.
 
 LDRAW PARTS
 The Quantego models contain parts from the LDraw Parts Library (ldraw.org), by the LDraw.org contributors,
@@ -294,10 +308,7 @@ MESHOPTIMIZER (meshopt decoder, part of three.js)
 MIT License. Copyright (C) 2016-2022, by Arseny Kapoulkine (arseny.kapoulkine@gmail.com). The permission notice
 is the same as three.js's above.
 
-QUANTUM GOLF: THIRD-PARTY NOTICES (from Entangible's golf bundle)
-${golfNotices}
-
-TRADEMARKS
+${notices}TRADEMARKS
 This app is not affiliated with or endorsed by IBM, the LEGO Group or BrickLink. IBM, IBM Quantum and Qiskit are
 trademarks of International Business Machines Corporation. LEGO and BrickLink are trademarks of the LEGO Group.
 
@@ -321,8 +332,13 @@ function catalog() {
   const projects = collection('portal/src/content/projects')
     .filter((p) => p.url && !hidden.includes(new URL(p.url).hostname) && (p.status ?? 'live') === 'live')
     .map((p) => ({ id: p.id, door: p.door, title: p.title, tagline: p.tagline, icon: p.icon, url: p.url }));
-  if (!projects.find((p) => p.id === GOLF.project)) throw new Error(`catalog: Quantum Golf's project ${GOLF.project} is not listed`);
-  const golf = { ...GOLF, repo: SOURCES['quantum-golf'].repo, release: SOURCES['quantum-golf'].release };
+  const bundled = BUNDLED.map(({ id, source, title, icon, project, from, background, tagline, concept, about }) => {
+    if (!projects.find((p) => p.id === project)) throw new Error(`catalog: ${title}'s project ${project} is not listed`);
+    return { id, title, icon, tagline, concept, from, about, background, project, page: `/bundles/${id}/index.html`, repo: SOURCES[source].repo, release: SOURCES[source].release };
+  });
+  // a website project that a bundled game replaces is listed once, as the game
+  const replaced = new Set(BUNDLED.map((b) => b.replaces).filter(Boolean));
+  projects.splice(0, projects.length, ...projects.filter((p) => !replaced.has(p.id)));
   const models = MODELS.map(({ id, title, blurb, ar, project }) => ({
     id, title, blurb, page: `/models/${id}.html`, ...(ar ? { ar: `/models/${MODELS.find((m) => m.id === id).from}/${ar}` } : {}),
     ...(projects.find((p) => p.id === project) ? { project } : {}),
@@ -337,7 +353,7 @@ function catalog() {
     for (const k of ['id', 'door', 'title', 'tagline', 'icon']) if (typeof p[k] !== 'string' || !p[k]) throw new Error(`catalog: project ${p.id} lacks ${k}`);
     https(p.url, `project ${p.id}`);
   }
-  const credits = Object.entries(SOURCES).filter(([k]) => !k.startsWith('$') && k !== 'quantum-golf').map(([name, s]) => ({ name, repo: s.repo, ref: s.ref }));
+  const credits = Object.entries(SOURCES).filter(([k]) => !k.startsWith('$') && !BUNDLED.some((b) => b.source === k)).map(([name, s]) => ({ name, repo: s.repo, ref: s.ref }));
   // The native guide sheet's texts: the portal's guide box (KetGuide.astro), so app and site say the same.
   const t = { ...ASSISTANT_TEXTS.en, ...GUIDE_TEXTS };
   const ket = Object.fromEntries(['open', 'title', 'intro', 'privacy', 'placeholder', 'send', 'thinking', 'you', 'explainer', 'helpful', 'notHelpful', 'thanks', 'errRate', 'errBusy', 'errNetwork']
@@ -354,7 +370,7 @@ function catalog() {
     }),
   };
   ket.trusted = TRUSTED.source; // links in an answer become tappable only to these sites, as on the web
-  writeFileSync(join(OUT, 'catalog.json'), `${JSON.stringify({ games, golf, projects, models, credits, ket, welcome }, null, 1)}\n`);
+  writeFileSync(join(OUT, 'catalog.json'), `${JSON.stringify({ games, bundled, projects, models, credits, ket, welcome }, null, 1)}\n`);
 }
 
 rmSync(OUT, { recursive: true, force: true });
@@ -363,7 +379,7 @@ await fetchSources();
 applyPatches();
 buildPortal();
 buildModels();
-buildGolf();
+buildBundles();
 licenses();
 catalog();
 console.log(`web content → ${relative(ROOT, OUT)}`);

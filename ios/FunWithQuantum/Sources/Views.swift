@@ -12,7 +12,9 @@ struct PlayView: View {
                 ForEach(catalog.games.filter(\.webGame)) { game in
                     NavigationLink { GameView(game: game) } label: { GameRow(game: game) }
                 }
-                NavigationLink { GolfView(golf: catalog.golf, project: catalog.project(catalog.golf.project)) } label: { GolfRow(golf: catalog.golf) }
+                ForEach(catalog.bundled) { game in
+                    NavigationLink { BundledView(game: game, project: catalog.project(game.project)) } label: { BundledRow(game: game) }
+                }
             } header: { Text("Play right here") } footer: { Text("Nothing to install, no account: the games run on your device, also offline.") }
 
             Section {
@@ -61,33 +63,34 @@ struct GameView: View {
     }
 }
 
-struct GolfRow: View {
-    let golf: Catalog.Golf
+struct BundledRow: View {
+    let game: Catalog.Bundled
 
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
-            Text(golf.icon).font(.title2).accessibilityHidden(true)
+            Text(game.icon).font(.title2).accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 4) {
-                Text(golf.title).font(.headline)
-                Text(golf.tagline).font(.subheadline).foregroundStyle(.secondary)
-                Text("\(golf.concept) · from Entangible").font(.caption).foregroundStyle(.tertiary)
+                Text(game.title).font(.headline)
+                Text(game.tagline).font(.subheadline).foregroundStyle(.secondary)
+                Text("\(game.concept) · from \(game.from)").font(.caption).foregroundStyle(.tertiary)
             }
         }
         .padding(.vertical, 4)
     }
 }
 
-struct GolfView: View {
-    let golf: Catalog.Golf
+struct BundledView: View {
+    let game: Catalog.Bundled
     let project: Catalog.Project?
 
     var body: some View {
-        WebPage(path: golf.page, sitePage: false, scrolls: true, background: UIColor(red: 15 / 255, green: 17 / 255, blue: 23 / 255, alpha: 1))
+        let color = Color(hex: game.background)
+        WebPage(path: game.page, sitePage: false, scrolls: true, background: UIColor(color))
             .ignoresSafeArea(edges: .bottom)
-            .navigationTitle(golf.title)
+            .navigationTitle(game.title)
             .navigationBarTitleDisplayMode(.inline)
-            // The game is dark only (as on entangible.org): a dark title bar in its colour (#0f1117).
-            .toolbarBackground(Color(red: 15 / 255, green: 17 / 255, blue: 23 / 255), for: .navigationBar)
+            // The games are dark: a dark title bar in the page's colour.
+            .toolbarBackground(color, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
             .toolbar(.hidden, for: .tabBar)
@@ -96,6 +99,14 @@ struct GolfView: View {
                     Button { Safari.open(url) } label: { Label("\(project.title) website", systemImage: "safari") }
                 }
             }
+    }
+}
+
+extension Color {
+    /// "#rrggbb" (from catalog.json); black if it isn't one.
+    init(hex: String) {
+        let v = UInt32(hex.dropFirst(), radix: 16) ?? 0
+        self.init(red: Double(v >> 16 & 0xff) / 255, green: Double(v >> 8 & 0xff) / 255, blue: Double(v & 0xff) / 255)
     }
 }
 
@@ -221,9 +232,11 @@ struct AboutView: View {
                         .font(.footnote)
                     Button("More about privacy") { Safari.open(URL(string: "https://fun-with-quantum.org/about/#privacy")!) }
                 }
-                Section("Quantum Golf") {
-                    Button("\(catalog.golf.repo) (\(catalog.golf.release))") { Safari.open(URL(string: "https://github.com/\(catalog.golf.repo)")!) }
-                    Text("The golf game of Entangible, the family's hands-on circuit composer (Apache License 2.0).").font(.footnote).foregroundStyle(.secondary)
+                ForEach(catalog.bundled) { game in
+                    Section(game.title) {
+                        Button("\(game.repo) (\(game.release))") { Safari.open(URL(string: "https://github.com/\(game.repo)")!) }
+                        Text(game.about).font(.footnote).foregroundStyle(.secondary)
+                    }
                 }
                 Section("The 3D models") {
                     ForEach(catalog.credits, id: \.repo) { c in

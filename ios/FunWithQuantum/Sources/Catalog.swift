@@ -6,9 +6,9 @@ struct Catalog: Decodable {
         let id, title, tagline, icon, concept, duration, level, audience, page, notebookUrl: String
         let webGame: Bool
     }
-    /// Quantum Golf: Entangible's golf-only build, bundled from its release (sources.json `quantum-golf`).
-    struct Golf: Decodable {
-        let id, title, tagline, icon, concept, page, project, repo, release: String
+    /// A family member's game in its own build, bundled from its release (ios/web/sources.json), e.g. Quantum Golf.
+    struct Bundled: Decodable, Identifiable {
+        let id, title, tagline, icon, concept, from, about, background, page, project, repo, release: String
     }
     struct Project: Decodable, Identifiable {
         let id, door, title, tagline, icon, url: String
@@ -25,7 +25,7 @@ struct Catalog: Decodable {
     }
 
     let games: [Game]
-    let golf: Golf
+    let bundled: [Bundled]
     let projects: [Project]
     let models: [Model]
     let credits: [Credit]
