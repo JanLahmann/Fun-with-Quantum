@@ -32,9 +32,9 @@
   },
   "quantum-golf": {
     "repo": "JanLahmann/entangible",
-    "release": "golf-v2",
-    "ref": "729cb0f7784267ecc8bf775ca98acc0b2386778d",
-    "asset": "entangible-golf-729cb0f.tar.gz",
-    "sha256": "bb19d7a5000bb11459af4cb2c057acf8ba552649455aa7627b720675a3e28a80"
+    "release": "golf-v3",
+    "ref": "5f3d576223d9a86596caa36c6e9402b015c529c8",
+    "asset": "entangible-golf-5f3d576.tar.gz",
+    "sha256": "28313df0a8940c7616f72af032c61db8349b2d43d3f6e8ef59ca25d72365619d"
   }
 }
