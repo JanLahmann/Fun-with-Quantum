@@ -52,8 +52,10 @@ import Base from '../layouts/Base.astro';
           </li>
           <li>
             <strong>The iPhone and iPad app.</strong> The Fun with Quantum app (in test, through Apple's TestFlight) has no
-            account and no tracking, and it doesn't count how you use it: no Umami, no cookies. The games and 3D models run
-            on your device, also offline; links open in Safari, where the linked site's own privacy policy applies. Ket in
+            account, no cookies and no tracking. The games and 3D models run on your device, also offline; links open in
+            Safari, where the linked site's own privacy policy applies. Like this site, the app counts anonymously with
+            Umami which screens and games are used (the screen or page, game events such as a finished round, and device
+            type, system, language and country), without identifying you; offline, nothing is counted. Ket in
             the app works as described above. So that only the app can ask, it proves it is genuine with Apple's App Attest:
             the server keeps that key (its ID and public key, which say nothing about you) until 30 days after its last use
             and counts the questions per key per day; to limit new keys, it counts them per day under a pseudonym of your IP
