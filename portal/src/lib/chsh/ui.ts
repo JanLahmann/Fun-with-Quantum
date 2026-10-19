@@ -278,6 +278,7 @@ export function mountChsh(root: HTMLElement) {
 
   const shell: Shell = mountShell(root, [chapter1, chapter2, chapter3, chapter4], {
     game: 'chsh game',
+    play: { slug: 'chsh-game', finish: 3 }, // finish: on to the closing explanation
     storageKey: 'fwq-chsh-done',
     terms: TERMS,
     labels: UI,

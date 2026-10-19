@@ -51,6 +51,12 @@ The html renderer and the site components tag every family-footer link with
 the member's optional `label` (else its `name`; the portal's label is `Portal`). All events follow
 `<Site>: <what happened>` — the full list is in [EVENTS.md](EVENTS.md).
 
+Every site loads Umami with the family's standard tracker tag (EVENTS.md, "The tracker tag"): one
+inline script before the tracker, plus `data-before-send="fwqUmamiBeforeSend"` on it. It drops
+automated browsers and bots, and lets anyone switch counting off for their own browser with `?notrack`
+on any URL of a site (`?track` switches it back on). The audit (`family/audit/family-audit.sh`, column
+`bsend`) checks the tag on every site.
+
 ## Renderers
 
 ```sh
