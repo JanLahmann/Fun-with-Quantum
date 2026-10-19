@@ -19,6 +19,9 @@ Only `data-domains` differs per site (its own host or hosts):
 * **`?notrack`** (the parameter's presence, any value) on any URL of a site switches counting off for that browser and that site
   (`localStorage` `umami.disabled`, which Umami's tracker honors); **`?track`** switches it back on. Jan
   uses it once per site and browser to keep his own visits out.
+* **Inside a JS string** (Next.js `dangerouslySetInnerHTML`, Docusaurus `headTags` `innerHTML`): `\b` in a
+  normal string literal becomes a backspace and `?notrack` silently stops working. Write `\\b` there, or
+  use `/[?&]notrack(?=$|[&=])/` (and the same for `track`). Check the built HTML: it must read `notrack\b`.
 * **Strict CSP** (no inline scripts): put the inline code into a small same-origin `.js` file and load it,
   not deferred, before the tracker.
 * **Check** after a change: a normal browser sends (a POST to `…/api/send`; the tracker now posts to
@@ -26,8 +29,8 @@ Only `data-domains` differs per site (its own host or hosts):
   `family/audit/family-audit.sh` reports the tag per site (column `bsend`).
 
 Hostnames besides the sites' own: `app.fun-with-quantum.org` (the FwQ iOS app, below),
-`device.rasqberry.org` (RasQberry Two devices: on-device pages and helpers report under this hostname,
-not as rasqberry.org), `ios.cleanjibe.org` (CleanJibe's iOS app, not a family site).
+`device.rasqberry.org` (RasQberry Two devices: on-device pages and helpers, and the Pi browser's start page
+rasqberry.org/?from=pi, whose hostname RasQberry's `beforeSend` rewrites — not counted as rasqberry.org), `ios.cleanjibe.org` (CleanJibe's iOS app, not a family site).
 
 ## Events
 
@@ -96,8 +99,10 @@ The redesign preview sends the coin-game events above with an extra `v: 2`, and 
 | `CertiQ: objective filter` | `section`, `objective` | the objective filter |
 | `CertiQ: outbound click` | `host`, `category` (ibm-exam \| docs \| github \| doqumentation \| apps \| other) | external links |
 | `CertiQ: file download` | `kind` (anki \| epub), `file` | Anki deck and EPUB downloads |
-| `RasQberry Two: image download` | `file`, `stream`, `tag` | rasqberry.org/latest redirect |
+| `RasQberry Two: image download` | `file`, `stream`, `tag` | rasqberry.org/latest redirect (waits up to 2 s for the tracker) |
 | `RasQberry Two: beta box click` | `target` (imager \| release-notes \| feedback \| ab-image \| learning-paths) | rasqberry.org homepage "New beta" box |
+| `RasQberry Two: release click` | `tag`, `file` (optional) | links to GitHub releases and the /latest release button |
+| `RasQberry One: to two click` | `from` | rasqberry.one: links to rasqberry.org without an event of their own |
 | `RasQberry Two: newsletter open` | — | rasqberry.org footer |
 | `RasQberry Two: assistant open` / `ask` / `vote` | `context` (build \| device), `vote` | the RasQberry helper (widget.js from the assistant Worker) |
 | `App: outbound click` | `host` | the FwQ iOS app (hostname `app.fun-with-quantum.org`): any link that opens in Safari |
