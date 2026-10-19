@@ -49,11 +49,11 @@ const path = Astro.url.pathname;
     {!noindex && <meta property="og:url" content={new URL(path, Astro.site)} />}
     <meta name="twitter:card" content="summary_large_image" />
     {/* Umami analytics (cookieless, shared family property — filter by hostname); none offline. The family's
-        standard snippet (family/EVENTS.md): ?notrack / ?track, no automated browsers. Then, before the tracker
-        so it runs first: an external link without an event of its own gets `Portal: outbound click` (host),
-        or `Portal: app store click` for the app's TestFlight / App Store links. */}
+        standard snippet (family/EVENTS.md): ?notrack / ?track, no automated browsers. Then: a click on an external
+        link without an event of its own sends `Portal: outbound click` (host), or `Portal: app store click` for the
+        app's TestFlight / App Store links; sent directly (Umami posts with keepalive), so the link never waits. */}
     {!NO_REMOTE && <script is:inline>(function(){try{var q=location.search;if(/[?&]notrack\b/.test(q))localStorage.setItem('umami.disabled','1');if(/[?&]track\b/.test(q))localStorage.removeItem('umami.disabled')}catch(e){}window.fwqUmamiBeforeSend=function(t,p){var n=navigator;return(n.webdriver||/HeadlessChrome|bot|crawl|spider|Lighthouse|PageSpeed/i.test(n.userAgent))?false:p}})();</script>}
-    {!NO_REMOTE && <script is:inline>document.addEventListener('click',function(e){var a=e.target&&e.target.closest&&e.target.closest('a[href]');if(!a||a.hasAttribute('data-umami-event'))return;var u;try{u=new URL(a.href,location.href)}catch(x){return}if(!/^https?:$/.test(u.protocol)||u.hostname===location.hostname)return;var h=u.hostname.replace(/^www\./,''),app={'testflight.apple.com':'testflight','apps.apple.com':'app-store'}[h];a.setAttribute('data-umami-event',app?'Portal: app store click':'Portal: outbound click');a.setAttribute(app?'data-umami-event-target':'data-umami-event-host',app||h)},true);</script>}
+    {!NO_REMOTE && <script is:inline>document.addEventListener('click',function(e){var a=e.target&&e.target.closest&&e.target.closest('a[href]');if(!a||a.hasAttribute('data-umami-event'))return;var u;try{u=new URL(a.href,location.href)}catch(x){return}if(!/^https?:$/.test(u.protocol)||u.hostname===location.hostname)return;var h=u.hostname.replace(/^www\./,''),app={'testflight.apple.com':'testflight','apps.apple.com':'app-store'}[h];try{window.umami&&window.umami.track(app?'Portal: app store click':'Portal: outbound click',app?{target:app}:{host:h})}catch(x){}},true);</script>}
     {!NO_REMOTE && <script defer src="https://cloud.umami.is/script.js" data-website-id="97f347ac-e7ba-4be3-b26f-ab4b328bdbf2" data-domains="fun-with-quantum.org" data-before-send="fwqUmamiBeforeSend"></script>}
   </head>
   <body>

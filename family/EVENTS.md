@@ -16,7 +16,7 @@ Only `data-domains` differs per site (its own host or hosts):
 * **No automated browsers.** `fwqUmamiBeforeSend` drops every page view and event from a browser that is
   driven by automation (`navigator.webdriver`) or names itself a bot, crawler, Lighthouse or PageSpeed —
   in October 2026 about 30 % of all visitors were headless Chrome from Singapore.
-* **`?notrack`** on any URL of a site switches counting off for that browser and that site
+* **`?notrack`** (the parameter's presence, any value) on any URL of a site switches counting off for that browser and that site
   (`localStorage` `umami.disabled`, which Umami's tracker honors); **`?track`** switches it back on. Jan
   uses it once per site and browser to keep his own visits out.
 * **Strict CSP** (no inline scripts): put the inline code into a small same-origin `.js` file and load it,
@@ -46,7 +46,7 @@ Most events need **no JavaScript**: Umami's tracker records a click on any eleme
 | `Portal: notebook launch` | `target`, `image`, `notebook` | portal game pages |
 | `Portal: game start` | `game` (quantum-coin-game \| ghz-game \| chsh-game) | the public browser games: the player's first answer (button press) on the page |
 | `Portal: game finish` | `game` | played through: on from the last play chapter to the closing one (coin game: "You be quantum" → Sandbox; GHZ: Team quantum → How it works; CHSH: Turn the angles → Why 85%). Once per page view each; the preview games don't send them |
-| `Portal: outbound click` | `host` | any external link without an event of its own (the layout tags it at click time) |
+| `Portal: outbound click` | `host` | any external link without an event of its own (`Base.astro`, sent at click time without holding the link) |
 | `Portal: app store click` | `target` (testflight \| app-store) | any link to the app on TestFlight or the App Store (none yet) |
 | `Portal: share click` | `target` | reserved for share buttons (the portal has none yet) |
 | `Portal: shop click` | `host` | portal footer |

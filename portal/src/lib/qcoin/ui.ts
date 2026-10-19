@@ -126,8 +126,8 @@ export function mountCoinGame(root: HTMLElement) {
   root.addEventListener('pointerdown', () => { pointer = true; });
   root.addEventListener('keydown', () => { pointer = false; });
 
-  /** Render buttons, resolve with the chosen value; aborts if the chapter changes meanwhile. */
   let started = false, finished = false; // once per page view
+  /** Render buttons, resolve with the chosen value; aborts if the chapter changes meanwhile. */
   function ask<T>(e: number, options: { label: string; value: T; kind?: 'primary' | 'quantum'; gate?: GateName }[], extra = ''): Promise<T> {
     actions.innerHTML = '';
     return new Promise<T>((resolve, reject) => {
