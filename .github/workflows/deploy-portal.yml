@@ -27,9 +27,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      # The live page fingerprints: unchanged pages keep their sitemap <lastmod> (astro.config.mjs)
+      - name: Get the live sitemap state
+        run: curl -fsS --retry 2 "https://fun-with-quantum.org/sitemap-state.json?v=${GITHUB_RUN_ID}" -o "$RUNNER_TEMP/sitemap-prev.json" || echo "no live sitemap state yet"
       - name: Build with Astro
         uses: withastro/action@v3
         env:
+          FWQ_SITEMAP_PREV: ${{ runner.temp }}/sitemap-prev.json
           # The explainer chat (assistant/): repository variables, not secrets. No URL = no widget;
           # FWQ_ASSISTANT_PUBLIC=1 shows it to everyone, otherwise only with ?assistant=1.
           PUBLIC_FWQ_ASSISTANT_URL: ${{ vars.FWQ_ASSISTANT_URL }}
@@ -50,6 +54,16 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  # Bing, Yandex & co.: the pages this build changed, listed in sitemap-state.json (family/indexnow/README.md)
+  indexnow:
+    needs: deploy
+    if: github.ref == 'refs/heads/master'
+    uses: ./.github/workflows/indexnow.yml
+    with:
+      site: https://fun-with-quantum.org
+      key: d26064a42afd9450a537aa49737a76a8
+      changed: https://fun-with-quantum.org/sitemap-state.json
 
   # The same build, packed per commit for offline use: RasQberry Two downloads
   # the bundle of the commit it pins. Assets are kept, so a pinned commit

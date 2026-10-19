@@ -1,0 +1,85 @@
+# IndexNow for the Fun with Quantum family: after a deploy, tell Bing, Yandex & co. which pages changed.
+# Reusable: a member repo adds a job after its deploy job (family/indexnow/README.md):
+#
+#   indexnow:
+#     needs: deploy
+#     uses: JanLahmann/Fun-with-Quantum/.github/workflows/indexnow.yml@master
+#     with:
+#       site: https://example.org
+#       key: <the key in your public/<key>.txt>
+#
+# It reads <site>/sitemap.xml and sends the pages whose <lastmod> is at most `days` old (all pages
+# when the sitemap has no <lastmod>) to api.indexnow.org, or the pages in a `changed` list the build
+# published. The key is public by design.
+name: IndexNow
+
+on:
+  workflow_call:
+    inputs:
+      site:
+        description: The site, e.g. https://fun-with-quantum.org
+        required: true
+        type: string
+      key:
+        description: The site's IndexNow key; <site>/<key>.txt must contain it
+        required: true
+        type: string
+      sitemap:
+        description: Sitemap URL (default <site>/sitemap.xml)
+        required: false
+        type: string
+        default: ''
+      changed:
+        description: URL of a JSON list of the pages that changed (instead of the sitemap)
+        required: false
+        type: string
+        default: ''
+      days:
+        description: Send pages whose lastmod is at most this many days old
+        required: false
+        type: number
+        default: 1
+      all:
+        description: Send every sitemap page
+        required: false
+        type: boolean
+        default: false
+  workflow_dispatch:
+    inputs:
+      site:
+        description: The site
+        required: true
+        default: https://fun-with-quantum.org
+      key:
+        description: The site's IndexNow key
+        required: true
+        default: d26064a42afd9450a537aa49737a76a8
+      all:
+        description: Send every sitemap page
+        type: boolean
+        default: false
+
+permissions: {}
+
+jobs:
+  indexnow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      # straight from this repo's master, no token needed (works with any caller permissions)
+      - name: Get the IndexNow script
+        run: curl -fsSL --retry 2 https://raw.githubusercontent.com/JanLahmann/Fun-with-Quantum/master/family/indexnow/indexnow.py -o indexnow.py
+      - name: Submit changed pages
+        env:
+          SITE: ${{ inputs.site }}
+          KEY: ${{ inputs.key }}
+          SITEMAP: ${{ inputs.sitemap }}
+          CHANGED: ${{ inputs.changed }}
+          DAYS: ${{ inputs.days || 1 }}
+          ALL: ${{ inputs.all }}
+        run: |
+          args=(--site "$SITE" --key "$KEY" --days "$DAYS")
+          [ -n "$SITEMAP" ] && args+=(--sitemap "$SITEMAP")
+          [ -n "$CHANGED" ] && args+=(--changed "$CHANGED")
+          [ "$ALL" = "true" ] && args+=(--all)
+          python3 -u indexnow.py "${args[@]}"
