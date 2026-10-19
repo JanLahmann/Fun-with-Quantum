@@ -19,7 +19,8 @@ anything else fails the job (403: key file missing or different, 422: URLs not o
    where your generator copies static files as they are (Astro, Next.js, Docusaurus: `public/` or
    `static/`; Jekyll and plain Pages: the site root). Check after the deploy:
    `curl https://<site>/<key>.txt`.
-3. **Add a job** to the workflow that deploys the site, after the deploy job:
+3. **Add a job** to the workflow that deploys the site, after the deploy job (no deploy workflow? see
+   "Sites that Pages builds from a branch" below):
 
    ```yaml
      indexnow:
@@ -41,6 +42,57 @@ anything else fails the job (403: key file missing or different, 422: URLs not o
    that deploys many times a day does better with a `changed` list: the portal keeps a fingerprint per
    page (`portal/astro.config.mjs`), publishes `sitemap-state.json` with the pages whose fingerprint
    changed in this build under `changed`, and passes its URL.
+
+## Sites that Pages builds from a branch (Jekyll, no deploy workflow)
+
+When GitHub Pages builds a branch itself ("Deploy from a branch"), there is no deploy job to wait for, and
+`workflow_run` does not fire for the dynamic "pages build and deployment" run. Instead, start on the push,
+wait until Pages reports that it has built this commit, then call the shared workflow (as Quantego and
+Qoffee-Maker do):
+
+```yaml
+name: IndexNow
+on:
+  push:
+    branches: [main]                     # the branch Pages builds
+  workflow_dispatch:
+permissions: {}
+concurrency:                             # a newer push supersedes a run that is still waiting
+  group: indexnow
+  cancel-in-progress: true
+jobs:
+  pages:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      pages: read                        # for the Pages builds API
+    steps:
+      - name: Wait until Pages has built this commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          for i in $(seq 1 56); do
+            b=$(gh api "repos/$REPO/pages/builds/latest" --jq '"\(.status) \(.commit)"' || true)
+            echo "Pages build: $b"
+            [ "$b" = "built $SHA" ] && exit 0
+            [ "$b" = "errored $SHA" ] && exit 1
+            sleep 15
+          done
+          echo "Pages has not built $SHA within 14 minutes"; exit 1
+  indexnow:
+    needs: pages
+    uses: JanLahmann/Fun-with-Quantum/.github/workflows/indexnow.yml@master
+    with:
+      site: https://example.org
+      key: <your key>
+      all: true                          # see below
+```
+
+**`all: true` with jekyll-sitemap**: its sitemap gives the home page no `<lastmod>` and other files
+(PDFs, for example) the build time, so "changed since yesterday" misses the home page and resends the
+files on every build. For a small site that deploys now and then, sending every page is simpler and right.
 
 By hand, from any checkout of this repo:
 
