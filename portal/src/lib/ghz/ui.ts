@@ -211,6 +211,7 @@ export function mountGhzGame(root: HTMLElement) {
 
   const shell: Shell = mountShell(root, [chapter1, chapter2, chapter3], {
     game: 'ghz game',
+    play: { slug: 'ghz-game', finish: 2 }, // finish: on to the closing explanation
     storageKey: 'fwq-ghz-done',
     terms: TERMS,
     labels: UI,

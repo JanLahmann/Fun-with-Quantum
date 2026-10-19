@@ -126,6 +126,7 @@ export function mountCoinGame(root: HTMLElement) {
   root.addEventListener('pointerdown', () => { pointer = true; });
   root.addEventListener('keydown', () => { pointer = false; });
 
+  let started = false, finished = false; // once per page view
   /** Render buttons, resolve with the chosen value; aborts if the chapter changes meanwhile. */
   function ask<T>(e: number, options: { label: string; value: T; kind?: 'primary' | 'quantum'; gate?: GateName }[], extra = ''): Promise<T> {
     actions.innerHTML = '';
@@ -139,6 +140,7 @@ export function mountCoinGame(root: HTMLElement) {
         b.addEventListener('click', () => {
           if (myEpoch !== epoch) { reject(new Abort()); return; }
           actions.querySelectorAll('button').forEach((x) => (x.disabled = true));
+          if (!started) { started = true; track('Portal: game start', { game: 'quantum-coin-game' }); }
           resolve(o.value);
         });
         actions.appendChild(b);
@@ -551,6 +553,8 @@ export function mountCoinGame(root: HTMLElement) {
   const DONE_KEY = 'fwq-coin-done';
   const done = new Set<number>((() => { try { return JSON.parse(localStorage.getItem(DONE_KEY) ?? '[]'); } catch { return []; } })());
   function markDone(ch: Chapter) {
+    // played through: "You be quantum" done, on to the sandbox
+    if (ch === 4 && !finished) { finished = true; track('Portal: game finish', { game: 'quantum-coin-game' }); }
     done.add(ch);
     try { localStorage.setItem(DONE_KEY, JSON.stringify([...done])); } catch { /* private mode: fine */ }
     paintTabs(ch);

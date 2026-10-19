@@ -58,7 +58,11 @@ export interface Shell {
 export function mountShell(
   root: HTMLElement,
   chapters: ((e: number) => Promise<void>)[],
-  opts: { game: string; storageKey: string; terms: readonly TermKey[]; labels: UiLabels; locale: string; onEnter?: (chapter: number) => void },
+  opts: {
+    game: string; storageKey: string; terms: readonly TermKey[]; labels: UiLabels; locale: string; onEnter?: (chapter: number) => void;
+    /** Public games only: `Portal: game start` on the first answer, `Portal: game finish` when chapter `finish` is done. */
+    play?: { slug: string; finish: number };
+  },
 ): Shell {
   const $ = <T extends HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
   const title = $('.qg-title'), text = $('.qg-text'), status = $('.qg-status');
@@ -67,6 +71,7 @@ export function mountShell(
   let epoch = 0;
   let pending: ((v: never) => void) | null = null;
   let lastText = '';
+  let started = false, finished = false; // once per page view
 
   function buttons<T>(e: number, options: Choice<T>[], done: (v: T) => void, extra: string) {
     actions.innerHTML = '';
@@ -107,6 +112,7 @@ export function mountShell(
           if (settled || e !== epoch) return;
           settled = true;
           pending = null;
+          if (opts.play && !started) { started = true; track('Portal: game start', { game: opts.play.slug }); }
           actions.querySelectorAll('button').forEach((x) => (x.disabled = true));
           resolve(v);
         };
@@ -171,6 +177,7 @@ export function mountShell(
     }
   }
   function markDone(ch: number) {
+    if (opts.play && ch === opts.play.finish && !finished) { finished = true; track('Portal: game finish', { game: opts.play.slug }); }
     done.add(ch);
     try { localStorage.setItem(opts.storageKey, JSON.stringify([...done])); } catch { /* private mode: fine */ }
     paintTabs();
