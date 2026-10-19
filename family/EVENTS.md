@@ -89,6 +89,8 @@ The redesign preview sends the coin-game events above with an extra `v: 2`, and 
 | `Qutie: STL download` | `file` | qutie.org |
 | `Qutie: shop click` | `host` | qutie.org footer |
 | `Qutie: outbound click` | `host` | external links without an event of their own |
+| `Qoffee-Maker: outbound click` | `host` | qoffee-maker.org: every external link (Composer circuits and docs, ibm.com, GitHub, LinkedIn credit); tagged on DOMContentLoaded (`_includes/head-custom.html`) |
+| `Qoffee-Maker: build guide open` | — | links to /QoffeeMakerInstructions.html |
 | `CertiQ: quiz start` | `mode` (drill \| mock), `section` (s1–s8 \| all), `objective` (drill only) | certiq.dev quiz |
 | `CertiQ: quiz finish` | as quiz start, plus `score` (0-49 \| 50-69 \| 70-89 \| 90-100); a mock also `result` (pass \| fail) | a finished quiz |
 | `CertiQ: objective filter` | `section`, `objective` | the objective filter |
