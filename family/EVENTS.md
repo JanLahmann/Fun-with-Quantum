@@ -84,9 +84,16 @@ The redesign preview sends the coin-game events above with an extra `v: 2`, and 
 | `doQumentation: tutorial feedback` · `translation feedback` | `rating`, `page`, `locale` | feedback widgets |
 | `doQumentation: play box click` | `game` (coin \| ghz \| chsh \| ghzReal \| sat), `page`, `locale` | "Play it as a game" box at the end of matching tutorials, linking to fun-with-quantum.org/play/ (UTM `utm_source=doqumentation&utm_medium=referral&utm_campaign=play-box`) |
 | `doQumentation: outbound click` | `host`, `category`, `url`, `path`, `from`, `locale` | every external link (JS tracker) |
-| `Quantego: file download` | `kind` (pdf \| studio \| pab), `file` | quantego.org instruction and model files |
+| `Quantego: file download` | `kind` (pdf \| studio \| pab \| ldraw), `file` | quantego.org instruction and model files |
+| `Quantego: outbound click` | `host` | every link to another site (footer links keep their own event) |
 | `Qutie: STL download` | `file` | qutie.org |
 | `Qutie: shop click` | `host` | qutie.org footer |
+| `Qutie: outbound click` | `host` | external links without an event of their own |
+| `CertiQ: quiz start` | `mode` (drill \| mock), `section` (s1–s8 \| all), `objective` (drill only) | certiq.dev quiz |
+| `CertiQ: quiz finish` | as quiz start, plus `score` (0-49 \| 50-69 \| 70-89 \| 90-100); a mock also `result` (pass \| fail) | a finished quiz |
+| `CertiQ: objective filter` | `section`, `objective` | the objective filter |
+| `CertiQ: outbound click` | `host`, `category` (ibm-exam \| docs \| github \| doqumentation \| apps \| other) | external links |
+| `CertiQ: file download` | `kind` (anki \| epub), `file` | Anki deck and EPUB downloads |
 | `RasQberry Two: image download` | `file`, `stream`, `tag` | rasqberry.org/latest redirect |
 | `RasQberry Two: beta box click` | `target` (imager \| release-notes \| feedback \| ab-image \| learning-paths) | rasqberry.org homepage "New beta" box |
 | `RasQberry Two: newsletter open` | — | rasqberry.org footer |
