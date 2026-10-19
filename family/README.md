@@ -57,6 +57,15 @@ automated browsers and bots, and lets anyone switch counting off for their own b
 on any URL of a site (`?track` switches it back on). The audit (`family/audit/family-audit.sh`, column
 `bsend`) checks the tag on every site.
 
+## Search engines: IndexNow
+
+After each deploy, a site that has it set up tells the IndexNow search engines (Bing, Yandex, Seznam, Naver, …) which
+pages changed, so they don't wait for the next crawl. One job after the deploy job calls this repo's
+reusable workflow `.github/workflows/indexnow.yml`, which runs `indexnow/indexnow.py`: it reads the
+site's `sitemap.xml` and sends the pages whose `<lastmod>` is new (every page when the sitemap has no
+`<lastmod>`), or a list of changed pages the build wrote. Each site has its own key, served at `https://<site>/<key>.txt`; the key is public by
+design. Set-up for a member site: [indexnow/README.md](indexnow/README.md).
+
 ## Renderers
 
 ```sh

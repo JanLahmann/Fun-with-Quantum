@@ -14,9 +14,11 @@ interface Props {
   alternates?: { lang: string; href: string }[];
   /** Social share image (path under public/); defaults to the site card. */
   ogImage?: string;
+  /** schema.org structured data (JSON-LD) for search engines; left out on noindex pages. */
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
 }
 
-const { title, description, noindex = false, lang = 'en', alternates = [], ogImage = '/og-card.png' } = Astro.props;
+const { title, description, noindex = false, lang = 'en', alternates = [], ogImage = '/og-card.png', jsonLd } = Astro.props;
 const nav = [
   { href: '/play/', label: 'Play' },
   { href: '/build/', label: 'Build' },
@@ -48,6 +50,8 @@ const path = Astro.url.pathname;
     <meta property="og:type" content="website" />
     {!noindex && <meta property="og:url" content={new URL(path, Astro.site)} />}
     <meta name="twitter:card" content="summary_large_image" />
+    {/* `<` escaped so no text in the data can end the script element */}
+    {jsonLd && !noindex && <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd).replace(/</g, '\\u003c')} />}
     {/* Umami analytics (cookieless, shared family property — filter by hostname); none offline. The family's
         standard snippet (family/EVENTS.md): ?notrack / ?track, no automated browsers. Then: a click on an external
         link without an event of its own sends `Portal: outbound click` (host), or `Portal: app store click` for the

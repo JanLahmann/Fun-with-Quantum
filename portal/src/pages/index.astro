@@ -6,6 +6,7 @@ import KetGuide from '../components/KetGuide.astro';
 import Highlights from '../components/Highlights.astro';
 import { NO_REMOTE, OFFLINE } from '../data/offline';
 import { DOORS, HERO } from '../data/home';
+import { homeJsonLd } from '../lib/seo';
 import heroPhoto from '../assets/RasQberry2model.png';
 import qoffeeMug from '../assets/qoffee-mug.png';
 import quantegoPhoto from '../assets/quantego-two-photo.jpg';
@@ -15,6 +16,7 @@ import certiqSite from '../assets/certiq-site.jpg';
 import quantumCoin from '../assets/quantum-coin.png';
 import qubinsSite from '../assets/qubins-site.png';
 
+const DESCRIPTION = 'Quantum games, 3D-printed and LEGO quantum computer models, and hands-on ways to learn. Open source, nothing to install.';
 const games = (await getCollection('games')).sort((a, b) => a.data.order - b.data.order);
 const featured = games.find((g) => g.data.featured) ?? games[0];
 const allProjects = await getCollection('projects');
@@ -40,7 +42,8 @@ const doors = DOORS.map((d) => ({
 
 <Base
   title="Fun with Quantum — quantum computing to play, build & learn"
-  description="Quantum games, 3D-printed and LEGO quantum computer models, and hands-on ways to learn. Open source, nothing to install."
+  description={DESCRIPTION}
+  jsonLd={homeJsonLd(DESCRIPTION)}
 >
   <section class="hero">
     <div class="wrap hero-grid">
@@ -216,6 +219,14 @@ const doors = DOORS.map((d) => ({
           </span>
         </div>
       </div>
+
+      {/* every game page, one click from the home page (▶ = plays right on its page, as on /play/) */}
+      <p class="all-games">
+        <span class="all-games-label">All games</span> <span class="all-games-key">(▶ plays in your browser):</span>{' '}
+        {games.map((g, i) => (
+          <>{i > 0 && ' · '}<a href={`/play/${g.id}/`}><span aria-hidden="true">{g.data.icon}</span> {g.data.title}{g.data.webGame && <><span aria-hidden="true"> ▶</span><span class="sr-only"> (plays in your browser)</span></>}</a></>
+        ))}
+      </p>
     </div>
   </section>
 
@@ -361,6 +372,8 @@ const doors = DOORS.map((d) => ({
 
   /* rows 2+3: examples from the categories above */
   .examples-kicker { margin: 36px 0 14px; color: var(--muted); }
+  .all-games { margin: 24px 0 0; color: var(--muted); font-size: 0.95rem; line-height: 1.9; }
+  .all-games-label { font-weight: 600; }
   .feature-grid { margin-top: 0; }
   .card.feature h3 { font-size: 1.08rem; }
   .card.feature .badge { margin-bottom: 2px; }

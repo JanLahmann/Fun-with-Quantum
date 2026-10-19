@@ -6,6 +6,7 @@ import CoinGame from '../../components/CoinGame.astro';
 import GhzGame from '../../components/GhzGame.astro';
 import ChshGame from '../../components/ChshGame.astro';
 import { LOCALES, MESSAGES, pagePath } from '../../lib/qcoin/i18n';
+import { gameJsonLd } from '../../lib/seo';
 
 export async function getStaticPaths() {
   const games = await getCollection('games');
@@ -14,9 +15,10 @@ export async function getStaticPaths() {
 
 const { game } = Astro.props;
 const { Content } = await render(game);
+// "More games": the browser games first (the pages most visitors want), then the rest in list order
 const others = (await getCollection('games'))
   .filter((g) => g.id !== game.id)
-  .sort((a, b) => a.data.order - b.data.order)
+  .sort((a, b) => Number(b.data.webGame) - Number(a.data.webGame) || a.data.order - b.data.order)
   .slice(0, 3);
 // Umami `launch` event properties (family taxonomy, see family/EVENTS.md)
 const launchUrl = new URL(game.data.binderUrl);
@@ -35,13 +37,17 @@ const coin = game.id === 'quantum-coin-game';
 const alternates = coin
   ? [...LOCALES.map((l) => ({ lang: l, href: pagePath(l) })), { lang: 'x-default', href: pagePath('en') }]
   : [];
+// the search snippet: the tagline plus how you play it (about 155 characters at most)
+const description = `${game.data.tagline} ${game.data.webGame ? 'Play it free in your browser, then open the Qiskit notebook.' : 'Free Qiskit notebook, no account needed.'}`;
+const jsonLd = gameJsonLd({ id: game.id, title: game.data.title, description, concept: game.data.concept, level: game.data.level, goals: game.data.goals, webGame: game.data.webGame });
 const launchVia = launchTarget === 'qubins' ? 'mybinder.org (via QuBins)' : launchTarget === 'binder' ? 'mybinder.org' : launchUrl.hostname;
 ---
 
 <Base
   title={`${game.data.title} | Fun with Quantum`}
-  description={game.data.tagline}
+  description={description}
   alternates={alternates}
+  jsonLd={jsonLd}
   ogImage={`/og/${game.id}.png`}
 >
   <section class="section">
