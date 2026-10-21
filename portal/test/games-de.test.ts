@@ -1,5 +1,5 @@
 /**
- * The browser games in German (GHZ; CHSH to follow): every German text has the same keys,
+ * The browser games in German (GHZ, CHSH): every German text has the same keys,
  * explanation links, HTML tags and numbers as the English one, so tools/check_numbers.py, which
  * checks the English texts, covers the German ones too.
  */
@@ -9,6 +9,8 @@ import { GLOSSARY_EN, glossaryEntry, termRefs, type TermKey } from '../src/lib/g
 import { GLOSSARY_DE } from '../src/lib/games/glossary-de';
 import { TRANSLATED_GAMES, gamePath, percent } from '../src/lib/games/locale';
 import * as ghz from '../src/lib/ghz/messages';
+import * as chsh from '../src/lib/chsh/messages';
+import { TSIRELSON_WIN } from '../src/lib/chsh/game';
 
 /** Every string in a catalogue, keyed by path; functions are called with sample arguments. */
 function strings(m: object, samples: Record<string, unknown[]>): Record<string, string> {
@@ -64,6 +66,49 @@ describe('GHZ game in German', () => {
 
   it('explains every term it links to, and every term in its index, in German', () => {
     const refs = new Set<string>([...Object.values(de).flatMap(termRefs), ...ghz.TERMS]);
+    for (const r of refs) expect(Object.keys(GLOSSARY_DE), r).toContain(r);
+  });
+});
+
+const CHSH_SAMPLES: Record<string, unknown[]> = {
+  'UI.answerTo': ['x', 1], 'UI.question': [0, 1], 'UI.need': [1, 1], 'UI.needs': [1, 1],
+  'UI.tally': [7, 9], 'UI.degrees': [-45], 'UI.winCell': [TSIRELSON_WIN],
+  'CH1.result': [3], 'CH1.manyResult': [748, 1000, 3], 'CH1.allResult': [16, 3, 8],
+  'CH2.manyResult': [853, 1000], 'CH2.score': [7, 9],
+  'CH3.total': [0.8, TSIRELSON_WIN], 'CH3.manyResult': [851, 1000, TSIRELSON_WIN],
+  'CH4.question': [1, 1, 90, -45, TSIRELSON_WIN],
+  round: [{ x: 1, y: 1, a: 0, b: 1, win: true }, 90, -45], percent: [TSIRELSON_WIN, 1],
+};
+
+describe('CHSH game in German', () => {
+  const en = strings(chsh.MESSAGES.en, CHSH_SAMPLES);
+  const de = strings(chsh.MESSAGES.de, CHSH_SAMPLES);
+
+  it('has the same keys as English, and is a real translation', () => {
+    expect(Object.keys(de).sort()).toEqual(Object.keys(en).sort());
+    // formulas such as "x = 0 · y = 1" stay as they are
+    const same = Object.keys(en).filter((k) => de[k] === en[k] && en[k].length > 12 && !/^[\sxyab0-9=·,]+$/.test(en[k]));
+    expect(same, same.join(', ')).toEqual([]);
+  });
+
+  it('keeps the explanation links, HTML tags and numbers of every text', () => {
+    for (const k of Object.keys(en)) {
+      expect(termRefs(de[k]).sort(), k).toEqual(termRefs(en[k]).sort());
+      expect(tags(de[k]), k).toEqual(tags(en[k]));
+      expect(numbers(de[k]), k).toEqual(numbers(en[k]));
+    }
+  });
+
+  it('keeps the numbers in every branch of the win-rate verdict', () => {
+    for (const [win, max] of [[TSIRELSON_WIN, TSIRELSON_WIN], [0.8, TSIRELSON_WIN], [0.75, TSIRELSON_WIN], [0.5, TSIRELSON_WIN]])
+      expect(numbers(chsh.MESSAGES.de.CH3.total(win, max)), String(win)).toEqual(numbers(chsh.MESSAGES.en.CH3.total(win, max)));
+    expect(numbers(chsh.MESSAGES.de.CH1.result(2))).toEqual(numbers(chsh.MESSAGES.en.CH1.result(2)));
+    expect(chsh.MESSAGES.de.UI.winCell(TSIRELSON_WIN)).toBe('Gewinnchance 85,4\u00a0%');
+    expect(chsh.MESSAGES.de.CH2.manyResult(853, 1000)).toContain('(85,3\u00a0%)');
+  });
+
+  it('explains every term it links to, and every term in its index, in German', () => {
+    const refs = new Set<string>([...Object.values(de).flatMap(termRefs), ...chsh.TERMS]);
     for (const r of refs) expect(Object.keys(GLOSSARY_DE), r).toContain(r);
   });
 });

@@ -19,6 +19,7 @@ export const gamePath = (slug: string, locale: GameLocale) => (locale === 'en' ?
 /** The browser games with a page in more than one language (each other language: src/pages/<locale>/play/<slug>.astro). */
 export const TRANSLATED_GAMES: Record<string, readonly GameLocale[]> = {
   'ghz-game': ['en', 'de'],
+  'chsh-game': ['en', 'de'],
 };
 
 export const LANG_NAME: Record<GameLocale, string> = { en: 'English', de: 'Deutsch' };

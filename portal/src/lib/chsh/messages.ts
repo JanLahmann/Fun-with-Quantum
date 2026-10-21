@@ -1,9 +1,11 @@
 /**
- * Texts of the browser CHSH game (English for now). Conventions as in the coin game's catalogue:
- * a little HTML is fine, `[words](#term)` opens an explanation (src/lib/games/glossary.ts).
- * Every number here is checked in test/chsh.test.ts. Translations: copy this object per language.
+ * Texts of the browser CHSH game, English; German in de.ts (same keys, links and numbers: test/games-de.test.ts).
+ * Conventions as in the coin game's catalogue: a little HTML is fine, `[words](#term)` opens an
+ * explanation (src/lib/games/glossary.ts). Every number here is checked in test/chsh.test.ts.
  */
-import type { Bit, Round } from './game';
+import { between, type Bit, type Round } from './game';
+import { percent, type GameLocale } from '../games/locale';
+import de from './de';
 
 export const UI = {
   chapters: ['Play classically', 'The quantum team', 'Turn the angles', 'Why 85% is the limit'],
@@ -19,14 +21,20 @@ export const UI = {
   bob: 'Bob',
   answerTo: (who: 'x' | 'y', q: Bit) => `if ${who} = ${q}, answer`,
   question: (x: Bit, y: Bit) => `x = ${x} · y = ${y}`,
-  need: (x: Bit, y: Bit) => (x & y ? 'different answers' : 'same answer'),
+  need: (x: Bit, y: Bit): string => (x & y ? 'different answers' : 'same answer'),
   /** The same in a sentence: they need … */
-  needs: (x: Bit, y: Bit) => (x & y ? 'different answers' : 'the same answer'),
+  needs: (x: Bit, y: Bit): string => (x & y ? 'different answers' : 'the same answer'),
   sliders: ['Alice, x = 0', 'Alice, x = 1', 'Bob, y = 0', 'Bob, y = 1'],
   circleTitle: 'The Bloch circle: the directions Alice and Bob measure along',
   circleHint: 'dot at the tip: answer 0 · dot at the other end: answer 1',
   qubits: ['Alice', 'Bob'],
   circuitTitle: 'The game circuit',
+  /** A question square in chapter 2: rounds won so far. */
+  tally: (won: number, n: number) => `${won} of ${n} won (${share(won, n)})`,
+  /** A slider's value, read out by screen readers. */
+  degrees: (d: number) => `${d} degrees`,
+  /** A question square in chapters 3 and 4: its exact chance to win. */
+  winCell: (p: number) => `win ${pct(p)}`,
 };
 
 // The page around the game is /play/chsh-game/ (src/content/games/chsh-game.md).
@@ -34,12 +42,10 @@ export const PAGE = {
   heading: 'The CHSH Game',
 };
 
-const pct = (p: number) => `${(100 * p).toFixed(1)}%`;
+const pct = (p: number) => percent(p, 1, 'en');
 const share = (won: number, n: number) => pct(won / n);
 const result = (win: boolean) => (win ? '<span class="win">Win!</span>' : '<span class="lose">Lost.</span>');
 const deg = (d: number) => `${d}°`.replace('-', '−');
-/** Angle between two directions, 0°–180°. */
-export const between = (a: number, b: number) => { const d = (((a - b) % 360) + 360) % 360; return d > 180 ? 360 - d : d; };
 
 export const RULES = `<p>Alice and Bob may agree on a strategy beforehand — then they are put into <b>separate rooms</b> and cannot talk any more.</p>
 <p>The quiz master gives <b>Alice</b> a random bit <b>x</b> and <b>Bob</b> a random bit <b>y</b>. Each answers with a bit: Alice <b>a</b>, Bob <b>b</b>. They <b>win</b> if a ⊕ b = x · y: the <b>same answer</b>, unless both got a 1 — then <b>different answers</b>.</p>`;
@@ -142,3 +148,10 @@ export const TERMS = [
   'qubit', 'measurement', 'entanglement', 'bell', 'bloch', 'gate', 'basis', 'circuit',
   'parity', 'classical', 'nonlocal', 'hidden', 'inequality', 'tsirelson', 'signaling',
 ] as const;
+
+/** Everything a language provides; German: de.ts. */
+export const EN = { UI, PAGE, RULES, CH1, CH2, CH3, CH4, round, percent: (p: number, digits: number) => percent(p, digits, 'en') };
+export type ChshMessages = typeof EN;
+
+export const MESSAGES: Record<GameLocale, ChshMessages> = { en: EN, de };
+export const chshMessages = (locale: string | undefined): ChshMessages => (locale === 'de' ? de : EN);

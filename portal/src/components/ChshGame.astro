@@ -4,12 +4,19 @@
  * Logic in src/lib/chsh/game.ts (unit-tested, checked against Qiskit), interaction in src/lib/chsh/ui.ts.
  */
 import GameFrame from './GameFrame.astro';
-import { UI, PAGE } from '../lib/chsh/messages';
+import { chshMessages } from '../lib/chsh/messages';
+import type { GameLocale } from '../lib/games/locale';
+
+interface Props {
+  locale?: GameLocale;
+}
+const { locale = 'en' } = Astro.props;
+const { UI, PAGE } = chshMessages(locale);
 
 const bits = [0, 1] as const;
 ---
 
-<GameFrame id="chsh-game" label={PAGE.heading} locale="en" chapters={UI.chapters} chaptersLabel={UI.chaptersLabel}
+<GameFrame id="chsh-game" label={PAGE.heading} locale={locale} chapters={UI.chapters} chaptersLabel={UI.chaptersLabel}
   explain={UI.explain} explainTitle={UI.explainTitle} close={UI.close} noscript={UI.noscript}>
   <div class="ch-board" data-mode="off">
     <div class="ch-strategy">

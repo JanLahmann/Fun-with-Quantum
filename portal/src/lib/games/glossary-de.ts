@@ -1,6 +1,6 @@
 /**
- * German explanations for the browser games that exist in German (GHZ so far; the CHSH terms are here
- * already): every term those games and these entries link to. Same numbers as GLOSSARY_EN (test/games-de.test.ts); terms without a
+ * German explanations for the browser games that exist in German (GHZ, CHSH): every term those games
+ * and these entries link to. Same numbers as GLOSSARY_EN (test/games-de.test.ts); terms without a
  * German entry fall back to English (glossaryEntry in glossary.ts).
  */
 import type { GlossaryEntry, TermKey } from './glossary';

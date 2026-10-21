@@ -129,7 +129,7 @@ same circuits as `GHZ-Game.ipynb`, `CHSH-Game.ipynb`, `Hardys-Paradox.ipynb`, `M
 
 Explanations link to IBM Quantum Learning and doQumentation like the coin game's.
 
-**In German** (`/de/play/ghz-game/`): a game's German texts are `src/lib/<game>/de.ts`, typed by the English
+**In German** (`/de/play/ghz-game/`, `/de/play/chsh-game/`): a game's German texts are `src/lib/<game>/de.ts`, typed by the English
 catalogue in `messages.ts` (`ghzMessages(locale)` picks one); the explanations its texts link to are in
 `src/lib/games/glossary-de.ts` (other terms fall back to English). The page is
 `src/pages/de/play/<slug>.astro` (`TranslatedGamePage.astro`), listed in `TRANSLATED_GAMES`
