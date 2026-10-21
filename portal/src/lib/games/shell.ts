@@ -6,7 +6,7 @@
  * chapter reads top to bottom; switching chapters bumps `epoch`, which makes every pending wait
  * of the old chapter throw `Abort` and end quietly.
  */
-import { GLOSSARY_EN, doqLink, ibmLink, rich, type TermKey } from './glossary';
+import { GLOSSARY_EN, doqLink, glossaryEntry, ibmLink, rich, type TermKey } from './glossary';
 
 export class Abort extends Error {}
 
@@ -132,7 +132,7 @@ export function mountShell(
   const isTerm = (x: string | undefined): x is TermKey => !!x && x in GLOSSARY_EN;
   function explain(term: TermKey | null) {
     if (term) {
-      const g = GLOSSARY_EN[term];
+      const g = glossaryEntry(term, locale);
       const ibm = ibmLink(term, locale), doq = doqLink(term, locale);
       const ev = `data-umami-event="Portal: ${game} learn more" data-umami-event-term="${term}"`;
       dlgBody.innerHTML = `<button type="button" class="qg-back" data-term="">${labels.allTerms}</button>
@@ -145,7 +145,7 @@ export function mountShell(
       track(`Portal: ${game} explain`, { term, lang: locale });
     } else {
       dlgBody.innerHTML = `<h3 tabindex="-1">${labels.explainTitle}</h3>
-        <ul class="qg-terms">${opts.terms.map((t) => `<li><button type="button" class="qg-term" data-term="${t}">${GLOSSARY_EN[t].title}</button></li>`).join('')}</ul>`;
+        <ul class="qg-terms">${opts.terms.map((t) => `<li><button type="button" class="qg-term" data-term="${t}">${glossaryEntry(t, locale).title}</button></li>`).join('')}</ul>`;
     }
     if (!dlg.open) dlg.showModal();
     dlgBody.querySelector<HTMLElement>('h3')?.focus();

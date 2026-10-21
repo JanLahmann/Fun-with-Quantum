@@ -4,6 +4,7 @@
  * opens the term; each term links to IBM Quantum Learning and to the same page on doQumentation
  * (shared paths and anchors, checked 2026-10-02).
  */
+import { GLOSSARY_DE } from './glossary-de';
 
 export type TermKey =
   | 'qubit' | 'superposition' | 'measurement' | 'entanglement' | 'bell' | 'ghz'
@@ -197,6 +198,11 @@ export const GLOSSARY_EN: Record<TermKey, GlossaryEntry> = {
     body: 'Entanglement does not let Alice and Bob send messages. Alice’s results on their own don’t depend on what Bob measures (in our games they are simply 50:50), so they tell her nothing about Bob’s question. The correlation appears only when both lists of results are brought together — and that needs ordinary communication.',
   },
 };
+
+/** A term in the player's language: German where the games have it (glossary-de.ts), English otherwise. */
+export function glossaryEntry(term: TermKey, locale = 'en'): GlossaryEntry {
+  return (locale === 'de' ? GLOSSARY_DE[term] : undefined) ?? GLOSSARY_EN[term];
+}
 
 /** IBM Quantum Learning languages (others fall back to English). */
 const IBM_LANGS: ReadonlySet<string> = new Set(['en', 'ja', 'de', 'es', 'fr', 'it']);

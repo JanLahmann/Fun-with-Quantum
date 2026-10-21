@@ -1,8 +1,11 @@
 /**
- * Texts of the browser GHZ game (English for now). Conventions as in the coin game's catalogue:
- * a little HTML is fine, `[words](#term)` opens an explanation (src/lib/games/glossary.ts).
+ * Texts of the browser GHZ game, English; German in de.ts (same keys, links and numbers: test/games-de.test.ts).
+ * Conventions as in the coin game's catalogue: a little HTML is fine, `[words](#term)` opens an
+ * explanation (src/lib/games/glossary.ts).
  */
 import { isAllColor, type Question } from './game';
+import { percent, type GameLocale } from '../games/locale';
+import de from './de';
 
 export const UI = {
   chapters: ['Team classical', 'Team quantum', 'How it works'],
@@ -18,6 +21,8 @@ export const UI = {
   color: 'color?',
   shape: 'shape?',
   red: 'red', blue: 'blue', star: 'star', rectangle: 'rectangle',
+  /** A player's object: color 1 = red, shape 1 = star. */
+  thing: (color: number, shape: number) => `${color ? 'red' : 'blue'} ${shape ? 'star' : 'rectangle'}`,
   questionsLabel: 'The question',
   changeThing: (player: string) => `Change ${player}’s object`,
   circuitTitle: 'The game circuit',
@@ -37,7 +42,7 @@ export const questionLabel = (q: Question) => q.map((a) => ASK[a]).join(' · ');
 export const said = (ask: 'C' | 'S', bit: number) => (ask === 'C' ? (bit ? UI.red : UI.blue) : bit ? UI.star : UI.rectangle);
 
 const result = (win: boolean) => (win ? '<span class="win">Win!</span>' : '<span class="lose">Lost.</span>');
-const pct = (won: number, n: number) => `${((100 * won) / n).toFixed(1)}%`;
+const pct = (won: number, n: number) => percent(won / n, 1, 'en');
 
 /** "2 × red: even — Win!" */
 export function verdict(q: Question, bits: readonly number[], win: boolean): string {
@@ -99,3 +104,10 @@ export const TERMS = [
   'qubit', 'superposition', 'measurement', 'entanglement', 'ghz', 'pauli', 'basis', 'commute',
   'gate', 'cnot', 'circuit', 'parity', 'classical', 'nonlocal', 'hidden',
 ] as const;
+
+/** Everything a language provides; German: de.ts. */
+export const EN = { UI, PAGE, RULES, CH1, CH2, CH3, questionLabel, said, verdict, percent: (p: number, digits: number) => percent(p, digits, 'en') };
+export type GhzMessages = typeof EN;
+
+export const MESSAGES: Record<GameLocale, GhzMessages> = { en: EN, de };
+export const ghzMessages = (locale: string | undefined): GhzMessages => (locale === 'de' ? de : EN);

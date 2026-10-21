@@ -127,8 +127,16 @@ same circuits as `GHZ-Game.ipynb`, `CHSH-Game.ipynb`, `Hardys-Paradox.ipynb`, `M
    ~ and up to 6 variables; rounds to the first peak, 0 when half or more are solutions) · *How it
    works* (interference, sin²((2k+1)θ), scaling, limits).
 
-Explanations link to IBM Quantum Learning and doQumentation like the coin game's. To translate, add
-per-language copies of `messages.ts` and `GLOSSARY_EN` as for `src/lib/qcoin/i18n`. To launch one: set
+Explanations link to IBM Quantum Learning and doQumentation like the coin game's.
+
+**In German** (`/de/play/ghz-game/`): a game's German texts are `src/lib/<game>/de.ts`, typed by the English
+catalogue in `messages.ts` (`ghzMessages(locale)` picks one); the explanations its texts link to are in
+`src/lib/games/glossary-de.ts` (other terms fall back to English). The page is
+`src/pages/de/play/<slug>.astro` (`TranslatedGamePage.astro`), listed in `TRANSLATED_GAMES`
+(`src/lib/games/locale.ts`), which also gives the English page its language switch and hreflang.
+`test/games-de.test.ts` checks the same keys, explanation links, tags and numbers as English, so
+`tools/check_numbers.py` (English only) covers the German numbers too. German style: informal "du",
+decimal comma, a no-break space before % (`percent()` in `locale.ts`). To launch one: set
 `webGame: true` in its `src/content/games/*.md`, register its component in `WEB_GAMES` in
 `src/pages/play/[slug].astro` (the build fails if one is missing), point `BrowserGames.astro` at the
 `/play/` page, delete the preview page and redirect its URL (`astro.config.mjs`).
