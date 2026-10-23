@@ -12,7 +12,7 @@ import {
   GHZ, QUESTIONS, THINGS, bestClassical, classicalAnswer, classicalScore, gameOps, gameSteps,
   playQuantum, randomQuestion, wins, type Ask, type Question, type Thing,
 } from './game';
-import { CH1, CH2, CH3, TERMS, UI, questionLabel, said, verdict } from './messages';
+import { TERMS, ghzMessages } from './messages';
 
 type Mode = 'edit' | 'pick' | 'hist' | 'off';
 
@@ -29,6 +29,8 @@ function thingSvg(color: 0 | 1 | null, shape: 0 | 1 | null): string {
 }
 
 export function mountGhzGame(root: HTMLElement) {
+  const locale = root.dataset.locale ?? 'en';
+  const { UI, CH1, CH2, CH3, questionLabel, said, verdict, percent } = ghzMessages(locale);
   const board = root.querySelector<HTMLElement>('.gz-board')!;
   const chips = Array.from(root.querySelectorAll<HTMLButtonElement>('.gz-questions button'));
   const players = Array.from(root.querySelectorAll<HTMLElement>('.gz-player'));
@@ -55,7 +57,7 @@ export function mountGhzGame(root: HTMLElement) {
   }
   const paintTeam = () => paintPlayers({
     color: team.map((t) => t.color), shape: team.map((t) => t.shape),
-    words: team.map((t) => `${t.color ? UI.red : UI.blue} ${t.shape ? UI.star : UI.rectangle}`),
+    words: team.map((t) => UI.thing(t.color, t.shape)),
   });
 
   function paintHist(q: Question | null) {
@@ -64,7 +66,7 @@ export function mountGhzGame(root: HTMLElement) {
     for (let a = 0; a < 2; a++) for (let b = 0; b < 2; b++) for (let y = 0; y < 2; y++) {
       const pi = p[a + 2 * b + 4 * y];
       const cls = q && pi > 1e-9 ? (wins(q, [a, b, y]) ? 'win' : 'lose') : '';
-      bars.push(`<div class="bar"><span class="pct">${pi > 1e-9 ? `${Math.round(pi * 100)}%` : ''}</span><span class="track"><i class="fill ${cls}" style="height:${(pi * 100).toFixed(1)}%"></i></span><span class="lbl">${a}${b}${y}</span></div>`);
+      bars.push(`<div class="bar"><span class="pct">${pi > 1e-9 ? percent(pi, 0) : ''}</span><span class="track"><i class="fill ${cls}" style="height:${(pi * 100).toFixed(1)}%"></i></span><span class="lbl">${a}${b}${y}</span></div>`);
     }
     hist.innerHTML = `<div class="bars" role="img" aria-label="${UI.histLabel}">${bars.join('')}</div>
       <p class="cap">${q ? questionLabel(q) : UI.zBasis} — ${UI.players.join(' · ')}</p>`;
@@ -215,7 +217,7 @@ export function mountGhzGame(root: HTMLElement) {
     storageKey: 'fwq-ghz-done',
     terms: TERMS,
     labels: UI,
-    locale: root.dataset.locale ?? 'en',
+    locale,
     onEnter: () => {
       setMode('off');
       pickQ = null;

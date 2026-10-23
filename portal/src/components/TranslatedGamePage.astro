@@ -1,0 +1,71 @@
+---
+/**
+ * A browser game's page in a language other than English (/de/play/<slug>/): header, language switch,
+ * the game (slot), the notebook link. The English page is src/pages/play/[slug].astro; the coin game,
+ * with seven languages, has its own (CoinGamePage.astro).
+ */
+import { getEntry } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { APP, OFFLINE } from '../data/offline';
+import { LANG_NAME, TRANSLATED_GAMES, gamePath, type GameLocale } from '../lib/games/locale';
+
+interface Props {
+  slug: string;
+  locale: Exclude<GameLocale, 'en'>;
+  page: { title: string; description: string; kicker: string; heading: string; lead: string };
+}
+const { slug, locale, page } = Astro.props;
+const game = await getEntry('games', slug);
+if (!game) throw new Error(`${slug}: no such game in src/content/games`);
+const locales = TRANSLATED_GAMES[slug] ?? [];
+if (!locales.includes(locale)) throw new Error(`${slug}: add '${locale}' to TRANSLATED_GAMES in src/lib/games/locale.ts`);
+const T = {
+  de: {
+    notebook: 'Dasselbe Spiel als Jupyter-Notebook (auf Englisch), mit echtem Qiskit-Code:',
+    notebookLink: 'Notebook öffnen ↗',
+    notebookWait: 'Es startet eine kostenlose Jupyter-Sitzung auf mybinder.org (über QuBins); der Start kann einige Minuten dauern.',
+    offline: 'Auf einem <strong>RasQberry Two</strong> öffnet das Desktop-Symbol <strong>Fun with Quantum</strong> die Notebook-Spiele auf diesem Pi — ganz ohne Internet. Hier heißt das Notebook (auf Englisch)',
+  },
+}[locale];
+const alternates = [...locales.map((l) => ({ lang: l, href: gamePath(slug, l) })), { lang: 'x-default', href: gamePath(slug, 'en') }];
+const launch = new URL(game.data.binderUrl);
+---
+
+<Base title={page.title} description={page.description} lang={locale} alternates={alternates} ogImage={`/og/${slug}.png`}>
+  <section class="section">
+    <div class="wrap">
+      <div class="top">
+        {!APP && <div class="kicker">{page.kicker}</div>}
+        <nav class="langs" aria-label="Sprache">
+          {locales.map((l) => (
+            <a href={gamePath(slug, l)} hreflang={l} lang={l} aria-current={l === locale ? 'page' : undefined}>{LANG_NAME[l]}</a>
+          ))}
+        </nav>
+      </div>
+      {/* in the app the screen's title bar names the game already */}
+      <h1 class:list={[{ 'sr-only': APP }]}>{game.data.icon} {page.heading}</h1>
+      <p class="lead">{page.lead}</p>
+      <slot />
+      {OFFLINE ? (
+      <p class="lead"><Fragment set:html={T.offline} /> <code>{game.data.notebook}</code>.</p>
+      ) : (
+      <p class="lead">
+        {T.notebook}{' '}
+        <a href={game.data.binderUrl} target="_blank" rel="noopener" data-umami-event="Portal: notebook launch"
+           data-umami-event-target={launch.hostname.includes('qubins') ? 'qubins' : 'binder'}
+           data-umami-event-image={launch.searchParams.get('image') ?? 'binder'} data-umami-event-notebook={game.data.notebook}>{T.notebookLink}</a>
+        <span class="wait">{T.notebookWait}</span>
+      </p>
+      )}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .langs { display: flex; flex-wrap: wrap; gap: 4px 12px; font: 0.8rem var(--sans); }
+  .langs a { color: var(--muted); }
+  .langs a[aria-current='page'] { color: var(--ink); font-weight: 600; }
+  @media (pointer: coarse) { .langs a { padding: 13px 0; margin: -13px 0; } } /* tap targets of 44px without a taller row */
+  .wait { display: block; margin-top: 4px; font-size: 0.8rem; color: var(--muted); }
+</style>

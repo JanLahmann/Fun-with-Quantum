@@ -1,0 +1,10 @@
+---
+/** The GHZ game in German; English: /play/ghz-game/. */
+import TranslatedGamePage from '../../../components/TranslatedGamePage.astro';
+import GhzGame from '../../../components/GhzGame.astro';
+import de, { PAGE_DE } from '../../../lib/ghz/de';
+---
+
+<TranslatedGamePage slug="ghz-game" locale="de" page={{ ...PAGE_DE, heading: de.PAGE.heading }}>
+  <GhzGame locale="de" />
+</TranslatedGamePage>

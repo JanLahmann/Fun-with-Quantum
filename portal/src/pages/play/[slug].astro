@@ -7,6 +7,7 @@ import GhzGame from '../../components/GhzGame.astro';
 import ChshGame from '../../components/ChshGame.astro';
 import { LOCALES, MESSAGES, pagePath } from '../../lib/qcoin/i18n';
 import { gameJsonLd } from '../../lib/seo';
+import { LANG_NAME, TRANSLATED_GAMES, gamePath } from '../../lib/games/locale';
 
 export async function getStaticPaths() {
   const games = await getCollection('games');
@@ -25,18 +26,20 @@ const launchUrl = new URL(game.data.binderUrl);
 const launchTarget = launchUrl.hostname.includes('qubins') ? 'qubins' : launchUrl.hostname.includes('mybinder') ? 'binder' : launchUrl.hostname;
 const launchImage = launchUrl.searchParams.get('image') ?? 'binder';
 // the browser version of a launched game (`webGame: true`); unlisted ones live under /preview/
-const WEB_GAMES: Record<string, typeof CoinGame> = {
+const WEB_GAMES: Record<string, typeof CoinGame | typeof GhzGame | typeof ChshGame> = {
   'quantum-coin-game': CoinGame,
   'ghz-game': GhzGame,
   'chsh-game': ChshGame,
 };
 const WebGame = game.data.webGame ? WEB_GAMES[game.id] : undefined;
 if (game.data.webGame && !WebGame) throw new Error(`${game.id}: webGame is set, but no browser game is registered in play/[slug].astro`);
-// the coin game also exists in six more languages (src/pages/[lang]/play/quantum-coin-game.astro)
+// the coin game also exists in six more languages (src/pages/[lang]/play/quantum-coin-game.astro),
+// some other browser games in German (src/pages/de/play/, TRANSLATED_GAMES)
 const coin = game.id === 'quantum-coin-game';
-const alternates = coin
-  ? [...LOCALES.map((l) => ({ lang: l, href: pagePath(l) })), { lang: 'x-default', href: pagePath('en') }]
-  : [];
+const langs = coin
+  ? LOCALES.map((l) => ({ lang: l, href: pagePath(l), name: MESSAGES[l].langName }))
+  : (TRANSLATED_GAMES[game.id] ?? []).map((l) => ({ lang: l, href: gamePath(game.id, l), name: LANG_NAME[l] }));
+const alternates = langs.length ? [...langs.map(({ lang, href }) => ({ lang, href })), { lang: 'x-default', href: coin ? pagePath('en') : gamePath(game.id, 'en') }] : [];
 // the search snippet: the tagline plus how you play it (about 155 characters at most)
 const description = `${game.data.tagline} ${game.data.webGame ? 'Play it free in your browser, then open the Qiskit notebook.' : 'Free Qiskit notebook, no account needed.'}`;
 const jsonLd = gameJsonLd({ id: game.id, title: game.data.title, description, concept: game.data.concept, level: game.data.level, goals: game.data.goals, webGame: game.data.webGame });
@@ -54,10 +57,10 @@ const launchVia = launchTarget === 'qubins' ? 'mybinder.org (via QuBins)' : laun
     <div class="wrap">
       <div class="top">
         {!APP && <div class="kicker">Play · {game.data.concept}</div>}
-        {coin && (
+        {langs.length > 0 && (
           <nav class="langs" aria-label="Language">
-            {LOCALES.map((l) => (
-              <a href={pagePath(l)} hreflang={l} lang={l} aria-current={l === 'en' ? 'page' : undefined}>{MESSAGES[l].langName}</a>
+            {langs.map((l) => (
+              <a href={l.href} hreflang={l.lang} lang={l.lang} aria-current={l.lang === 'en' ? 'page' : undefined}>{l.name}</a>
             ))}
           </nav>
         )}

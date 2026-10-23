@@ -5,10 +5,17 @@
  */
 import GameFrame from './GameFrame.astro';
 import { QUESTIONS } from '../lib/ghz/game';
-import { PAGE, UI, questionLabel } from '../lib/ghz/messages';
+import { ghzMessages } from '../lib/ghz/messages';
+import type { GameLocale } from '../lib/games/locale';
+
+interface Props {
+  locale?: GameLocale;
+}
+const { locale = 'en' } = Astro.props;
+const { PAGE, UI, questionLabel } = ghzMessages(locale);
 ---
 
-<GameFrame id="ghz-game" label={PAGE.heading} locale="en" chapters={UI.chapters} chaptersLabel={UI.chaptersLabel}
+<GameFrame id="ghz-game" label={PAGE.heading} locale={locale} chapters={UI.chapters} chaptersLabel={UI.chaptersLabel}
   explain={UI.explain} explainTitle={UI.explainTitle} close={UI.close} noscript={UI.noscript}>
   <div class="gz-board" data-mode="off">
     <div class="gz-questions" role="group" aria-label={UI.questionsLabel}>
