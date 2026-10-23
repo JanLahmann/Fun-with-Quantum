@@ -12,11 +12,12 @@ interface Props {
   locale?: GameLocale;
 }
 const { locale = 'en' } = Astro.props;
-const { PAGE, UI, questionLabel } = ghzMessages(locale);
+const { PAGE, UI, questionLabel, CH1 } = ghzMessages(locale);
 ---
 
 <GameFrame id="ghz-game" label={PAGE.heading} locale={locale} chapters={UI.chapters} chaptersLabel={UI.chaptersLabel}
-  explain={UI.explain} explainTitle={UI.explainTitle} close={UI.close} noscript={UI.noscript}>
+  explain={UI.explain} explainTitle={UI.explainTitle} close={UI.close} noscript={UI.noscript}
+  title={CH1.title} intro={CH1.intro}>
   <div class="gz-board" data-mode="off">
     <div class="gz-questions" role="group" aria-label={UI.questionsLabel}>
       {QUESTIONS.map((q, i) => <button type="button" data-q={i} aria-pressed="false">{questionLabel(q)}</button>)}

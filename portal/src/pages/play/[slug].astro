@@ -72,7 +72,7 @@ const launchVia = launchTarget === 'qubins' ? 'mybinder.org (via QuBins)' : laun
       {WebGame && <WebGame />}
 
       {game.data.webGame && (
-        <h3 class="notebook-title">The real Qiskit code</h3>
+        <h2 class="notebook-title">The real Qiskit code</h2>
         <p class="notebook-lead">The same game as an interactive Jupyter notebook — the quantum circuit runs on Qiskit, and you can change it.</p>
       )}
       {OFFLINE ? (
@@ -106,7 +106,7 @@ const launchVia = launchTarget === 'qubins' ? 'mybinder.org (via QuBins)' : laun
       {/* in the app the Play tab lists the games; some of these are notebook pages */}
       {!APP && (
         <>
-        <h3 class="more-title">More games</h3>
+        <h2 class="more-title">More games</h2>
         <div class="grid cols-3">
           {others.map((g) => (
             <a class="card" href={`/play/${g.id}/`}>
@@ -131,7 +131,8 @@ const launchVia = launchTarget === 'qubins' ? 'mybinder.org (via QuBins)' : laun
   .langs { display: flex; flex-wrap: wrap; gap: 4px 12px; font: 0.8rem var(--sans); }
   .langs a { color: var(--muted); }
   .langs a[aria-current='page'] { color: var(--ink); font-weight: 600; }
-  @media (pointer: coarse) { .langs a { padding: 13px 0; margin: -13px 0; } } /* tap targets of 44px without a taller row */
+  /* tap targets of about 40px without a taller row; the row gap keeps them from overlapping when the list wraps */
+  @media (pointer: coarse) { .langs { row-gap: 20px; } .langs a { padding: 10px 0; margin: -10px 0; } }
   .launch {
     flex-direction: row; align-items: center; justify-content: space-between;
     gap: 24px; margin-bottom: 36px; flex-wrap: wrap;
@@ -141,7 +142,7 @@ const launchVia = launchTarget === 'qubins' ? 'mybinder.org (via QuBins)' : laun
     margin-top: 10px; font-family: var(--mono); font-size: 0.72rem;
     letter-spacing: 0.04em; color: var(--muted);
   }
-  .more-title { margin: 40px 0 16px; }
-  .notebook-title { margin: 8px 0 4px; }
+  .more-title { font-size: 1.17em; margin: 40px 0 16px; } /* h2 for the outline, the size of the h3 it was */
+  .notebook-title { font-size: 1.17em; margin: 8px 0 4px; }
   .notebook-lead { color: var(--muted); margin-bottom: 14px; max-width: 640px; }
 </style>

@@ -3,7 +3,10 @@
  * The frame shared by the browser GHZ game, magic square and 3-SAT page: chapter tabs, "Explain" button, a
  * stage (slot) next to the story panel, and the explanation dialog. Behavior: src/lib/games/shell.ts.
  * Looks like the coin game (components/CoinGame.astro) on purpose — the three are a set.
+ * `title` and `intro`: chapter 1 as the script will show it, rendered here so the stage below it on a
+ * phone doesn't jump when the script starts (layout shift).
  */
+import { rich } from '../lib/games/glossary';
 interface Props {
   id: string;
   label: string;
@@ -14,8 +17,10 @@ interface Props {
   explainTitle: string;
   close: string;
   noscript: string;
+  title?: string;
+  intro?: string;
 }
-const { id, label, locale, chapters, chaptersLabel, explain, explainTitle, close, noscript } = Astro.props;
+const { id, label, locale, chapters, chaptersLabel, explain, explainTitle, close, noscript, title = '', intro = '' } = Astro.props;
 ---
 
 <section class="qg" id={id} aria-label={label} data-locale={locale}>
@@ -30,8 +35,8 @@ const { id, label, locale, chapters, chaptersLabel, explain, explainTitle, close
   <div class="qg-arena">
     <div class="qg-stage"><slot /></div>
     <div class="qg-panel">
-      <h3 class="qg-title"></h3>
-      <div class="qg-text"></div>
+      <h2 class="qg-title">{title}</h2>
+      <div class="qg-text" set:html={rich(intro)}></div>
       <div class="qg-circuit"></div>
       <p class="qg-status" aria-live="polite"></p>
       <div class="qg-actions"></div>
@@ -101,7 +106,7 @@ const { id, label, locale, chapters, chaptersLabel, explain, explainTitle, close
     .qg-arena { grid-template-columns: minmax(240px, 1fr) 1.15fr; gap: 18px; }
   }
 
-  .qg-title { font-size: 1.2rem; margin-bottom: 6px; }
+  .qg .qg-title { font-size: 1.2rem; margin-bottom: 6px; }
   .qg-text p { color: var(--muted); font-size: 0.97rem; margin-bottom: 8px; }
   .qg-text p b, .qg-text p strong { color: var(--ink); }
   .qg-text .math { font-family: var(--mono); font-size: 0.85rem; color: var(--ink); line-height: 1.7; }

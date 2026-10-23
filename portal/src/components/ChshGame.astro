@@ -11,13 +11,14 @@ interface Props {
   locale?: GameLocale;
 }
 const { locale = 'en' } = Astro.props;
-const { UI, PAGE } = chshMessages(locale);
+const { UI, PAGE, CH1 } = chshMessages(locale);
 
 const bits = [0, 1] as const;
 ---
 
 <GameFrame id="chsh-game" label={PAGE.heading} locale={locale} chapters={UI.chapters} chaptersLabel={UI.chaptersLabel}
-  explain={UI.explain} explainTitle={UI.explainTitle} close={UI.close} noscript={UI.noscript}>
+  explain={UI.explain} explainTitle={UI.explainTitle} close={UI.close} noscript={UI.noscript}
+  title={CH1.title} intro={CH1.intro}>
   <div class="ch-board" data-mode="off">
     <div class="ch-strategy">
       {(['alice', 'bob'] as const).map((who) => (
