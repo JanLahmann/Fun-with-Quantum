@@ -109,3 +109,6 @@ export function playClassical(s: Strategy, x: Bit, y: Bit): Round {
 }
 
 export const randomBit = (rng: () => number = Math.random): Bit => (rng() < 0.5 ? 0 : 1);
+
+/** Angle between two directions, 0°–180°. */
+export const between = (a: number, b: number) => { const d = (((a - b) % 360) + 360) % 360; return d > 180 ? 360 - d : d; };

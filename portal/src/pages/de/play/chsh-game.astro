@@ -1,0 +1,10 @@
+---
+/** The CHSH game in German; English: /play/chsh-game/. */
+import TranslatedGamePage from '../../../components/TranslatedGamePage.astro';
+import ChshGame from '../../../components/ChshGame.astro';
+import de, { PAGE_DE } from '../../../lib/chsh/de';
+---
+
+<TranslatedGamePage slug="chsh-game" locale="de" page={{ ...PAGE_DE, heading: de.PAGE.heading }}>
+  <ChshGame locale="de" />
+</TranslatedGamePage>

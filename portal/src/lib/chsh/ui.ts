@@ -12,16 +12,15 @@ import {
   BEST_ANGLES, QUESTIONS, TSIRELSON_WIN, allStrategies, classicalWins, gameSteps,
   playClassical, playQuantum, randomBit, totalWin, winProbability, type Angles, type Bit, type Round,
 } from './game';
-import { CH1, CH2, CH3, CH4, TERMS, UI, round } from './messages';
+import { TERMS, chshMessages } from './messages';
 
 type Mode = 'strategy' | 'pick' | 'angles' | 'explain' | 'off';
-const pct = (p: number) => `${(100 * p).toFixed(1)}%`;
 
 /** The Bloch circle with the four arrows; the active pair bold, answers as dots (tip = 0, other end = 1). */
-function circleSvg(angles: Angles, active: { x: Bit; y: Bit } | null, answers: { a: Bit; b: Bit } | null): string {
+function circleSvg(title: string, angles: Angles, active: { x: Bit; y: Bit } | null, answers: { a: Bit; b: Bit } | null): string {
   const C = 110, R = 70;
   const pt = (deg: number, r = R) => { const t = (deg * Math.PI) / 180; return [C + r * Math.sin(t), C - r * Math.cos(t)]; };
-  const out: string[] = [`<svg class="ch-circle-svg" viewBox="0 0 220 220" role="img" aria-label="${UI.circleTitle}">`];
+  const out: string[] = [`<svg class="ch-circle-svg" viewBox="0 0 220 220" role="img" aria-label="${title}">`];
   out.push(`<circle class="rim" cx="${C}" cy="${C}" r="${R}"/>`,
     `<line class="axis" x1="${C}" y1="${C - R - 6}" x2="${C}" y2="${C + R + 6}"/><line class="axis" x1="${C - R - 6}" y1="${C}" x2="${C + R + 6}" y2="${C}"/>`,
     `<text class="ket" x="${C - 22}" y="${C - R - 4}" text-anchor="end">|0⟩</text><text class="ket" x="${C + 6}" y="${C + R + 17}">|1⟩</text>`,
@@ -56,6 +55,9 @@ function circleSvg(angles: Angles, active: { x: Bit; y: Bit } | null, answers: {
 }
 
 export function mountChsh(root: HTMLElement) {
+  const locale = root.dataset.locale ?? 'en';
+  const { UI, CH1, CH2, CH3, CH4, round } = chshMessages(locale);
+  const circleOf = (...a: [Angles, { x: Bit; y: Bit } | null, { a: Bit; b: Bit } | null]) => circleSvg(UI.circleTitle, ...a);
   const board = root.querySelector<HTMLElement>('.ch-board')!;
   const circle = root.querySelector<HTMLElement>('.ch-circle')!;
   const cells = Array.from(root.querySelectorAll<HTMLButtonElement>('.ch-q'));
@@ -169,9 +171,9 @@ export function mountChsh(root: HTMLElement) {
     shell.setTitle(CH2.title);
     shell.setText(CH2.intro);
     const tally = QUESTIONS.map(() => ({ won: 0, n: 0 }));
-    const tallyText = (x: Bit, y: Bit) => { const t = tally[2 * x + y]; return t.n ? `${t.won} of ${t.n} won (${pct(t.won / t.n)})` : '—'; };
+    const tallyText = (x: Bit, y: Bit) => { const t = tally[2 * x + y]; return t.n ? UI.tally(t.won, t.n) : '—'; };
     let won = 0, n = 0, lostOnce = false;
-    circle.innerHTML = circleSvg(BEST_ANGLES, null, null);
+    circle.innerHTML = circleOf(BEST_ANGLES, null, null);
     paintCells(tallyText);
     shell.circuit(circuitSvg(UI.qubits, gameSteps(BEST_ANGLES.alice[0], BEST_ANGLES.bob[0]), UI.circuitTitle));
     const record = (r: Round) => { const t = tally[2 * r.x + r.y]; t.n++; n++; if (r.win) { t.won++; won++; } };
@@ -185,7 +187,7 @@ export function mountChsh(root: HTMLElement) {
       if (v === 'many') {
         let w = 0;
         for (let i = 0; i < 1000; i++) { const r = playQuantum(randomBit(), randomBit()); record(r); if (r.win) w++; }
-        circle.innerHTML = circleSvg(BEST_ANGLES, null, null);
+        circle.innerHTML = circleOf(BEST_ANGLES, null, null);
         highlight(null);
         paintCells(tallyText);
         shell.say(CH2.manyResult(w, 1000));
@@ -196,10 +198,10 @@ export function mountChsh(root: HTMLElement) {
         record(r);
         const alpha = BEST_ANGLES.alice[x], beta = BEST_ANGLES.bob[y];
         shell.circuit(circuitSvg(UI.qubits, gameSteps(alpha, beta), UI.circuitTitle));
-        circle.innerHTML = circleSvg(BEST_ANGLES, { x, y }, null);
+        circle.innerHTML = circleOf(BEST_ANGLES, { x, y }, null);
         board.dataset.busy = ''; // clicks on the squares wait for the next question
         try { await shell.wait(250, e); } finally { delete board.dataset.busy; }
-        circle.innerHTML = circleSvg(BEST_ANGLES, { x, y }, { a: r.a, b: r.b });
+        circle.innerHTML = circleOf(BEST_ANGLES, { x, y }, { a: r.a, b: r.b });
         paintCells(tallyText, (qx, qy) => (qx === x && qy === y ? (r.win ? 'win' : 'lose') : null));
         highlight({ x, y });
         const firstLoss = !r.win && !lostOnce; // say once that losing a round is part of the game
@@ -216,11 +218,11 @@ export function mountChsh(root: HTMLElement) {
     sliders.forEach((s, i) => {
       const v = i < 2 ? angles.alice[i] : angles.bob[i - 2];
       s.value = String(v);
-      s.setAttribute('aria-valuetext', `${v} degrees`);
+      s.setAttribute('aria-valuetext', UI.degrees(v));
       sliderOut[i].textContent = `${v}°`.replace('-', '−');
     });
-    circle.innerHTML = circleSvg(angles, null, null);
-    paintCells((x, y) => `win ${pct(winProbability(x, y, angles))}`);
+    circle.innerHTML = circleOf(angles, null, null);
+    paintCells((x, y) => UI.winCell(winProbability(x, y, angles)));
     shell.say(CH3.total(totalWin(angles), TSIRELSON_WIN));
   }
 
@@ -252,7 +254,7 @@ export function mountChsh(root: HTMLElement) {
 
   /* ---- chapter 4 ---- */
   function explainQuestion(x: Bit, y: Bit) {
-    circle.innerHTML = circleSvg(BEST_ANGLES, { x, y }, null);
+    circle.innerHTML = circleOf(BEST_ANGLES, { x, y }, null);
     highlight({ x, y });
     shell.say(CH4.question(x, y, BEST_ANGLES.alice[x], BEST_ANGLES.bob[y], winProbability(x, y)));
     shell.circuit(circuitSvg(UI.qubits, gameSteps(BEST_ANGLES.alice[x], BEST_ANGLES.bob[y]), UI.circuitTitle));
@@ -261,15 +263,15 @@ export function mountChsh(root: HTMLElement) {
   async function chapter4(e: number) {
     setMode('explain');
     shell.setTitle(CH4.title);
-    circle.innerHTML = circleSvg(BEST_ANGLES, null, null);
-    paintCells((x, y) => `win ${pct(winProbability(x, y))}`);
+    circle.innerHTML = circleOf(BEST_ANGLES, null, null);
+    paintCells((x, y) => UI.winCell(winProbability(x, y)));
     let s = 0;
     for (;;) {
       shell.setText(CH4.texts[s]);
       shell.say(CH4.said[s]);
       shell.circuit('');
       highlight(null);
-      circle.innerHTML = circleSvg(BEST_ANGLES, null, null);
+      circle.innerHTML = circleOf(BEST_ANGLES, null, null);
       const v = await shell.ask(e, CH4.sections.map((label, i) => ({ label, value: i, kind: i === s ? ('current' as const) : undefined })));
       s = v;
       track('Portal: chsh game explain section', { section: s + 1 });
@@ -282,7 +284,7 @@ export function mountChsh(root: HTMLElement) {
     storageKey: 'fwq-chsh-done',
     terms: TERMS,
     labels: UI,
-    locale: root.dataset.locale ?? 'en',
+    locale,
     onEnter: () => { setMode('off'); pickResolve = null; picked = null; highlight(null); },
   });
 }
