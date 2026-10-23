@@ -66,6 +66,7 @@ const launch = new URL(game.data.binderUrl);
   .langs { display: flex; flex-wrap: wrap; gap: 4px 12px; font: 0.8rem var(--sans); }
   .langs a { color: var(--muted); }
   .langs a[aria-current='page'] { color: var(--ink); font-weight: 600; }
-  @media (pointer: coarse) { .langs a { padding: 13px 0; margin: -13px 0; } } /* tap targets of 44px without a taller row */
+  /* tap targets of about 40px without a taller row; the row gap keeps them from overlapping when the list wraps */
+  @media (pointer: coarse) { .langs { row-gap: 20px; } .langs a { padding: 10px 0; margin: -10px 0; } }
   .wait { display: block; margin-top: 4px; font-size: 0.8rem; color: var(--muted); }
 </style>
