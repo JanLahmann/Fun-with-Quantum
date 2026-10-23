@@ -1,0 +1,16 @@
+family audit 2026-10-23T16:40Z
+domain                 https http→s icons    ico   apple  og      umami  bsend  footer readme txt     enforced eco   
+fun-with-quantum.org   200   yes    2        404   yes    yes     1      yes    10     block  yes     true     no    
+rasqberry.org          200   yes    2        200   yes    yes     1      yes    10     block  yes     true     member
+rasqberry.one          200   yes    1        200   no     yes     1      yes    10     block  yes     true     member
+quantego.org           200   yes    1        200   yes    yes     1      yes    10     block  yes     true     no    
+doqumentation.org      200   yes    1        200   yes    yes     1      yes    10     block  yes     true     member
+qubins.org             200   yes    2        200   yes    yes     1      yes    10     block  yes     true     member
+qamposer.org           200   yes    1        404   no     no      0      -      js     block  NO      true     member
+qoffee-maker.org       200   yes    1        404   yes    yes     1      yes    10     block  yes     true     no    
+qutie.org              200   yes    1        404   no     yes     1      yes    10     block  yes     true     no    
+entangible.org         200   yes    1        404   yes    yes     1      yes    10     block  yes     true     member
+certiq.dev             200   yes    1        404   no     yes     1      yes    10     block  yes     true     no    
+racetraq.org           200   yes    1        404   no     yes     1      yes    off    block  NO      true     no    
+
+legend: icons = <link rel=icon> tags; ico = /favicon.ico status; umami = occurrences of the shared property id (Next.js embeds it in the RSC payload too, so 2 is normal; +other = another property present); bsend = the tracker tag carries data-before-send=fwqUmamiBeforeSend (the standard snippet: no bots, ?notrack); footer = other members linked from the page footer (js = drawn in the browser after load, not checkable here; off = footer: false in family.json); txt = _github-pages-challenge TXT present; eco = Qiskit ecosystem member file (by domain slug — RasQberry legacy and QAMPoser entries checked separately)
