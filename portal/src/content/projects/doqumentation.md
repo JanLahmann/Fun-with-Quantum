@@ -18,3 +18,6 @@ facts:
 The learning backbone of the family: IBM Quantum's open-source tutorials, guides and courses,
 from first qubit to advanced algorithms, with a Run button on every code cell. The code runs on a
 free Jupyter kernel (Binder) or your own server — no installation, no account.
+
+Start here: [run IBM's quantum tutorials in your browser](https://doqumentation.org/run-qiskit-in-browser),
+or follow [IBM's learning paths, runnable](https://doqumentation.org/learning-paths).
