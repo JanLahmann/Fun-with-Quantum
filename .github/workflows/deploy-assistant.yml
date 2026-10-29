@@ -3,7 +3,7 @@ name: Deploy assistant
 # Deploys the assistant Worker (assistant/) to Cloudflare — run by hand from the Actions tab, and
 # every day, so the RasQberry helpers pick up changes to the rasqberry.org pages, the demo
 # manifests and the tester missions, and the tester helper knows today's open issues.
-# Needs three repository secrets: CLOUDFLARE_API_TOKEN (template "Edit Cloudflare Workers" plus
+# Needs three repository secrets (and WINGFOIL_READ_TOKEN for the CleanJibe knowledge, below): CLOUDFLARE_API_TOKEN (template "Edit Cloudflare Workers" plus
 # Account · D1 · Edit), CLOUDFLARE_ACCOUNT_ID and ANTHROPIC_API_KEY. Creates the D1 database
 # on the first run, applies migrations, deploys, and stores the API key as a Worker secret.
 on:
@@ -66,15 +66,24 @@ jobs:
         run: gh issue list -R JanLahmann/RasQberry-Two --state open --limit 300 --json number,title,labels,milestone,author > "$RUNNER_TEMP/rqb-issues.json"
       - name: RasQberry helper knowledge from today's pages, manifests, missions and issues
         run: node scripts/rasqberry-knowledge.mjs ../_rqb ../_rqb-dev "$RUNNER_TEMP/rqb-issues.json"
-      - name: CleanJibe help desk knowledge (JanLahmann/WingFoil main; kept as committed if not there)
+      # JanLahmann/WingFoil is private since 26 Oct 2026, so the anonymous raw URL is a 404: the
+      # file comes through the API with WINGFOIL_READ_TOKEN (a fine-grained token, that one
+      # repository, Contents: read-only). Without it, or if the fetch fails, the committed
+      # knowledge stays — and a deploy that would ship the placeholder fails instead, because
+      # that placeholder made the help desk tell every rider it was "still being set up".
+      - name: CleanJibe help desk knowledge (JanLahmann/WingFoil main; the committed copy if not reachable)
         env:
-          GH_TOKEN: ${{ github.token }}
+          WINGFOIL_READ_TOKEN: ${{ secrets.WINGFOIL_READ_TOKEN }}
         run: |
-          if curl -fsSL https://raw.githubusercontent.com/JanLahmann/WingFoil/main/docs/copy/assistant-knowledge.md -o "$RUNNER_TEMP/cleanjibe.md"; then
-            sha=$(gh api repos/JanLahmann/WingFoil/commits/main --jq .sha 2>/dev/null || echo main)
+          src=src/contexts/cleanjibe/knowledge.generated.ts
+          if [ -n "$WINGFOIL_READ_TOKEN" ] && GH_TOKEN="$WINGFOIL_READ_TOKEN" gh api -H "Accept: application/vnd.github.raw" repos/JanLahmann/WingFoil/contents/docs/copy/assistant-knowledge.md?ref=main > "$RUNNER_TEMP/cleanjibe.md"; then
+            sha=$(GH_TOKEN="$WINGFOIL_READ_TOKEN" gh api repos/JanLahmann/WingFoil/commits/main --jq .sha 2>/dev/null || echo main)
             node scripts/cleanjibe-knowledge.mjs "$RUNNER_TEMP/cleanjibe.md" "JanLahmann/WingFoil ${sha:0:12}"
           else
-            echo "docs/copy/assistant-knowledge.md not on WingFoil main yet: keeping the committed knowledge"
+            echo "::warning::WingFoil's assistant-knowledge.md not reachable (WINGFOIL_READ_TOKEN missing or rejected): keeping the committed knowledge, $(head -1 $src)"
+          fi
+          if grep -q "help texts are not loaded yet" "$src"; then
+            echo "::error::The CleanJibe knowledge is the placeholder: the help desk would tell every rider it is still being set up"; exit 1
           fi
       # The coin-game knowledge imports the game's code from portal/, whose tsconfig extends astro's.
       - run: npm ci --prefix ../portal
