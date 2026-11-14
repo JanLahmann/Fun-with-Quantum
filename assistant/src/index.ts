@@ -154,7 +154,7 @@ async function chat(req: Request, env: Env, ctx: ExecutionContext, deps: Deps, c
   let tester: string | null = null;
   let pageState = state;
   if (context.tester) {
-    tester = await signedIn(req, env, body.tester);
+    tester = await signedIn(req, env, body.tester, now);
     if (!tester) return json(401, { error: 'tester_auth' }, cors);
     const daily = await checkTesterDaily(env, tester, context.tester, now);
     if (daily !== 'ok') return daily === 'global' ? json(503, { error: 'busy' }, cors) : json(429, { error: 'rate' }, cors);

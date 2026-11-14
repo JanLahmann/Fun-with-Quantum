@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { handle, purge, type Deps } from '../src/index';
-import { cleanFinding, cleanPreferences, testerId } from '../src/tester';
+import { TESTER_TOKEN_DAYS, cleanFinding, cleanPreferences, testerId } from '../src/tester';
 import { sseEvents } from '../src/anthropic';
 import { chunked, claudeStream, fakeClaude, makeCtx, makeEnv } from './fakes';
 
@@ -66,6 +66,37 @@ describe('tester sign-in', () => {
     const { run } = setup();
     expect((await run(req('/chat', chat(), { Origin: 'https://fun-with-quantum.org' }))).res.status).toBe(403);
     expect((await run(req('/tester/me', { site: 'rasqberry', tester: 'Ada L' }, { Origin: 'https://fun-with-quantum.org' }))).res.status).toBe(403);
+  });
+
+  it('signing in returns a token for that tester; the token then replaces the passphrase until it expires', async () => {
+    const { run, at, claude } = setup();
+    const me = { site: 'rasqberry', tester: 'Ada L' };
+    const token = ((await (await run(req('/tester/me', me))).res.json()) as any).token as string;
+    expect(token).toMatch(new RegExp(`^${T0 + TESTER_TOKEN_DAYS * DAY}\\.[A-Za-z0-9_-]{43}$`));
+    const withToken = (extra: Record<string, string> = {}) => ({ 'X-Tester-Pass': '', 'X-Tester-Token': token, ...extra });
+    expect((await run(req('/tester/prefs', { ...me, preferences: {} }, withToken()))).res.status).toBe(204);
+    expect((await run(req('/chat', chat(), withToken()))).res.status).toBe(200);
+    // the token is for Ada only, can't be altered, and a bad token isn't rescued by the passphrase
+    expect((await run(req('/tester/me', { ...me, tester: 'Bob B' }, withToken()))).res.status).toBe(401);
+    expect((await run(req('/tester/me', me, withToken({ 'X-Tester-Token': token.replace(/^\d+/, String(T0 + 365 * DAY)) })))).res.status).toBe(401);
+    expect((await run(req('/tester/me', me, { 'X-Tester-Token': 'nonsense' }))).res.status).toBe(401);
+    at(T0 + TESTER_TOKEN_DAYS * DAY);
+    expect((await run(req('/tester/me', me, withToken()))).res.status).toBe(401);
+    expect(claude.calls).toHaveLength(1);
+  });
+
+  it('a new passphrase signs everyone out', async () => {
+    const a = setup();
+    const token = ((await (await a.run(req('/tester/me', { site: 'rasqberry', tester: 'Ada L' }))).res.json()) as any).token;
+    const changed = setup({ TESTER_PASSPHRASE: 'a new passphrase' });
+    expect((await changed.run(req('/tester/me', { site: 'rasqberry', tester: 'Ada L' }, { 'X-Tester-Token': token }))).res.status).toBe(401);
+    expect((await a.run(req('/tester/me', { site: 'rasqberry', tester: 'Ada L' }, { 'X-Tester-Token': token }))).res.status).toBe(200);
+  });
+
+  it('lets the widget send the token header across origins', async () => {
+    const { run } = setup();
+    const pre = await run(new Request('https://fwq-assistant.example.workers.dev/tester/me', { method: 'OPTIONS', headers: { Origin: RQB } }));
+    expect(pre.res.headers.get('Access-Control-Allow-Headers')).toContain('X-Tester-Token');
   });
 
   it('tester IDs: 3–30 letters, digits, space, _ . -, lower-cased; never an e-mail address', () => {

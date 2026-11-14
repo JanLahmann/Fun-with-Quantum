@@ -10,7 +10,9 @@
 import type { ChatHooks } from './widget';
 
 interface CatalogueEntry { id: string; title: string; goal: string; group: string; beta: boolean }
-interface Me { preferences: Record<string, unknown>; missions: Record<string, string>; catalogue: CatalogueEntry[]; needs: Record<string, string> }
+interface Me { preferences: Record<string, unknown>; missions: Record<string, string>; catalogue: CatalogueEntry[]; needs: Record<string, string>; token?: string }
+/** The passphrase only while signing in; afterwards the sign-in token from /tester/me. */
+type Creds = { tester: string; pass: string } | { tester: string; token: string };
 
 const KEY = 'rqb-tester';
 /** A card line; tolerates a bullet, quote, bold or backticks around it. */
@@ -48,14 +50,23 @@ export function cardLines(answer: string): ({ kind: 'mission'; id: string } | { 
   return out;
 }
 
+/** The browser keeps the tester name and sign-in token, never the passphrase. */
 const store = {
-  get(): { tester: string; pass: string } | null {
-    try { const v = JSON.parse(localStorage.getItem(KEY) ?? 'null'); return v && typeof v.tester === 'string' && typeof v.pass === 'string' ? v : null; } catch { return null; }
+  get(): Creds | null {
+    try {
+      const v = JSON.parse(localStorage.getItem(KEY) ?? 'null');
+      if (v && typeof v.tester === 'string' && typeof v.token === 'string') return { tester: v.tester, token: v.token };
+      if (v) localStorage.removeItem(KEY); // e.g. a sign-in saved with the passphrase by an older widget
+    } catch { /* not available */ }
+    return null;
   },
-  set(v: { tester: string; pass: string } | null) {
-    try { if (v) localStorage.setItem(KEY, JSON.stringify(v)); else localStorage.removeItem(KEY); } catch { /* private mode: sign in again next time */ }
+  set(v: Creds | null) {
+    try { if (v && 'token' in v) localStorage.setItem(KEY, JSON.stringify({ tester: v.tester, token: v.token })); else localStorage.removeItem(KEY); } catch { /* private mode: sign in again next time */ }
   },
 };
+
+const authHeader = (c: Creds | null): Record<string, string> =>
+  c && 'token' in c ? { 'X-Tester-Token': c.token } : { 'X-Tester-Pass': c?.pass ?? '' };
 
 const KIND_LABEL: Record<string, string> = { bug: 'Bug', docs: 'Documentation', confusing: 'Confusing', idea: 'Idea', praise: 'Worked well' };
 
@@ -88,7 +99,7 @@ export function mountTester(panel: HTMLElement, chat: HTMLElement[], url: string
 
   const post = async (path: string, body: Record<string, unknown>) => fetch(`${url}${path}`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'X-Tester-Pass': creds?.pass ?? '' },
+    headers: { 'Content-Type': 'application/json', ...authHeader(creds) },
     body: JSON.stringify({ site: 'rasqberry', tester: creds?.tester, ...body }),
   });
 
@@ -130,6 +141,8 @@ export function mountTester(panel: HTMLElement, chat: HTMLElement[], url: string
     if (!res.ok) { signMsg.textContent = 'Something went wrong. Please try again in a minute.'; show('signin'); return; }
     me = (await res.json()) as Me;
     Object.assign(missionState, me.missions);
+    // A Worker from before sign-in tokens sends none: then the passphrase stays in memory only, unsaved.
+    if (me.token) creds = { tester: creds!.tester, token: me.token };
     store.set(creds);
     status.textContent = '';
     status.append(`Tester: ${creds!.tester} · `);
@@ -315,7 +328,7 @@ export function mountTester(panel: HTMLElement, chat: HTMLElement[], url: string
   if (creds) { signin.hidden = true; load(false); }
 
   return {
-    headers: () => ({ 'X-Tester-Pass': creds?.pass ?? '' }),
+    headers: () => authHeader(creds),
     body: () => ({ tester: creds?.tester }),
     visible: visibleText,
     decorate: (msg, answer, id) => {
