@@ -8,7 +8,10 @@
  *   POST /tester/status   {tester, mission_id, state}       → 204 (state "open" undoes: the mission is new again)
  *   POST /tester/reset    {tester}                          → 204 (all the tester's mission states; findings stay)
  *   POST /tester/finding  {tester, finding}                 → {id}
- *   (all with the header X-Tester-Pass, from a rasqberry site origin)
+ *   (all from a rasqberry site origin, with the header X-Tester-Pass or X-Tester-Token)
+ *
+ * The widget sends the passphrase only to sign in: /tester/me answers with a sign-in token for that
+ * tester (valid TESTER_TOKEN_DAYS, renewed with every /tester/me), and the browser keeps only the token.
  *
  * The passphrase is shared, so anyone who has it could use another tester's ID: fine for a small
  * group of friendly testers; the per-tester budget and the global one still cap the cost.
@@ -18,6 +21,7 @@
  *   POST /tester/triage   {finding_id, issue_url}           → 204 (status triaged)
  *                         {finding_id, status: "noted", note} → 204 (no issue: praise, duplicate, wontfix …)
  */
+import { b64, b64url } from './attest';
 import type { Env } from './env';
 import { utcDay } from './guard';
 import { catalogue, isMission, progress, started, suggest, versionCheck } from './contexts/rasqberry/missions';
@@ -29,6 +33,8 @@ const TESTER_SITE = 'rasqberry';
 const MISSION_STATES = ['suggested', 'started', 'done', 'skipped'] as const;
 const KINDS = ['bug', 'docs', 'confusing', 'idea', 'praise'] as const;
 const SEVERITIES = ['blocker', 'major', 'minor'] as const;
+/** How long a sign-in lasts in the browser before the tester is asked for the passphrase again. */
+export const TESTER_TOKEN_DAYS = 14;
 
 type Json = Record<string, unknown>;
 const reply = (status: number, body: unknown, cors: Record<string, string> = {}) =>
@@ -80,8 +86,10 @@ export function cleanFinding(raw: unknown): Json | null {
   };
 }
 
+const utf8 = (s: string) => new TextEncoder().encode(s);
+
 async function sha256(s: string): Promise<Uint8Array> {
-  return new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)));
+  return new Uint8Array(await crypto.subtle.digest('SHA-256', utf8(s)));
 }
 
 /** Compares two secrets in constant time (both hashed first, so their lengths don't leak either). */
@@ -93,11 +101,36 @@ export async function sameSecret(given: string | null, expected: string | undefi
   return diff === 0;
 }
 
-/** The signed-in tester's key, or null when the passphrase is wrong or no passphrase is set (fails closed). */
-export async function signedIn(req: Request, env: Env, rawId: unknown): Promise<string | null> {
+/**
+ * The HMAC key for sign-in tokens. Like the app tokens (app-auth.ts) it comes from a server-only secret,
+ * so a token can't help anyone guess the shared passphrase offline; it includes the passphrase. Changing
+ * either signs every tester out (also a new Anthropic key). There is no per-token revocation: signing out
+ * only forgets the token in the browser, and each /tester/me renews it.
+ */
+async function testerHmacKey(env: Env): Promise<CryptoKey> {
+  const raw = await sha256(`fwq-tester-token|${env.ANTHROPIC_API_KEY}|${env.TESTER_PASSPHRASE}`);
+  return crypto.subtle.importKey('raw', raw, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign', 'verify']);
+}
+
+/** A sign-in token for tester `id` (a testerId key), valid until `exp` (ms since epoch): "<exp>.<HMAC>". */
+async function testerToken(env: Env, id: string, exp: number): Promise<string> {
+  const mac = await crypto.subtle.sign('HMAC', await testerHmacKey(env), utf8(`${id}|${exp}`));
+  return `${exp}.${b64url(new Uint8Array(mac))}`;
+}
+
+async function validToken(env: Env, id: string, token: string, now: number): Promise<boolean> {
+  const m = /^(\d{13})\.([\w-]{43})$/.exec(token);
+  if (!m || Number(m[1]) <= now) return false;
+  return crypto.subtle.verify('HMAC', await testerHmacKey(env), b64(m[2]), utf8(`${id}|${m[1]}`));
+}
+
+/** The signed-in tester's key: by the tester's token or the passphrase; null otherwise or when no passphrase is set (fails closed). */
+export async function signedIn(req: Request, env: Env, rawId: unknown, now: number): Promise<string | null> {
   const id = testerId(rawId);
-  if (!id || !(await sameSecret(req.headers.get('X-Tester-Pass'), env.TESTER_PASSPHRASE))) return null;
-  return id;
+  if (!id || !env.TESTER_PASSPHRASE) return null;
+  const token = req.headers.get('X-Tester-Token');
+  if (token) return (await validToken(env, id, token, now)) ? id : null;
+  return (await sameSecret(req.headers.get('X-Tester-Pass'), env.TESTER_PASSPHRASE)) ? id : null;
 }
 
 /** Daily budgets per tester and for all testers together; only requests within the tester's own count globally. */
@@ -150,12 +183,13 @@ export async function testerState(env: Env, id: string, now: number, deviceVersi
 export async function testerRoute(path: string, req: Request, body: Json | null, env: Env, now: number, uuid: () => string, cors: Record<string, string>): Promise<Response> {
   if (!body || body.site !== TESTER_SITE) return reply(400, { error: 'bad_request' }, cors);
   if (!env.SITES[TESTER_SITE]?.origins.includes(req.headers.get('Origin')!)) return reply(403, { error: 'origin' }, cors);
-  const id = await signedIn(req, env, body.tester);
+  const id = await signedIn(req, env, body.tester, now);
   if (!id) return reply(401, { error: 'tester_auth' }, cors);
   const done = new Response(null, { status: 204, headers: cors });
 
   if (path === '/tester/me') {
-    return reply(200, { ...(await profile(env, id, now)), catalogue: catalogue(), groups: MISSION_GROUPS, needs: NEEDS_KEYS }, cors);
+    const token = await testerToken(env, id, now + TESTER_TOKEN_DAYS * 86_400_000);
+    return reply(200, { ...(await profile(env, id, now)), catalogue: catalogue(), groups: MISSION_GROUPS, needs: NEEDS_KEYS, token }, cors);
   }
 
   await profile(env, id, now);

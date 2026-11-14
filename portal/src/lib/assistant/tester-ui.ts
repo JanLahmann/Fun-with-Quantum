@@ -10,7 +10,9 @@
 import type { ChatHooks } from './widget';
 
 interface CatalogueEntry { id: string; title: string; goal: string; group: string; beta: boolean }
-interface Me { preferences: Record<string, unknown>; missions: Record<string, string>; catalogue: CatalogueEntry[]; needs: Record<string, string> }
+interface Me { preferences: Record<string, unknown>; missions: Record<string, string>; catalogue: CatalogueEntry[]; needs: Record<string, string>; token?: string }
+/** The passphrase only while signing in; afterwards the sign-in token from /tester/me. */
+type Creds = { tester: string; pass: string } | { tester: string; token: string };
 
 const KEY = 'rqb-tester';
 /** A card line; tolerates a bullet, quote, bold or backticks around it. */
@@ -48,14 +50,25 @@ export function cardLines(answer: string): ({ kind: 'mission'; id: string } | { 
   return out;
 }
 
+/** The browser keeps the tester name and sign-in token, never the passphrase. */
 const store = {
-  get(): { tester: string; pass: string } | null {
-    try { const v = JSON.parse(localStorage.getItem(KEY) ?? 'null'); return v && typeof v.tester === 'string' && typeof v.pass === 'string' ? v : null; } catch { return null; }
+  /** Set when get() dropped a sign-in saved by an older widget (with the passphrase). */
+  forgotOld: false,
+  get(): Creds | null {
+    try {
+      const v = JSON.parse(localStorage.getItem(KEY) ?? 'null');
+      if (v && typeof v.tester === 'string' && typeof v.token === 'string') return { tester: v.tester, token: v.token };
+      if (v) { localStorage.removeItem(KEY); store.forgotOld = true; }
+    } catch { /* not available */ }
+    return null;
   },
-  set(v: { tester: string; pass: string } | null) {
-    try { if (v) localStorage.setItem(KEY, JSON.stringify(v)); else localStorage.removeItem(KEY); } catch { /* private mode: sign in again next time */ }
+  set(v: Creds | null) {
+    try { if (v && 'token' in v) localStorage.setItem(KEY, JSON.stringify({ tester: v.tester, token: v.token })); else localStorage.removeItem(KEY); } catch { /* private mode: sign in again next time */ }
   },
 };
+
+const authHeader = (c: Creds | null): Record<string, string> =>
+  c && 'token' in c ? { 'X-Tester-Token': c.token } : { 'X-Tester-Pass': c?.pass ?? '' };
 
 const KIND_LABEL: Record<string, string> = { bug: 'Bug', docs: 'Documentation', confusing: 'Confusing', idea: 'Idea', praise: 'Worked well' };
 
@@ -86,11 +99,16 @@ export function mountTester(panel: HTMLElement, chat: HTMLElement[], url: string
   panel.insertBefore(signin, chat[0]);
   panel.insertBefore(setup, chat[0]);
 
-  const post = async (path: string, body: Record<string, unknown>) => fetch(`${url}${path}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'X-Tester-Pass': creds?.pass ?? '' },
-    body: JSON.stringify({ site: 'rasqberry', tester: creds?.tester, ...body }),
-  });
+  const post = async (path: string, body: Record<string, unknown>) => {
+    const res = await fetch(`${url}${path}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...authHeader(creds) },
+      body: JSON.stringify({ site: 'rasqberry', tester: creds?.tester, ...body }),
+    });
+    // The sign-in expired (or the passphrase changed) while the page was open, as /chat handles it.
+    if (res.status === 401 && path !== '/tester/me') signOut('Please sign in again.');
+    return res;
+  };
 
   function show(view: 'signin' | 'setup' | 'mine' | 'chat') {
     signin.hidden = view !== 'signin';
@@ -122,7 +140,8 @@ export function mountTester(panel: HTMLElement, chat: HTMLElement[], url: string
     let res: Response;
     try { res = await post('/tester/me', {}); } catch { signMsg.textContent = 'Ket couldn’t be reached. Please check the internet connection.'; show('signin'); return; }
     if (res.status === 401) {
-      if (!fresh) store.set(null); // only a refused sign-in forgets the saved one
+      // A saved sign-in that expired: nothing the tester typed was wrong.
+      if (!fresh) { signOut('Please sign in again.'); return; }
       signMsg.textContent = 'That didn’t work: please check the passphrase, and use 3–30 letters, digits, spaces, _ . or - for your name.';
       show('signin');
       return;
@@ -130,6 +149,8 @@ export function mountTester(panel: HTMLElement, chat: HTMLElement[], url: string
     if (!res.ok) { signMsg.textContent = 'Something went wrong. Please try again in a minute.'; show('signin'); return; }
     me = (await res.json()) as Me;
     Object.assign(missionState, me.missions);
+    // A Worker from before sign-in tokens sends none: then the passphrase stays in memory only, unsaved.
+    if (me.token) creds = { tester: creds!.tester, token: me.token };
     store.set(creds);
     status.textContent = '';
     status.append(`Tester: ${creds!.tester} · `);
@@ -313,9 +334,10 @@ export function mountTester(panel: HTMLElement, chat: HTMLElement[], url: string
 
   show('signin');
   if (creds) { signin.hidden = true; load(false); }
+  else if (store.forgotOld) signMsg.textContent = 'Please sign in again.';
 
   return {
-    headers: () => ({ 'X-Tester-Pass': creds?.pass ?? '' }),
+    headers: () => authHeader(creds),
     body: () => ({ tester: creds?.tester }),
     visible: visibleText,
     decorate: (msg, answer, id) => {
