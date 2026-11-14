@@ -33,7 +33,13 @@ const HELPER_ERRORS = {
 };
 
 const RASQBERRY_PRIVACY =
-  'Your questions and the page you are on are sent to Anthropic (Claude) to answer, and stored for 30 days to improve Ket. Please don’t enter personal data.';
+  'When you ask, your question, the conversation so far and the page you are on go through Cloudflare to Anthropic (Claude) for the answer. ' +
+  'Your question, the page and the answer are kept for 30 days to improve Ket. Please don’t enter personal data.';
+/** On the Pi (rasqberry/device), the Pi's facts from its start URL go along too (piDevice below). */
+const RASQBERRY_PI_PRIVACY =
+  'When you ask, your question, the conversation so far and the page you are on go through Cloudflare to Anthropic (Claude) for the answer, ' +
+  'and so do this Pi’s RasQberry version, model and LED setup and check. ' +
+  'Your question, the page, the Pi’s details and the answer are kept for 30 days to improve Ket. Please don’t enter personal data.';
 
 /** Texts per site/context (English only for now). */
 export const EMBED_TEXTS: Record<string, EmbedTexts> = {
@@ -50,7 +56,7 @@ export const EMBED_TEXTS: Record<string, EmbedTexts> = {
     open: 'Ask Ket',
     title: 'Ket — ask about your RasQberry',
     intro: 'Questions about the demos and games on this RasQberry, how to start them or what they show — for example “Which demo should I try first?”',
-    privacy: RASQBERRY_PRIVACY,
+    privacy: RASQBERRY_PI_PRIVACY,
     explainer: 'Ket (AI)',
     ...HELPER_ERRORS,
     privacyUrl: 'https://rasqberry.org/privacy/',
