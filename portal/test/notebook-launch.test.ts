@@ -17,7 +17,7 @@ describe('notebook links while qubins.org is down', () => {
   });
 
   it('has the note in every language of the game pages, with the link text it names', () => {
-    for (const l of new Set<string>([...LOCALES, ...GAME_LOCALES])) {
+    for (const l of new Set([...LOCALES, ...GAME_LOCALES])) {
       const t = NOTEBOOK_DOWN[l];
       expect(t, l).toBeDefined();
       expect(t.note.length, l).toBeGreaterThan(t.noteNoWeb.length);
