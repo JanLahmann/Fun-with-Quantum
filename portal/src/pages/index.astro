@@ -15,7 +15,7 @@ import qutieHero from '../assets/qutie-hero.jpg';
 import certiqSite from '../assets/certiq-site.jpg';
 import quantumCoin from '../assets/quantum-coin.png';
 import qubinsSite from '../assets/qubins-site.png';
-import { notebookHref } from '../lib/notebook-launch';
+import { QUBINS_DOWN, SHOWCASE_DOWN, notebookHref } from '../lib/notebook-launch';
 
 const DESCRIPTION = 'Quantum games, 3D-printed and LEGO quantum computer models, and hands-on ways to learn. Open source, nothing to install.';
 const games = (await getCollection('games')).sort((a, b) => a.data.order - b.data.order);
@@ -196,6 +196,7 @@ const doors = DOORS.map((d) => ({
           <h3>Launch a notebook from GitHub</h3>
           <p>Paste a link to a GitHub repository or notebook and run it in one click — <strong>Qiskit comes preinstalled</strong>.</p>
           <Image class="feature-photo top" src={qubinsSite} alt="qubins.org — prebuilt Qiskit environments with a one-click browser launch" widths={[480, 760]} sizes="(max-width: 820px) 90vw, 340px" />
+          {QUBINS_DOWN ? <p class="launch-down">{SHOWCASE_DOWN}</p> : <>
           <form class="launch-form" id="launch-form">
             <input
               id="launch-input"
@@ -215,8 +216,9 @@ const doors = DOORS.map((d) => ({
                data-umami-event-notebook="use-a-qc-today/build-and-run-your-first-quantum-program.ipynb">▸ Build and run your first quantum program</a>{' '}
             <span class="launch-src">— from IBM's <em>Use a Quantum Computer Today</em> course</span>
           </p>
+          </>}
           <span class="meta">
-            powered by the{' '}<a href="https://qubins.org" target="_blank" rel="noopener">QuBins launch-link generator ↗</a>
+            powered by the{' '}{QUBINS_DOWN ? 'QuBins launch-link generator' : <a href="https://qubins.org" target="_blank" rel="noopener">QuBins launch-link generator ↗</a>}
           </span>
         </div>
       </div>
@@ -405,6 +407,7 @@ const doors = DOORS.map((d) => ({
   .launch-form .btn { padding: 9px 16px; font-size: 0.88rem; }
   .launch-hint { font-size: 0.78rem; color: var(--magenta); }
   .launch-example { font-size: 0.85rem; margin: 2px 0 0; }
+  .launch-down { font-size: 0.85rem; color: var(--muted); margin: 2px 0 0; }
   .launch-example a { font-weight: 600; }
   .launch-src { color: var(--muted); }
   .model-wrap { position: relative; }
