@@ -7,8 +7,8 @@ import type { GameLocale } from './games/locale';
  * notebook on GitHub, and the start-up hint gives way to a short note (Jan, 2026-11-14).
  * When qubins.org answers again (the Links check warns then, .github/workflows/links.yml), set
  * QUBINS_DOWN to false; the texts below can then go too. Outside this file, the outage also shows in
- * the lead of src/pages/play/index.astro, the note under the README's games table and the excludes in
- * links.yml.
+ * the lead of src/pages/play/index.astro, the note under the README's games table, Ket's knowledge
+ * (assistant/scripts/fwq-guide-knowledge.mjs, guide.summary.md) and the excludes in links.yml.
  */
 export const QUBINS_DOWN = true;
 
@@ -22,8 +22,11 @@ export const qubinsLaunch = (notebook: string) =>
 export const notebookHref = (launchUrl: string, notebook: string) => (QUBINS_DOWN ? `${REPO}/blob/master/${notebook}` : launchUrl);
 
 /** For the Umami event: where the link goes. */
-export const notebookTarget = (launchUrl: string) =>
-  QUBINS_DOWN ? 'github' : new URL(launchUrl).hostname.includes('qubins') ? 'qubins' : 'binder';
+export function notebookTarget(launchUrl: string) {
+  if (QUBINS_DOWN) return 'github';
+  const host = new URL(launchUrl).hostname;
+  return host.includes('qubins') ? 'qubins' : host.includes('mybinder') ? 'binder' : host;
+}
 
 /** The note and link text while QuBins is down, in the languages of the game pages. */
 export const NOTEBOOK_DOWN = {

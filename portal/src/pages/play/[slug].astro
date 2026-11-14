@@ -90,9 +90,8 @@ const launchVia = launchTarget === 'qubins' ? 'mybinder.org (via QuBins)' : laun
              data-umami-event="Portal: notebook launch" data-umami-event-target={notebookTarget(game.data.binderUrl)} data-umami-event-image={launchImage}
              data-umami-event-notebook={game.data.notebook}>{QUBINS_DOWN ? 'Read the notebook on GitHub ↗' : '▶ Open the notebook'}</a>
           <div class="hero-note">
-            {QUBINS_DOWN ? NOTEBOOK_DOWN.en[game.data.webGame ? 'note' : 'noteNoWeb'] : <>
-            {game.data.duration} · {game.data.audience} · runs in your browser, no account<br />
-            Opens a free Jupyter session on {launchVia} — starting it can take a few minutes</>}
+            {game.data.duration} · {game.data.audience}{QUBINS_DOWN ? '' : ' · runs in your browser, no account'}<br />
+            {QUBINS_DOWN ? NOTEBOOK_DOWN.en[game.data.webGame ? 'note' : 'noteNoWeb'] : `Opens a free Jupyter session on ${launchVia} — starting it can take a few minutes`}
           </div>
         </div>
         {!APP && <div class="alt">

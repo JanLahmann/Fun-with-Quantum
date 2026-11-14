@@ -143,7 +143,9 @@ export function buildGuideKnowledge() {
     ]),
     ...(others.length ? ['### More family members', ...others.map((m) => `#### ${m.name}\n\n${m.tagline}\n\n- Link: ${m.url}`)] : []),
     `### The games: ${PORTAL}/play/ (notebook games) and ${PORTAL}/teachers/ (for teachers)`,
-    'Each game is an interactive Jupyter notebook: one click, no account; it opens a free session on mybinder.org (via QuBins), so starting it can take a few minutes. The games marked as playing on their page also run right in the browser.',
+    'Each game is an interactive Jupyter notebook: one click, no account; it opens a free session on mybinder.org (via QuBins), so starting it can take a few minutes. The games marked as playing on their page also run right in the browser.'
+      // While qubins.org is down (portal/src/lib/notebook-launch.ts, QUBINS_DOWN); drop with it.
+      + ' While qubins.org is down (since 9 November 2026), notebooks can’t be started from the site: the button opens the notebook on GitHub to read, and the browser games play as usual.',
     ...games.map((g) => gameSection(g, langs)),
   ];
   const text = `${parts.join('\n\n')}\n`;
