@@ -103,8 +103,9 @@ export async function sameSecret(given: string | null, expected: string | undefi
 
 /**
  * The HMAC key for sign-in tokens. Like the app tokens (app-auth.ts) it comes from a server-only secret,
- * so a token can't help anyone guess the shared passphrase offline; it includes the passphrase, so
- * changing that signs everyone out.
+ * so a token can't help anyone guess the shared passphrase offline; it includes the passphrase. Changing
+ * either signs every tester out (also a new Anthropic key). There is no per-token revocation: signing out
+ * only forgets the token in the browser, and each /tester/me renews it.
  */
 async function testerHmacKey(env: Env): Promise<CryptoKey> {
   const raw = await sha256(`fwq-tester-token|${env.ANTHROPIC_API_KEY}|${env.TESTER_PASSPHRASE}`);
