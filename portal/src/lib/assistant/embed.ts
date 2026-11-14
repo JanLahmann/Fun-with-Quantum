@@ -44,7 +44,7 @@ export const EMBED_TEXTS: Record<string, EmbedTexts> = {
     privacy: RASQBERRY_PRIVACY,
     explainer: 'Ket (AI)',
     ...HELPER_ERRORS,
-    privacyUrl: 'https://fun-with-quantum.org/about/#privacy',
+    privacyUrl: 'https://rasqberry.org/privacy/',
   },
   'rasqberry/device': {
     open: 'Ask Ket',
@@ -53,7 +53,7 @@ export const EMBED_TEXTS: Record<string, EmbedTexts> = {
     privacy: RASQBERRY_PRIVACY,
     explainer: 'Ket (AI)',
     ...HELPER_ERRORS,
-    privacyUrl: 'https://fun-with-quantum.org/about/#privacy',
+    privacyUrl: 'https://rasqberry.org/privacy/',
   },
   'rasqberry/tester': {
     open: 'Ket · tester helper',
@@ -67,7 +67,7 @@ export const EMBED_TEXTS: Record<string, EmbedTexts> = {
     explainer: 'Ket (AI)',
     ...HELPER_ERRORS,
     errRate: 'That’s all the questions for today (60 per tester). Thank you — please continue tomorrow.',
-    privacyUrl: 'https://rasqberry.org/testing/',
+    privacyUrl: 'https://rasqberry.org/testing/#privacy',
   },
   'cleanjibe/help': {
     open: 'Ask CleanJibe',
