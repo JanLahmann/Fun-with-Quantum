@@ -8,6 +8,7 @@ import ChshGame from '../../components/ChshGame.astro';
 import { LOCALES, MESSAGES, pagePath } from '../../lib/qcoin/i18n';
 import { gameJsonLd } from '../../lib/seo';
 import { LANG_NAME, TRANSLATED_GAMES, gamePath } from '../../lib/games/locale';
+import { NOTEBOOK_DOWN, QUBINS_DOWN, notebookHref, notebookTarget } from '../../lib/notebook-launch';
 
 export async function getStaticPaths() {
   const games = await getCollection('games');
@@ -85,12 +86,13 @@ const launchVia = launchTarget === 'qubins' ? 'mybinder.org (via QuBins)' : laun
       ) : (
       <div class="launch card">
         <div>
-          <a class="btn primary" href={game.data.binderUrl} target="_blank" rel="noopener"
-             data-umami-event="Portal: notebook launch" data-umami-event-target={launchTarget} data-umami-event-image={launchImage}
-             data-umami-event-notebook={game.data.notebook}>▶ Open the notebook</a>
+          <a class="btn primary" href={notebookHref(game.data.binderUrl, game.data.notebook)} target="_blank" rel="noopener"
+             data-umami-event="Portal: notebook launch" data-umami-event-target={notebookTarget(game.data.binderUrl)} data-umami-event-image={launchImage}
+             data-umami-event-notebook={game.data.notebook}>{QUBINS_DOWN ? 'Read the notebook on GitHub ↗' : '▶ Open the notebook'}</a>
           <div class="hero-note">
+            {QUBINS_DOWN ? NOTEBOOK_DOWN.en[game.data.webGame ? 'note' : 'noteNoWeb'] : <>
             {game.data.duration} · {game.data.audience} · runs in your browser, no account<br />
-            Opens a free Jupyter session on {launchVia} — starting it can take a few minutes
+            Opens a free Jupyter session on {launchVia} — starting it can take a few minutes</>}
           </div>
         </div>
         {!APP && <div class="alt">

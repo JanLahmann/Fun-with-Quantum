@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import KetGuide from '../../components/KetGuide.astro';
 import ProjectRow from '../../components/ProjectRow.astro';
+import { QUBINS_DOWN } from '../../lib/notebook-launch';
 
 const games = (await getCollection('games')).sort((a, b) => a.data.order - b.data.order);
 const projects = (await getCollection('projects'))
@@ -27,9 +28,11 @@ const projects = (await getCollection('projects'))
 
       <h2 class="games-title">The notebook games</h2>
       <p class="lead">
+        {QUBINS_DOWN ? <>Each game is an interactive Jupyter notebook. Notebook launch is temporarily unavailable:
+        games marked ▶ play right on their page, and every notebook can be read on GitHub.</> : <>
         Each game is an interactive Jupyter notebook — one click, no account. It opens a free
         session on mybinder.org (via QuBins), so starting it can take a few minutes. Games marked ▶
-        also play right on their page. Play first, then pull back the curtain and see the circuit.
+        also play right on their page.</>} Play first, then pull back the curtain and see the circuit.
       </p>
       <div class="grid cols-2">
         {games.map((g) => (

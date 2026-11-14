@@ -19,6 +19,8 @@ More games, and the family of projects around them: **[fun-with-quantum.org](htt
 | [8. GHZ on Real Quantum Devices](#8-ghz-on-real-quantum-devices) | noise, transpiler, readout error mitigation | [▶ Open](https://qubins.org/launch/?image=2.5-xl&repo=https%3A%2F%2Fgithub.com%2FJanLahmann%2FFun-with-Quantum&branch=master&path=GHZ-on-Real-Devices.ipynb) · [Binder](https://mybinder.org/v2/gh/JanLahmann/Fun-with-Quantum/master?filepath=GHZ-on-Real-Devices.ipynb) · [View](https://github.com/JanLahmann/Fun-with-Quantum/blob/master/GHZ-on-Real-Devices.ipynb) |
 <!-- /games-table -->
 
+> **▶ Open is temporarily unavailable:** qubins.org is down. Use **Binder** (its first start can take about 20 minutes) or **View** to read the notebook on GitHub.
+
 **▶ Open** starts a free Jupyter session on [mybinder.org](https://mybinder.org) through [QuBins](https://qubins.org), with Qiskit preinstalled — no install, no account. Starting it can take a few minutes. Games 1–7 open as slideshows ([how to use them](#slideshow-controls)); game 8 opens as a regular notebook. **Binder** builds this repository's own environment instead, which can take longer. **View** shows the notebook on GitHub without running it.
 
 ---
