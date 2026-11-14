@@ -2,10 +2,10 @@ name: Links
 
 # Every link in the README, in the notebooks' text and on the built portal must work — external
 # ones included. Weekly as well, since sites move. Links to fun-with-quantum.org are checked
-# against this build. Not checked: LinkedIn (blocks every bot), Medium (blocks GitHub's runners)
-# and doi.org (the publishers behind it answer bots with 403; DOIs don't move).
-# Known down: qubins.org, since 2026-11-09 (GitHub flagged the QuBins org as spam, which took its
-# Pages site offline; support ticket open). Remove that exclude when https://qubins.org/ returns 200 again.
+# against this build. Not checked: LinkedIn (blocks every bot), Medium (blocks GitHub's runners),
+# doi.org (the publishers behind it answer bots with 403; DOIs don't move) and, while it is down,
+# qubins.org: 404 since 2026-11-09, when GitHub flagged the QuBins org as spam and its Pages site went
+# offline (support ticket open). The last step warns once qubins.org answers again: then remove its exclude.
 on:
   pull_request:
     paths:
@@ -48,11 +48,6 @@ jobs:
           echo "1f4e0ef7f6554a6ed33dd7ac144fb2e1bbed98598e7af973042fc5cd43951c9a  $RUNNER_TEMP/$f" | sha256sum -c -
           tar -xzf "$RUNNER_TEMP/$f" --strip-components=1 -C "$RUNNER_TEMP" lychee-x86_64-unknown-linux-gnu/lychee
           echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
-      - name: Is qubins.org still down? (once it's back, its exclude below must go)
-        run: |
-          code=$(curl -s -o /dev/null -w '%{http_code}' https://qubins.org/ || true)
-          if [ "$code" = 200 ]; then echo "::error::qubins.org answers 200 again: remove its --exclude from links.yml"; exit 1; fi
-          echo "qubins.org still answers $code, so its links stay excluded"
       - name: Check every link
         env:
           GITHUB_TOKEN: ${{ github.token }}   # higher GitHub rate limit
@@ -62,3 +57,13 @@ jobs:
           --root-dir "$PWD/portal/dist" --index-files index.html
           --remap "^https://fun-with-quantum\.org/(.*)\$ file://$PWD/portal/dist/\$1"
           README.md '*.ipynb.md' 'portal/dist/**/*.html'
+      - name: Is qubins.org back? (then remove its exclude above)
+        if: always()
+        run: |
+          up() { curl -sL -o /dev/null --max-time 20 -w '%{http_code}' "$1" | grep -q '^2'; }
+          if up https://qubins.org/ && up https://qubins.org/launch/; then
+            echo "::warning::qubins.org answers again: remove its --exclude from links.yml"
+            [ "$GITHUB_EVENT_NAME" != schedule ] || exit 1   # the weekly run goes red as a reminder; PRs stay green
+          else
+            echo "qubins.org is still down, so its links stay excluded"
+          fi
