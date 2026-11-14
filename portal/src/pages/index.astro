@@ -15,7 +15,7 @@ import qutieHero from '../assets/qutie-hero.jpg';
 import certiqSite from '../assets/certiq-site.jpg';
 import quantumCoin from '../assets/quantum-coin.png';
 import qubinsSite from '../assets/qubins-site.png';
-import { notebookHref } from '../lib/notebook-launch';
+import { QUBINS_DOWN, SHOWCASE_DOWN, notebookHref } from '../lib/notebook-launch';
 
 const DESCRIPTION = 'Quantum games, 3D-printed and LEGO quantum computer models, and hands-on ways to learn. Open source, nothing to install.';
 const games = (await getCollection('games')).sort((a, b) => a.data.order - b.data.order);
@@ -196,6 +196,7 @@ const doors = DOORS.map((d) => ({
           <h3>Launch a notebook from GitHub</h3>
           <p>Paste a link to a GitHub repository or notebook and run it in one click — <strong>Qiskit comes preinstalled</strong>.</p>
           <Image class="feature-photo top" src={qubinsSite} alt="qubins.org — prebuilt Qiskit environments with a one-click browser launch" widths={[480, 760]} sizes="(max-width: 820px) 90vw, 340px" />
+          {QUBINS_DOWN ? <p class="launch-example">{SHOWCASE_DOWN}</p> : <>
           <form class="launch-form" id="launch-form">
             <input
               id="launch-input"
@@ -215,9 +216,10 @@ const doors = DOORS.map((d) => ({
                data-umami-event-notebook="use-a-qc-today/build-and-run-your-first-quantum-program.ipynb">▸ Build and run your first quantum program</a>{' '}
             <span class="launch-src">— from IBM's <em>Use a Quantum Computer Today</em> course</span>
           </p>
-          <span class="meta">
+          </>}
+          {!QUBINS_DOWN && <span class="meta">
             powered by the{' '}<a href="https://qubins.org" target="_blank" rel="noopener">QuBins launch-link generator ↗</a>
-          </span>
+          </span>}
         </div>
       </div>
 
