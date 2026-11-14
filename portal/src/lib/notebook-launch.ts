@@ -28,6 +28,9 @@ export function notebookTarget(launchUrl: string) {
   return host.includes('qubins') ? 'qubins' : host.includes('mybinder') ? 'binder' : host;
 }
 
+/** The home page's QuBins showcase while QuBins is down: the note instead of the launch form and the one-click link. */
+export const SHOWCASE_DOWN = 'Launching is temporarily unavailable while qubins.org is down.';
+
 /** The note and link text while QuBins is down, in the languages of the game pages. */
 export const NOTEBOOK_DOWN = {
   en: {
