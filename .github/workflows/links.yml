@@ -63,7 +63,7 @@ jobs:
         run: |
           up() { curl -sL -o /dev/null --max-time 20 -w '%{http_code}' "$1" | grep -q '^2'; }
           if up https://qubins.org/ && up https://qubins.org/launch/ && up https://github.com/QuBins/qiskit-images; then
-            echo "::warning::qubins.org and github.com/QuBins answer again: remove their --exclude from links.yml"
+            echo "::warning::qubins.org and github.com/QuBins answer again: remove their --exclude from links.yml, set QUBINS_DOWN to false in portal/src/lib/notebook-launch.ts and drop the note under the README games table and the outage line in Ket's knowledge"
             [ "$GITHUB_EVENT_NAME" != schedule ] || exit 1   # the weekly run goes red as a reminder; PRs stay green
           else
             echo "qubins.org or github.com/QuBins is still down, so their links stay excluded"

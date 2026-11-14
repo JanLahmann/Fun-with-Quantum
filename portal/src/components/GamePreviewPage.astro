@@ -5,6 +5,7 @@
  */
 import Base from '../layouts/Base.astro';
 import BrowserGames from './BrowserGames.astro';
+import { NOTEBOOK_DOWN, QUBINS_DOWN, notebookHref, notebookTarget, qubinsLaunch } from '../lib/notebook-launch';
 
 interface Props {
   page: { title: string; description: string; kicker: string; heading: string; lead: string; notebook: string; notebookLink: string };
@@ -13,7 +14,7 @@ interface Props {
   current: 'magic' | 'sat' | 'hardy' | 'pd';
 }
 const { page, icon, notebook, current } = Astro.props;
-const launch = `https://qubins.org/launch/?image=2.5-xl&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=${notebook}&ui=rise-classic`;
+const launch = qubinsLaunch(notebook);
 ---
 
 <Base title={page.title} description={page.description} noindex>
@@ -25,9 +26,9 @@ const launch = `https://qubins.org/launch/?image=2.5-xl&repo=https://github.com/
       <slot />
       <p class="lead">
         {page.notebook}{' '}
-        <a href={launch} target="_blank" rel="noopener" data-umami-event="Portal: notebook launch" data-umami-event-target="qubins"
-           data-umami-event-image="2.5-xl" data-umami-event-notebook={notebook}>{page.notebookLink}</a>
-        <span class="wait">It starts a free Jupyter session on mybinder.org (via QuBins); starting it can take a few minutes.</span>
+        <a href={notebookHref(launch, notebook)} target="_blank" rel="noopener" data-umami-event="Portal: notebook launch" data-umami-event-target={notebookTarget(launch)}
+           data-umami-event-image="2.5-xl" data-umami-event-notebook={notebook}>{QUBINS_DOWN ? NOTEBOOK_DOWN.en.link : page.notebookLink}</a>
+        <span class="wait">{QUBINS_DOWN ? NOTEBOOK_DOWN.en.note : 'It starts a free Jupyter session on mybinder.org (via QuBins); starting it can take a few minutes.'}</span>
       </p>
       <BrowserGames current={current} />
     </div>
