@@ -33,7 +33,8 @@ const HELPER_ERRORS = {
 };
 
 const RASQBERRY_PRIVACY =
-  'Your questions and the page you are on are sent to Anthropic (Claude) to answer, and stored for 30 days to improve Ket. Please don’t enter personal data.';
+  'When you ask, your question, the conversation so far and the page you are on go through Cloudflare to Anthropic (Claude) for the answer, and are kept for 30 days to improve Ket. ' +
+  'On a Pi, its RasQberry version, model and LED setup go along. Please don’t enter personal data.';
 
 /** Texts per site/context (English only for now). */
 export const EMBED_TEXTS: Record<string, EmbedTexts> = {
