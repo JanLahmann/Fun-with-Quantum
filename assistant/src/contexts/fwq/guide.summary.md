@@ -27,7 +27,7 @@ These follow from the descriptions below; they are a starting point, not the onl
 ### What a visitor needs, as far as known
 
 - The browser games (Quantum Coin Game, GHZ Game, CHSH Game): any phone, tablet or laptop with a web browser; nothing to install, no account, no cookies.
-- The notebook games: one click, no account; they open a free session on mybinder.org (via QuBins), so starting one can take a few minutes. Each game page has the button.
+- The notebook games: one click, no account; they open a free session on mybinder.org (via QuBins), so starting one can take a few minutes. Each game page has the button. While qubins.org is down (since 9 November 2026), notebooks can’t be started from the site: the button opens the notebook on GitHub to read, and the browser games play as usual.
 - RasQberry Two (from rasqberry.org): a 3D printer for the parts, a Raspberry Pi (Pi 5 recommended, Pi 4B possible) and the other parts on the bill of materials, such as the power supply; no soldering needed; every demo also runs without an IBM Quantum account, on the built-in simulator. Parts list and prices: https://rasqberry.org/01-3d-model/01-bill-of-materials/.
 - Qutie: a home 3D printer; prints in one piece, no electronics, no assembly.
 - Quantego: LEGO bricks; full brick lists and step-by-step instructions on quantego.org.

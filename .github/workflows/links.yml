@@ -2,8 +2,11 @@ name: Links
 
 # Every link in the README, in the notebooks' text and on the built portal must work — external
 # ones included. Weekly as well, since sites move. Links to fun-with-quantum.org are checked
-# against this build. Not checked: LinkedIn (blocks every bot), Medium (blocks GitHub's runners)
-# and doi.org (the publishers behind it answer bots with 403; DOIs don't move).
+# against this build. Not checked: LinkedIn (blocks every bot), Medium (blocks GitHub's runners),
+# doi.org (the publishers behind it answer bots with 403; DOIs don't move) and, while they are down,
+# qubins.org and github.com/QuBins: 404 since 2026-11-09, when GitHub flagged the QuBins org as spam,
+# hiding its repos and Pages site (support ticket open). The last step warns once both answer again:
+# then remove their excludes.
 on:
   pull_request:
     paths:
@@ -51,7 +54,17 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}   # higher GitHub rate limit
         run: >-
           lychee --no-progress --max-retries 3 --retry-wait-time 5 --accept '200..=299,429'
-          --exclude '^https://www\.linkedin\.com/' --exclude '^https://medium\.com/' --exclude '^https://doi\.org/'
+          --exclude '^https://www\.linkedin\.com/' --exclude '^https://medium\.com/' --exclude '^https://doi\.org/' --exclude '^https://qubins\.org/' --exclude '^https://github\.com/QuBins/'
           --root-dir "$PWD/portal/dist" --index-files index.html
           --remap "^https://fun-with-quantum\.org/(.*)\$ file://$PWD/portal/dist/\$1"
           README.md '*.ipynb.md' 'portal/dist/**/*.html'
+      - name: Are qubins.org and github.com/QuBins back? (then remove their excludes above)
+        if: always()
+        run: |
+          up() { curl -sL -o /dev/null --max-time 20 -w '%{http_code}' "$1" | grep -q '^2'; }
+          if up https://qubins.org/ && up https://qubins.org/launch/ && up https://github.com/QuBins/qiskit-images; then
+            echo "::warning::qubins.org and github.com/QuBins answer again: remove their --exclude from links.yml, set QUBINS_DOWN to false in portal/src/lib/notebook-launch.ts and drop the note under the README games table and the outage line in Ket's knowledge"
+            [ "$GITHUB_EVENT_NAME" != schedule ] || exit 1   # the weekly run goes red as a reminder; PRs stay green
+          else
+            echo "qubins.org or github.com/QuBins is still down, so their links stay excluded"
+          fi
