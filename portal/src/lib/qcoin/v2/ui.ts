@@ -20,6 +20,10 @@ import { CoinView, reducedMotion } from '../view';
 import { MESSAGES, doqLink, ibmLink, rich, type Messages, type TermKey } from '../i18n';
 import { MESSAGES_V2, isLocaleV2, paint, plain, type LocaleV2, type MessagesV2 } from './index';
 import { roundMoves } from './flow';
+import { notebookHref, notebookTarget, qubinsLaunch } from '../../notebook-launch';
+
+const COIN_LAUNCH = qubinsLaunch('Quantum-Coin-Game.ipynb');
+const COIN_NOTEBOOK = notebookHref(COIN_LAUNCH, 'Quantum-Coin-Game.ipynb');
 
 type Chapter = 1 | 2 | 3 | 4 | 5 | 6;
 type Side = 'heads' | 'tails';
@@ -489,7 +493,7 @@ export function mountCoinGameV2(root: HTMLElement) {
     draw();
     say(t.ch5.start, t.ch5.tapHint);
     tallyEl.innerHTML = '';
-    const nb = `<a href="https://qubins.org/launch/?image=2.5-xl&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=Quantum-Coin-Game.ipynb&ui=rise-classic" target="_blank" rel="noopener" data-umami-event="Portal: notebook launch" data-umami-event-target="qubins" data-umami-event-image="2.5-xl" data-umami-event-notebook="Quantum-Coin-Game.ipynb">${t.ch5.notebook}</a>`;
+    const nb = `<a href="${COIN_NOTEBOOK}" target="_blank" rel="noopener" data-umami-event="Portal: notebook launch" data-umami-event-target="${notebookTarget(COIN_LAUNCH)}" data-umami-event-image="2.5-xl" data-umami-event-notebook="Quantum-Coin-Game.ipynb">${t.ch5.notebook}</a>`;
     for (;;) {
       const full = gates.length >= 8;
       const taps: Record<number, string> = {};

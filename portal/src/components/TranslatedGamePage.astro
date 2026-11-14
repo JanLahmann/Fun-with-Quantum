@@ -8,6 +8,7 @@ import { getEntry } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import { APP, OFFLINE } from '../data/offline';
 import { LANG_NAME, TRANSLATED_GAMES, gamePath, type GameLocale } from '../lib/games/locale';
+import { NOTEBOOK_DOWN, QUBINS_DOWN, notebookHref, notebookTarget } from '../lib/notebook-launch';
 
 interface Props {
   slug: string;
@@ -51,10 +52,10 @@ const launch = new URL(game.data.binderUrl);
       ) : (
       <p class="lead">
         {T.notebook}{' '}
-        <a href={game.data.binderUrl} target="_blank" rel="noopener" data-umami-event="Portal: notebook launch"
-           data-umami-event-target={launch.hostname.includes('qubins') ? 'qubins' : 'binder'}
-           data-umami-event-image={launch.searchParams.get('image') ?? 'binder'} data-umami-event-notebook={game.data.notebook}>{T.notebookLink}</a>
-        <span class="wait">{T.notebookWait}</span>
+        <a href={notebookHref(game.data.binderUrl, game.data.notebook)} target="_blank" rel="noopener" data-umami-event="Portal: notebook launch"
+           data-umami-event-target={notebookTarget(game.data.binderUrl)}
+           data-umami-event-image={launch.searchParams.get('image') ?? 'binder'} data-umami-event-notebook={game.data.notebook}>{QUBINS_DOWN ? NOTEBOOK_DOWN[locale].link : T.notebookLink}</a>
+        <span class="wait">{QUBINS_DOWN ? NOTEBOOK_DOWN[locale][game.data.webGame ? 'note' : 'noteNoWeb'] : T.notebookWait}</span>
       </p>
       )}
     </div>

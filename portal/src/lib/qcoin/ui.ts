@@ -18,6 +18,10 @@ import { IDENTITY, axisAngle, mul, type Mat3 } from './rotation';
 import { CoinView, reducedMotion } from './view';
 import { reveal as showText } from '../games/shell';
 import { MESSAGES, doqLink, ibmLink, isLocale, rich, type Locale, type Messages, type TermKey } from './i18n';
+import { notebookHref, notebookTarget, qubinsLaunch } from '../notebook-launch';
+
+const COIN_LAUNCH = qubinsLaunch('Quantum-Coin-Game.ipynb');
+const COIN_NOTEBOOK = notebookHref(COIN_LAUNCH, 'Quantum-Coin-Game.ipynb');
 
 type Chapter = 1 | 2 | 3 | 4 | 5 | 6;
 const QUANTUM: ReadonlySet<GateName> = new Set(['H', 'Z', 'S']);
@@ -446,7 +450,7 @@ export function mountCoinGame(root: HTMLElement) {
         { label: m.ch5.undo, value: 'undo' as const },
         { label: m.ch5.reset, value: 'reset' as const },
       ].filter((o) => !(full && typeof o.value === 'string' && o.value.length === 1)),
-      `<a href="https://qubins.org/launch/?image=2.5-xl&repo=https://github.com/JanLahmann/Fun-with-Quantum&branch=master&path=Quantum-Coin-Game.ipynb&ui=rise-classic" target="_blank" rel="noopener" data-umami-event="Portal: notebook launch" data-umami-event-target="qubins" data-umami-event-image="2.5-xl" data-umami-event-notebook="Quantum-Coin-Game.ipynb">${m.ch5.notebook}</a>`);
+      `<a href="${COIN_NOTEBOOK}" target="_blank" rel="noopener" data-umami-event="Portal: notebook launch" data-umami-event-target="${notebookTarget(COIN_LAUNCH)}" data-umami-event-image="2.5-xl" data-umami-event-notebook="Quantum-Coin-Game.ipynb">${m.ch5.notebook}</a>`);
       seen = { sandbox: gates, lastAction: typeof choice === 'string' && choice.length > 1 ? choice : 'gate' };
       if (choice === 'reset') { gates.length = 0; start = { state: HEADS, R: IDENTITY }; resetCoin(); draw(); say(m.ch5.backToHeads); scoreEl.textContent = ''; continue; }
       if (choice === 'undo') {
