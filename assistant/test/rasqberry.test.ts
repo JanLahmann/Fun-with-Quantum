@@ -3,7 +3,7 @@ import { KNOWLEDGE, SOURCE_COMMIT } from '../src/contexts/rasqberry/knowledge.ge
 import { rasqberryBuild } from '../src/contexts/rasqberry/build';
 import { systemPrompt, userMessage } from '../src/prompt';
 // @ts-expect-error — plain .mjs script without types
-import { BUILD_PAGES, clean, pageUrl, pathSection, preinstalled } from '../scripts/rasqberry-knowledge.mjs';
+import { BUILD_PAGES, clean, demoLevel, demoSection, pageUrl, pathLevel, pathSection, preinstalled, variantLevel } from '../scripts/rasqberry-knowledge.mjs';
 
 describe('rasqberry build knowledge', () => {
   it('has the summary and every page, from a known commit', () => {
@@ -69,7 +69,36 @@ describe('rasqberry device context (the Pi)', async () => {
     const path = { title: 'First 15 minutes', minutes: 15, audience: 'everyone', goal: 'g',
       steps: [{ demo: 'grok-bloch', variant: 'local', try: 'Press H.', notice: 'Look.' }] };
     expect(pathSection(path, [m])).toContain('variant `local`, downloads on first start, needs internet once');
-    expect(DEVICE_KNOWLEDGE).toContain('(`web`, on the image)');
+    expect(DEVICE_KNOWLEDGE).toContain('(`web`, on the image, ships in ');
+  });
+
+  it('says which images ship a demo, variant or learning-path step (RasQberry #371, rq_demo_level.py)', () => {
+    const fwq = { id: 'fwq', name: 'Fun with Quantum', description: 'Games', group: 'play', install: { preinstalled: true },
+      variants: [{ id: 'coin', name: 'Coin', maturity: 'beta' }, { id: 'ghz', name: 'GHZ', maturity: 'dev' }, { id: 'x', name: 'X' }] };
+    const old = { id: 'old', name: 'Old', maturity: 'stable', variants: [{ id: 'a', name: 'A', maturity: 'dev' }] };
+    // a demo with variants ships where its best variant does; a missing level is dev, "stable" is prod
+    expect(demoLevel(fwq)).toBe('beta and development images');
+    expect(demoLevel(old)).toBe('development images only');
+    expect(demoLevel({ maturity: 'stable' })).toBe('every image');
+    expect(demoLevel({})).toBe('development images only');
+    // a variant without a level (or an unknown one) takes its demo's
+    expect(variantLevel({ maturity: 'beta', variants: [{ id: 'v' }, { id: 'w', maturity: 'odd' }] }, 'v')).toBe('beta and development images');
+    expect(variantLevel({ maturity: 'beta', variants: [{ id: 'w', maturity: 'odd' }] }, 'w')).toBe('beta and development images');
+    const text = demoSection(fwq, [{ id: 'play', title: 'Play' }]);
+    expect(text).toContain('Ships in: beta and development images.');
+    expect(text).toContain('GHZ (`ghz`, on the image, ships in development images only)');
+    // a path ships where at least two of its steps do; a step with its material online becomes a web step
+    const step = (variant, extra = {}) => ({ demo: 'fwq', variant, try: 't', notice: 'n', ...extra });
+    const path = { title: 'P', minutes: 5, audience: 'all', goal: 'g', steps: [step('coin'), step('ghz'), { command: 'rq_help', try: 't', notice: 'n' }] };
+    expect(pathLevel(path, [fwq])).toBe('beta and development images');
+    const p = pathSection(path, [fwq]);
+    expect(p).toContain('Ships in: beta and development images.');
+    expect(p.match(/this step is left out/g)).toHaveLength(1);
+    const online = { ...path, steps: [step('ghz', { name: 'GHZ', online: 'https://example.org/ghz' }), { url: 'https://example.org', try: 't', notice: 'n' }] };
+    expect(pathLevel(online, [fwq])).toBe('every image');
+    expect(pathSection(online, [fwq])).toContain('on images without it this step opens https://example.org/ghz');
+    expect(pathLevel({ ...path, steps: [step('ghz'), step('x')] }, [fwq])).toBe('development images only');
+    expect(pathLevel({ ...path, steps: [step('ghz'), step('missing')] }, [fwq])).toMatch(/^no image/);
   });
 
   it('keeps the Pi facts only when they look right', () => {

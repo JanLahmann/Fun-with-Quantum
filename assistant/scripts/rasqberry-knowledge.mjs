@@ -69,9 +69,51 @@ const TOKEN = {
 const DISPLAY = { none: 'runs without a screen', optional: 'a screen is optional', required: 'needs a screen' };
 const RUNS = { jupyter: 'opens as a Jupyter notebook in the browser', docker: 'runs in a Docker container', browser: 'opens in the browser', python: 'opens its own window', 'web-static': 'opens in the browser' };
 
+/**
+ * Which images ship a demo, variant or learning path, by the rules of RasQberry's rq_demo_level.py (#371):
+ * "maturity" is dev (development images only; also a missing or unknown value), beta (beta and development
+ * images) or prod ("stable" is the old name). A variant without a level takes its demo's; a demo with
+ * variants ships where its best variant does. A learning path has no level of its own: an image keeps the
+ * steps of the demos it ships (a step that names its material `online` becomes a web step instead), and
+ * the paths with at least two steps left. On the Pi only development images show a mark: their dev-level
+ * entries say "(beta)" and sit in "Beta: try & tell us".
+ */
+const LEVELS = ['dev', 'beta', 'prod'];
+const LEVEL = { dev: 'development images only', beta: 'beta and development images', prod: 'every image' };
+const MIN_STEPS = 2;
+/** The level (index into LEVELS) of a maturity value, else of `fallback`. */
+const levelOf = (value, fallback = 0) => {
+  const i = LEVELS.indexOf(value === 'stable' ? 'prod' : value);
+  return i < 0 ? fallback : i;
+};
+const variantOf = (m, id) => m.variants?.find((v) => v.id === id);
+const demoRank = (m) => {
+  const own = levelOf(m.maturity);
+  return m.variants?.length ? Math.max(...m.variants.map((v) => levelOf(v.maturity, own))) : own;
+};
+/** A learning-path step's level: a command or web page is everywhere, an unknown demo nowhere. */
+const stepRank = (st, manifests) => {
+  if (!st.demo) return LEVELS.length - 1;
+  const m = manifests.find((x) => x.id === st.demo);
+  if (!m) return -1;
+  return st.variant ? (variantOf(m, st.variant) ? levelOf(variantOf(m, st.variant).maturity, levelOf(m.maturity)) : -1) : demoRank(m);
+};
+/** A step kept as a web step where its demo isn't shipped. */
+const webFallback = (st) => Boolean(st.online && st.name);
+/** The highest level whose images keep at least MIN_STEPS of the path's steps (-1: none). */
+const pathRank = (p, manifests) => {
+  const ranks = p.steps.map((st) => (webFallback(st) ? LEVELS.length - 1 : stepRank(st, manifests)));
+  for (let i = LEVELS.length - 1; i >= 0; i--) if (ranks.filter((r) => r >= i).length >= MIN_STEPS) return i;
+  return -1;
+};
+const shipsIn = (i) => (i < 0 ? 'no image (fewer than two steps ship anywhere)' : LEVEL[LEVELS[i]]);
+export const demoLevel = (m) => shipsIn(demoRank(m));
+export const variantLevel = (m, id) => shipsIn(levelOf(variantOf(m, id)?.maturity, levelOf(m.maturity)));
+export const pathLevel = (p, manifests) => shipsIn(pathRank(p, manifests));
+
 /** Is the demo (or one of its variants, which may override `install`) on the image? */
 export const preinstalled = (m, variant) =>
-  Boolean((m.variants?.find((v) => v.id === variant)?.install ?? m.install)?.preinstalled);
+  Boolean((variantOf(m, variant)?.install ?? m.install)?.preinstalled);
 
 /** One demo manifest → a short Markdown section. Only facts the manifest states. */
 export function demoSection(m, groups) {
@@ -93,9 +135,10 @@ export function demoSection(m, groups) {
   const install = m.install?.preinstalled
     ? 'Installed on the image.'
     : `Downloaded on first start${dl ? ` (${[dl.what, dl.download_mb && `about ${dl.download_mb} MB`, dl.time].filter(Boolean).join(', ')})` : ''}; that needs internet once.`;
-  const variants = (m.variants ?? []).map((v) => `${v.name} (\`${v.id}\`${v.maturity === 'beta' ? ', beta' : ''}, ${preinstalled(m, v.id) ? 'on the image' : 'downloads on first start'})`);
+  const variants = (m.variants ?? []).map((v) => `${v.name} (\`${v.id}\`, ${preinstalled(m, v.id) ? 'on the image' : 'downloads on first start'}, ships in ${variantLevel(m, v.id)})`);
   return [
-    `### ${m.name}${m.maturity === 'beta' ? ' (beta)' : ''} — id \`${m.id}\`, group "${group}"`,
+    `### ${m.name} — id \`${m.id}\`, group "${group}"`,
+    `Ships in: ${demoLevel(m)}.`,
     `${m.description.replace(/\.?$/, '.')} ${install}`,
     `Start: ${where.join('; ')}.`,
     `It ${facts.join(', ')}.`,
@@ -105,15 +148,18 @@ export function demoSection(m, groups) {
 
 /** The learning paths, as the Pi shows them. */
 export function pathSection(p, manifests) {
+  const own = pathRank(p, manifests);
   const steps = p.steps.map((st, i) => {
     const name = st.name ?? manifests.find((m) => m.id === st.demo)?.name ?? st.demo ?? st.command ?? st.url;
     const m = st.demo && manifests.find((x) => x.id === st.demo);
-    const install = m ? `, ${preinstalled(m, st.variant) ? 'on the image' : 'downloads on first start, needs internet once'}` : '';
+    const below = m && stepRank(st, manifests) < own;
+    const elsewhere = below ? `; on images without it ${webFallback(st) ? `this step opens ${st.online}` : 'this step is left out'}` : '';
+    const install = m ? `, ${preinstalled(m, st.variant) ? 'on the image' : 'downloads on first start, needs internet once'}, ships in ${shipsIn(stepRank(st, manifests))}${elsewhere}` : '';
     const how = st.demo ? `demo \`${st.demo}\`${st.variant ? ` variant \`${st.variant}\`` : ''}${install}` : st.command ? `\`${st.command}\`` : st.url;
     return `${i + 1}. ${name} (${how}): ${st.try} ${st.notice}`;
   });
   const next = (p.next ?? []).map((n) => `${n.path ? `path "${n.path}"` : `${n.name} ${n.url}`}: ${n.why.replace(/\.$/, '')}`);
-  return [`### ${p.title}${p.maturity === 'beta' ? ' (beta)' : ''} — ${p.minutes} minutes, for: ${p.audience}`, `Goal: ${p.goal}`, ...steps,
+  return [`### ${p.title} — ${p.minutes} minutes, for: ${p.audience}`, `Ships in: ${shipsIn(own)}.`, `Goal: ${p.goal}`, ...steps,
     next.length ? `Keep going: ${next.join('; ')}.` : ''].filter(Boolean).join('\n');
 }
 
