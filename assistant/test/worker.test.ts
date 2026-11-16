@@ -394,6 +394,12 @@ describe('fwq guide', () => {
     expect(toml).toMatch(/\[vars\.SITES\.fwq\.budgets\.guide\]\ndaily_visitor = \d+\ndaily_global = \d+/);
   });
 
+  it('wrangler.toml gives the Pis a budget apart from the rasqberry.org website: 500 a day each', () => {
+    const toml = readFileSync(fileURLToPath(new URL('../wrangler.toml', import.meta.url).href), 'utf8');
+    expect(toml).toMatch(/\[vars\.SITES\.rasqberry\]\norigins = [^\n]*\ndaily_visitor = 100\ndaily_global = 500\n/);
+    expect(toml).toMatch(/\[vars\.SITES\.rasqberry\.budgets\.device\]\ndaily_visitor = 100\ndaily_global = 500\n/);
+  });
+
   it('refuses the guide from another site\'s origin', async () => {
     const { run, claude } = setup();
     const r = req('/chat', { site: 'fwq', context: 'guide', locale: 'en', question: 'Hi', state: {} }, { Origin: 'https://rasqberry.org' });

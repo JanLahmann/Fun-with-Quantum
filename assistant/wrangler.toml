@@ -39,10 +39,18 @@ daily_visitor = 30
 daily_global = 500
 
 # RasQberry: at a booth, every visitor at one Pi shares its address, hence the higher per-visitor limit.
+# The website (rasqberry.org visitors) and the Pis have separate daily budgets, so a busy or abused
+# website can't make Ket "busy" on a Pi at a booth (Jan, 2026-11-16: "split: 500 / 500 for now").
+# Testers have their own budgets (tester.ts).
 [vars.SITES.rasqberry]
 origins = ["https://rasqberry.org", "http://localhost:3000"]
 daily_visitor = 100
-daily_global = 1000
+daily_global = 500
+
+# The helper on the Pi (context device, ?from=pi).
+[vars.SITES.rasqberry.budgets.device]
+daily_visitor = 100
+daily_global = 500
 
 # CleanJibe (wingfoil app, JanLahmann/WingFoil): the web help desk on cleanjibe.org; the iOS app
 # comes with App Attest (Jan, 2026-10-15: 20 per device and 500 for everyone per day).
