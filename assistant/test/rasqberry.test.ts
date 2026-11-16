@@ -3,7 +3,12 @@ import { KNOWLEDGE, SOURCE_COMMIT } from '../src/contexts/rasqberry/knowledge.ge
 import { rasqberryBuild } from '../src/contexts/rasqberry/build';
 import { systemPrompt, userMessage } from '../src/prompt';
 // @ts-expect-error — plain .mjs script without types
+import { existsSync } from 'node:fs';
 import { BUILD_PAGES, clean, demoLevel, demoSection, pageUrl, pathLevel, pathSection, preinstalled, variantLevel } from '../scripts/rasqberry-knowledge.mjs';
+import { shippedAt } from '../scripts/rqb-shipped.mjs';
+
+/** A RasQberry-Two checkout (its development branch) for the trimmer test; skipped without one. */
+const RQB_DEV = process.env.RQB_DEV_DIR ?? '../../RasQberry-Two';
 
 describe('rasqberry build knowledge', () => {
   it('has the summary and every page, from a known commit', () => {
@@ -68,37 +73,43 @@ describe('rasqberry device context (the Pi)', async () => {
     expect(preinstalled(m, 'web')).toBe(true);
     const path = { title: 'First 15 minutes', minutes: 15, audience: 'everyone', goal: 'g',
       steps: [{ demo: 'grok-bloch', variant: 'local', try: 'Press H.', notice: 'Look.' }] };
-    expect(pathSection(path, [m])).toContain('variant `local`, downloads on first start, needs internet once');
+    const none = { beta: { demos: {}, paths: {} }, prod: { demos: {}, paths: {} } };
+    expect(pathSection({ id: 'x', ...path }, [m], none)).toContain('variant `local`, downloads on first start, needs internet once');
     expect(DEVICE_KNOWLEDGE).toContain('(`web`, on the image, ships in ');
   });
 
-  it('says which images ship a demo, variant or learning-path step (RasQberry #371, rq_demo_level.py)', () => {
+  it('says which images ship a demo, variant or learning-path step, from what RasQberry\'s trimmer kept', () => {
     const fwq = { id: 'fwq', name: 'Fun with Quantum', description: 'Games', group: 'play', install: { preinstalled: true },
-      variants: [{ id: 'coin', name: 'Coin', maturity: 'beta' }, { id: 'ghz', name: 'GHZ', maturity: 'dev' }, { id: 'x', name: 'X' }] };
-    const old = { id: 'old', name: 'Old', maturity: 'stable', variants: [{ id: 'a', name: 'A', maturity: 'dev' }] };
-    // a demo with variants ships where its best variant does; a missing level is dev, "stable" is prod
-    expect(demoLevel(fwq)).toBe('beta and development images');
-    expect(demoLevel(old)).toBe('development images only');
-    expect(demoLevel({ maturity: 'stable' })).toBe('every image');
-    expect(demoLevel({})).toBe('development images only');
-    // a variant without a level (or an unknown one) takes its demo's
-    expect(variantLevel({ maturity: 'beta', variants: [{ id: 'v' }, { id: 'w', maturity: 'odd' }] }, 'v')).toBe('beta and development images');
-    expect(variantLevel({ maturity: 'beta', variants: [{ id: 'w', maturity: 'odd' }] }, 'w')).toBe('beta and development images');
-    const text = demoSection(fwq, [{ id: 'play', title: 'Play' }]);
+      variants: [{ id: 'coin', name: 'Coin' }, { id: 'ghz', name: 'GHZ' }] };
+    const led = { id: 'led', name: 'LED', description: 'LEDs', group: 'play' };
+    const step = (demo, variant, extra = {}) => ({ demo, variant, try: 't', notice: 'n', ...extra });
+    const path = { id: 'p', title: 'P', minutes: 5, audience: 'all', goal: 'g',
+      steps: [step('fwq', 'coin'), step('fwq', 'ghz', { name: 'GHZ', online: 'https://example.org/ghz' }), step('led')],
+      next: [{ path: 'q', why: 'More.' }] };
+    // as rq_demo_level.py apply leaves them: beta keeps Coin, the GHZ step as a web step, the LED demo;
+    // prod keeps the LED demo only, so no path
+    const shipped = {
+      beta: { demos: { fwq: ['coin'], led: [] }, paths: { p: { steps: ['demo:fwq/coin', 'url:https://example.org/ghz', 'demo:led/'], next: [] } } },
+      prod: { demos: { led: [] }, paths: {} },
+    };
+    expect(demoLevel(fwq, shipped)).toBe('beta and development images');
+    expect(demoLevel(led, shipped)).toBe('every image');
+    expect(variantLevel(fwq, 'ghz', shipped)).toBe('development images only');
+    expect(demoSection(fwq, [{ id: 'play', title: 'Play' }], shipped)).toContain('GHZ (`ghz`, on the image, ships in development images only)');
+    expect(pathLevel(path, shipped)).toBe('beta and development images');
+    const text = pathSection(path, [fwq, led], shipped);
     expect(text).toContain('Ships in: beta and development images.');
-    expect(text).toContain('GHZ (`ghz`, on the image, ships in development images only)');
-    // a path ships where at least two of its steps do; a step with its material online becomes a web step
-    const step = (variant, extra = {}) => ({ demo: 'fwq', variant, try: 't', notice: 'n', ...extra });
-    const path = { title: 'P', minutes: 5, audience: 'all', goal: 'g', steps: [step('coin'), step('ghz'), { command: 'rq_help', try: 't', notice: 'n' }] };
-    expect(pathLevel(path, [fwq])).toBe('beta and development images');
-    const p = pathSection(path, [fwq]);
-    expect(p).toContain('Ships in: beta and development images.');
-    expect(p.match(/this step is left out/g)).toHaveLength(1);
-    const online = { ...path, steps: [step('ghz', { name: 'GHZ', online: 'https://example.org/ghz' }), { url: 'https://example.org', try: 't', notice: 'n' }] };
-    expect(pathLevel(online, [fwq])).toBe('every image');
-    expect(pathSection(online, [fwq])).toContain('on images without it this step opens https://example.org/ghz');
-    expect(pathLevel({ ...path, steps: [step('ghz'), step('x')] }, [fwq])).toBe('development images only');
-    expect(pathLevel({ ...path, steps: [step('ghz'), step('missing')] }, [fwq])).toMatch(/^no image/);
+    expect(text).toContain('on beta images this step opens https://example.org/ghz');
+    expect(text).not.toContain('leave this step out');
+    expect(text).toContain('path "q" (not on beta images): More');
+    const dropped = { ...shipped, beta: { ...shipped.beta, paths: { p: { steps: ['demo:fwq/coin', 'demo:led/'], next: ['q'] } } } };
+    expect(pathSection(path, [fwq, led], dropped)).toContain('beta images leave this step out');
+  });
+
+  it.skipIf(!existsSync(RQB_DEV))('reads the levels from RasQberry\'s own trimmer (needs a RasQberry-Two checkout)', () => {
+    const shipped = shippedAt(RQB_DEV);
+    expect(Object.keys(shipped.beta.demos).length).toBeGreaterThan(0);
+    for (const id of Object.keys(shipped.prod.demos)) expect(shipped.beta.demos[id]).toBeDefined(); // prod ⊆ beta
   });
 
   it('keeps the Pi facts only when they look right', () => {

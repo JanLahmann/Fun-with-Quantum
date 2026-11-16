@@ -23,6 +23,7 @@
 import { execFileSync } from 'node:child_process';
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { IMAGE_LEVELS, stepKey } from './rqb-shipped.mjs';
 
 const SITE = 'https://rasqberry.org';
 /** Pages the build helper knows verbatim, in this order. Demo detail pages belong to the device helper. */
@@ -70,53 +71,36 @@ const DISPLAY = { none: 'runs without a screen', optional: 'a screen is optional
 const RUNS = { jupyter: 'opens as a Jupyter notebook in the browser', docker: 'runs in a Docker container', browser: 'opens in the browser', python: 'opens its own window', 'web-static': 'opens in the browser' };
 
 /**
- * Which images ship a demo, variant or learning path, by the rules of RasQberry's rq_demo_level.py (#371):
- * "maturity" is dev (development images only; also a missing or unknown value), beta (beta and development
- * images) or prod ("stable" is the old name). A variant without a level takes its demo's; a demo with
- * variants ships where its best variant does. A learning path has no level of its own: an image keeps the
- * steps of the demos it ships (a step that names its material `online` becomes a web step instead), and
- * the paths with at least two steps left. On the Pi only development images show a mark: their dev-level
- * entries say "(beta)" and sit in "Beta: try & tell us".
+ * Which images ship a demo, variant or learning path (RasQberry #371). Not re-implemented here: RasQberry's
+ * own trimmer decides (scripts/rqb-shipped.mjs runs it and writes what survives; the deploy runs that in a
+ * job without secrets, since it executes RasQberry's code). Everything in the development config ships in
+ * development images.
  */
-const LEVELS = ['dev', 'beta', 'prod'];
-const LEVEL = { dev: 'development images only', beta: 'beta and development images', prod: 'every image' };
-const MIN_STEPS = 2;
-/** The level (index into LEVELS) of a maturity value, else of `fallback`. */
-const levelOf = (value, fallback = 0) => {
-  const i = LEVELS.indexOf(value === 'stable' ? 'prod' : value);
-  return i < 0 ? fallback : i;
-};
+
+/** "Ships in" text from the levels (beta, prod) whose images have it. */
+const shipsIn = (has) => (has('prod') ? 'every image' : has('beta') ? 'beta and development images' : 'development images only');
+const LEVEL_NAME = { beta: 'beta', prod: 'stable' };
+export const demoLevel = (m, shipped) => shipsIn((l) => Boolean(shipped[l].demos[m.id]));
+export const variantLevel = (m, id, shipped) => shipsIn((l) => Boolean(shipped[l].demos[m.id]?.includes(id)));
+export const pathLevel = (p, shipped) => shipsIn((l) => Boolean(shipped[l].paths[p.id]));
+
+/** How an image level differs for one step of a path it ships: left out, or a web step in its place. */
+function stepNotes(st, p, shipped) {
+  return IMAGE_LEVELS.flatMap((l) => {
+    const kept = shipped[l].paths[p.id]?.steps;
+    if (!kept || kept.includes(stepKey(st))) return [];
+    return [st.online && kept.includes(`url:${st.online}`) ? `on ${LEVEL_NAME[l]} images this step opens ${st.online}` : `${LEVEL_NAME[l]} images leave this step out`];
+  });
+}
+
 const variantOf = (m, id) => m.variants?.find((v) => v.id === id);
-const demoRank = (m) => {
-  const own = levelOf(m.maturity);
-  return m.variants?.length ? Math.max(...m.variants.map((v) => levelOf(v.maturity, own))) : own;
-};
-/** A learning-path step's level: a command or web page is everywhere, an unknown demo nowhere. */
-const stepRank = (st, manifests) => {
-  if (!st.demo) return LEVELS.length - 1;
-  const m = manifests.find((x) => x.id === st.demo);
-  if (!m) return -1;
-  return st.variant ? (variantOf(m, st.variant) ? levelOf(variantOf(m, st.variant).maturity, levelOf(m.maturity)) : -1) : demoRank(m);
-};
-/** A step kept as a web step where its demo isn't shipped. */
-const webFallback = (st) => Boolean(st.online && st.name);
-/** The highest level whose images keep at least MIN_STEPS of the path's steps (-1: none). */
-const pathRank = (p, manifests) => {
-  const ranks = p.steps.map((st) => (webFallback(st) ? LEVELS.length - 1 : stepRank(st, manifests)));
-  for (let i = LEVELS.length - 1; i >= 0; i--) if (ranks.filter((r) => r >= i).length >= MIN_STEPS) return i;
-  return -1;
-};
-const shipsIn = (i) => (i < 0 ? 'no image (fewer than two steps ship anywhere)' : LEVEL[LEVELS[i]]);
-export const demoLevel = (m) => shipsIn(demoRank(m));
-export const variantLevel = (m, id) => shipsIn(levelOf(variantOf(m, id)?.maturity, levelOf(m.maturity)));
-export const pathLevel = (p, manifests) => shipsIn(pathRank(p, manifests));
 
 /** Is the demo (or one of its variants, which may override `install`) on the image? */
 export const preinstalled = (m, variant) =>
   Boolean((variantOf(m, variant)?.install ?? m.install)?.preinstalled);
 
 /** One demo manifest → a short Markdown section. Only facts the manifest states. */
-export function demoSection(m, groups) {
+export function demoSection(m, groups, shipped) {
   const group = groups.find((g) => g.id === m.group)?.title ?? m.group;
   const where = [];
   if (m.desktop?.show) where.push(`desktop folder "${group}" → "${m.name}"`);
@@ -135,10 +119,10 @@ export function demoSection(m, groups) {
   const install = m.install?.preinstalled
     ? 'Installed on the image.'
     : `Downloaded on first start${dl ? ` (${[dl.what, dl.download_mb && `about ${dl.download_mb} MB`, dl.time].filter(Boolean).join(', ')})` : ''}; that needs internet once.`;
-  const variants = (m.variants ?? []).map((v) => `${v.name} (\`${v.id}\`, ${preinstalled(m, v.id) ? 'on the image' : 'downloads on first start'}, ships in ${variantLevel(m, v.id)})`);
+  const variants = (m.variants ?? []).map((v) => `${v.name} (\`${v.id}\`, ${preinstalled(m, v.id) ? 'on the image' : 'downloads on first start'}, ships in ${variantLevel(m, v.id, shipped)})`);
   return [
     `### ${m.name} — id \`${m.id}\`, group "${group}"`,
-    `Ships in: ${demoLevel(m)}.`,
+    `Ships in: ${demoLevel(m, shipped)}.`,
     `${m.description.replace(/\.?$/, '.')} ${install}`,
     `Start: ${where.join('; ')}.`,
     `It ${facts.join(', ')}.`,
@@ -147,19 +131,21 @@ export function demoSection(m, groups) {
 }
 
 /** The learning paths, as the Pi shows them. */
-export function pathSection(p, manifests) {
-  const own = pathRank(p, manifests);
+export function pathSection(p, manifests, shipped) {
   const steps = p.steps.map((st, i) => {
-    const name = st.name ?? manifests.find((m) => m.id === st.demo)?.name ?? st.demo ?? st.command ?? st.url;
     const m = st.demo && manifests.find((x) => x.id === st.demo);
-    const below = m && stepRank(st, manifests) < own;
-    const elsewhere = below ? `; on images without it ${webFallback(st) ? `this step opens ${st.online}` : 'this step is left out'}` : '';
-    const install = m ? `, ${preinstalled(m, st.variant) ? 'on the image' : 'downloads on first start, needs internet once'}, ships in ${shipsIn(stepRank(st, manifests))}${elsewhere}` : '';
+    const name = st.name ?? m?.name ?? st.demo ?? st.command ?? st.url;
+    const notes = stepNotes(st, p, shipped);
+    const install = m ? `, ${preinstalled(m, st.variant) ? 'on the image' : 'downloads on first start, needs internet once'}` : '';
     const how = st.demo ? `demo \`${st.demo}\`${st.variant ? ` variant \`${st.variant}\`` : ''}${install}` : st.command ? `\`${st.command}\`` : st.url;
-    return `${i + 1}. ${name} (${how}): ${st.try} ${st.notice}`;
+    return `${i + 1}. ${name} (${[how, ...notes].join('; ')}): ${st.try} ${st.notice}`;
   });
-  const next = (p.next ?? []).map((n) => `${n.path ? `path "${n.path}"` : `${n.name} ${n.url}`}: ${n.why.replace(/\.$/, '')}`);
-  return [`### ${p.title} — ${p.minutes} minutes, for: ${p.audience}`, `Ships in: ${shipsIn(own)}.`, `Goal: ${p.goal}`, ...steps,
+  const next = (p.next ?? []).map((n) => {
+    const missing = n.path ? IMAGE_LEVELS.filter((l) => shipped[l].paths[p.id] && !shipped[l].paths[p.id].next.includes(n.path)) : [];
+    const note = missing.length ? ` (not on ${missing.map((l) => LEVEL_NAME[l]).join(' or ')} images)` : '';
+    return `${n.path ? `path "${n.path}"` : `${n.name} ${n.url}`}${note}: ${n.why.replace(/\.$/, '')}`;
+  });
+  return [`### ${p.title} — ${p.minutes} minutes, for: ${p.audience}`, `Ships in: ${pathLevel(p, shipped)}.`, `Goal: ${p.goal}`, ...steps,
     next.length ? `Keep going: ${next.join('; ')}.` : ''].filter(Boolean).join('\n');
 }
 
@@ -226,7 +212,9 @@ export function clean(md) {
 }
 
 function main() {
-  const [repo, dev, issuesFile] = process.argv.slice(2);
+  const [repo, dev, issuesFile, shippedFile] = process.argv.slice(2);
+  if (!shippedFile) throw new Error('usage: rasqberry-knowledge.mjs <gh-pages> <development> <issues.json> <shipped.json from rqb-shipped.mjs>');
+  const shipped = JSON.parse(readFileSync(shippedFile, 'utf8'));
   if (!repo || !dev) { console.error('usage: node scripts/rasqberry-knowledge.mjs <gh-pages checkout> <development checkout>'); process.exit(2); }
   const here = new URL('../src/contexts/rasqberry/', import.meta.url);
   const sha = (dir) => execFileSync('git', ['-C', dir, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
@@ -252,8 +240,8 @@ function main() {
     '# RasQberry Two on this Pi — what you know',
     read('device.summary.md'),
     `## Demo groups\n\n${groups.map((g) => `- ${g.title}: ${g.description ?? g.menu ?? ''}`).join('\n')}`,
-    `## The demos (from the demo manifests on the Pi)\n\n${manifests.map((m) => demoSection(m, groups)).join('\n\n')}`,
-    `## Learning paths (Quantum Demos → Learning paths, or \`rq_learning_paths.sh\`)\n\n${json('learning-paths.json').paths.map((p) => pathSection(p, manifests)).join('\n\n')}`,
+    `## The demos (from the demo manifests on the Pi)\n\n${manifests.map((m) => demoSection(m, groups, shipped)).join('\n\n')}`,
+    `## Learning paths (Quantum Demos → Learning paths, or \`rq_learning_paths.sh\`)\n\n${json('learning-paths.json').paths.map((p) => pathSection(p, manifests, shipped)).join('\n\n')}`,
     `## Setting up and fixing the Pi\n\n${read('build.summary.md').replace(/^(#+) /gm, '#$1 ')}`,
     `## Website pages (rasqberry.org, as published)\n\n${DEVICE_PAGES.map(page).join('\n\n')}`,
   ].join('\n\n') + '\n';

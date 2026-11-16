@@ -19,7 +19,36 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Which demos the beta and stable images ship (RasQberry #371): RasQberry's own trimmer decides. That
+  # runs RasQberry-Two's code, so it runs here, without secrets or a token; the deploy reads only its JSON.
+  rqb-levels:
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: assistant/scripts/rqb-shipped.mjs
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+      - name: The demo manifests and the trimmer (JanLahmann/RasQberry-Two, development)
+        uses: actions/checkout@v4
+        with:
+          repository: JanLahmann/RasQberry-Two
+          ref: development
+          path: _rqb-dev
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: node assistant/scripts/rqb-shipped.mjs _rqb-dev "$RUNNER_TEMP/rqb-shipped.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rqb-shipped
+          path: ${{ runner.temp }}/rqb-shipped.json
+          retention-days: 1
+
   deploy:
+    needs: rqb-levels
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -60,12 +89,16 @@ jobs:
           ref: development
           path: _rqb-dev
       - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          name: rqb-shipped
+          path: ${{ runner.temp }}
       - name: Open RasQberry-Two issues (the tester helper's known issues)
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh issue list -R JanLahmann/RasQberry-Two --state open --limit 300 --json number,title,labels,milestone,author > "$RUNNER_TEMP/rqb-issues.json"
       - name: RasQberry helper knowledge from today's pages, manifests, missions and issues
-        run: node scripts/rasqberry-knowledge.mjs ../_rqb ../_rqb-dev "$RUNNER_TEMP/rqb-issues.json"
+        run: node scripts/rasqberry-knowledge.mjs ../_rqb ../_rqb-dev "$RUNNER_TEMP/rqb-issues.json" "$RUNNER_TEMP/rqb-shipped.json"
       # JanLahmann/WingFoil is private since 26 Oct 2026, so the anonymous raw URL is a 404: the
       # file comes through the API with WINGFOIL_READ_TOKEN (a fine-grained token, that one
       # repository, Contents: read-only). Without it, or if the fetch fails, the committed
