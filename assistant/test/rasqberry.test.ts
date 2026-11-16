@@ -2,8 +2,15 @@ import { describe, expect, it } from 'vitest';
 import { KNOWLEDGE, SOURCE_COMMIT } from '../src/contexts/rasqberry/knowledge.generated';
 import { rasqberryBuild } from '../src/contexts/rasqberry/build';
 import { systemPrompt, userMessage } from '../src/prompt';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
 // @ts-expect-error — plain .mjs script without types
-import { BUILD_PAGES, clean, pageUrl, pathSection, preinstalled } from '../scripts/rasqberry-knowledge.mjs';
+import { BUILD_PAGES, clean, demoLevel, demoSection, pageUrl, pathLevel, pathSection, preinstalled, shippedFromRules, variantLevel } from '../scripts/rasqberry-knowledge.mjs';
+// @ts-expect-error — plain .mjs script without types
+import { shippedAt } from '../scripts/rqb-shipped.mjs';
+
+/** A RasQberry-Two checkout (its development branch) for the trimmer cross-check; skipped without one. */
+const RQB_DEV = process.env.RQB_DEV_DIR ?? '';
 
 describe('rasqberry build knowledge', () => {
   it('has the summary and every page, from a known commit', () => {
@@ -68,8 +75,47 @@ describe('rasqberry device context (the Pi)', async () => {
     expect(preinstalled(m, 'web')).toBe(true);
     const path = { title: 'First 15 minutes', minutes: 15, audience: 'everyone', goal: 'g',
       steps: [{ demo: 'grok-bloch', variant: 'local', try: 'Press H.', notice: 'Look.' }] };
-    expect(pathSection(path, [m])).toContain('variant `local`, downloads on first start, needs internet once');
-    expect(DEVICE_KNOWLEDGE).toContain('(`web`, on the image)');
+    const none = { beta: { demos: {}, paths: {} }, prod: { demos: {}, paths: {} } };
+    expect(pathSection({ id: 'x', ...path }, [m], none)).toContain('variant `local`, downloads on first start, needs internet once');
+    expect(DEVICE_KNOWLEDGE).toContain('(`web`, on the image, ships in ');
+  });
+
+  it('says which images ship a demo, variant or learning-path step, from what RasQberry\'s trimmer kept', () => {
+    const fwq = { id: 'fwq', name: 'Fun with Quantum', description: 'Games', group: 'play', install: { preinstalled: true },
+      variants: [{ id: 'coin', name: 'Coin' }, { id: 'ghz', name: 'GHZ' }] };
+    const led = { id: 'led', name: 'LED', description: 'LEDs', group: 'play' };
+    const step = (demo: string, variant?: string, extra = {}) => ({ demo, variant, try: 't', notice: 'n', ...extra });
+    const path = { id: 'p', title: 'P', minutes: 5, audience: 'all', goal: 'g',
+      steps: [step('fwq', 'coin'), step('fwq', 'ghz', { name: 'GHZ', online: 'https://example.org/ghz' }), step('led')],
+      next: [{ path: 'q', why: 'More.' }] };
+    // as rq_demo_level.py apply leaves them: beta keeps Coin, the GHZ step as a web step, the LED demo;
+    // prod keeps the LED demo only, so no path
+    const shipped = {
+      beta: { demos: { fwq: ['coin'], led: [] }, paths: { p: { steps: ['demo:fwq/coin', 'url:https://example.org/ghz', 'demo:led/'], next: [] } } },
+      prod: { demos: { led: [] }, paths: {} },
+    };
+    expect(demoLevel(fwq, shipped)).toBe('beta and development images');
+    expect(demoLevel(led, shipped)).toBe('every image');
+    expect(variantLevel(fwq, 'ghz', shipped)).toBe('development images only');
+    expect(demoSection(fwq, [{ id: 'play', title: 'Play' }], shipped)).toContain('GHZ (`ghz`, on the image, ships in development images only)');
+    expect(pathLevel(path, shipped)).toBe('beta and development images');
+    const text = pathSection(path, [fwq, led], shipped);
+    expect(text).toContain('Ships in: beta and development images.');
+    expect(text).toContain('on beta images this step opens https://example.org/ghz');
+    expect(text).not.toContain('leave this step out');
+    expect(text).toContain('path "q" (not on beta images): More');
+    const dropped = { ...shipped, beta: { ...shipped.beta, paths: { p: { steps: ['demo:fwq/coin', 'demo:led/'], next: ['q'] } } } };
+    expect(pathSection(path, [fwq, led], dropped)).toContain('beta images leave this step out');
+  });
+
+  // Runs RasQberry's own trimmer (its code): local only, never in CI. Run it at every summary refresh:
+  // RQB_DEV_DIR=<RasQberry-Two development checkout> npx vitest run test/rasqberry.test.ts
+  it.skipIf(!process.env.RQB_DEV_DIR || !existsSync(RQB_DEV))('mirrors rq_demo_level.py exactly (needs RQB_DEV_DIR)', () => {
+    const dir = join(RQB_DEV, 'RQB2-config/demo-manifests');
+    const manifests = readdirSync(dir).filter((f) => /^rq_demo_.*\.json$/.test(f) && f !== 'rq_demo_schema.json')
+      .map((f) => JSON.parse(readFileSync(join(dir, f), 'utf8')));
+    const paths = JSON.parse(readFileSync(join(dir, 'learning-paths.json'), 'utf8')).paths;
+    expect(shippedFromRules(manifests, paths)).toEqual(shippedAt(RQB_DEV));
   });
 
   it('keeps the Pi facts only when they look right', () => {
