@@ -71,11 +71,48 @@ const DISPLAY = { none: 'runs without a screen', optional: 'a screen is optional
 const RUNS = { jupyter: 'opens as a Jupyter notebook in the browser', docker: 'runs in a Docker container', browser: 'opens in the browser', python: 'opens its own window', 'web-static': 'opens in the browser' };
 
 /**
- * Which images ship a demo, variant or learning path (RasQberry #371). Not re-implemented here: RasQberry's
- * own trimmer decides (scripts/rqb-shipped.mjs runs it and writes what survives; the deploy runs that in a
- * job without secrets, since it executes RasQberry's code). Everything in the development config ships in
+ * Which images ship a demo, variant or learning path (RasQberry #371): what RasQberry's trimmer
+ * (`rq_demo_level.py apply`, run by its image build) keeps at the beta and prod level, worked out here
+ * from the manifests as data. CI must not run RasQberry-Two's code (it would get this workflow's Actions
+ * token and could poison the cache that the jobs with secrets restore), so the rules are mirrored below,
+ * and test/rasqberry.test.ts checks them against the real trimmer whenever a RasQberry-Two checkout is
+ * at hand (RQB_DEV_DIR), e.g. at every summary refresh. Everything in the development config ships in
  * development images.
  */
+const LEVELS = ['dev', 'beta', 'prod'];
+const MIN_STEPS = 2;
+/** level_of(): a maturity value's level, "stable" = prod; missing or unknown → `fallback`. */
+const levelOf = (value, fallback = 'dev') => {
+  const v = value === 'stable' ? 'prod' : value;
+  return LEVELS.includes(v) ? v : fallback;
+};
+const ships = (level, image) => LEVELS.indexOf(level) >= LEVELS.indexOf(image);
+
+/** Mirrors trim_manifests and trim_learning_paths: { beta|prod: { demos: {id: [variant ids]}, paths: {id: {steps, next}} } }. */
+export function shippedFromRules(manifests, paths) {
+  const out = {};
+  for (const image of IMAGE_LEVELS) {
+    const demos = {};
+    for (const m of manifests) {
+      const level = levelOf(m.maturity);
+      if (m.variants?.length) {
+        const keep = m.variants.filter((v) => ships(levelOf(v.maturity, level), image)).map((v) => v.id);
+        if (keep.length) demos[m.id] = keep;
+      } else if (ships(level, image)) demos[m.id] = [];
+    }
+    // a step is kept when its demo (and variant, if the demo has variants) ships; else a step naming its
+    // material online becomes a web step; a path needs MIN_STEPS steps left
+    const kept = (st) => !st.demo || (st.demo in demos && (!st.variant || !demos[st.demo].length || demos[st.demo].includes(st.variant)));
+    const left = {};
+    for (const p of paths) {
+      const steps = p.steps.flatMap((st) => (kept(st) ? [stepKey(st)] : st.online && st.name ? [`url:${st.online}`] : []));
+      if (steps.length >= MIN_STEPS) left[p.id] = { steps, next: [] };
+    }
+    for (const p of paths) if (left[p.id]) left[p.id].next = (p.next ?? []).map((nx) => nx.path).filter((id) => id && id in left);
+    out[image] = { demos, paths: left };
+  }
+  return out;
+}
 
 /** "Ships in" text from the levels (beta, prod) whose images have it. */
 const shipsIn = (has) => (has('prod') ? 'every image' : has('beta') ? 'beta and development images' : 'development images only');
@@ -212,9 +249,7 @@ export function clean(md) {
 }
 
 function main() {
-  const [repo, dev, issuesFile, shippedFile] = process.argv.slice(2);
-  if (!shippedFile) throw new Error('usage: rasqberry-knowledge.mjs <gh-pages> <development> <issues.json> <shipped.json from rqb-shipped.mjs>');
-  const shipped = JSON.parse(readFileSync(shippedFile, 'utf8'));
+  const [repo, dev, issuesFile] = process.argv.slice(2);
   if (!repo || !dev) { console.error('usage: node scripts/rasqberry-knowledge.mjs <gh-pages checkout> <development checkout>'); process.exit(2); }
   const here = new URL('../src/contexts/rasqberry/', import.meta.url);
   const sha = (dir) => execFileSync('git', ['-C', dir, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
@@ -236,6 +271,7 @@ function main() {
   const manifests = readdirSync(join(dev, MANIFESTS)).filter((f) => /^rq_demo_.*\.json$/.test(f) && f !== 'rq_demo_schema.json').sort().map(json);
   const order = (m) => groups.findIndex((g) => g.id === m.group);
   manifests.sort((a, b) => order(a) - order(b) || (a.menu?.order ?? 99) - (b.menu?.order ?? 99));
+  const shipped = shippedFromRules(manifests, json('learning-paths.json').paths);
   const device = [
     '# RasQberry Two on this Pi — what you know',
     read('device.summary.md'),

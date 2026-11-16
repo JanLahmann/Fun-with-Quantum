@@ -1,7 +1,8 @@
 // What the beta and prod images of RasQberry Two ship, by RasQberry's own trimmer (rq_demo_level.py apply,
-// the step its image build runs) on a copy of the development config. This runs RasQberry's code, so the
-// deploy runs it in a job without secrets; rasqberry-knowledge.mjs only reads the JSON it writes.
-// Usage: node scripts/rqb-shipped.mjs <RasQberry-Two development checkout> <out.json>
+// the step its image build runs) on a copy of a local RasQberry-Two checkout's config. It runs RasQberry's
+// code, so it is for local checks only (test/rasqberry.test.ts compares it with the mirrored rules in
+// rasqberry-knowledge.mjs); never run it in CI.
+// Usage: node scripts/rqb-shipped.mjs <RasQberry-Two checkout> <out.json>
 import { execFileSync } from 'node:child_process';
 import { cpSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';

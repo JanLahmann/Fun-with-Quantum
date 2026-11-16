@@ -3,12 +3,13 @@ import { KNOWLEDGE, SOURCE_COMMIT } from '../src/contexts/rasqberry/knowledge.ge
 import { rasqberryBuild } from '../src/contexts/rasqberry/build';
 import { systemPrompt, userMessage } from '../src/prompt';
 // @ts-expect-error — plain .mjs script without types
-import { existsSync } from 'node:fs';
-import { BUILD_PAGES, clean, demoLevel, demoSection, pageUrl, pathLevel, pathSection, preinstalled, variantLevel } from '../scripts/rasqberry-knowledge.mjs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { BUILD_PAGES, clean, demoLevel, demoSection, pageUrl, pathLevel, pathSection, preinstalled, shippedFromRules, variantLevel } from '../scripts/rasqberry-knowledge.mjs';
 import { shippedAt } from '../scripts/rqb-shipped.mjs';
 
-/** A RasQberry-Two checkout (its development branch) for the trimmer test; skipped without one. */
-const RQB_DEV = process.env.RQB_DEV_DIR ?? '../../RasQberry-Two';
+/** A RasQberry-Two checkout (its development branch) for the trimmer cross-check; skipped without one. */
+const RQB_DEV = process.env.RQB_DEV_DIR ?? '';
 
 describe('rasqberry build knowledge', () => {
   it('has the summary and every page, from a known commit', () => {
@@ -106,10 +107,14 @@ describe('rasqberry device context (the Pi)', async () => {
     expect(pathSection(path, [fwq, led], dropped)).toContain('beta images leave this step out');
   });
 
-  it.skipIf(!existsSync(RQB_DEV))('reads the levels from RasQberry\'s own trimmer (needs a RasQberry-Two checkout)', () => {
-    const shipped = shippedAt(RQB_DEV);
-    expect(Object.keys(shipped.beta.demos).length).toBeGreaterThan(0);
-    for (const id of Object.keys(shipped.prod.demos)) expect(shipped.beta.demos[id]).toBeDefined(); // prod ⊆ beta
+  // Runs RasQberry's own trimmer (its code): local only, never in CI. Run it at every summary refresh:
+  // RQB_DEV_DIR=<RasQberry-Two development checkout> npx vitest run test/rasqberry.test.ts
+  it.skipIf(!process.env.RQB_DEV_DIR || !existsSync(RQB_DEV))('mirrors rq_demo_level.py exactly (needs RQB_DEV_DIR)', () => {
+    const dir = join(RQB_DEV, 'RQB2-config/demo-manifests');
+    const manifests = readdirSync(dir).filter((f) => /^rq_demo_.*\.json$/.test(f) && f !== 'rq_demo_schema.json')
+      .map((f) => JSON.parse(readFileSync(join(dir, f), 'utf8')));
+    const paths = JSON.parse(readFileSync(join(dir, 'learning-paths.json'), 'utf8')).paths;
+    expect(shippedFromRules(manifests, paths)).toEqual(shippedAt(RQB_DEV));
   });
 
   it('keeps the Pi facts only when they look right', () => {
