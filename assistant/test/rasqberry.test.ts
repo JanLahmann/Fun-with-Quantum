@@ -2,10 +2,11 @@ import { describe, expect, it } from 'vitest';
 import { KNOWLEDGE, SOURCE_COMMIT } from '../src/contexts/rasqberry/knowledge.generated';
 import { rasqberryBuild } from '../src/contexts/rasqberry/build';
 import { systemPrompt, userMessage } from '../src/prompt';
-// @ts-expect-error — plain .mjs script without types
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+// @ts-expect-error — plain .mjs script without types
 import { BUILD_PAGES, clean, demoLevel, demoSection, pageUrl, pathLevel, pathSection, preinstalled, shippedFromRules, variantLevel } from '../scripts/rasqberry-knowledge.mjs';
+// @ts-expect-error — plain .mjs script without types
 import { shippedAt } from '../scripts/rqb-shipped.mjs';
 
 /** A RasQberry-Two checkout (its development branch) for the trimmer cross-check; skipped without one. */
@@ -83,7 +84,7 @@ describe('rasqberry device context (the Pi)', async () => {
     const fwq = { id: 'fwq', name: 'Fun with Quantum', description: 'Games', group: 'play', install: { preinstalled: true },
       variants: [{ id: 'coin', name: 'Coin' }, { id: 'ghz', name: 'GHZ' }] };
     const led = { id: 'led', name: 'LED', description: 'LEDs', group: 'play' };
-    const step = (demo, variant, extra = {}) => ({ demo, variant, try: 't', notice: 'n', ...extra });
+    const step = (demo: string, variant?: string, extra = {}) => ({ demo, variant, try: 't', notice: 'n', ...extra });
     const path = { id: 'p', title: 'P', minutes: 5, audience: 'all', goal: 'g',
       steps: [step('fwq', 'coin'), step('fwq', 'ghz', { name: 'GHZ', online: 'https://example.org/ghz' }), step('led')],
       next: [{ path: 'q', why: 'More.' }] };
