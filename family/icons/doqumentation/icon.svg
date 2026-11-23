@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <title>doQumentation</title>
+  <style>
+    .arc { stroke: #1C1D27; }
+    @media (prefers-color-scheme: dark) { .arc { stroke: #E9EAF1; } }
+  </style>
+  <defs>
+    <linearGradient id="g-doqumentation" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0E7C9C"/>
+      <stop offset="1" stop-color="#C22F6E"/>
+    </linearGradient>
+  </defs>
+  <path class="arc" d="M9 12 A 24 24 0 0 1 19 6" fill="none" stroke-width="3.5" stroke-linecap="round" opacity="0.5"/>
+  <g transform="rotate(-12 32 32)">
+    <rect x="14" y="14" width="36" height="36" rx="10" fill="none" stroke="url(#g-doqumentation)" stroke-width="6"/>
+    <path d="M23 19 H 36 L 42 25 V 45 H 23 Z" fill="#0E7C9C" opacity="0.45"/><path d="M29 28 L 37 33.5 L 29 39 Z" fill="#C22F6E"/>
+  </g>
+</svg>
