@@ -2,10 +2,11 @@ import { describe, expect, it } from 'vitest';
 import { KNOWLEDGE, SOURCE_COMMIT } from '../src/contexts/rasqberry/knowledge.generated';
 import { rasqberryBuild } from '../src/contexts/rasqberry/build';
 import { systemPrompt, userMessage } from '../src/prompt';
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 // @ts-expect-error — plain .mjs script without types
-import { BUILD_PAGES, clean, demoLevel, demoSection, pageUrl, pathLevel, pathSection, preinstalled, shippedFromRules, variantLevel } from '../scripts/rasqberry-knowledge.mjs';
+import { BUILD_PAGES, clean, extraPages, published, demoLevel, demoSection, pageUrl, pathLevel, pathSection, preinstalled, shippedFromRules, variantLevel } from '../scripts/rasqberry-knowledge.mjs';
 // @ts-expect-error — plain .mjs script without types
 import { shippedAt } from '../scripts/rqb-shipped.mjs';
 
@@ -28,6 +29,30 @@ describe('rasqberry build knowledge', () => {
 
   it('stays a reasonable size for the cached prompt', () => {
     expect(KNOWLEDGE.length).toBeLessThan(200_000);
+  });
+
+  it('reads the FAQ and the detail pages when they exist, only published ones', () => {
+    const repo = mkdtempSync(join(tmpdir(), 'rqb-'));
+    try {
+      expect(extraPages(repo)).toEqual([]);
+      mkdirSync(join(repo, 'content', 'details'), { recursive: true });
+      const put = (p: string, md: string) => writeFileSync(join(repo, 'content', p), md);
+      put('faq.md', '# FAQ');
+      put('details/b-hotspot.md', '# Hotspot');
+      put('details/a-led.md', '---\ntitle: LED\n---\n# LED');
+      put('details/draft.md', '---\ndraft: true\n---\n# Draft');
+      put('details/off.md', '---\npublished: false\n---\n# Off');
+      put('details/game.md', 'Try [it](https://fun-with-quantum.org/preview/hardys-paradox/).');
+      put('details/notes.txt', 'not a page');
+      expect(extraPages(repo)).toEqual(['faq.md', 'details/a-led.md', 'details/b-hotspot.md']);
+      expect(pageUrl('details/a-led.md')).toBe('https://rasqberry.org/details/a-led/');
+    } finally { rmSync(repo, { recursive: true, force: true }); }
+    expect(published('---\nunlisted: "yes"\n---\n# x')).toBe(false);
+    expect(published('---\ntitle: Draft notes\n---\n# x')).toBe(true);
+  });
+
+  it('has no unlisted preview games', () => {
+    expect(KNOWLEDGE).not.toMatch(/\/preview\//);
   });
 
   it('cleans website Markdown', () => {
