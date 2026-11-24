@@ -6,7 +6,7 @@ import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, 
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 // @ts-expect-error — plain .mjs script without types
-import { BUILD_PAGES, clean, extraPages, published, demoLevel, demoSection, pageUrl, pathLevel, pathSection, preinstalled, shippedFromRules, variantLevel } from '../scripts/rasqberry-knowledge.mjs';
+import { BUILD_PAGES, clean, extraPages, demoLevel, demoSection, pageUrl, pathLevel, pathSection, preinstalled, shippedFromRules, variantLevel } from '../scripts/rasqberry-knowledge.mjs';
 // @ts-expect-error — plain .mjs script without types
 import { shippedAt } from '../scripts/rqb-shipped.mjs';
 
@@ -31,28 +31,24 @@ describe('rasqberry build knowledge', () => {
     expect(KNOWLEDGE.length).toBeLessThan(200_000);
   });
 
-  it('reads the FAQ and the detail pages when they exist, only published ones', () => {
+  it('reads the FAQ and the detail pages when they exist', () => {
     const repo = mkdtempSync(join(tmpdir(), 'rqb-'));
     try {
       expect(extraPages(repo)).toEqual([]);
-      mkdirSync(join(repo, 'content', 'details'), { recursive: true });
-      const put = (p: string, md: string) => writeFileSync(join(repo, 'content', p), md);
-      put('faq.md', '# FAQ');
-      put('details/b-hotspot.md', '# Hotspot');
-      put('details/a-led.md', '---\ntitle: LED\n---\n# LED');
-      put('details/draft.md', '---\ndraft: true\n---\n# Draft');
-      put('details/off.md', '---\npublished: false\n---\n# Off');
-      put('details/game.md', 'Try [it](https://fun-with-quantum.org/preview/hardys-paradox/).');
-      put('details/notes.txt', 'not a page');
-      expect(extraPages(repo)).toEqual(['faq.md', 'details/a-led.md', 'details/b-hotspot.md']);
+      mkdirSync(join(repo, 'content', 'details', 'demos'), { recursive: true });
+      const put = (p: string) => writeFileSync(join(repo, 'content', p), '# x');
+      for (const p of ['faq.md', 'details/b-hotspot.md', 'details/a-led.md', 'details/demos/fractals.md', 'details/notes.txt']) put(p);
+      expect(extraPages(repo)).toEqual(['faq.md', 'details/a-led.md', 'details/b-hotspot.md', 'details/demos/fractals.md']);
       expect(pageUrl('details/a-led.md')).toBe('https://rasqberry.org/details/a-led/');
     } finally { rmSync(repo, { recursive: true, force: true }); }
-    expect(published('---\nunlisted: "yes"\n---\n# x')).toBe(false);
-    expect(published('---\ntitle: Draft notes\n---\n# x')).toBe(true);
   });
 
-  it('has no unlisted preview games', () => {
-    expect(KNOWLEDGE).not.toMatch(/\/preview\//);
+  it('keeps unlisted Fun with Quantum previews out', async () => {
+    expect(clean('Try [Hardy](https://fun-with-quantum.org/preview/hardys-paradox/) or https://fun-with-quantum.org/preview/magic-square/ now.'))
+      .toBe('Try Hardy or  now.');
+    const { DEVICE_KNOWLEDGE } = await import('../src/contexts/rasqberry/device.generated');
+    const { TESTER_KNOWLEDGE } = await import('../src/contexts/rasqberry/tester.generated');
+    for (const k of [KNOWLEDGE, DEVICE_KNOWLEDGE, TESTER_KNOWLEDGE]) expect(k).not.toMatch(/\/preview\//);
   });
 
   it('cleans website Markdown', () => {
@@ -90,6 +86,7 @@ describe('rasqberry device context (the Pi)', async () => {
     for (const id of DEMO_IDS) expect(DEVICE_KNOWLEDGE).toContain(`id \`${id}\``);
     expect(DEVICE_KNOWLEDGE).toContain('## Learning paths');
     expect(DEVICE_KNOWLEDGE).toContain('## Setting up and fixing the Pi');
+    expect(DEVICE_KNOWLEDGE.length).toBeLessThan(200_000); // the detail pages go here too
   });
 
   it('says per variant and per learning-path step whether it is on the image', () => {

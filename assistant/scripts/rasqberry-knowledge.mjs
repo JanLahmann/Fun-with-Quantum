@@ -21,12 +21,12 @@
  * has today's pages; the committed copy is the snapshot the tests and local runs use.
  */
 import { execFileSync } from 'node:child_process';
-import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { IMAGE_LEVELS, stepKey } from './rqb-shipped.mjs';
 
 const SITE = 'https://rasqberry.org';
-/** Pages the build helper knows verbatim, in this order. Demo detail pages belong to the device helper. */
+/** Pages the build helper knows verbatim, in this order (then extraPages). The demo pages belong to the device helper. */
 export const BUILD_PAGES = [
   'index.md',
   '01-3d-model/01-bill-of-materials.md',
@@ -59,23 +59,14 @@ export const DEVICE_PAGES = [
 
 /**
  * Pages read verbatim when they exist, by both the build and the device helper, after the fixed lists:
- * the FAQ and every detail page in content/details/ (RasQberry #423 moves details there from the
- * shortened pages), so a new one needs no change here.
+ * the FAQ and every detail page under content/details/ (RasQberry #423 moves details there from the
+ * shortened pages), so a new one needs no change here. Every content/ page is published on the site
+ * (it has no drafts); unlisted Fun with Quantum previews are taken out by clean().
  */
 export function extraPages(repo) {
-  const details = (() => { try { return readdirSync(join(repo, 'content', 'details')); } catch { return []; } })()
+  const details = (() => { try { return readdirSync(join(repo, 'content', 'details'), { recursive: true }).map(String); } catch { return []; } })()
     .filter((f) => f.endsWith('.md')).sort().map((f) => `details/${f}`);
-  return ['faq.md', ...details].filter((p) => {
-    try { return published(readFileSync(join(repo, 'content', p), 'utf8')); } catch { return false; }
-  });
-}
-
-/** False for a page its front matter marks as not public (draft, unpublished, unlisted, noindex). */
-export function published(md) {
-  const front = /^---\n([\s\S]*?)\n---/.exec(md)?.[1] ?? '';
-  return !/^\s*(draft|unlisted|noindex|hidden|preview)\s*:\s*["']?(true|yes)["']?\s*$/im.test(front)
-    && !/^\s*published\s*:\s*["']?(false|no)["']?\s*$/im.test(front)
-    && !/\/preview\//.test(md);
+  return [...(existsSync(join(repo, 'content', 'faq.md')) ? ['faq.md'] : []), ...details];
 }
 
 const MANIFESTS = 'RQB2-config/demo-manifests';
@@ -262,6 +253,9 @@ export function clean(md) {
     .replace(/<br\s*\/?>/gi, '\n')
     .replace(/<\/?(p|div|span|em|strong|b|i|center|sup|sub|small|details|summary|figure|figcaption|picture|source|video|iframe)\b[^>]*>/gi, '')
     .replace(/<a\s[^>]*href=['"]([^'"]+)['"][^>]*>([\s\S]*?)<\/a>/gi, '[$2]($1)')
+    // Unlisted Fun with Quantum previews stay out of Ket's knowledge: keep the link text, drop the link.
+    .replace(/\[([^\]]*)\]\([^)\s]*fun-with-quantum\.org\/preview\/[^)]*\)/gi, '$1')
+    .replace(/<?https?:\/\/(www\.)?fun-with-quantum\.org\/preview\/[^\s)>]*>?/gi, '')
     .replace(/\]\((\/[^)\s]*)\)/g, (_, p) => `](${SITE}${p.replace(/^\/([^#?]*?)\/?(#|\?|$)/, (_m, a, b) => `/${a}${a && !a.includes('.') ? '/' : ''}${b}`)})`)
     .replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
     .replace(/^[ \t]{2,}(?![-*+] |\d+\. |```)/gm, '') // indentation left over from HTML blocks (keeps nested lists)
@@ -318,8 +312,7 @@ function main() {
     const md = readFileSync(join(repo, 'content', p), 'utf8');
     return /^title:\s*["']?(.+?)["']?\s*$/m.exec(/^---\n([\s\S]*?)\n---/.exec(md)?.[1] ?? '')?.[1] ?? /^#\s+(.+)$/m.exec(clean(md))?.[1].trim() ?? p;
   };
-  const sitePages = readdirSync(join(repo, 'content'), { recursive: true }).map(String)
-    .filter((p) => p.endsWith('.md') && published(readFileSync(join(repo, 'content', p), 'utf8'))).sort();
+  const sitePages = readdirSync(join(repo, 'content'), { recursive: true }).filter((p) => String(p).endsWith('.md')).map(String).sort();
   const releases = JSON.parse(readFileSync(join(repo, 'public/RQB-releases.json'), 'utf8'));
   const highlights = (() => { try { return JSON.parse(readFileSync(join(repo, 'public/highlights.json'), 'utf8')); } catch { return {}; } })();
   const issues = issuesFile ? JSON.parse(readFileSync(issuesFile, 'utf8')) : [];
