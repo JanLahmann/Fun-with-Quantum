@@ -13,6 +13,8 @@
  * too, and public if the marker says so. It is read once, when the script starts (link to such a
  * page with a full page load).
  * The page may define window.fwqAssistantState() to add to the state sent along (page + title).
+ * Once the box is shown, window.fwqAssistantOpen() opens it as the launcher button does (e.g. for an
+ * "Ask Ket" button in the site's header); it stays undefined where the box isn't shown.
  * The box floats bottom right in a shadow root, so the site's CSS and ours stay apart.
  */
 import type { AssistantTexts } from './i18n';
@@ -21,7 +23,7 @@ import { mountTester } from './tester-ui';
 import { mountAssistant } from './widget';
 
 declare global {
-  interface Window { fwqAssistantState?: () => Record<string, unknown> }
+  interface Window { fwqAssistantState?: () => Record<string, unknown>; fwqAssistantOpen?: () => void }
 }
 
 interface EmbedTexts extends Partial<AssistantTexts> { privacyUrl: string }
@@ -302,6 +304,8 @@ export function embed(script: HTMLScriptElement): void {
     ? mountTester(panel, [log, form], new URL(script.src).origin, () => (onPi ? piDevice() : undefined), ask, () => resetChat())
     : undefined;
   resetChat = mountAssistant(root, { texts: t, events: EVENTS[site] ?? site, hooks }).reset;
+  // The launcher toggles; this only opens (an open box keeps its state and gets the focus).
+  window.fwqAssistantOpen = () => { if (panel.hidden) open.click(); else input.focus(); };
 }
 
 const me = document.currentScript as HTMLScriptElement | null;
