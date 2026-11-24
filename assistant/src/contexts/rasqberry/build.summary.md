@@ -14,14 +14,15 @@ Most of these pages are also in your context, word for word (below); the learnin
 
 | Question | Page → sections |
 |---|---|
-| Quick start, first-boot checklist | https://rasqberry.org/ → "Getting Started", "First boot" |
+| Quick start | https://rasqberry.org/ → "Getting started" |
+| First start, setup checklist | https://rasqberry.org/02-software/01-installation-overview/ → "First start", "Setup checklist" |
 | Parts, prices, links, Core vs Optional, Pi/RAM, card, power supply, filament colors and grams, magnets, screws | https://rasqberry.org/01-3d-model/01-bill-of-materials/ → "Required Components", "Core Components BOM", "Optional Components BOM" |
 | STL location, 3D viewer, cooler, gluing, LED wiring and panel orientation, welding-shield filter (240 × 83 mm), Pi mounting, floor, cryostat/RTEs/door, magnet tips | https://rasqberry.org/01-3d-model/02-hardware-assembly-guide/ → "Where to find the 3D files", "Explore the model in 3D", "Mounting the fan", "Gluing all the pieces together", "Wiring up the LED Arrays", "Cutting the welding shield", "Attach the Pi to the Wall", "Assembly of the Floor", "Assembly of the Cryostat" |
 | Writing the image, Imager link and customization, which image, card sizes, default login, downloads, 0 RasQberry menu, versions, venv, updates, troubleshooting | https://rasqberry.org/02-software/01-installation-overview/ → "Write the card", "Customisation", "If the link does not open Imager", "Which image?", "First start", "Downloads", "About the image", "Keeping up to date", "Troubleshooting" |
 | Wi-Fi, SSH, VNC, password, first access without a screen (the 15-minute SSH window) | https://rasqberry.org/02-software/02-system-options/ → "First access without a screen" |
 | A/B image: card sizes, update, what is kept, going back, Pi 4 bootloader | https://rasqberry.org/02-software/03-ab-boot/ → "Card sizes", "Update", "What an update keeps", "Go back", "Raspberry Pi 4" |
 | LED wizard, LED settings, LED troubleshooting, LED Python API | https://rasqberry.org/03-quantum-computing-demos/led-display/ → "Set up your panel first", "Configuration", "Troubleshooting", "For developers" |
-| Running/stopping demos, no LED panel (on-screen/browser view), booth tips | https://rasqberry.org/03-quantum-computing-demos/00-overview/ → "Running demos", "No LED panel?", "At a booth or in class" |
+| Running/stopping demos, no LED panel (on-screen/browser view), your own Qiskit programs, booth tips | https://rasqberry.org/03-quantum-computing-demos/00-overview/ → "Running demos", "No LED panel?", "Your own Qiskit programs", "At a booth or in class" |
 | Demo list and ids; guided tours | https://rasqberry.org/03-quantum-computing-demos/01-demo-list/ ; https://rasqberry.org/03-quantum-computing-demos/02-learning-paths/ |
 | Standalone (floorless) model, printed LED filter, 8×32 panel cut to 8×24, beta tips, update from a branch, building images | https://rasqberry.org/04-jans-corner/tips-and-tricks/ |
 | Workshops, one Pi as class server; contributing | https://rasqberry.org/workshops/ ; https://rasqberry.org/05-contributing/ |
