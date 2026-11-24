@@ -254,8 +254,8 @@ export function clean(md) {
     .replace(/<\/?(p|div|span|em|strong|b|i|center|sup|sub|small|details|summary|figure|figcaption|picture|source|video|iframe)\b[^>]*>/gi, '')
     .replace(/<a\s[^>]*href=['"]([^'"]+)['"][^>]*>([\s\S]*?)<\/a>/gi, '[$2]($1)')
     // Unlisted Fun with Quantum previews stay out of Ket's knowledge: keep the link text, drop the link.
-    .replace(/\[([^\]]*)\]\([^)\s]*fun-with-quantum\.org\/preview\/[^)]*\)/gi, '$1')
-    .replace(/<?https?:\/\/(www\.)?fun-with-quantum\.org\/preview\/[^\s)>]*>?/gi, '')
+    .replace(/\[([^\]]*)\]\([^)\s]*fun-with-quantum\.org\/preview\b[^)]*\)/gi, '$1')
+    .replace(/<?(?:https?:\/\/)?(?:www\.)?fun-with-quantum\.org\/preview\b[^\s)>]*>?/gi, (m) => /[.,;:!?]$/.test(m) ? m.slice(-1) : '')
     .replace(/\]\((\/[^)\s]*)\)/g, (_, p) => `](${SITE}${p.replace(/^\/([^#?]*?)\/?(#|\?|$)/, (_m, a, b) => `/${a}${a && !a.includes('.') ? '/' : ''}${b}`)})`)
     .replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
     .replace(/^[ \t]{2,}(?![-*+] |\d+\. |```)/gm, '') // indentation left over from HTML blocks (keeps nested lists)

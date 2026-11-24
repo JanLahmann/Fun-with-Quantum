@@ -46,9 +46,11 @@ describe('rasqberry build knowledge', () => {
   it('keeps unlisted Fun with Quantum previews out', async () => {
     expect(clean('Try [Hardy](https://fun-with-quantum.org/preview/hardys-paradox/) or https://fun-with-quantum.org/preview/magic-square/ now.'))
       .toBe('Try Hardy or  now.');
+    expect(clean('<a href="https://www.fun-with-quantum.org/preview/pd/">PD</a>, [Guide](/02-software/x), fun-with-quantum.org/preview, see https://fun-with-quantum.org/preview/3sat-grover/.'))
+      .toBe('PD, [Guide](https://rasqberry.org/02-software/x/), , see .');
     const { DEVICE_KNOWLEDGE } = await import('../src/contexts/rasqberry/device.generated');
     const { TESTER_KNOWLEDGE } = await import('../src/contexts/rasqberry/tester.generated');
-    for (const k of [KNOWLEDGE, DEVICE_KNOWLEDGE, TESTER_KNOWLEDGE]) expect(k).not.toMatch(/\/preview\//);
+    for (const k of [KNOWLEDGE, DEVICE_KNOWLEDGE, TESTER_KNOWLEDGE]) expect(k).not.toMatch(/fun-with-quantum\.org\/preview/i);
   });
 
   it('cleans website Markdown', () => {
